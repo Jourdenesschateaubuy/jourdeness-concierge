@@ -189,12 +189,12 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 18px;
+  padding: 28px;
 }
 
 .product-image img {
-  max-width: 86%;
-  max-height: 86%;
+  max-width: 68%;
+  max-height: 68%;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -341,14 +341,14 @@ main {
     gap: 20px;
   }
 
-  .product-image {
+    .product-image {
     aspect-ratio: 5 / 3;
-    padding: 20px;
+    padding: 30px;
   }
 
   .product-image img {
-    max-width: 80%;
-    max-height: 80%;
+    max-width: 62%;
+    max-height: 62%;
   }
 
   .product-info {
