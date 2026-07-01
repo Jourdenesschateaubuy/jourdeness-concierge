@@ -61,8 +61,8 @@ const products: Product[] = [
     name: "BC-HA複合益生菌",
     category: "保健食品",
     series: "益生菌系列",
-    price: "NT$ 1,500",
-    image: "/products/BCHA.jpg",
+    price: "2盒 NT$ 2000",
+    image: "/products/BC-HA.jpg",
     description: "3g x 60包 / 盒。複合益生菌保健品項。",
   },
   {
