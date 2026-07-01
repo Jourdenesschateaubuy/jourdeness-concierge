@@ -44,7 +44,7 @@ const products: Product[] = [
     category: "保健食品",
     series: "益生菌系列",
     price: "3 盒 NT$ 1,100",
-    image: "/products/BC-HA複合益生菌.jpg",
+    image: "/products/probiotic-bc-ca.jpg",
     description: "BC-198芽孢桿菌，維持消化道機能，詳細食用方式可透過 LINE 詢問。",
   },
   {
@@ -62,7 +62,7 @@ const products: Product[] = [
     category: "保健食品",
     series: "益生菌系列",
     price: "NT$ 1,500",
-    image: "/products/RCHA.jpg",
+    image: "/products/BCHA.jpg",
     description: "BC-HA複合益生菌，詳細食用方式可透過 LINE 詢問。",
   },
   {
@@ -447,14 +447,16 @@ export default function Home() {
 
                 <p className="price">{product.price}</p>
 
-                <a
-                  className="product-button"
-                  href={lineLink(product.name)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  詢問 / 下單
-                </a>
+                <div className="product-info">
+  <p className="series-label">{product.series}</p>
+  <h3>{product.name}</h3>
+
+  {product.description ? (
+    <p className="description">{product.description}</p>
+  ) : null}
+
+  <p className="price">{product.price}</p>
+</div>
               </div>
             </article>
           ))}
