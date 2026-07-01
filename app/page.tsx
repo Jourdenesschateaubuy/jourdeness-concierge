@@ -121,7 +121,7 @@ const products: Product[] = [
     category: "保養品",
     series: "冷杉系列",
     price: "缺貨中",
-    image: "/products/Men's Abies0",
+    image: "/products/Men's Abies0.jpg",
     description: "120mL。冷杉系列保養品。",
   },
   {
@@ -287,8 +287,8 @@ const products: Product[] = [
     name: "BA-5肌密抗皺精華",
     category: "保養品",
     series: "BA-5肌密抗皺系列",
-    price: "價格待補",
-    image: "/products/placeholder.jpg",
+    price: "缺貨中",
+    image: "/products/BA-5 2.jpg",
     description: "BA-5肌密抗皺系列。",
   },
   {
@@ -296,8 +296,8 @@ const products: Product[] = [
     name: "BA-5肌密抗皺霜",
     category: "保養品",
     series: "BA-5肌密抗皺系列",
-    price: "價格待補",
-    image: "/products/placeholder.jpg",
+    price: "缺貨中",
+    image: "/products/BA-5 4.png",
     description: "BA-5肌密抗皺系列。",
   },
 
@@ -360,8 +360,8 @@ const products: Product[] = [
     name: "齒齦保健薰衣草舒緩牙膏",
     category: "牙膏",
     series: "牙膏",
-    price: "價格待補",
-    image: "/products/placeholder.jpg",
+    price: "單價 NT$ 250 任選3條 NT$ 500",
+    image: "/products/Lavender-washtoothpaste.jpg",
     description: "120g。齒齦保健牙膏。",
   },
   {
@@ -369,8 +369,8 @@ const products: Product[] = [
     name: "齒齦保健龍血修護牙膏",
     category: "牙膏",
     series: "牙膏",
-    price: "價格待補",
-    image: "/products/placeholder.jpg",
+    price: "單價 NT$ 250 任選3條 NT$ 500",
+    image: "/products/bd-washtoothpaste.jpg",
     description: "120g / 單支。齒齦保健牙膏。",
   },
 ];
