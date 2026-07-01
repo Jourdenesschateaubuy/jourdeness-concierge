@@ -135,7 +135,7 @@ const products: Product[] = [
     category: "保養品",
     series: "玫瑰超微晶萃系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/rose0.jpg",
     description: "150mL。玫瑰超微晶萃系列。",
   },
   {
@@ -144,7 +144,7 @@ const products: Product[] = [
     category: "保養品",
     series: "玫瑰超微晶萃系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/rose1.jpg",
     description: "130mL。玫瑰超微晶萃系列。",
   },
   {
@@ -153,7 +153,7 @@ const products: Product[] = [
     category: "保養品",
     series: "玫瑰超微晶萃系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/rose3.jpg",
     description: "130mL。玫瑰超微晶萃系列。",
   },
   {
@@ -162,7 +162,7 @@ const products: Product[] = [
     category: "保養品",
     series: "玫瑰超微晶萃系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/rose4.jpg",
     description: "50g。玫瑰超微晶萃系列。",
   },
 
@@ -172,7 +172,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/db-1.jpg",
     description: "龍血系列保養品。",
   },
   {
@@ -181,7 +181,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/db-3.jpg",
     description: "龍血系列保養品。",
   },
   {
@@ -190,7 +190,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/db-4.jpg",
     description: "龍血系列保養品。",
   },
   {
@@ -199,7 +199,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/db-2.jpg",
     description: "龍血系列保養品。",
   },
 
