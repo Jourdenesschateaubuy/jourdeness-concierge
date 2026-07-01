@@ -120,7 +120,7 @@ const products: Product[] = [
     category: "保養品",
     series: "冷杉系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Men's Abies0",
     description: "120mL。冷杉系列保養品。",
   },
   {
@@ -231,7 +231,7 @@ const products: Product[] = [
     category: "保養品",
     series: "肌光緊緻速妍系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Radiance and Lifting1.jpg",
     description: "肌光緊緻速妍系列。",
   },
   {
@@ -240,7 +240,7 @@ const products: Product[] = [
     category: "保養品",
     series: "肌光緊緻速妍系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Radiance and Lifting2.jpg",
     description: "肌光緊緻速妍系列。",
   },
   {
@@ -249,7 +249,7 @@ const products: Product[] = [
     category: "保養品",
     series: "肌光緊緻速妍系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Radiance and Lifting4.jpg",
     description: "肌光緊緻速妍系列。",
   },
   {
@@ -258,7 +258,7 @@ const products: Product[] = [
     category: "保養品",
     series: "肌光緊緻速妍系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Radiance and Lifting5.jpg",
     description: "肌光緊緻速妍系列。",
   },
 
@@ -315,7 +315,7 @@ const products: Product[] = [
     category: "洗沐",
     series: "洗沐系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Argan Oil1.jpg",
     description: "洗髮品項。",
   },
   {
