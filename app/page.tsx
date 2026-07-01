@@ -71,7 +71,7 @@ const products: Product[] = [
     category: "保健食品",
     series: "晶眸保健系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Lutein.jpg",
     description: "精華凍 + 精華飲綜合組。",
   },
   {
@@ -80,7 +80,7 @@ const products: Product[] = [
     category: "保健食品",
     series: "美妍飲品系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/FISH-Collagen.jpg",
     description: "美妍保健飲品。",
   },
 
@@ -90,7 +90,7 @@ const products: Product[] = [
     category: "保養品",
     series: "薰衣草系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Lavender1.jpg",
     description: "150mL。薰衣草肌安舒緩系列。",
   },
   {
@@ -99,7 +99,7 @@ const products: Product[] = [
     category: "保養品",
     series: "薰衣草系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Lavender2.jpg",
     description: "30mL。薰衣草肌安舒緩系列。",
   },
   {
@@ -108,18 +108,8 @@ const products: Product[] = [
     category: "保養品",
     series: "薰衣草系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Lavender3.jpg",
     description: "100mL。薰衣草肌安舒緩系列。",
-  },
-
-  {
-    id: 9,
-    name: "冷杉型男淨化潔顏乳",
-    category: "保養品",
-    series: "冰河系列",
-    price: "價格待補",
-    image: "/products/placeholder.jpg",
-    description: "120mL。冰河系列保養品。",
   },
   {
     id: 10,
@@ -127,7 +117,7 @@ const products: Product[] = [
     category: "保養品",
     series: "冰河系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Men's Abies3.jpg",
     description: "150mL。冰河系列保養品。",
   },
   {
@@ -136,19 +126,9 @@ const products: Product[] = [
     category: "保養品",
     series: "冰河系列",
     price: "價格待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Men's Abies1.jpg",
     description: "100mL。冰河系列保養品。",
   },
-  {
-    id: 12,
-    name: "冷杉酷涼活絡精油滾珠",
-    category: "保養品",
-    series: "冰河系列",
-    price: "價格待補",
-    image: "/products/placeholder.jpg",
-    description: "9mL。滾珠型精油品項。",
-  },
-
   {
     id: 13,
     name: "玫瑰超微晶萃潔顏慕絲",
