@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 const categoryConfig = {
-  組合優惠價: ["全部", "保健食品組合", "洗沐組合"],
+  組合價: ["全部", "保健食品組合", "洗沐組合"],
   全部: ["全部"],
   保養品: [
     "全部",
@@ -23,9 +23,10 @@ const categoryConfig = {
   ],
   保健食品: ["全部", "益生菌系列", "晶眸保健系列", "美妍飲品系列"],
   洗沐: ["全部", "洗沐系列"],
-  精油: ["全部", "拉芳黛精油"],
+  精油: ["全部", "10mL 精油系列", "50mL 精萃油系列", "擴香設備"],
   牙膏: ["全部", "牙膏"],
   肥皂: ["全部", "肥皂"],
+  貼布: ["全部", "貼布"],
   外部廠商: ["全部", "歐思佛", "上山採藥", "太極石"],
 } as const;
 type MainCategory = keyof typeof categoryConfig;
@@ -35,6 +36,7 @@ type Product = {
   name: string;
   category: MainCategory;
   series: string;
+  originalPrice?: string;
   price: string;
   image: string;
   description: string;
@@ -145,8 +147,8 @@ const products: Product[] = [
   {
     id: 12,
     name: "冷杉酷涼活絡精油滾珠",
-    category: "精油",
-    series: "添加精油系列",
+    category: "保養品",
+    series: "冷杉系列",
     price: "價格待補",
     image: "/products/placeholder.jpg",
     description: "9mL。冷杉酷涼活絡精油滾珠。",
@@ -208,16 +210,16 @@ const products: Product[] = [
     description: "龍血系列保養品。",
   },
   {
-    id: 18,
+    id: 19,
     name: "龍血求麗修護乳",
     category: "保養品",
     series: "龍血系列",
-    price: "NT 1290",
+    price: "買一送一 NT 1290",
     image: "/products/db-3.jpg",
     description: "龍血系列保養品。",
   },
   {
-    id: 19,
+    id: 20,
     name: "龍血求麗修護霜",
     category: "保養品",
     series: "龍血系列",
@@ -373,6 +375,126 @@ const products: Product[] = [
     image: "/products/bd-washtoothpaste.jpg",
     description: "120g / 單支。齒齦保健牙膏。",
   },
+    {
+    id: 37,
+    name: "智慧之冠",
+    category: "精油",
+    series: "10mL 精油系列",
+    originalPrice: "原價 NT$ 1,800",
+    price: "產地價 NT$ 1,350",
+    image: "/products/placeholder.jpg",
+    description: "10mL。精油系列。",
+  },
+  {
+    id: 38,
+    name: "亮采橙真",
+    category: "精油",
+    series: "10mL 精油系列",
+    originalPrice: "原價 NT$ 1,800",
+    price: "產地價 NT$ 1,350",
+    image: "/products/placeholder.jpg",
+    description: "10mL。精油系列。",
+  },
+  {
+    id: 39,
+    name: "呼暢護隨",
+    category: "精油",
+    series: "10mL 精油系列",
+    originalPrice: "原價 NT$ 1,800",
+    price: "產地價 NT$ 1,350",
+    image: "/products/placeholder.jpg",
+    description: "10mL。精油系列。",
+  },
+  {
+    id: 40,
+    name: "魔力輕盈",
+    category: "精油",
+    series: "10mL 精油系列",
+    originalPrice: "原價 NT$ 1,800",
+    price: "產地價 NT$ 1,350",
+    image: "/products/placeholder.jpg",
+    description: "10mL。精油系列。",
+  },
+  {
+    id: 41,
+    name: "順暢平衡",
+    category: "精油",
+    series: "10mL 精油系列",
+    originalPrice: "原價 NT$ 1,800",
+    price: "產地價 NT$ 1,350",
+    image: "/products/placeholder.jpg",
+    description: "10mL。精油系列。",
+  },
+  {
+    id: 42,
+    name: "心之綻放",
+    category: "精油",
+    series: "10mL 精油系列",
+    originalPrice: "原價 NT$ 1,800",
+    price: "產地價 NT$ 1,350",
+    image: "/products/placeholder.jpg",
+    description: "10mL。精油系列。",
+  },
+  {
+    id: 43,
+    name: "青春密碼維 E 精萃油",
+    category: "精油",
+    series: "50mL 精萃油系列",
+    originalPrice: "原價 NT$ 2,200",
+    price: "產地價 NT$ 1,650",
+    image: "/products/placeholder.jpg",
+    description: "50mL。精萃油系列。",
+  },
+  {
+    id: 44,
+    name: "防護盾牌維 C 精萃油",
+    category: "精油",
+    series: "50mL 精萃油系列",
+    originalPrice: "原價 NT$ 2,200",
+    price: "產地價 NT$ 1,650",
+    image: "/products/placeholder.jpg",
+    description: "50mL。精萃油系列。",
+  },
+  {
+    id: 45,
+    name: "晚安無瑕維 A 精萃油",
+    category: "精油",
+    series: "50mL 精萃油系列",
+    originalPrice: "原價 NT$ 2,200",
+    price: "產地價 NT$ 1,650",
+    image: "/products/placeholder.jpg",
+    description: "50mL。精萃油系列。",
+  },
+  {
+    id: 46,
+    name: "高頻霧化香薰機",
+    category: "精油",
+    series: "擴香設備",
+    originalPrice: "原價 NT$ 1,980",
+    price: "產地價 NT$ 1,980",
+    image: "/products/placeholder.jpg",
+    description: "擴香設備。",
+  },
+  {
+  id: 47,
+  name: "石墨烯電氣石精油貼布(涼感)",
+  category: "貼布",
+  series: "貼布",
+  originalPrice: "原價 NT$ 800",
+  price: "產地價 NT$ 500",
+  image: "/products/placeholder.jpg",
+  description: "商品敘述。",
+},
+{
+  id: 48,
+  name: "石墨烯電氣石精油貼布(溫感)",
+  category: "貼布",
+  series: "貼布",
+  originalPrice: "原價 NT$ 800",
+  price: "產地價 NT$ 500",
+  image: "/products/placeholder.jpg",
+  description: "商品敘述。",
+},
 ];
 
 export default function Home() {
@@ -459,11 +581,16 @@ export default function Home() {
               </div>
 
               <div className="product-info">
-                <p className="series-label">{product.series}</p>
-                <h3>{product.name}</h3>
-                <p className="description">{product.description}</p>
-                <p className="price">{product.price}</p>
-              </div>
+  <p className="series-label">{product.series}</p>
+  <h3>{product.name}</h3>
+  <p className="description">{product.description}</p>
+
+  {product.originalPrice ? (
+    <p className="original-price">{product.originalPrice}</p>
+  ) : null}
+
+  <p className="price">{product.price}</p>
+</div>
             </article>
           ))}
         </section>
