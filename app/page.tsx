@@ -176,7 +176,7 @@ const products: Product[] = [
     series: "冷杉系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Siberian Fir Essential Oil Roller.jpg",
     description: "9mL。冷杉酷涼活絡精油滾珠。",
   },
 
@@ -227,7 +227,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "產地價 $890",
     image: "/products/db-1.jpg",
     description: "龍血系列保養品。",
   },
@@ -715,7 +715,7 @@ const products: Product[] = [
     series: "冰河淨化系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Glacial 0.jpg",
     description: "150mL。冰河淨化系列。",
   },
   {
@@ -725,7 +725,7 @@ const products: Product[] = [
     series: "冰河淨化系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Glacial 1.jpg",
     description: "120mL。冰河淨化系列。",
   },
   {
@@ -735,7 +735,7 @@ const products: Product[] = [
     series: "冰河淨化系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Glacial 5.jpg",
     description: "100mL。冰河淨化系列。",
   },
   {
@@ -755,7 +755,7 @@ const products: Product[] = [
     series: "鳳梨酵素系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/pineapple 0.jpg",
     description: "120g。鳳梨酵素系列。",
   },
   {
@@ -765,7 +765,7 @@ const products: Product[] = [
     series: "鳳梨酵素系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/pineapple 5.jpg",
     description: "22mL x 5pcs。鳳梨酵素系列。",
   },
   {
@@ -817,7 +817,7 @@ const products: Product[] = [
     series: "護手霜",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/sakura hand cream.jpg",
     description: "30mL。護手霜品項。",
   },
   {
@@ -827,7 +827,7 @@ const products: Product[] = [
     series: "護手霜",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/tea tree hand cream.jpg",
     description: "30mL。護手霜品項。",
   },
   {
@@ -837,7 +837,7 @@ const products: Product[] = [
     series: "護手霜",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/lavender hand cream.jpg",
     description: "30mL。護手霜品項。",
   },
   {
@@ -847,7 +847,7 @@ const products: Product[] = [
     series: "護手霜",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/musk hand cream.jpg",
     description: "30g。護手霜品項。",
   },
 
@@ -873,7 +873,7 @@ const products: Product[] = [
   },
   {
     id: 81,
-    name: "檸檬馬鞭草皂",
+    name: "龍血檸檬馬鞭草皂",
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
@@ -883,7 +883,7 @@ const products: Product[] = [
   },
   {
     id: 82,
-    name: "薰衣草舒緩皂",
+    name: "龍血薰衣草舒緩皂",
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
