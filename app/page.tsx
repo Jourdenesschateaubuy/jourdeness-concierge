@@ -559,7 +559,7 @@ const products: Product[] = [
     series: "茶樹控油系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/tt6.jpg",
     description: "8mL / 盒。茶樹控油系列。",
   },
   {
@@ -569,7 +569,7 @@ const products: Product[] = [
     series: "茶樹控油系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/tt1.jpg",
     description: "150mL。茶樹控油系列。",
   },
   {
@@ -589,7 +589,7 @@ const products: Product[] = [
     series: "膠原蛋白系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/collagen 1.jpg",
     description: "30mL。膠原蛋白系列。",
   },
   {
@@ -679,7 +679,7 @@ const products: Product[] = [
     series: "水光肌能系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/glassskin 1.jpg",
     description: "140mL。水光肌能系列。",
   },
   {
@@ -689,7 +689,7 @@ const products: Product[] = [
     series: "水光肌能系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/glassskin 3.jpg",
     description: "130mL。水光肌能系列。",
   },
   {
@@ -699,7 +699,7 @@ const products: Product[] = [
     series: "水光肌能系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/glassskin 4.jpg",
     description: "50mL。水光肌能系列。",
   },
   {
@@ -709,7 +709,7 @@ const products: Product[] = [
     series: "杏仁酸系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/mandelic acid.jpg",
     description: "30mL。溫和煥顏保養品項。",
   },
   {
@@ -749,7 +749,7 @@ const products: Product[] = [
     series: "晶淬雪系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Crystal Radiance Brightening Emulsion.jpg",
     description: "100mL。晶淬雪系列。",
   },
   {
@@ -779,7 +779,7 @@ const products: Product[] = [
     series: "櫻の雪傳明酸美白系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/sukola0.jpg",
     description: "150mL。櫻の雪傳明酸美白系列。",
   },
   {
@@ -789,7 +789,7 @@ const products: Product[] = [
     series: "櫻の雪傳明酸美白系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/sukola1.jpg",
     description: "150mL。櫻の雪傳明酸美白系列。",
   },
 
