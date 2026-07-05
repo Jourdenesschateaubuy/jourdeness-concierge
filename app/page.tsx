@@ -32,6 +32,10 @@ const categoryConfig = {
     "杏仁酸系列",
     "膠原蛋白系列",
     "鳳梨酵素系列",
+    "防曬",
+    "綠茶多酚保濕平衡系列",
+    "白金密集煥白系列",
+    "頂級養護",
   ],
   保健食品: ["全部", "益生菌系列", "晶眸保健系列", "美妍飲品系列"],
   洗沐: ["全部", "洗沐系列"],
@@ -40,7 +44,7 @@ const categoryConfig = {
   肥皂: ["全部", "肥皂"],
   護手霜: ["全部", "護手霜"],
   貼布: ["全部", "貼布"],
-  外部廠商: ["全部", "歐思佛", "上山採藥", "生福科技"],
+  外部廠商: ["全部", "歐思佛", "上山採藥", "生福科技", "良冠", "木匠兄妹", "F.SEASONS 富雨洋傘"],
 } as const;
 
 type MainCategory = keyof typeof categoryConfig;
@@ -595,7 +599,7 @@ const products: Product[] = [
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/DBME.jpg",
     description: "龍血系列保養品。",
   },
   {
@@ -605,7 +609,7 @@ const products: Product[] = [
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/BD001.jpg",
     description: "150mL。龍血系列保養品。",
   },
   {
@@ -615,7 +619,7 @@ const products: Product[] = [
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/BD0.jpg",
     description: "150mL。龍血系列保養品。",
   },
   {
@@ -625,7 +629,7 @@ const products: Product[] = [
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/DBMUSK 5.jpg",
     description: "22mL x 5pcs。",
   },
   {
@@ -655,7 +659,7 @@ const products: Product[] = [
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/DBMUSK 5 W.jpg",
     description: "x 5pcs。",
   },
   {
@@ -1084,6 +1088,147 @@ const products: Product[] = [
     description: "龍血求麗潔顏慕絲 / 龍血求麗卸妝油可任選，共2件。",
   },
 
+  {
+    id: 102,
+    name: "糖肽中膠囊",
+    category: "外部廠商",
+    series: "生福科技",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "生福科技品項。",
+  },
+  {
+    id: 103,
+    name: "柔焦濾鏡CC霜",
+    category: "保養品",
+    series: "防曬",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "30mL。防曬 / 潤色品項。",
+  },
+  {
+    id: 104,
+    name: "綠茶多酚保濕平衡精華液",
+    category: "保養品",
+    series: "綠茶多酚保濕平衡系列",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "30mL。綠茶多酚保濕平衡系列。",
+  },
+  {
+    id: 105,
+    name: "綠茶多酚保濕平衡面膜",
+    category: "保養品",
+    series: "綠茶多酚保濕平衡系列",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "20mL x 5片 / 盒。綠茶多酚保濕平衡系列。",
+  },
+  {
+    id: 106,
+    name: "白金密集煥白淡斑筆",
+    category: "保養品",
+    series: "白金密集煥白系列",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "白金密集煥白系列。",
+  },
+  {
+    id: 107,
+    name: "賽洛美潤膚美體油(C+E)",
+    category: "保養品",
+    series: "頂級養護",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "頂級養護品項。",
+  },
+  {
+    id: 108,
+    name: "24小時賦活液",
+    category: "保養品",
+    series: "頂級養護",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "頂級養護品項。",
+  },
+  {
+    id: 109,
+    name: "鉑金無痕煥白雙導精華",
+    category: "保養品",
+    series: "頂級養護",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "頂級養護品項。",
+  },
+  {
+    id: 110,
+    name: "黑耀緊緻奢華眼霜",
+    category: "保養品",
+    series: "頂級養護",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "頂級養護品項。",
+  },
+  {
+    id: 111,
+    name: "24小時黃金璀璨賦活液",
+    category: "保養品",
+    series: "頂級養護",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "頂級養護品項。",
+  },
+  {
+    id: 112,
+    name: "大猩猩紅酒架",
+    category: "外部廠商",
+    series: "木匠兄妹",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "木匠兄妹品項。",
+  },
+  {
+    id: 113,
+    name: "親子DIY 小花椅",
+    category: "外部廠商",
+    series: "木匠兄妹",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "居家體驗品項，固碳量 6426 克。",
+  },
+  {
+    id: 114,
+    name: "CARPENTER 漢堡杯墊",
+    category: "外部廠商",
+    series: "木匠兄妹",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "固碳量 437 克。",
+  },
+  {
+    id: 115,
+    name: "CARPENTER 法藍獅時計",
+    category: "外部廠商",
+    series: "木匠兄妹",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "固碳量 280 克。",
+  },
+
 ];
 
 export default function Home() {
@@ -1115,14 +1260,14 @@ export default function Home() {
       <header className="header">
         <div>
           <h1>佐登妮絲城堡回購群</h1>
-          <p>今日產地價</p>
+          <p>用產地價回饋給支持我們的顧客</p>
         </div>
       </header>
 
       <section className="hero">
-        <p className="small-title">Price List</p>
+        <p className="small-title">產品資訊價格以供參考，如須購買請洽詢佐登妮絲城堡line官方回購群</p>
         <h2>佐登妮絲城堡產地價</h2>
-        <p>快速查看目前商品價格與優惠組合，價格依當日公告為準。</p>
+        <p>查看目前商品價格與優惠組合。</p>
       </section>
 
       <section className="filter-section">
