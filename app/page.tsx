@@ -538,7 +538,7 @@ const products: Product[] = [
     series: "貼布",
     originalPrice: "原價 $ 800",
     price: "產地價 $ 500",
-    image: "/products/placeholder.jpg",
+    image: "/products/blue 100.jpg",
     description: "商品敘述。",
   },
   {
@@ -548,7 +548,7 @@ const products: Product[] = [
     series: "貼布",
     originalPrice: "原價 $ 800",
     price: "產地價 $ 500",
-    image: "/products/placeholder.jpg",
+    image: "/products/red 100.jpg",
     description: "商品敘述。",
   },
 
@@ -1004,7 +1004,7 @@ const products: Product[] = [
     series: "洗沐系列",
     originalPrice: "原價 $ 1,680",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Argan Oil3.jpg",
     description: "80mL。髮根養護品項。",
   },
   {
@@ -1105,7 +1105,7 @@ const products: Product[] = [
     series: "防曬",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/cc 0.jpg",
     description: "30mL。防曬 / 潤色品項。",
   },
   {
