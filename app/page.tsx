@@ -1336,9 +1336,31 @@ export default function Home() {
       )}
 
       <footer className="footer">
-        <h2>價格提醒</h2>
-        <p>商品價格與優惠組合依當日公告為準。</p>
-      </footer>
+  <h2>加入 LINE 詢問</h2>
+
+  <p className="line-id">LINE ID：@chateau-buy</p>
+
+  <a
+    className="line-button"
+    href="https://line.me/R/ti/p/@chateau-buy"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    點我加入 LINE
+  </a>
+
+  <div className="line-qr-card">
+    <img src="/line-qrcode.png" alt="LINE QR Code" />
+  </div>
+
+  <p className="footer-note">
+    掃描 QR Code 或搜尋 LINE ID：@chateau-buy
+  </p>
+
+  <p className="footer-price-note">
+    商品價格與優惠組合依當日公告為準。
+  </p>
+</footer>
     </main>
   );
 }

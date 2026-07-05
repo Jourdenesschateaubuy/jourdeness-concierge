@@ -375,3 +375,56 @@ main {
     margin: 0 5vw 42px;
   }
 }
+.line-id {
+  margin: 12px 0 14px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+.line-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  padding: 12px 20px;
+  background: #ffffff;
+  color: #3f352d;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.line-qr-card {
+  width: 180px;
+  height: 180px;
+  margin: 4px auto 14px;
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.line-qr-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.footer-note {
+  margin: 8px auto 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.footer-price-note {
+  margin: 12px auto 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
+  line-height: 1.7;
+}
