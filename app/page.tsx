@@ -1115,7 +1115,7 @@ const products: Product[] = [
     series: "綠茶多酚保濕平衡系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/tee 2.jpg",
     description: "30mL。綠茶多酚保濕平衡系列。",
   },
   {
@@ -1125,7 +1125,7 @@ const products: Product[] = [
     series: "綠茶多酚保濕平衡系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/tee 5.jpg",
     description: "20mL x 5片 / 盒。綠茶多酚保濕平衡系列。",
   },
   {
@@ -1135,7 +1135,7 @@ const products: Product[] = [
     series: "白金密集煥白系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Dark Spot Eraser.jpg",
     description: "白金密集煥白系列。",
   },
   {
@@ -1145,7 +1145,7 @@ const products: Product[] = [
     series: "頂級養護",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Ceramide Body Oil (C+E).jpg",
     description: "頂級養護品項。",
   },
   {
@@ -1155,7 +1155,7 @@ const products: Product[] = [
     series: "頂級養護",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/24H Revitalizing Essence.jpg",
     description: "頂級養護品項。",
   },
   {
@@ -1165,7 +1165,7 @@ const products: Product[] = [
     series: "頂級養護",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Platinum.jpg",
     description: "頂級養護品項。",
   },
   {
@@ -1175,7 +1175,7 @@ const products: Product[] = [
     series: "頂級養護",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Obsidian Firming Luxury Eye Cream.jpg",
     description: "頂級養護品項。",
   },
   {
@@ -1185,7 +1185,7 @@ const products: Product[] = [
     series: "頂級養護",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/24K Gold.jpg",
     description: "頂級養護品項。",
   },
   {
