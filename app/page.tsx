@@ -497,7 +497,7 @@ const products: Product[] = [
     series: "50mL 精萃油系列",
     originalPrice: "原價 $ 2,200",
     price: "產地價 $ 1,650",
-    image: "/products/Essential Oil EC.jpg",
+    image: "/products/Essential Oil E.jpg",
     description: "50mL。精萃油系列。",
   },
   {
@@ -507,7 +507,7 @@ const products: Product[] = [
     series: "50mL 精萃油系列",
     originalPrice: "原價 $ 2,200",
     price: "產地價 $ 1,650",
-    image: "/products/Essential Oil EC.jpg",
+    image: "/products/Essential Oil C.jpg",
     description: "50mL。精萃油系列。",
   },
   {
