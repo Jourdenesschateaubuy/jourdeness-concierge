@@ -579,7 +579,7 @@ const products: Product[] = [
     series: "茶樹控油系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/tee3.jpg",
     description: "100mL。茶樹控油系列。",
   },
   {
@@ -639,7 +639,7 @@ const products: Product[] = [
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/water 5.jpg",
     description: "22mL x 10pcs。",
   },
   {
@@ -649,7 +649,7 @@ const products: Product[] = [
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/water 5.jpg",
     description: "22mL x 35pcs。",
   },
   {
@@ -669,7 +669,7 @@ const products: Product[] = [
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/white 5.jpg",
     description: "x 35pcs。",
   },
   {
