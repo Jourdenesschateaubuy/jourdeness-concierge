@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 
 const categoryConfig = {
   組合價: [
@@ -36,6 +36,7 @@ const categoryConfig = {
     "綠茶多酚保濕平衡系列",
     "白金密集煥白系列",
     "頂級養護",
+    "面膜",
   ],
   保健食品: ["全部", "益生菌系列", "晶眸保健系列", "美妍飲品系列"],
   洗沐: ["全部", "洗沐系列"],
@@ -43,6 +44,7 @@ const categoryConfig = {
   牙膏: ["全部", "牙膏"],
   肥皂: ["全部", "肥皂"],
   護手霜: ["全部", "護手霜"],
+  香水: ["全部", "香水"],
   貼布: ["全部", "貼布"],
   外部廠商: ["全部", "歐思佛", "上山採藥", "生福科技", "良冠", "木匠兄妹", "F.SEASONS 富雨洋傘"],
 } as const;
@@ -59,6 +61,22 @@ type Product = {
   image: string;
   description: string;
 };
+
+type CartItem = {
+  product: Product;
+  quantity: number;
+};
+
+type CustomerForm = {
+  customerName: string;
+  lineId: string;
+  phone: string;
+  deliveryMethod: string;
+  note: string;
+};
+
+const ORDER_WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
 const products: Product[] = [
   {
@@ -497,7 +515,7 @@ const products: Product[] = [
     series: "50mL 精萃油系列",
     originalPrice: "原價 $ 2,200",
     price: "產地價 $ 1,650",
-    image: "/products/Essential Oil E.jpg",
+    image: "/products/Essential Oil EC.jpg",
     description: "50mL。精萃油系列。",
   },
   {
@@ -507,7 +525,7 @@ const products: Product[] = [
     series: "50mL 精萃油系列",
     originalPrice: "原價 $ 2,200",
     price: "產地價 $ 1,650",
-    image: "/products/Essential Oil C.jpg",
+    image: "/products/Essential Oil EC.jpg",
     description: "50mL。精萃油系列。",
   },
   {
@@ -1229,15 +1247,198 @@ const products: Product[] = [
     description: "固碳量 280 克。",
   },
 
+  {
+    id: 116,
+    name: "水光苦杏仁酸慕絲",
+    category: "保養品",
+    series: "水光肌能系列",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "水光肌能系列品項。",
+  },
+  {
+    id: 117,
+    name: "時光瑞亞淡香水",
+    category: "香水",
+    series: "香水",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "30mL。香水品項。",
+  },
+  {
+    id: 118,
+    name: "超導水網瞬效面膜",
+    category: "保養品",
+    series: "頂級養護",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "頂級養護面膜品項。",
+  },
+  {
+    id: 119,
+    name: "冰河淨化柔膚面膜",
+    category: "保養品",
+    series: "頂級養護",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/Glacial 5.jpg",
+    description: "100mL。頂級養護 / 冰河淨化面膜品項。",
+  },
+  {
+    id: 120,
+    name: "Exo-雙粹秘泌凍晶組",
+    category: "保養品",
+    series: "頂級養護",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "頂級養護品項。",
+  },
+  {
+    id: 121,
+    name: "奧勒岡小白花美體乳",
+    category: "保養品",
+    series: "頂級養護",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "500mL。頂級養護身體保養品項。",
+  },
+  {
+    id: 122,
+    name: "肌光緊緻速妍面膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價 $ 3,680",
+    price: "產地價待補",
+    image: "/products/Radiance and Lifting5.jpg",
+    description: "肌光緊緻速妍系列面膜。",
+  },
+  {
+    id: 123,
+    name: "INSK乳酸平衡水嫩膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價待補",
+    image: "/products/INSK5.jpg",
+    description: "23mL x 6片 / 盒。INSK乳酸平衡系列面膜。",
+  },
+  {
+    id: 124,
+    name: "水搖滾保濕面膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/DBMUSK 5.jpg",
+    description: "22mL x 5pcs。",
+  },
+  {
+    id: 125,
+    name: "水搖滾保濕面膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/water 5.jpg",
+    description: "22mL x 10pcs。",
+  },
+  {
+    id: 126,
+    name: "水搖滾保濕面膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/water 5.jpg",
+    description: "22mL x 35pcs。",
+  },
+  {
+    id: 127,
+    name: "極光白美白面膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/DBMUSK 5 W.jpg",
+    description: "x 5pcs。",
+  },
+  {
+    id: 128,
+    name: "極光白美白面膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/white 5.jpg",
+    description: "x 35pcs。",
+  },
+  {
+    id: 129,
+    name: "冰河淨化柔膚面膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/Glacial 5.jpg",
+    description: "100mL。冰河淨化系列面膜。",
+  },
+  {
+    id: 130,
+    name: "鳳梨酵素活膚面膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/pineapple 5.jpg",
+    description: "22mL x 5pcs。鳳梨酵素系列面膜。",
+  },
+  {
+    id: 131,
+    name: "綠茶多酚保濕平衡面膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/tee 5.jpg",
+    description: "20mL x 5片 / 盒。綠茶多酚保濕平衡系列面膜。",
+  },
+  {
+    id: 132,
+    name: "超導水網瞬效面膜",
+    category: "保養品",
+    series: "面膜",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "頂級養護面膜品項。",
+  },
+
+
 ];
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] =
     useState<MainCategory>("組合價");
   const [selectedSeries, setSelectedSeries] = useState("全部");
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [customer, setCustomer] = useState<CustomerForm>({
+    customerName: "",
+    lineId: "",
+    phone: "",
+    deliveryMethod: "LINE確認",
+    note: "",
+  });
 
   const mainCategories = Object.keys(categoryConfig) as MainCategory[];
-
   const seriesList = categoryConfig[selectedCategory];
 
   const filteredProducts = products.filter((product) => {
@@ -1250,9 +1451,135 @@ export default function Home() {
     return matchCategory && matchSeries;
   });
 
+  const cartTotalQuantity = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+
   function handleCategoryChange(category: MainCategory) {
     setSelectedCategory(category);
     setSelectedSeries("全部");
+  }
+
+  function addToCart(product: Product) {
+    if (product.price.includes("缺貨")) return;
+
+    setCartItems((currentItems) => {
+      const existingItem = currentItems.find(
+        (item) => item.product.id === product.id
+      );
+
+      if (existingItem) {
+        return currentItems.map((item) =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [...currentItems, { product, quantity: 1 }];
+    });
+
+    setSubmitStatus("idle");
+    setSubmitMessage("");
+  }
+
+  function updateCartQuantity(productId: number, quantity: number) {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+
+    setCartItems((currentItems) =>
+      currentItems.map((item) =>
+        item.product.id === productId ? { ...item, quantity } : item
+      )
+    );
+  }
+
+  function removeFromCart(productId: number) {
+    setCartItems((currentItems) =>
+      currentItems.filter((item) => item.product.id !== productId)
+    );
+  }
+
+  function clearCart() {
+    setCartItems([]);
+    setSubmitStatus("idle");
+    setSubmitMessage("");
+  }
+
+  async function submitOrder(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (cartItems.length === 0) {
+      setSubmitStatus("error");
+      setSubmitMessage("請先加入商品到清單。");
+      return;
+    }
+
+    if (!customer.customerName.trim()) {
+      setSubmitStatus("error");
+      setSubmitMessage("請填寫姓名。");
+      return;
+    }
+
+    if (!customer.lineId.trim() && !customer.phone.trim()) {
+      setSubmitStatus("error");
+      setSubmitMessage("請至少填寫 LINE ID 或電話其中一項，方便我們聯絡你。");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
+    setSubmitMessage("");
+
+    const payload = {
+      customerName: customer.customerName.trim(),
+      lineId: customer.lineId.trim(),
+      phone: customer.phone.trim(),
+      deliveryMethod: customer.deliveryMethod,
+      note: customer.note.trim(),
+      items: cartItems.map((item) => ({
+        id: item.product.id,
+        name: item.product.name,
+        category: item.product.category,
+        series: item.product.series,
+        originalPrice: item.product.originalPrice ?? "原價待補",
+        price: item.product.price,
+        description: item.product.description,
+        quantity: item.quantity,
+      })),
+    };
+
+    try {
+      await fetch(ORDER_WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      setSubmitStatus("success");
+      setSubmitMessage(
+        "訂購清單已送出！我們會再透過 LINE 或電話確認庫存、金額與付款方式。"
+      );
+      setCartItems([]);
+      setCustomer({
+        customerName: "",
+        lineId: "",
+        phone: "",
+        deliveryMethod: "LINE確認",
+        note: "",
+      });
+    } catch (error) {
+      setSubmitStatus("error");
+      setSubmitMessage("送出時發生問題，請稍後再試，或直接加入 LINE：@chateau-buy。");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -1308,23 +1635,35 @@ export default function Home() {
 
       {filteredProducts.length > 0 ? (
         <section className="product-grid">
-          {filteredProducts.map((product) => (
-            <article className="product-card" key={product.id}>
-              <div className="product-image">
-                <img src={product.image} alt={product.name} />
-              </div>
+          {filteredProducts.map((product) => {
+            const isSoldOut = product.price.includes("缺貨");
 
-              <div className="product-info">
-                <p className="series-label">{product.series}</p>
-                <h3>{product.name}</h3>
-                <p className="description">{product.description}</p>
+            return (
+              <article className="product-card" key={product.id}>
+                <div className="product-image">
+                  <img src={product.image} alt={product.name} />
+                </div>
 
-                <p className="original-price">{product.originalPrice ?? "原價待補"}</p>
+                <div className="product-info">
+                  <p className="series-label">{product.series}</p>
+                  <h3>{product.name}</h3>
+                  <p className="description">{product.description}</p>
 
-                <p className="price">{product.price}</p>
-              </div>
-            </article>
-          ))}
+                  <p className="original-price">{product.originalPrice ?? "原價待補"}</p>
+
+                  <p className="price">{product.price}</p>
+
+                  <button
+                    className="add-cart-button"
+                    onClick={() => addToCart(product)}
+                    disabled={isSoldOut}
+                  >
+                    {isSoldOut ? "缺貨中" : "加入清單"}
+                  </button>
+                </div>
+              </article>
+            );
+          })}
         </section>
       ) : (
         <section className="empty-section">
@@ -1335,32 +1674,429 @@ export default function Home() {
         </section>
       )}
 
+      {cartTotalQuantity > 0 && (
+        <button className="floating-cart-button" onClick={() => setIsCartOpen(true)}>
+          清單 {cartTotalQuantity}
+        </button>
+      )}
+
+      {isCartOpen && (
+        <section className="cart-backdrop" onClick={() => setIsCartOpen(false)}>
+          <div className="cart-panel" onClick={(event) => event.stopPropagation()}>
+            <div className="cart-header">
+              <div>
+                <p className="cart-eyebrow">Order List</p>
+                <h2>訂購清單</h2>
+              </div>
+              <button className="cart-close" onClick={() => setIsCartOpen(false)}>
+                ×
+              </button>
+            </div>
+
+            {cartItems.length > 0 ? (
+              <>
+                <div className="cart-items">
+                  {cartItems.map((item) => (
+                    <div className="cart-item" key={item.product.id}>
+                      <div>
+                        <p className="cart-item-series">{item.product.series}</p>
+                        <h3>{item.product.name}</h3>
+                        <p>{item.product.price}</p>
+                      </div>
+
+                      <div className="cart-quantity-control">
+                        <button
+                          onClick={() =>
+                            updateCartQuantity(item.product.id, item.quantity - 1)
+                          }
+                        >
+                          −
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button
+                          onClick={() =>
+                            updateCartQuantity(item.product.id, item.quantity + 1)
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button className="clear-cart-button" onClick={clearCart}>
+                  清空清單
+                </button>
+
+                <form className="order-form" onSubmit={submitOrder}>
+                  <label>
+                    姓名 <span>*</span>
+                    <input
+                      value={customer.customerName}
+                      onChange={(event) =>
+                        setCustomer({ ...customer, customerName: event.target.value })
+                      }
+                      placeholder="請輸入姓名"
+                    />
+                  </label>
+
+                  <label>
+                    LINE ID
+                    <input
+                      value={customer.lineId}
+                      onChange={(event) =>
+                        setCustomer({ ...customer, lineId: event.target.value })
+                      }
+                      placeholder="例如：@chateau-buy"
+                    />
+                  </label>
+
+                  <label>
+                    電話
+                    <input
+                      value={customer.phone}
+                      onChange={(event) =>
+                        setCustomer({ ...customer, phone: event.target.value })
+                      }
+                      placeholder="請輸入電話"
+                    />
+                  </label>
+
+                  <label>
+                    取貨 / 配送方式
+                    <select
+                      value={customer.deliveryMethod}
+                      onChange={(event) =>
+                        setCustomer({ ...customer, deliveryMethod: event.target.value })
+                      }
+                    >
+                      <option>LINE確認</option>
+                      <option>城堡自取</option>
+                      <option>宅配</option>
+                      <option>其他</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    備註
+                    <textarea
+                      value={customer.note}
+                      onChange={(event) =>
+                        setCustomer({ ...customer, note: event.target.value })
+                      }
+                      placeholder="可填寫顏色、口味、想確認庫存、其他需求"
+                    />
+                  </label>
+
+                  {submitMessage && (
+                    <p className={submitStatus === "success" ? "form-message success" : "form-message error"}>
+                      {submitMessage}
+                    </p>
+                  )}
+
+                  <button className="submit-order-button" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "送出中..." : "送出訂購清單"}
+                  </button>
+
+                  <p className="order-form-note">
+                    送出後仍會由 LINE 或電話確認庫存、金額與付款方式，尚未完成付款。
+                  </p>
+                </form>
+              </>
+            ) : (
+              <div className="empty-cart">
+                <h3>清單目前是空的</h3>
+                <p>可以先回商品列表加入想詢問或訂購的品項。</p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       <footer className="footer">
-  <h2>加入 LINE 詢問</h2>
+        <h2>加入 LINE 詢問</h2>
 
-  <p className="line-id">LINE ID：@chateau-buy</p>
+        <p className="line-id">LINE ID：@chateau-buy</p>
 
-  <a
-    className="line-button"
-    href="https://line.me/R/ti/p/@chateau-buy"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    點我加入 LINE
-  </a>
+        <a
+          className="line-button"
+          href="https://line.me/R/ti/p/@chateau-buy"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          點我加入 LINE
+        </a>
 
-  <div className="line-qr-card">
-    <img src="/line-qrcode.png" alt="LINE QR Code" />
-  </div>
+        <div className="line-qr-card">
+          <img src="/line-qrcode.png" alt="LINE QR Code" />
+        </div>
 
-  <p className="footer-note">
-    掃描 QR Code 或搜尋 LINE ID：@chateau-buy
-  </p>
+        <p className="footer-note">
+          掃描 QR Code 或搜尋 LINE ID：@chateau-buy
+        </p>
 
-  <p className="footer-price-note">
-    商品價格與優惠組合依當日公告為準。
-  </p>
-</footer>
+        <p className="footer-price-note">
+          商品價格與優惠組合依當日公告為準。
+        </p>
+      </footer>
+
+      <style jsx global>{`
+        .add-cart-button {
+          width: 100%;
+          margin-top: 12px;
+          border: 0;
+          border-radius: 999px;
+          padding: 10px 12px;
+          background: #3f352d;
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 900;
+          cursor: pointer;
+        }
+
+        .add-cart-button:disabled {
+          background: #c9c0b8;
+          cursor: not-allowed;
+        }
+
+        .floating-cart-button {
+          position: fixed;
+          right: 16px;
+          bottom: 18px;
+          z-index: 30;
+          border: 0;
+          border-radius: 999px;
+          padding: 13px 18px;
+          background: #3f352d;
+          color: #ffffff;
+          font-size: 15px;
+          font-weight: 900;
+          box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+        }
+
+        .cart-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 50;
+          background: rgba(0, 0, 0, 0.36);
+          display: flex;
+          justify-content: center;
+          align-items: flex-end;
+          padding: 14px;
+        }
+
+        .cart-panel {
+          width: min(100%, 520px);
+          max-height: 88vh;
+          overflow-y: auto;
+          background: #fffaf5;
+          border-radius: 26px 26px 18px 18px;
+          padding: 18px;
+          box-shadow: 0 -12px 34px rgba(0, 0, 0, 0.24);
+        }
+
+        .cart-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 14px;
+        }
+
+        .cart-eyebrow {
+          margin: 0 0 4px;
+          font-size: 12px;
+          color: #9b8f86;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .cart-header h2 {
+          margin: 0;
+          color: #3f352d;
+          font-size: 24px;
+        }
+
+        .cart-close {
+          width: 38px;
+          height: 38px;
+          border: 0;
+          border-radius: 50%;
+          background: #eee4db;
+          color: #3f352d;
+          font-size: 28px;
+          line-height: 1;
+        }
+
+        .cart-items {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .cart-item {
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 12px;
+          border-radius: 18px;
+          background: #ffffff;
+          border: 1px solid #eee4db;
+        }
+
+        .cart-item h3 {
+          margin: 3px 0 6px;
+          color: #3f352d;
+          font-size: 15px;
+          line-height: 1.35;
+        }
+
+        .cart-item p {
+          margin: 0;
+          color: #b64032;
+          font-size: 13px;
+          font-weight: 800;
+          line-height: 1.45;
+        }
+
+        .cart-item-series {
+          color: #9b8f86 !important;
+          font-size: 12px !important;
+          font-weight: 800 !important;
+        }
+
+        .cart-quantity-control {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
+        }
+
+        .cart-quantity-control button {
+          width: 30px;
+          height: 30px;
+          border: 0;
+          border-radius: 50%;
+          background: #eee4db;
+          color: #3f352d;
+          font-size: 19px;
+          font-weight: 900;
+        }
+
+        .cart-quantity-control span {
+          min-width: 18px;
+          text-align: center;
+          font-weight: 900;
+          color: #3f352d;
+        }
+
+        .clear-cart-button {
+          margin: 12px 0 16px;
+          border: 0;
+          background: transparent;
+          color: #9b4b40;
+          font-weight: 800;
+          text-decoration: underline;
+        }
+
+        .order-form {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          padding-top: 14px;
+          border-top: 1px solid #eee4db;
+        }
+
+        .order-form label {
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          color: #3f352d;
+          font-size: 14px;
+          font-weight: 900;
+        }
+
+        .order-form label span {
+          color: #b64032;
+        }
+
+        .order-form input,
+        .order-form select,
+        .order-form textarea {
+          width: 100%;
+          border: 1px solid #e1d5cb;
+          border-radius: 14px;
+          padding: 12px 13px;
+          background: #ffffff;
+          color: #3f352d;
+          font-size: 16px;
+          outline: none;
+        }
+
+        .order-form textarea {
+          min-height: 92px;
+          resize: vertical;
+        }
+
+        .submit-order-button {
+          width: 100%;
+          border: 0;
+          border-radius: 999px;
+          padding: 14px 16px;
+          background: #b64032;
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 900;
+        }
+
+        .submit-order-button:disabled {
+          opacity: 0.65;
+        }
+
+        .form-message {
+          margin: 0;
+          padding: 11px 12px;
+          border-radius: 14px;
+          font-size: 14px;
+          font-weight: 800;
+          line-height: 1.5;
+        }
+
+        .form-message.success {
+          background: #e9f6ed;
+          color: #267144;
+        }
+
+        .form-message.error {
+          background: #fff0ee;
+          color: #b64032;
+        }
+
+        .order-form-note {
+          margin: 0;
+          color: #8e8177;
+          font-size: 13px;
+          line-height: 1.65;
+        }
+
+        .empty-cart {
+          padding: 24px 8px 10px;
+          text-align: center;
+        }
+
+        .empty-cart h3 {
+          margin: 0 0 8px;
+          color: #3f352d;
+        }
+
+        .empty-cart p {
+          margin: 0;
+          color: #8e8177;
+          line-height: 1.6;
+        }
+      `}</style>
     </main>
   );
 }
