@@ -1460,6 +1460,7 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedDetailProduct, setSelectedDetailProduct] = useState<Product | null>(null);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
   const [customer, setCustomer] = useState<CustomerForm>({
@@ -1692,6 +1693,42 @@ export default function Home() {
     );
   }
 
+  function getDetailBullets(product: Product) {
+    const tags = getProductTags(product);
+    const bullets: string[] = [];
+
+    if (tags.includes("乾燥缺水")) bullets.push("適合想加強水潤感與日常保濕保養。");
+    if (tags.includes("油性毛孔")) bullets.push("適合想找清爽調理、油水平衡類品項。");
+    if (tags.includes("敏感舒緩")) bullets.push("適合偏好溫和、穩定保養節奏的客人。");
+    if (tags.includes("美白淡斑")) bullets.push("適合想找提亮、暗沉與斑點加強保養品項。");
+    if (tags.includes("抗皺緊緻")) bullets.push("適合熟齡、緊緻與高階養護需求。");
+    if (tags.includes("清潔卸妝")) bullets.push("適合日常清潔、卸妝或角質代謝保養流程。");
+    if (tags.includes("面膜保養")) bullets.push("適合想做集中保養或加強型保養時搭配使用。");
+    if (tags.includes("男士保養")) bullets.push("適合男士日常清潔、保濕與清爽保養需求。");
+
+    if (hasComboPrice(product)) {
+      bullets.push("此品項可留意組合價，送出清單後客服會協助確認最適合的優惠方案。");
+    }
+
+    if (bullets.length === 0) {
+      bullets.push("可先加入清單，送出後由 LINE 客服協助確認庫存、價格與適合搭配品項。");
+    }
+
+    return bullets.slice(0, 4);
+  }
+
+  function getRelatedProducts(product: Product) {
+    const sameSeries = products.filter(
+      (item) => item.id !== product.id && item.category === product.category && item.series === product.series
+    );
+
+    const sameCategory = products.filter(
+      (item) => item.id !== product.id && item.category === product.category && item.series !== product.series
+    );
+
+    return [...sameSeries, ...sameCategory].slice(0, 4);
+  }
+
   function ProductCard({
     product,
     featured = false,
@@ -1754,6 +1791,14 @@ export default function Home() {
             disabled={soldOut}
           >
             {soldOut ? "缺貨中" : inquiry ? "加入詢問清單" : "加入清單"}
+          </button>
+
+          <button
+            type="button"
+            className="detail-button"
+            onClick={() => setSelectedDetailProduct(product)}
+          >
+            查看商品資訊
           </button>
         </div>
       </article>
@@ -2306,6 +2351,125 @@ export default function Home() {
                 <p>可以先回商品列表加入想詢問或訂購的品項。</p>
               </div>
             )}
+          </div>
+        </section>
+      )}
+
+      {selectedDetailProduct && (
+        <section className="detail-backdrop" onClick={() => setSelectedDetailProduct(null)}>
+          <div className="detail-panel" onClick={(event) => event.stopPropagation()}>
+            <div className="detail-header">
+              <button className="detail-close" onClick={() => setSelectedDetailProduct(null)}>
+                ‹
+              </button>
+              <h2>商品詳情</h2>
+              <button className="detail-cart-button" onClick={() => setIsCartOpen(true)}>
+                清單 {cartTotalQuantity}
+              </button>
+            </div>
+
+            <div className="detail-main-image">
+              {hasRealImage(selectedDetailProduct) ? (
+                <img src={selectedDetailProduct.image} alt={selectedDetailProduct.name} />
+              ) : (
+                <div className="image-placeholder detail-placeholder">
+                  <span>Jourdeness Castle</span>
+                  <strong>商品圖片準備中</strong>
+                </div>
+              )}
+            </div>
+
+            <div className="detail-content">
+              <div className="detail-title-row">
+                <div>
+                  <p className="series-label">{selectedDetailProduct.series}</p>
+                  <h1>{selectedDetailProduct.name}</h1>
+                  <p className="detail-description">{selectedDetailProduct.description}</p>
+                </div>
+              </div>
+
+              <div className="detail-tags">
+                {displayTags(selectedDetailProduct).map((tag) => (
+                  <span className="need-tag" key={`detail-${selectedDetailProduct.id}-${tag}`}>
+                    {tag}
+                  </span>
+                ))}
+
+                {hasComboPrice(selectedDetailProduct) && (
+                  <button
+                    type="button"
+                    className="combo-badge"
+                    onClick={() => {
+                      setSelectedDetailProduct(null);
+                      goToComboSection();
+                    }}
+                  >
+                    有組合價
+                  </button>
+                )}
+              </div>
+
+              <div className="detail-price-card">
+                {hasKnownOriginalPrice(selectedDetailProduct) && (
+                  <p className="original-price">{selectedDetailProduct.originalPrice}</p>
+                )}
+                <p className={`price ${hasInquiryPrice(selectedDetailProduct) ? "inquiry" : ""}`}>
+                  {displayPrice(selectedDetailProduct)}
+                </p>
+              </div>
+
+              <button
+                className="detail-add-button"
+                disabled={isSoldOut(selectedDetailProduct)}
+                onClick={() => addToCart(selectedDetailProduct)}
+              >
+                {isSoldOut(selectedDetailProduct)
+                  ? "缺貨中"
+                  : hasInquiryPrice(selectedDetailProduct)
+                  ? "加入詢問清單"
+                  : "加入清單"}
+              </button>
+
+              <section className="detail-info-block">
+                <h3>商品特色</h3>
+                {getDetailBullets(selectedDetailProduct).map((bullet) => (
+                  <p key={bullet}>・{bullet}</p>
+                ))}
+              </section>
+
+              <section className="detail-info-block soft">
+                <h3>配送提醒</h3>
+                <p>滿 NT$3000 免運，僅提供宅配。</p>
+                <p>送出清單後，請至 LINE 與客服確認庫存、金額、付款方式與宅配資訊。</p>
+              </section>
+
+              <section className="detail-info-block">
+                <div className="related-heading">
+                  <h3>相關商品</h3>
+                  <span>同系列 / 同分類推薦</span>
+                </div>
+                <div className="related-products">
+                  {getRelatedProducts(selectedDetailProduct).map((item) => (
+                    <button
+                      type="button"
+                      className="related-card"
+                      key={`related-${item.id}`}
+                      onClick={() => setSelectedDetailProduct(item)}
+                    >
+                      <div className="related-image">
+                        {hasRealImage(item) ? (
+                          <img src={item.image} alt={item.name} />
+                        ) : (
+                          <span>圖片準備中</span>
+                        )}
+                      </div>
+                      <strong>{item.name}</strong>
+                      <p>{displayPrice(item)}</p>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            </div>
           </div>
         </section>
       )}
@@ -3130,6 +3294,265 @@ export default function Home() {
           background: #c9c0b8;
           cursor: not-allowed;
           box-shadow: none;
+        }
+
+        .detail-button {
+          width: 100%;
+          margin-top: 8px;
+          border: 1px solid rgba(178, 65, 51, 0.32);
+          border-radius: 999px;
+          padding: 10px 12px;
+          background: rgba(255, 255, 255, 0.82);
+          color: var(--accent-dark);
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .detail-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 60;
+          background: rgba(0, 0, 0, 0.38);
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          padding: 12px;
+        }
+
+        .detail-panel {
+          width: min(100%, 520px);
+          max-height: 92vh;
+          overflow-y: auto;
+          border-radius: 30px 30px 18px 18px;
+          background: #fffaf5;
+          box-shadow: 0 -18px 42px rgba(0, 0, 0, 0.26);
+        }
+
+        .detail-header {
+          position: sticky;
+          top: 0;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 14px 16px;
+          background: rgba(255, 250, 245, 0.94);
+          backdrop-filter: blur(16px);
+          border-bottom: 1px solid var(--line);
+        }
+
+        .detail-header h2 {
+          margin: 0;
+          color: var(--ink);
+          font-size: 18px;
+          letter-spacing: -0.03em;
+        }
+
+        .detail-close,
+        .detail-cart-button {
+          border: 0;
+          border-radius: 999px;
+          background: #efe4db;
+          color: var(--ink);
+          font-weight: 900;
+        }
+
+        .detail-close {
+          width: 38px;
+          height: 38px;
+          font-size: 28px;
+          line-height: 1;
+        }
+
+        .detail-cart-button {
+          padding: 9px 12px;
+          font-size: 13px;
+        }
+
+        .detail-main-image {
+          width: calc(100% - 24px);
+          aspect-ratio: 1 / 1.06;
+          margin: 12px auto 0;
+          border-radius: 24px;
+          background: radial-gradient(circle at center, #ffffff 0%, #f5eadf 78%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          border: 1px solid rgba(234, 219, 208, 0.9);
+        }
+
+        .detail-main-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          transform: scale(1.08);
+          filter: drop-shadow(0 14px 20px rgba(55, 40, 30, 0.10));
+        }
+
+        .detail-placeholder {
+          width: calc(100% - 36px);
+          height: calc(100% - 36px);
+        }
+
+        .detail-content {
+          padding: 16px;
+        }
+
+        .detail-title-row h1 {
+          margin: 7px 0 6px;
+          color: var(--ink);
+          font-size: 26px;
+          line-height: 1.18;
+          letter-spacing: -0.05em;
+        }
+
+        .detail-description {
+          margin: 0;
+          color: var(--muted);
+          font-size: 14px;
+          line-height: 1.75;
+        }
+
+        .detail-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 7px;
+          margin-top: 12px;
+        }
+
+        .detail-price-card {
+          margin-top: 14px;
+          padding: 14px;
+          border: 1px solid var(--line);
+          border-radius: 20px;
+          background: #ffffff;
+        }
+
+        .detail-price-card .price {
+          font-size: 26px;
+        }
+
+        .detail-add-button {
+          width: 100%;
+          margin-top: 12px;
+          border: 0;
+          border-radius: 999px;
+          padding: 15px 16px;
+          background: var(--accent);
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 900;
+          box-shadow: 0 12px 24px rgba(178, 65, 51, 0.22);
+        }
+
+        .detail-add-button:disabled {
+          background: #c9c0b8;
+          box-shadow: none;
+          cursor: not-allowed;
+        }
+
+        .detail-info-block {
+          margin-top: 14px;
+          padding: 15px;
+          border: 1px solid var(--line);
+          border-radius: 22px;
+          background: #ffffff;
+        }
+
+        .detail-info-block.soft {
+          background: #fff4eb;
+          border-style: dashed;
+        }
+
+        .detail-info-block h3,
+        .related-heading h3 {
+          margin: 0 0 9px;
+          color: var(--ink);
+          font-size: 17px;
+          letter-spacing: -0.03em;
+        }
+
+        .detail-info-block p {
+          margin: 0;
+          color: var(--muted);
+          font-size: 14px;
+          line-height: 1.75;
+        }
+
+        .detail-info-block p + p {
+          margin-top: 6px;
+        }
+
+        .related-heading {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+        }
+
+        .related-heading span {
+          color: var(--muted);
+          font-size: 12px;
+          white-space: nowrap;
+        }
+
+        .related-products {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+        }
+
+        .related-card {
+          min-width: 0;
+          border: 1px solid var(--line);
+          border-radius: 18px;
+          background: #fffaf6;
+          padding: 8px;
+          text-align: left;
+        }
+
+        .related-image {
+          width: 100%;
+          aspect-ratio: 1 / 0.9;
+          border-radius: 14px;
+          background: var(--soft-2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .related-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          transform: scale(1.08);
+        }
+
+        .related-image span {
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .related-card strong {
+          display: -webkit-box;
+          margin-top: 8px;
+          color: var(--ink);
+          font-size: 13px;
+          line-height: 1.35;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
+
+        .related-card p {
+          margin: 5px 0 0;
+          color: var(--accent);
+          font-size: 13px;
+          font-weight: 900;
         }
 
         .floating-cart-button {
