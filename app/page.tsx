@@ -1508,6 +1508,11 @@ export default function Home() {
     })
     .map(({ product }) => product);
 
+  const searchPreviewProducts = normalizedSearchQuery ? filteredProducts.slice(0, 8) : [];
+  const searchRemainingCount = normalizedSearchQuery
+    ? Math.max(filteredProducts.length - searchPreviewProducts.length, 0)
+    : 0;
+
   const featuredProductIds = [83, 100, 101, 89, 91, 88];
   const featuredProducts = featuredProductIds
     .map((id) => products.find((product) => product.id === id))
@@ -2183,7 +2188,7 @@ export default function Home() {
   return (
     <main className="site-shell">
       <div className="announcement-bar">
-        🚚 滿 NT$3000 免運｜📦 僅提供宅配｜送出清單後由 LINE 客服確認
+        🚚 滿 NT$3000 免運｜📦 僅宅配｜LINE 客服確認
       </div>
 
       <header className="top-header">
@@ -2205,7 +2210,7 @@ export default function Home() {
           <button
             className={isSearchOpen ? "icon-button active" : "icon-button"}
             onClick={() => setIsSearchOpen((current) => !current)}
-            aria-label="開啟搜尋"
+            aria-label="開啟搜尋頁面"
           >
             🔍
           </button>
@@ -2217,7 +2222,23 @@ export default function Home() {
       </header>
 
       {isSearchOpen && (
-        <section className="search-panel" aria-label="商品搜尋">
+        <section className="search-panel search-page-view" aria-label="商品搜尋頁面">
+          <div className="search-page-head">
+            <button
+              type="button"
+              className="search-back-button"
+              onClick={() => setIsSearchOpen(false)}
+            >
+              ← 返回
+            </button>
+
+            <div>
+              <p>Jourdeness Castle</p>
+              <h2>搜尋商品</h2>
+              <span>輸入部分字詞，直接在搜尋頁查看結果</span>
+            </div>
+          </div>
+
           <div className="search-input-wrap">
             <span>🔍</span>
             <input
@@ -2230,7 +2251,77 @@ export default function Home() {
               <button type="button" onClick={clearSearch}>清除</button>
             )}
           </div>
-          <p>可輸入部分字詞或簡寫，例如「龍血慕絲」、「bcha」、「冷杉即期」。搜尋不會自動跳到下方商品列表。</p>
+          <p>可輸入部分字詞或簡寫，例如「龍血慕絲」、「bcha」、「冷杉即期」。搜尋結果會顯示在這個搜尋頁，不會顯示在首頁下方。</p>
+
+          {normalizedSearchQuery && (
+            <div className="search-results-block">
+              <div className="search-results-head">
+                <strong>搜尋結果</strong>
+                <span>符合 {filteredProducts.length} 項</span>
+              </div>
+
+              {searchPreviewProducts.length > 0 ? (
+                <div className="search-result-list">
+                  {searchPreviewProducts.map((product) => (
+                    <article className="search-result-card" key={`search-${product.id}`}>
+                      <div className="search-result-image">
+                        {hasRealImage(product) ? (
+                          <img src={product.image} alt={product.name} />
+                        ) : (
+                          <div className="search-result-placeholder">商品圖準備中</div>
+                        )}
+                      </div>
+
+                      <div className="search-result-info">
+                        <p>{product.series}</p>
+                        <h3>{product.name}</h3>
+
+                        <div className="search-result-tags">
+                          {isExpiringDeal(product) && <span>即期優惠</span>}
+                          {hasComboPrice(product) && <span>有組合價</span>}
+                          {displayTags(product)
+                            .filter((tag) => tag !== "有組合價")
+                            .slice(0, isExpiringDeal(product) || hasComboPrice(product) ? 1 : 2)
+                            .map((tag) => (
+                              <span key={`search-${product.id}-${tag}`}>{tag}</span>
+                            ))}
+                        </div>
+
+                        <div className="search-result-price">
+                          <strong>{displayPrice(product)}</strong>
+                          {hasKnownOriginalPrice(product) && <span>{product.originalPrice}</span>}
+                        </div>
+
+                        <div className="search-result-actions">
+                          <button type="button" onClick={() => setSelectedDetailProduct(product)}>
+                            查看
+                          </button>
+                          <button
+                            type="button"
+                            className="primary"
+                            onClick={() => addToCart(product)}
+                            disabled={isSoldOut(product)}
+                          >
+                            {isSoldOut(product) ? "缺貨" : hasInquiryPrice(product) ? "詢問" : "加入"}
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="search-result-empty">
+                  找不到符合的商品，可以換短一點的關鍵字，例如「龍血」、「面膜」、「益生菌」。
+                </div>
+              )}
+
+              {searchRemainingCount > 0 && (
+                <p className="search-result-note">
+                  還有 {searchRemainingCount} 項符合結果，可以輸入更精準的字詞縮小範圍。
+                </p>
+              )}
+            </div>
+          )}
         </section>
       )}
 
@@ -5121,6 +5212,396 @@ export default function Home() {
 
           .hero-home-copy h2 {
             font-size: 30px;
+          }
+        }
+
+
+        /* Phase 3 fix: announcement bar flush top + visible text */
+        .site-shell {
+          padding-top: 0;
+        }
+
+        .announcement-bar {
+          margin: 0 -14px 0 !important;
+          min-height: 38px;
+          padding: 9px 12px !important;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: visible !important;
+          white-space: nowrap;
+          background: linear-gradient(90deg, #5a4034, #a96f3f);
+          color: #fff;
+          text-align: center;
+          font-size: 12px;
+          font-weight: 950;
+          line-height: 1.45 !important;
+          letter-spacing: 0.01em;
+        }
+
+        .top-header {
+          margin: 0 -14px 14px !important;
+          top: 0;
+        }
+
+        .search-panel {
+          margin-top: 0;
+        }
+
+        .search-results-block {
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px solid rgba(234, 219, 208, 0.92);
+        }
+
+        .search-results-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          margin-bottom: 10px;
+        }
+
+        .search-results-head strong {
+          color: var(--ink);
+          font-size: 15px;
+          font-weight: 950;
+        }
+
+        .search-results-head span {
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 850;
+        }
+
+        .search-result-list {
+          display: grid;
+          gap: 10px;
+        }
+
+        .search-result-card {
+          display: grid;
+          grid-template-columns: 88px minmax(0, 1fr);
+          gap: 10px;
+          padding: 9px;
+          border: 1px solid rgba(234, 219, 208, 0.95);
+          border-radius: 18px;
+          background: rgba(255, 255, 255, 0.92);
+          box-shadow: 0 10px 22px rgba(77, 55, 38, 0.07);
+        }
+
+        .search-result-image {
+          position: relative;
+          width: 88px;
+          aspect-ratio: 4 / 5;
+          border-radius: 14px;
+          overflow: hidden;
+          background:
+            radial-gradient(circle at 35% 20%, rgba(255, 255, 255, 0.9), transparent 42%),
+            linear-gradient(135deg, #fff8ef, #f1dfd0);
+        }
+
+        .search-result-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 6px;
+          transform: scale(1.08);
+        }
+
+        .search-result-placeholder {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          padding: 8px;
+          color: var(--muted);
+          font-size: 11px;
+          font-weight: 900;
+          text-align: center;
+          line-height: 1.35;
+        }
+
+        .search-result-info {
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .search-result-info p {
+          margin: 0;
+          color: var(--gold);
+          font-size: 10px;
+          font-weight: 950;
+          letter-spacing: 0.04em;
+        }
+
+        .search-result-info h3 {
+          display: -webkit-box;
+          margin: 0;
+          color: var(--ink);
+          font-size: 14px;
+          font-weight: 900;
+          line-height: 1.35;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
+
+        .search-result-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          min-height: 18px;
+        }
+
+        .search-result-tags span {
+          border-radius: 999px;
+          padding: 2px 6px;
+          background: #f6e8dd;
+          color: var(--accent-dark);
+          font-size: 10px;
+          font-weight: 950;
+          line-height: 1.4;
+        }
+
+        .search-result-price {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+          min-width: 0;
+        }
+
+        .search-result-price strong {
+          color: var(--accent);
+          font-size: 17px;
+          font-weight: 950;
+          letter-spacing: -0.03em;
+        }
+
+        .search-result-price span {
+          color: #a8978a;
+          font-size: 12px;
+          font-weight: 850;
+          text-decoration: line-through;
+        }
+
+        .search-result-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px;
+          margin-top: auto;
+        }
+
+        .search-result-actions button {
+          min-height: 30px;
+          border: 1px solid var(--line);
+          border-radius: 999px;
+          background: #fffaf6;
+          color: var(--ink);
+          font-size: 12px;
+          font-weight: 950;
+        }
+
+        .search-result-actions button.primary {
+          border: 0;
+          background: var(--accent);
+          color: #fff;
+        }
+
+        .search-result-actions button:disabled {
+          opacity: 0.48;
+          cursor: not-allowed;
+        }
+
+        .search-result-empty {
+          padding: 14px;
+          border: 1px dashed var(--line);
+          border-radius: 18px;
+          background: rgba(255, 255, 255, 0.74);
+          color: var(--muted);
+          font-size: 13px;
+          font-weight: 800;
+          line-height: 1.6;
+        }
+
+        .search-result-note {
+          margin: 10px 2px 0 !important;
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 750;
+          line-height: 1.55;
+        }
+
+        @media (max-width: 370px) {
+          .site-shell {
+            padding-top: 0;
+          }
+
+          .announcement-bar {
+            margin-left: -10px !important;
+            margin-right: -10px !important;
+            font-size: 11px;
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+          }
+
+          .top-header {
+            margin: 0 -10px 14px !important;
+          }
+
+          .search-result-card {
+            grid-template-columns: 76px minmax(0, 1fr);
+            gap: 8px;
+          }
+
+          .search-result-image {
+            width: 76px;
+          }
+
+          .search-result-info h3 {
+            font-size: 13px;
+          }
+
+          .search-result-price strong {
+            font-size: 16px;
+          }
+        }
+
+
+        /* Phase 4 fix: search opens as a dedicated page view */
+        .search-page-view {
+          position: fixed !important;
+          inset: 0 !important;
+          z-index: 3000 !important;
+          width: 100% !important;
+          max-width: none !important;
+          height: 100dvh !important;
+          margin: 0 !important;
+          padding: calc(env(safe-area-inset-top, 0px) + 14px) 14px calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background:
+            radial-gradient(circle at top left, rgba(245, 201, 176, 0.45), transparent 34%),
+            linear-gradient(180deg, #fff8f1 0%, #f4e4d7 100%) !important;
+          box-shadow: none !important;
+          overflow-y: auto !important;
+          overscroll-behavior: contain;
+        }
+
+        .search-page-head {
+          display: grid;
+          grid-template-columns: auto minmax(0, 1fr);
+          gap: 12px;
+          align-items: center;
+          margin-bottom: 14px;
+          padding: 6px 2px 2px;
+        }
+
+        .search-page-head p {
+          margin: 0 0 2px !important;
+          color: var(--gold);
+          font-size: 11px;
+          font-weight: 950;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .search-page-head h2 {
+          margin: 0;
+          color: var(--ink);
+          font-size: 23px;
+          font-weight: 950;
+          letter-spacing: -0.04em;
+        }
+
+        .search-page-head span {
+          display: block;
+          margin-top: 2px;
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 800;
+          line-height: 1.45;
+        }
+
+        .search-back-button {
+          width: 64px;
+          min-height: 42px;
+          border: 1px solid rgba(229, 213, 201, 0.95);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.92);
+          color: var(--ink);
+          font-size: 14px;
+          font-weight: 950;
+          box-shadow: 0 10px 24px rgba(78, 55, 35, 0.10);
+        }
+
+        .search-page-view .search-input-wrap {
+          position: sticky;
+          top: 0;
+          z-index: 2;
+          margin-bottom: 10px;
+          background: rgba(255, 255, 255, 0.96);
+          backdrop-filter: blur(12px);
+          box-shadow: 0 10px 24px rgba(78, 55, 35, 0.08);
+        }
+
+        .search-page-view > p {
+          margin: 10px 4px 12px !important;
+          color: var(--muted);
+          font-size: 13px;
+          font-weight: 800;
+          line-height: 1.65;
+        }
+
+        .search-page-view .search-results-block {
+          margin-top: 12px;
+          padding: 14px;
+          border: 1px solid rgba(234, 219, 208, 0.92);
+          border-radius: 24px;
+          background: rgba(255, 255, 255, 0.74);
+          box-shadow: 0 16px 38px rgba(78, 55, 35, 0.08);
+        }
+
+        .search-page-view .search-result-list {
+          gap: 12px;
+        }
+
+        @media (min-width: 720px) {
+          .search-page-view {
+            max-width: 520px !important;
+            left: 50% !important;
+            transform: translateX(-50%);
+            border-left: 1px solid rgba(234, 219, 208, 0.92) !important;
+            border-right: 1px solid rgba(234, 219, 208, 0.92) !important;
+          }
+        }
+
+        @media (max-width: 370px) {
+          .search-page-head {
+            grid-template-columns: 58px minmax(0, 1fr);
+            gap: 10px;
+          }
+
+          .search-back-button {
+            width: 58px;
+            min-height: 40px;
+            font-size: 13px;
+          }
+
+          .search-page-head h2 {
+            font-size: 21px;
+          }
+
+          .search-page-view {
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+          }
+
+          .search-page-view .search-results-block {
+            padding: 10px;
+            border-radius: 20px;
           }
         }
 
