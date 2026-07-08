@@ -1462,6 +1462,8 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<Product | null>(null);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
@@ -1477,19 +1479,34 @@ export default function Home() {
   const mainCategories = Object.keys(categoryConfig) as MainCategory[];
   const seriesList = categoryConfig[selectedCategory];
 
-  const filteredProducts = products.filter((product) => {
-    const matchCategory =
-      selectedCategory === "全部" || product.category === selectedCategory;
+  const normalizedSearchQuery = normalizeSearchText(searchQuery);
 
-    const matchSeries =
-      selectedSeries === "全部" || product.series === selectedSeries;
+  const filteredProducts = products
+    .map((product, index) => ({
+      product,
+      index,
+      searchScore: getProductSearchScore(product, normalizedSearchQuery),
+    }))
+    .filter(({ product, searchScore }) => {
+      if (normalizedSearchQuery) return searchScore !== null;
 
-    const productTags = getProductTags(product);
-    const matchSkinFilter =
-      selectedSkinFilter === "全部" || productTags.includes(selectedSkinFilter);
+      const matchCategory =
+        selectedCategory === "全部" || product.category === selectedCategory;
 
-    return matchCategory && matchSeries && matchSkinFilter;
-  });
+      const matchSeries =
+        selectedSeries === "全部" || product.series === selectedSeries;
+
+      const productTags = getProductTags(product);
+      const matchSkinFilter =
+        selectedSkinFilter === "全部" || productTags.includes(selectedSkinFilter);
+
+      return matchCategory && matchSeries && matchSkinFilter;
+    })
+    .sort((a, b) => {
+      if (!normalizedSearchQuery) return a.index - b.index;
+      return (a.searchScore ?? 9999) - (b.searchScore ?? 9999) || a.index - b.index;
+    })
+    .map(({ product }) => product);
 
   const featuredProductIds = [83, 100, 101, 89, 91, 88];
   const featuredProducts = featuredProductIds
@@ -1550,34 +1567,29 @@ export default function Home() {
   function handleCategoryChange(category: MainCategory) {
     setSelectedCategory(category);
     setSelectedSeries("全部");
+    setSelectedSkinFilter("全部");
+    setSearchQuery("");
   }
 
   function jumpToCategory(category: MainCategory, series = "全部") {
     setSelectedCategory(category);
     setSelectedSeries(series);
     setSelectedSkinFilter("全部");
-    window.setTimeout(() => {
-      document.getElementById("product-section")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 80);
+    setSearchQuery("");
   }
 
   function handleSkinFilterChange(filter: SkinFilter) {
     setSelectedSkinFilter(filter);
+    setSearchQuery("");
 
     if (filter !== "全部" && selectedCategory !== "保養品" && selectedCategory !== "全部") {
       setSelectedCategory("保養品");
       setSelectedSeries("全部");
     }
+  }
 
-    window.setTimeout(() => {
-      document.getElementById("product-section")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 80);
+  function clearSearch() {
+    setSearchQuery("");
   }
 
   function handleDrawerCategory(category: MainCategory, series = "全部") {
@@ -1732,6 +1744,70 @@ export default function Home() {
     }
 
     return tags.slice(0, 2);
+  }
+
+  function normalizeSearchText(value: string) {
+    return value
+      .toLowerCase()
+      .normalize("NFKC")
+      .replace(/[\s\-_/\\|.,，。:：;；!！?？()（）[\]{}【】「」『』'"’‘“”+＋*＊×]/g, "")
+      .replace(/nt\$/g, "");
+  }
+
+  function getSearchableText(product: Product) {
+    return [
+      product.name,
+      product.category,
+      product.series,
+      product.description,
+      product.price,
+      product.originalPrice ?? "",
+      ...getProductTags(product),
+      hasComboPrice(product) ? "組合價 有組合價 優惠 任選" : "",
+      isExpiringDeal(product) ? "即期 即期優惠 特價" : "",
+      hasInquiryPrice(product) ? "LINE詢價 詢價" : "",
+    ].join(" ");
+  }
+
+  function fuzzyGapScore(needle: string, haystack: string) {
+    let lastIndex = -1;
+    let gapScore = 0;
+
+    for (const char of needle) {
+      const nextIndex = haystack.indexOf(char, lastIndex + 1);
+      if (nextIndex === -1) return null;
+      gapScore += nextIndex - lastIndex - 1;
+      lastIndex = nextIndex;
+    }
+
+    return gapScore;
+  }
+
+  function getProductSearchScore(product: Product, normalizedQuery: string) {
+    if (!normalizedQuery) return 0;
+
+    const nameText = normalizeSearchText(product.name);
+    const seriesText = normalizeSearchText(product.series);
+    const fullText = normalizeSearchText(getSearchableText(product));
+
+    if (nameText.includes(normalizedQuery)) return 1;
+    if (seriesText.includes(normalizedQuery)) return 2;
+    if (fullText.includes(normalizedQuery)) return 3;
+
+    const fuzzyScore = fuzzyGapScore(normalizedQuery, fullText);
+    return fuzzyScore === null ? null : 20 + fuzzyScore;
+  }
+
+  function currentFilterText() {
+    if (searchQuery.trim()) return `模糊搜尋：${searchQuery.trim()}`;
+
+    return [
+      selectedCategory,
+      selectedSeries !== "全部" ? selectedSeries : "",
+      selectedSkinFilter !== "全部" ? selectedSkinFilter : "",
+    ]
+      .filter(Boolean)
+      .join(" / ");
   }
 
   function MascotImage({
@@ -2127,14 +2203,9 @@ export default function Home() {
 
         <div className="header-actions">
           <button
-            className="icon-button"
-            onClick={() => {
-              document.getElementById("product-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-            aria-label="前往商品"
+            className={isSearchOpen ? "icon-button active" : "icon-button"}
+            onClick={() => setIsSearchOpen((current) => !current)}
+            aria-label="開啟搜尋"
           >
             🔍
           </button>
@@ -2144,6 +2215,24 @@ export default function Home() {
           </button>
         </div>
       </header>
+
+      {isSearchOpen && (
+        <section className="search-panel" aria-label="商品搜尋">
+          <div className="search-input-wrap">
+            <span>🔍</span>
+            <input
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="模糊搜尋：龍血、面膜、益生菌、冷杉、即期"
+              autoFocus
+            />
+            {searchQuery.trim() && (
+              <button type="button" onClick={clearSearch}>清除</button>
+            )}
+          </div>
+          <p>可輸入部分字詞或簡寫，例如「龍血慕絲」、「bcha」、「冷杉即期」。搜尋不會自動跳到下方商品列表。</p>
+        </section>
+      )}
 
       {isMenuOpen && (
         <section className="drawer-backdrop" onClick={() => setIsMenuOpen(false)}>
@@ -2171,6 +2260,15 @@ export default function Home() {
                 <button onClick={() => handleDrawerCategory("保健食品")}>保健食品</button>
                 <button onClick={() => handleDrawerCategory("洗沐")}>洗沐</button>
                 <button onClick={() => handleDrawerCategory("外部廠商")}>外部廠商</button>
+              </div>
+
+              <div className="drawer-section drawer-section-wide">
+                <p>保養品系列</p>
+                {categoryConfig.保養品.filter((series) => series !== "全部").map((series) => (
+                  <button key={`drawer-skincare-${series}`} onClick={() => handleDrawerCategory("保養品", series)}>
+                    {series}
+                  </button>
+                ))}
               </div>
 
               <div className="drawer-section">
@@ -2449,36 +2547,9 @@ export default function Home() {
           <span>目前顯示 {filteredProducts.length} 項商品</span>
         </div>
 
-        <div className="category-bar">
-          {mainCategories.map((category) => (
-            <button
-              key={category}
-              className={
-                selectedCategory === category
-                  ? "category-button active"
-                  : "category-button"
-              }
-              onClick={() => handleCategoryChange(category)}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        <div className="subcategory-bar">
-          {seriesList.map((series) => (
-            <button
-              key={series}
-              className={
-                selectedSeries === series
-                  ? "subcategory-button active"
-                  : "subcategory-button"
-              }
-              onClick={() => setSelectedSeries(series)}
-            >
-              {series}
-            </button>
-          ))}
+        <div className="catalog-helper-card">
+          <strong>目前檢視：{currentFilterText()}</strong>
+          <span>分類與系列請使用左上角 ☰ 選單切換；搜尋請點右上角 🔍，不會自動跳到這裡。</span>
         </div>
       </section>
 
@@ -2492,7 +2563,7 @@ export default function Home() {
         <section className="empty-section">
           <div className="empty-card">
             <h3>喵～這個條件暫時沒有商品</h3>
-            <p>可以切換其他分類或清除膚質篩選看看。</p>
+            <p>可以調整搜尋字詞，或從左上角 ☰ 選單切換分類看看。</p>
           </div>
         </section>
       )}
@@ -2934,6 +3005,60 @@ export default function Home() {
           text-transform: uppercase;
         }
 
+        .search-panel {
+          margin: -2px 0 16px;
+          padding: 12px;
+          border: 1px solid rgba(234, 219, 208, 0.95);
+          border-radius: 22px;
+          background: rgba(255, 250, 246, 0.96);
+          box-shadow: 0 12px 28px rgba(77, 55, 38, 0.08);
+        }
+
+        .search-input-wrap {
+          display: grid;
+          grid-template-columns: auto minmax(0, 1fr) auto;
+          align-items: center;
+          gap: 8px;
+          min-height: 44px;
+          padding: 0 8px 0 12px;
+          border: 1px solid var(--line);
+          border-radius: 999px;
+          background: #fff;
+        }
+
+        .search-input-wrap input {
+          width: 100%;
+          border: 0;
+          outline: 0;
+          background: transparent;
+          color: var(--ink);
+          font-size: 14px;
+          font-weight: 800;
+        }
+
+        .search-input-wrap button {
+          border: 0;
+          border-radius: 999px;
+          padding: 7px 10px;
+          background: var(--soft);
+          color: var(--accent-dark);
+          font-size: 12px;
+          font-weight: 950;
+        }
+
+        .search-panel p {
+          margin: 8px 4px 0;
+          color: var(--muted);
+          font-size: 12px;
+          line-height: 1.55;
+          font-weight: 700;
+        }
+
+        .icon-button.active {
+          background: var(--ink);
+          color: #fff;
+        }
+
         .header-cart-button {
           flex-shrink: 0;
           border: 0;
@@ -3120,6 +3245,10 @@ export default function Home() {
         .drawer-section button:hover {
           border-color: rgba(178, 65, 51, 0.32);
           background: #fff;
+        }
+
+        .drawer-section-wide {
+          grid-template-columns: 1fr;
         }
 
         .drawer-line-button {
@@ -3405,6 +3534,28 @@ export default function Home() {
           color: #fff;
           border-color: var(--ink);
           box-shadow: 0 10px 22px rgba(61, 48, 40, 0.18);
+        }
+
+        .catalog-helper-card {
+          display: grid;
+          gap: 5px;
+          padding: 12px 14px;
+          border: 1px solid var(--line);
+          border-radius: 18px;
+          background: rgba(255, 255, 255, 0.82);
+          color: var(--ink);
+        }
+
+        .catalog-helper-card strong {
+          font-size: 14px;
+          line-height: 1.4;
+        }
+
+        .catalog-helper-card span {
+          color: var(--muted);
+          font-size: 12px;
+          line-height: 1.5;
+          font-weight: 800;
         }
 
         .product-grid {
@@ -4294,15 +4445,20 @@ export default function Home() {
         }
 
         .announcement-bar {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 40px;
           margin: -14px -14px 0;
-          padding: 9px 14px;
+          padding: 8px 14px;
           background: linear-gradient(90deg, #3d3028, #6b4939);
           color: #fff7ef;
           font-size: 12px;
           font-weight: 900;
-          line-height: 1.5;
+          line-height: 1.55;
           text-align: center;
           letter-spacing: 0.01em;
+          overflow: visible;
         }
 
         .top-header {
