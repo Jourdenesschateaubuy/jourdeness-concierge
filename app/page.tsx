@@ -1421,6 +1421,7 @@ const products: Product[] = [
 
 ];
 
+
 export default function Home() {
   const [selectedCategory, setSelectedCategory] =
     useState<MainCategory>("組合價");
@@ -1451,6 +1452,11 @@ export default function Home() {
     return matchCategory && matchSeries;
   });
 
+  const featuredProductIds = [83, 100, 101, 89, 91, 88];
+  const featuredProducts = featuredProductIds
+    .map((id) => products.find((product) => product.id === id))
+    .filter(Boolean) as Product[];
+
   const cartTotalQuantity = cartItems.reduce(
     (total, item) => total + item.quantity,
     0
@@ -1461,8 +1467,66 @@ export default function Home() {
     setSelectedSeries("全部");
   }
 
+  function jumpToCategory(category: MainCategory, series = "全部") {
+    setSelectedCategory(category);
+    setSelectedSeries(series);
+    window.setTimeout(() => {
+      document.getElementById("product-section")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 80);
+  }
+
+  function hasKnownOriginalPrice(product: Product) {
+    if (!product.originalPrice) return false;
+    return !(
+      product.originalPrice.includes("待補") ||
+      product.originalPrice.includes("???") ||
+      product.originalPrice.includes("000")
+    );
+  }
+
+  function hasInquiryPrice(product: Product) {
+    return product.price.includes("待補") || product.price.includes("???");
+  }
+
+  function displayPrice(product: Product) {
+    if (hasInquiryPrice(product)) return "LINE 詢價";
+    return product.price;
+  }
+
+  function isSoldOut(product: Product) {
+    return product.price.includes("缺貨");
+  }
+
+  function hasRealImage(product: Product) {
+    return Boolean(product.image && !product.image.includes("placeholder"));
+  }
+
+  function ProductVisual({
+    product,
+    variant = "normal",
+  }: {
+    product: Product;
+    variant?: "normal" | "featured";
+  }) {
+    return (
+      <div className={`product-image ${variant === "featured" ? "featured-image" : ""}`}>
+        {hasRealImage(product) ? (
+          <img src={product.image} alt={product.name} />
+        ) : (
+          <div className="image-placeholder">
+            <span>Jourdeness Castle</span>
+            <strong>商品圖片準備中</strong>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   function addToCart(product: Product) {
-    if (product.price.includes("缺貨")) return;
+    if (isSoldOut(product)) return;
 
     setCartItems((currentItems) => {
       const existingItem = currentItems.find(
@@ -1480,6 +1544,7 @@ export default function Home() {
       return [...currentItems, { product, quantity: 1 }];
     });
 
+    setIsCartOpen(true);
     setSubmitStatus("idle");
     setSubmitMessage("");
   }
@@ -1545,8 +1610,10 @@ export default function Home() {
         name: item.product.name,
         category: item.product.category,
         series: item.product.series,
-        originalPrice: item.product.originalPrice ?? "原價待補",
-        price: item.product.price,
+        originalPrice: hasKnownOriginalPrice(item.product)
+          ? item.product.originalPrice
+          : "",
+        price: displayPrice(item.product),
         description: item.product.description,
         quantity: item.quantity,
       })),
@@ -1583,21 +1650,111 @@ export default function Home() {
   }
 
   return (
-    <main>
-      <header className="header">
+    <main className="site-shell">
+      <header className="top-header">
         <div>
+          <p className="top-eyebrow">Jourdeness Castle</p>
           <h1>佐登妮絲城堡回購群</h1>
-          <p>用產地價回饋給支持我們的顧客</p>
+          <p>產地價訂購清單・LINE 客服確認</p>
         </div>
+
+        <button className="header-cart-button" onClick={() => setIsCartOpen(true)}>
+          清單 <span>{cartTotalQuantity}</span>
+        </button>
       </header>
 
-      <section className="hero">
-        <p className="small-title">產品資訊價格以供參考，如須購買請洽詢佐登妮絲城堡line官方回購群</p>
-        <h2>佐登妮絲城堡產地價</h2>
-        <p>查看目前商品價格與優惠組合。</p>
+      <section className="hero-section">
+        <div className="hero-copy">
+          <p className="small-title">Castle Price List</p>
+          <h2>回購群專屬產地價訂購站</h2>
+          <p>
+            選擇想詢問或訂購的商品，送出清單後由 LINE 客服協助確認價格、庫存與取貨方式。
+          </p>
+
+          <div className="hero-actions">
+            <button onClick={() => jumpToCategory("組合價")}>查看本月優惠</button>
+            <a
+              href="https://line.me/R/ti/p/@chateau-buy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              加入 LINE 詢問
+            </a>
+          </div>
+        </div>
+
+        <div className="hero-card">
+          <p>LINE ID</p>
+          <strong>@chateau-buy</strong>
+          <span>送出清單不代表付款完成，客服會再確認明細。</span>
+        </div>
       </section>
 
-      <section className="filter-section">
+      <section className="trust-section">
+        <div className="trust-card">
+          <span>01</span>
+          <h3>選擇商品</h3>
+          <p>從分類或組合價中加入想詢問的品項。</p>
+        </div>
+
+        <div className="trust-card">
+          <span>02</span>
+          <h3>送出清單</h3>
+          <p>留下姓名與 LINE ID，資料會進入訂單表。</p>
+        </div>
+
+        <div className="trust-card">
+          <span>03</span>
+          <h3>客服確認</h3>
+          <p>由 LINE 確認庫存、金額、付款與取貨方式。</p>
+        </div>
+      </section>
+
+      <section className="featured-section">
+        <div className="section-heading">
+          <p>Featured</p>
+          <h2>本月主打優惠</h2>
+          <span>精選組合價與熱門回購品項</span>
+        </div>
+
+        <div className="featured-grid">
+          {featuredProducts.map((product) => (
+            <article className="featured-card" key={`featured-${product.id}`}>
+              <ProductVisual product={product} variant="featured" />
+              <div className="featured-info">
+                <p className="series-label">{product.series}</p>
+                <h3>{product.name}</h3>
+                <p className="description">{product.description}</p>
+                {hasKnownOriginalPrice(product) && (
+                  <p className="original-price">{product.originalPrice}</p>
+                )}
+                <p className={`price ${hasInquiryPrice(product) ? "inquiry" : ""}`}>
+                  {displayPrice(product)}
+                </p>
+                <button
+                  className="add-cart-button"
+                  onClick={() => addToCart(product)}
+                  disabled={isSoldOut(product)}
+                >
+                  {isSoldOut(product)
+                    ? "缺貨中"
+                    : hasInquiryPrice(product)
+                    ? "加入詢問清單"
+                    : "加入清單"}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="filter-section" id="product-section">
+        <div className="section-heading compact">
+          <p>Catalog</p>
+          <h2>商品分類</h2>
+          <span>目前顯示 {filteredProducts.length} 項商品</span>
+        </div>
+
         <div className="category-bar">
           {mainCategories.map((category) => (
             <button
@@ -1629,36 +1786,44 @@ export default function Home() {
             </button>
           ))}
         </div>
-
-        <p className="product-count">目前顯示 {filteredProducts.length} 項商品</p>
       </section>
 
       {filteredProducts.length > 0 ? (
         <section className="product-grid">
           {filteredProducts.map((product) => {
-            const isSoldOut = product.price.includes("缺貨");
+            const soldOut = isSoldOut(product);
+            const inquiry = hasInquiryPrice(product);
 
             return (
               <article className="product-card" key={product.id}>
-                <div className="product-image">
-                  <img src={product.image} alt={product.name} />
-                </div>
+                <ProductVisual product={product} />
 
                 <div className="product-info">
-                  <p className="series-label">{product.series}</p>
+                  <div className="product-meta-row">
+                    <p className="series-label">{product.series}</p>
+                    {inquiry && !soldOut && <span>可詢價</span>}
+                    {soldOut && <span className="sold-out-badge">缺貨</span>}
+                  </div>
+
                   <h3>{product.name}</h3>
                   <p className="description">{product.description}</p>
 
-                  <p className="original-price">{product.originalPrice ?? "原價待補"}</p>
+                  <div className="price-block">
+                    {hasKnownOriginalPrice(product) && (
+                      <p className="original-price">{product.originalPrice}</p>
+                    )}
 
-                  <p className="price">{product.price}</p>
+                    <p className={`price ${inquiry ? "inquiry" : ""}`}>
+                      {displayPrice(product)}
+                    </p>
+                  </div>
 
                   <button
                     className="add-cart-button"
                     onClick={() => addToCart(product)}
-                    disabled={isSoldOut}
+                    disabled={soldOut}
                   >
-                    {isSoldOut ? "缺貨中" : "加入清單"}
+                    {soldOut ? "缺貨中" : inquiry ? "加入詢問清單" : "加入清單"}
                   </button>
                 </div>
               </article>
@@ -1687,6 +1852,7 @@ export default function Home() {
               <div>
                 <p className="cart-eyebrow">Order List</p>
                 <h2>訂購清單</h2>
+                <span>送出後由 LINE 客服確認，尚未完成付款。</span>
               </div>
               <button className="cart-close" onClick={() => setIsCartOpen(false)}>
                 ×
@@ -1701,7 +1867,7 @@ export default function Home() {
                       <div>
                         <p className="cart-item-series">{item.product.series}</p>
                         <h3>{item.product.name}</h3>
-                        <p>{item.product.price}</p>
+                        <p>{displayPrice(item.product)}</p>
                       </div>
 
                       <div className="cart-quantity-control">
@@ -1796,11 +1962,11 @@ export default function Home() {
                   )}
 
                   <button className="submit-order-button" type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "送出中..." : "送出訂購清單"}
+                    {isSubmitting ? "送出中..." : "送出清單，等待 LINE 確認"}
                   </button>
 
                   <p className="order-form-note">
-                    送出後仍會由 LINE 或電話確認庫存、金額與付款方式，尚未完成付款。
+                    送出清單不代表付款完成。商品價格、庫存、優惠組合與取貨方式，仍依 LINE 客服確認為準。
                   </p>
                 </form>
               </>
@@ -1813,6 +1979,19 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      <section className="notice-section">
+        <div className="section-heading compact">
+          <p>Notice</p>
+          <h2>購買提醒</h2>
+        </div>
+
+        <div className="notice-card">
+          <p>商品價格與優惠組合依當日公告為準。</p>
+          <p>送出訂購清單後，客服會再透過 LINE 或電話確認庫存、金額與付款方式。</p>
+          <p>若遇缺貨、價格異動或組合活動調整，將以客服確認內容為準。</p>
+        </div>
+      </section>
 
       <footer className="footer">
         <h2>加入 LINE 詢問</h2>
@@ -1842,37 +2021,601 @@ export default function Home() {
       </footer>
 
       <style jsx global>{`
+        :root {
+          --bg: #f8f1ea;
+          --card: #fffaf6;
+          --card-strong: #ffffff;
+          --ink: #3d3028;
+          --muted: #8f7d70;
+          --soft: #efe2d7;
+          --soft-2: #f5ebe2;
+          --line: #eadbd0;
+          --accent: #b24133;
+          --accent-dark: #7b2d24;
+          --gold: #b78a48;
+          --shadow: 0 16px 45px rgba(77, 55, 38, 0.12);
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          background:
+            radial-gradient(circle at top left, rgba(183, 138, 72, 0.18), transparent 30%),
+            linear-gradient(180deg, #fffaf6 0%, var(--bg) 45%, #f5eadf 100%);
+          color: var(--ink);
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+          font: inherit;
+        }
+
+        button {
+          cursor: pointer;
+        }
+
+        a {
+          color: inherit;
+        }
+
+        .site-shell {
+          width: min(100%, 520px);
+          margin: 0 auto;
+          padding: 14px 14px 92px;
+        }
+
+        .top-header {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin: -14px -14px 14px;
+          padding: 14px;
+          background: rgba(255, 250, 246, 0.92);
+          backdrop-filter: blur(18px);
+          border-bottom: 1px solid rgba(234, 219, 208, 0.75);
+        }
+
+        .top-header h1 {
+          margin: 2px 0 2px;
+          color: var(--ink);
+          font-size: 18px;
+          line-height: 1.2;
+          letter-spacing: -0.02em;
+        }
+
+        .top-header p {
+          margin: 0;
+          color: var(--muted);
+          font-size: 12px;
+          line-height: 1.4;
+        }
+
+        .top-eyebrow {
+          color: var(--gold) !important;
+          font-size: 11px !important;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .header-cart-button {
+          flex-shrink: 0;
+          border: 0;
+          border-radius: 999px;
+          padding: 9px 12px;
+          background: var(--ink);
+          color: #fff;
+          font-size: 13px;
+          font-weight: 900;
+          box-shadow: 0 10px 22px rgba(61, 48, 40, 0.18);
+        }
+
+        .header-cart-button span {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 20px;
+          height: 20px;
+          margin-left: 5px;
+          border-radius: 999px;
+          background: var(--accent);
+          color: #fff;
+        }
+
+        .hero-section {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 14px;
+          padding: 24px 18px 18px;
+          border: 1px solid rgba(183, 138, 72, 0.28);
+          border-radius: 30px;
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 244, 234, 0.92)),
+            radial-gradient(circle at right top, rgba(183, 138, 72, 0.20), transparent 34%);
+          box-shadow: var(--shadow);
+          overflow: hidden;
+        }
+
+        .hero-copy h2 {
+          margin: 8px 0 10px;
+          color: var(--ink);
+          font-size: 32px;
+          line-height: 1.08;
+          letter-spacing: -0.06em;
+        }
+
+        .hero-copy p {
+          margin: 0;
+          color: var(--muted);
+          font-size: 15px;
+          line-height: 1.75;
+        }
+
+        .small-title {
+          display: inline-flex;
+          width: fit-content;
+          margin: 0 !important;
+          padding: 6px 10px;
+          border: 1px solid rgba(183, 138, 72, 0.28);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.72);
+          color: var(--gold) !important;
+          font-size: 11px !important;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .hero-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          margin-top: 18px;
+        }
+
+        .hero-actions button,
+        .hero-actions a {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 44px;
+          border: 0;
+          border-radius: 999px;
+          padding: 11px 12px;
+          font-size: 14px;
+          font-weight: 900;
+          text-decoration: none;
+        }
+
+        .hero-actions button {
+          background: var(--accent);
+          color: #fff;
+          box-shadow: 0 12px 24px rgba(178, 65, 51, 0.2);
+        }
+
+        .hero-actions a {
+          background: #fff;
+          color: var(--ink);
+          border: 1px solid var(--line);
+        }
+
+        .hero-card {
+          padding: 16px;
+          border-radius: 24px;
+          background: #3f342c;
+          color: #fff;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        }
+
+        .hero-card p {
+          margin: 0 0 6px;
+          color: rgba(255, 255, 255, 0.68);
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+
+        .hero-card strong {
+          display: block;
+          font-size: 24px;
+          line-height: 1.1;
+        }
+
+        .hero-card span {
+          display: block;
+          margin-top: 10px;
+          color: rgba(255, 255, 255, 0.74);
+          font-size: 13px;
+          line-height: 1.65;
+        }
+
+        .trust-section {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+          margin-top: 14px;
+        }
+
+        .trust-card {
+          min-height: 128px;
+          padding: 12px 10px;
+          border: 1px solid var(--line);
+          border-radius: 22px;
+          background: rgba(255, 250, 246, 0.84);
+          box-shadow: 0 10px 26px rgba(77, 55, 38, 0.06);
+        }
+
+        .trust-card span {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: var(--soft);
+          color: var(--accent-dark);
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .trust-card h3 {
+          margin: 9px 0 5px;
+          color: var(--ink);
+          font-size: 14px;
+          line-height: 1.25;
+        }
+
+        .trust-card p {
+          margin: 0;
+          color: var(--muted);
+          font-size: 12px;
+          line-height: 1.55;
+        }
+
+        .featured-section,
+        .filter-section,
+        .notice-section {
+          margin-top: 24px;
+        }
+
+        .section-heading {
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          margin-bottom: 12px;
+        }
+
+        .section-heading.compact {
+          margin-bottom: 10px;
+        }
+
+        .section-heading p {
+          margin: 0;
+          color: var(--gold);
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+
+        .section-heading h2 {
+          margin: 0;
+          color: var(--ink);
+          font-size: 24px;
+          line-height: 1.2;
+          letter-spacing: -0.04em;
+        }
+
+        .section-heading span {
+          color: var(--muted);
+          font-size: 13px;
+          line-height: 1.6;
+        }
+
+        .featured-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .featured-card {
+          display: grid;
+          grid-template-columns: 42% 1fr;
+          gap: 12px;
+          min-height: 180px;
+          padding: 12px;
+          border: 1px solid rgba(183, 138, 72, 0.22);
+          border-radius: 26px;
+          background: rgba(255, 250, 246, 0.95);
+          box-shadow: 0 12px 34px rgba(77, 55, 38, 0.09);
+        }
+
+        .featured-info {
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+        }
+
+        .featured-info h3 {
+          margin: 6px 0 6px;
+          color: var(--ink);
+          font-size: 18px;
+          line-height: 1.25;
+          letter-spacing: -0.03em;
+        }
+
+        .featured-info .description {
+          -webkit-line-clamp: 3;
+        }
+
+        .category-bar,
+        .subcategory-bar {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          padding: 3px 1px 9px;
+          scrollbar-width: none;
+        }
+
+        .category-bar::-webkit-scrollbar,
+        .subcategory-bar::-webkit-scrollbar {
+          display: none;
+        }
+
+        .category-button,
+        .subcategory-button {
+          flex: 0 0 auto;
+          border: 1px solid var(--line);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.78);
+          color: var(--muted);
+          font-weight: 900;
+          white-space: nowrap;
+        }
+
+        .category-button {
+          padding: 11px 15px;
+          font-size: 14px;
+        }
+
+        .subcategory-button {
+          padding: 9px 12px;
+          font-size: 13px;
+        }
+
+        .category-button.active,
+        .subcategory-button.active {
+          background: var(--ink);
+          color: #fff;
+          border-color: var(--ink);
+          box-shadow: 0 10px 22px rgba(61, 48, 40, 0.18);
+        }
+
+        .product-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 12px;
+          margin-top: 14px;
+        }
+
+        .product-card {
+          display: flex;
+          min-width: 0;
+          min-height: 100%;
+          flex-direction: column;
+          border: 1px solid rgba(234, 219, 208, 0.95);
+          border-radius: 24px;
+          overflow: hidden;
+          background: var(--card-strong);
+          box-shadow: 0 12px 30px rgba(77, 55, 38, 0.08);
+        }
+
+        .product-image {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 1 / 1.06;
+          background:
+            radial-gradient(circle at center, rgba(255, 255, 255, 0.95), rgba(242, 229, 218, 0.78));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .featured-image {
+          height: 100%;
+          min-height: 156px;
+          aspect-ratio: auto;
+          border-radius: 20px;
+        }
+
+        .product-image img {
+          width: 100%;
+          height: 100%;
+          max-width: none;
+          max-height: none;
+          object-fit: contain;
+          transform: scale(1.12);
+          filter: drop-shadow(0 10px 14px rgba(55, 40, 30, 0.08));
+        }
+
+        .image-placeholder {
+          width: calc(100% - 24px);
+          min-height: 82%;
+          border: 1px dashed rgba(183, 138, 72, 0.38);
+          border-radius: 20px;
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.74), rgba(247, 236, 225, 0.66));
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 12px;
+          text-align: center;
+        }
+
+        .image-placeholder span {
+          color: var(--gold);
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .image-placeholder strong {
+          margin-top: 6px;
+          color: var(--ink);
+          font-size: 13px;
+          line-height: 1.35;
+        }
+
+        .product-info {
+          display: flex;
+          flex: 1;
+          flex-direction: column;
+          padding: 12px;
+        }
+
+        .product-meta-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          margin-bottom: 4px;
+        }
+
+        .product-meta-row span {
+          flex-shrink: 0;
+          border-radius: 999px;
+          padding: 3px 7px;
+          background: #f4e7dd;
+          color: var(--accent-dark);
+          font-size: 10px;
+          font-weight: 900;
+        }
+
+        .sold-out-badge {
+          background: #eee7e0 !important;
+          color: #8a7d72 !important;
+        }
+
+        .series-label {
+          margin: 0;
+          color: var(--gold);
+          font-size: 11px;
+          font-weight: 900;
+          line-height: 1.3;
+          letter-spacing: 0.02em;
+        }
+
+        .product-info h3 {
+          margin: 5px 0 7px;
+          color: var(--ink);
+          font-size: 16px;
+          line-height: 1.34;
+          letter-spacing: -0.03em;
+        }
+
+        .description {
+          display: -webkit-box;
+          margin: 0;
+          color: var(--muted);
+          font-size: 12px;
+          line-height: 1.55;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
+
+        .price-block {
+          margin-top: auto;
+          padding-top: 10px;
+        }
+
+        .original-price {
+          margin: 0 0 3px;
+          color: #a5978b;
+          font-size: 12px;
+          line-height: 1.35;
+          text-decoration: line-through;
+        }
+
+        .price {
+          margin: 0;
+          color: var(--accent);
+          font-size: 19px;
+          font-weight: 950;
+          line-height: 1.25;
+          letter-spacing: -0.04em;
+        }
+
+        .price.inquiry {
+          color: var(--ink);
+          font-size: 17px;
+        }
+
         .add-cart-button {
           width: 100%;
           margin-top: 12px;
           border: 0;
           border-radius: 999px;
-          padding: 10px 12px;
-          background: #3f352d;
+          padding: 11px 12px;
+          background: var(--ink);
           color: #ffffff;
           font-size: 14px;
           font-weight: 900;
-          cursor: pointer;
+          box-shadow: 0 9px 18px rgba(61, 48, 40, 0.14);
         }
 
         .add-cart-button:disabled {
           background: #c9c0b8;
           cursor: not-allowed;
+          box-shadow: none;
         }
 
         .floating-cart-button {
           position: fixed;
-          right: 16px;
+          right: max(16px, calc((100vw - 520px) / 2 + 16px));
           bottom: 18px;
           z-index: 30;
           border: 0;
           border-radius: 999px;
           padding: 13px 18px;
-          background: #3f352d;
+          background: var(--accent);
           color: #ffffff;
           font-size: 15px;
           font-weight: 900;
-          box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+          box-shadow: 0 14px 32px rgba(178, 65, 51, 0.28);
+        }
+
+        .notice-card {
+          padding: 16px;
+          border: 1px solid var(--line);
+          border-radius: 24px;
+          background: rgba(255, 250, 246, 0.84);
+          box-shadow: 0 10px 26px rgba(77, 55, 38, 0.06);
+        }
+
+        .notice-card p {
+          margin: 0;
+          color: var(--muted);
+          font-size: 13px;
+          line-height: 1.75;
+        }
+
+        .notice-card p + p {
+          margin-top: 8px;
         }
 
         .cart-backdrop {
@@ -1891,7 +2634,7 @@ export default function Home() {
           max-height: 88vh;
           overflow-y: auto;
           background: #fffaf5;
-          border-radius: 26px 26px 18px 18px;
+          border-radius: 28px 28px 18px 18px;
           padding: 18px;
           box-shadow: 0 -12px 34px rgba(0, 0, 0, 0.24);
         }
@@ -1907,16 +2650,24 @@ export default function Home() {
         .cart-eyebrow {
           margin: 0 0 4px;
           font-size: 12px;
-          color: #9b8f86;
-          font-weight: 800;
+          color: var(--gold);
+          font-weight: 900;
           letter-spacing: 0.08em;
           text-transform: uppercase;
         }
 
         .cart-header h2 {
           margin: 0;
-          color: #3f352d;
+          color: var(--ink);
           font-size: 24px;
+        }
+
+        .cart-header span {
+          display: block;
+          margin-top: 5px;
+          color: var(--muted);
+          font-size: 13px;
+          line-height: 1.55;
         }
 
         .cart-close {
@@ -1925,7 +2676,7 @@ export default function Home() {
           border: 0;
           border-radius: 50%;
           background: #eee4db;
-          color: #3f352d;
+          color: var(--ink);
           font-size: 28px;
           line-height: 1;
         }
@@ -1943,28 +2694,28 @@ export default function Home() {
           padding: 12px;
           border-radius: 18px;
           background: #ffffff;
-          border: 1px solid #eee4db;
+          border: 1px solid var(--line);
         }
 
         .cart-item h3 {
           margin: 3px 0 6px;
-          color: #3f352d;
+          color: var(--ink);
           font-size: 15px;
           line-height: 1.35;
         }
 
         .cart-item p {
           margin: 0;
-          color: #b64032;
+          color: var(--accent);
           font-size: 13px;
-          font-weight: 800;
+          font-weight: 900;
           line-height: 1.45;
         }
 
         .cart-item-series {
-          color: #9b8f86 !important;
+          color: var(--muted) !important;
           font-size: 12px !important;
-          font-weight: 800 !important;
+          font-weight: 900 !important;
         }
 
         .cart-quantity-control {
@@ -1980,7 +2731,7 @@ export default function Home() {
           border: 0;
           border-radius: 50%;
           background: #eee4db;
-          color: #3f352d;
+          color: var(--ink);
           font-size: 19px;
           font-weight: 900;
         }
@@ -1989,15 +2740,15 @@ export default function Home() {
           min-width: 18px;
           text-align: center;
           font-weight: 900;
-          color: #3f352d;
+          color: var(--ink);
         }
 
         .clear-cart-button {
           margin: 12px 0 16px;
           border: 0;
           background: transparent;
-          color: #9b4b40;
-          font-weight: 800;
+          color: var(--accent);
+          font-weight: 900;
           text-decoration: underline;
         }
 
@@ -2006,20 +2757,20 @@ export default function Home() {
           flex-direction: column;
           gap: 12px;
           padding-top: 14px;
-          border-top: 1px solid #eee4db;
+          border-top: 1px solid var(--line);
         }
 
         .order-form label {
           display: flex;
           flex-direction: column;
           gap: 7px;
-          color: #3f352d;
+          color: var(--ink);
           font-size: 14px;
           font-weight: 900;
         }
 
         .order-form label span {
-          color: #b64032;
+          color: var(--accent);
         }
 
         .order-form input,
@@ -2030,7 +2781,7 @@ export default function Home() {
           border-radius: 14px;
           padding: 12px 13px;
           background: #ffffff;
-          color: #3f352d;
+          color: var(--ink);
           font-size: 16px;
           outline: none;
         }
@@ -2045,10 +2796,11 @@ export default function Home() {
           border: 0;
           border-radius: 999px;
           padding: 14px 16px;
-          background: #b64032;
+          background: var(--accent);
           color: #ffffff;
           font-size: 16px;
           font-weight: 900;
+          box-shadow: 0 12px 24px rgba(178, 65, 51, 0.20);
         }
 
         .submit-order-button:disabled {
@@ -2071,30 +2823,155 @@ export default function Home() {
 
         .form-message.error {
           background: #fff0ee;
-          color: #b64032;
+          color: var(--accent);
         }
 
         .order-form-note {
           margin: 0;
-          color: #8e8177;
+          color: var(--muted);
           font-size: 13px;
           line-height: 1.65;
         }
 
-        .empty-cart {
+        .empty-cart,
+        .empty-section {
           padding: 24px 8px 10px;
           text-align: center;
         }
 
-        .empty-cart h3 {
+        .empty-cart h3,
+        .empty-card h3 {
           margin: 0 0 8px;
-          color: #3f352d;
+          color: var(--ink);
         }
 
-        .empty-cart p {
+        .empty-cart p,
+        .empty-card p {
           margin: 0;
-          color: #8e8177;
+          color: var(--muted);
           line-height: 1.6;
+        }
+
+        .empty-card {
+          padding: 20px;
+          border: 1px solid var(--line);
+          border-radius: 22px;
+          background: var(--card);
+        }
+
+        .footer {
+          margin-top: 26px;
+          padding: 26px 18px 24px;
+          border-radius: 30px;
+          background:
+            linear-gradient(135deg, #3f342c, #261f1a);
+          color: #fff;
+          text-align: center;
+          box-shadow: var(--shadow);
+        }
+
+        .footer h2 {
+          margin: 0 0 8px;
+          font-size: 24px;
+          letter-spacing: -0.04em;
+        }
+
+        .line-id {
+          margin: 12px 0 14px;
+          font-size: 18px;
+          font-weight: 900;
+          color: #ffffff;
+          letter-spacing: 0.02em;
+        }
+
+        .line-button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 18px;
+          padding: 12px 20px;
+          background: #ffffff;
+          color: var(--ink);
+          border-radius: 999px;
+          font-size: 15px;
+          font-weight: 900;
+          text-decoration: none;
+        }
+
+        .line-qr-card {
+          width: 180px;
+          height: 180px;
+          margin: 4px auto 14px;
+          padding: 10px;
+          background: #ffffff;
+          border-radius: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .line-qr-card img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        .footer-note {
+          margin: 8px auto 0;
+          color: rgba(255, 255, 255, 0.86);
+          font-size: 14px;
+          line-height: 1.7;
+        }
+
+        .footer-price-note {
+          margin: 12px auto 0;
+          color: rgba(255, 255, 255, 0.62);
+          font-size: 13px;
+          line-height: 1.7;
+        }
+
+        @media (max-width: 370px) {
+          .site-shell {
+            padding-left: 10px;
+            padding-right: 10px;
+          }
+
+          .top-header {
+            margin-left: -10px;
+            margin-right: -10px;
+          }
+
+          .hero-copy h2 {
+            font-size: 28px;
+          }
+
+          .trust-section {
+            grid-template-columns: 1fr;
+          }
+
+          .featured-card {
+            grid-template-columns: 1fr;
+          }
+
+          .featured-image {
+            min-height: 190px;
+          }
+
+          .product-grid {
+            gap: 10px;
+          }
+
+          .product-info {
+            padding: 10px;
+          }
+
+          .product-info h3 {
+            font-size: 15px;
+          }
+
+          .price {
+            font-size: 17px;
+          }
         }
       `}</style>
     </main>
