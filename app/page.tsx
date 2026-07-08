@@ -72,6 +72,7 @@ type CustomerForm = {
   lineId: string;
   phone: string;
   deliveryMethod: string;
+  address: string;
   note: string;
 };
 
@@ -1422,20 +1423,50 @@ const products: Product[] = [
 ];
 
 
+
+const skinFilters = [
+  "全部",
+  "乾燥缺水",
+  "油性毛孔",
+  "敏感舒緩",
+  "美白淡斑",
+  "抗皺緊緻",
+  "清潔卸妝",
+  "面膜保養",
+  "男士保養",
+] as const;
+
+type SkinFilter = (typeof skinFilters)[number];
+
+const comboProductIds = new Set<number>([
+  1, 2, 3,
+  10, 11,
+  29, 30,
+  35, 36,
+  47, 48,
+  54, 55,
+  56, 57, 58, 59, 60,
+]);
+
+
 export default function Home() {
   const [selectedCategory, setSelectedCategory] =
     useState<MainCategory>("組合價");
   const [selectedSeries, setSelectedSeries] = useState("全部");
+  const [selectedSkinFilter, setSelectedSkinFilter] =
+    useState<SkinFilter>("全部");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
   const [customer, setCustomer] = useState<CustomerForm>({
     customerName: "",
     lineId: "",
     phone: "",
-    deliveryMethod: "LINE確認",
+    deliveryMethod: "宅配",
+    address: "",
     note: "",
   });
 
@@ -1449,7 +1480,11 @@ export default function Home() {
     const matchSeries =
       selectedSeries === "全部" || product.series === selectedSeries;
 
-    return matchCategory && matchSeries;
+    const productTags = getProductTags(product);
+    const matchSkinFilter =
+      selectedSkinFilter === "全部" || productTags.includes(selectedSkinFilter);
+
+    return matchCategory && matchSeries && matchSkinFilter;
   });
 
   const featuredProductIds = [83, 100, 101, 89, 91, 88];
@@ -1470,12 +1505,33 @@ export default function Home() {
   function jumpToCategory(category: MainCategory, series = "全部") {
     setSelectedCategory(category);
     setSelectedSeries(series);
+    setSelectedSkinFilter("全部");
     window.setTimeout(() => {
       document.getElementById("product-section")?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
     }, 80);
+  }
+
+  function handleSkinFilterChange(filter: SkinFilter) {
+    setSelectedSkinFilter(filter);
+
+    if (filter !== "全部" && selectedCategory !== "保養品" && selectedCategory !== "全部") {
+      setSelectedCategory("保養品");
+      setSelectedSeries("全部");
+    }
+
+    window.setTimeout(() => {
+      document.getElementById("product-section")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 80);
+  }
+
+  function goToComboSection() {
+    jumpToCategory("組合價", "全部");
   }
 
   function hasKnownOriginalPrice(product: Product) {
@@ -1504,6 +1560,106 @@ export default function Home() {
     return Boolean(product.image && !product.image.includes("placeholder"));
   }
 
+  function hasComboPrice(product: Product) {
+    return comboProductIds.has(product.id);
+  }
+
+  function getProductTags(product: Product): string[] {
+    const tags = new Set<string>();
+    const name = product.name;
+    const series = product.series;
+
+    if (
+      series.includes("水光") ||
+      series.includes("綠茶") ||
+      series.includes("玫瑰") ||
+      series.includes("膠原") ||
+      name.includes("水搖滾") ||
+      name.includes("超導水網") ||
+      name.includes("保濕")
+    ) {
+      tags.add("乾燥缺水");
+    }
+
+    if (
+      series.includes("茶樹") ||
+      series.includes("INSK") ||
+      series.includes("冰河") ||
+      series.includes("杏仁酸") ||
+      series.includes("鳳梨") ||
+      name.includes("毛孔") ||
+      name.includes("控油") ||
+      name.includes("苦杏仁酸")
+    ) {
+      tags.add("油性毛孔");
+    }
+
+    if (
+      series.includes("薰衣草") ||
+      series.includes("綠茶") ||
+      series.includes("INSK") ||
+      name.includes("舒緩") ||
+      name.includes("柔膚")
+    ) {
+      tags.add("敏感舒緩");
+    }
+
+    if (
+      series.includes("晶淬雪") ||
+      series.includes("櫻") ||
+      series.includes("白金") ||
+      name.includes("美白") ||
+      name.includes("煥白") ||
+      name.includes("淡斑") ||
+      name.includes("極光白") ||
+      name.includes("鉑金")
+    ) {
+      tags.add("美白淡斑");
+    }
+
+    if (
+      series.includes("BA-5") ||
+      series.includes("肌光") ||
+      series.includes("頂級") ||
+      name.includes("抗皺") ||
+      name.includes("緊緻") ||
+      name.includes("賦活") ||
+      name.includes("奢華") ||
+      name.includes("凍晶")
+    ) {
+      tags.add("抗皺緊緻");
+    }
+
+    if (
+      name.includes("潔顏") ||
+      name.includes("卸妝") ||
+      name.includes("慕絲") ||
+      name.includes("角質") ||
+      name.includes("凝露")
+    ) {
+      tags.add("清潔卸妝");
+    }
+
+    if (
+      name.includes("面膜") ||
+      name.includes("水嫩膜") ||
+      name.includes("水搖滾") ||
+      name.includes("極光白")
+    ) {
+      tags.add("面膜保養");
+    }
+
+    if (series.includes("冷杉") || name.includes("型男")) {
+      tags.add("男士保養");
+    }
+
+    return Array.from(tags);
+  }
+
+  function displayTags(product: Product) {
+    return getProductTags(product).slice(0, 2);
+  }
+
   function ProductVisual({
     product,
     variant = "normal",
@@ -1522,6 +1678,74 @@ export default function Home() {
           </div>
         )}
       </div>
+    );
+  }
+
+  function ProductCard({
+    product,
+    featured = false,
+  }: {
+    product: Product;
+    featured?: boolean;
+  }) {
+    const soldOut = isSoldOut(product);
+    const inquiry = hasInquiryPrice(product);
+    const tags = displayTags(product);
+
+    return (
+      <article
+        className={featured ? "featured-card" : "product-card"}
+        key={featured ? `featured-${product.id}` : product.id}
+      >
+        <ProductVisual product={product} variant={featured ? "featured" : "normal"} />
+
+        <div className={featured ? "featured-info" : "product-info"}>
+          <div className="product-meta-row">
+            <p className="series-label">{product.series}</p>
+            {inquiry && !soldOut && <span>可詢價</span>}
+            {soldOut && <span className="sold-out-badge">缺貨</span>}
+          </div>
+
+          <h3>{product.name}</h3>
+          <p className="description">{product.description}</p>
+
+          <div className="tag-row">
+            {tags.map((tag) => (
+              <span className="need-tag" key={`${product.id}-${tag}`}>
+                {tag}
+              </span>
+            ))}
+
+            {hasComboPrice(product) && (
+              <button
+                type="button"
+                className="combo-badge"
+                onClick={goToComboSection}
+              >
+                有組合價
+              </button>
+            )}
+          </div>
+
+          <div className="price-block">
+            {hasKnownOriginalPrice(product) && (
+              <p className="original-price">{product.originalPrice}</p>
+            )}
+
+            <p className={`price ${inquiry ? "inquiry" : ""}`}>
+              {displayPrice(product)}
+            </p>
+          </div>
+
+          <button
+            className="add-cart-button"
+            onClick={() => addToCart(product)}
+            disabled={soldOut}
+          >
+            {soldOut ? "缺貨中" : inquiry ? "加入詢問清單" : "加入清單"}
+          </button>
+        </div>
+      </article>
     );
   }
 
@@ -1595,16 +1819,29 @@ export default function Home() {
       return;
     }
 
+    if (!customer.address.trim()) {
+      setSubmitStatus("error");
+      setSubmitMessage("請填寫宅配地址。");
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus("idle");
     setSubmitMessage("");
+
+    const noteWithAddress = [
+      `宅配地址：${customer.address.trim()}`,
+      customer.note.trim() ? `備註：${customer.note.trim()}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
 
     const payload = {
       customerName: customer.customerName.trim(),
       lineId: customer.lineId.trim(),
       phone: customer.phone.trim(),
-      deliveryMethod: customer.deliveryMethod,
-      note: customer.note.trim(),
+      deliveryMethod: "宅配",
+      note: noteWithAddress,
       items: cartItems.map((item) => ({
         id: item.product.id,
         name: item.product.name,
@@ -1616,6 +1853,8 @@ export default function Home() {
         price: displayPrice(item.product),
         description: item.product.description,
         quantity: item.quantity,
+        tags: getProductTags(item.product).join("、"),
+        combo: hasComboPrice(item.product) ? "有組合價" : "",
       })),
     };
 
@@ -1630,17 +1869,18 @@ export default function Home() {
       });
 
       setSubmitStatus("success");
-      setSubmitMessage(
-        "訂購清單已送出！我們會再透過 LINE 或電話確認庫存、金額與付款方式。"
-      );
+      setSubmitMessage("");
       setCartItems([]);
       setCustomer({
         customerName: "",
         lineId: "",
         phone: "",
-        deliveryMethod: "LINE確認",
+        deliveryMethod: "宅配",
+        address: "",
         note: "",
       });
+      setIsCartOpen(false);
+      setIsSuccessOpen(true);
     } catch (error) {
       setSubmitStatus("error");
       setSubmitMessage("送出時發生問題，請稍後再試，或直接加入 LINE：@chateau-buy。");
@@ -1651,11 +1891,15 @@ export default function Home() {
 
   return (
     <main className="site-shell">
+      <div className="announcement-bar">
+        🚚 滿 NT$3000 免運｜📦 僅提供宅配｜送出清單後由 LINE 客服確認
+      </div>
+
       <header className="top-header">
         <div>
           <p className="top-eyebrow">Jourdeness Castle</p>
           <h1>佐登妮絲城堡回購群</h1>
-          <p>產地價訂購清單・LINE 客服確認</p>
+          <p>產地價訂購站・滿額宅配免運</p>
         </div>
 
         <button className="header-cart-button" onClick={() => setIsCartOpen(true)}>
@@ -1668,7 +1912,7 @@ export default function Home() {
           <p className="small-title">Castle Price List</p>
           <h2>回購群專屬產地價訂購站</h2>
           <p>
-            選擇想詢問或訂購的商品，送出清單後由 LINE 客服協助確認價格、庫存與取貨方式。
+            選擇想詢問或訂購的商品，送出清單後由 LINE 客服協助確認價格、庫存與宅配資訊。
           </p>
 
           <div className="hero-actions">
@@ -1687,6 +1931,11 @@ export default function Home() {
           <p>LINE ID</p>
           <strong>@chateau-buy</strong>
           <span>送出清單不代表付款完成，客服會再確認明細。</span>
+
+          <div className="shipping-rule">
+            <em>滿 NT$3000 免運</em>
+            <em>僅提供宅配服務</em>
+          </div>
         </div>
       </section>
 
@@ -1694,20 +1943,49 @@ export default function Home() {
         <div className="trust-card">
           <span>01</span>
           <h3>選擇商品</h3>
-          <p>從分類或組合價中加入想詢問的品項。</p>
+          <p>從分類、膚質需求或組合價中加入想詢問的品項。</p>
         </div>
 
         <div className="trust-card">
           <span>02</span>
           <h3>送出清單</h3>
-          <p>留下姓名與 LINE ID，資料會進入訂單表。</p>
+          <p>留下姓名、LINE ID 與宅配地址，資料會進入訂單表。</p>
         </div>
 
         <div className="trust-card">
           <span>03</span>
-          <h3>客服確認</h3>
-          <p>由 LINE 確認庫存、金額、付款與取貨方式。</p>
+          <h3>LINE 確認</h3>
+          <p>客服確認庫存、金額、滿額免運與付款方式。</p>
         </div>
+      </section>
+
+      <section className="skin-guide-section">
+        <div className="skin-guide-copy">
+          <div>
+            <p className="small-title">Skin Guide</p>
+            <h2>依膚質找商品</h2>
+            <p>不知道從哪裡開始？可以先用膚況或保養需求快速篩選。</p>
+          </div>
+          <div className="skin-mascot">🐾</div>
+        </div>
+
+        <div className="skin-filter-grid">
+          {skinFilters.map((filter) => (
+            <button
+              key={filter}
+              className={selectedSkinFilter === filter ? "skin-filter-button active" : "skin-filter-button"}
+              onClick={() => handleSkinFilterChange(filter)}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        {selectedSkinFilter !== "全部" && (
+          <p className="active-filter-note">
+            目前顯示：{selectedSkinFilter} 適合品項
+          </p>
+        )}
       </section>
 
       <section className="featured-section">
@@ -1719,31 +1997,7 @@ export default function Home() {
 
         <div className="featured-grid">
           {featuredProducts.map((product) => (
-            <article className="featured-card" key={`featured-${product.id}`}>
-              <ProductVisual product={product} variant="featured" />
-              <div className="featured-info">
-                <p className="series-label">{product.series}</p>
-                <h3>{product.name}</h3>
-                <p className="description">{product.description}</p>
-                {hasKnownOriginalPrice(product) && (
-                  <p className="original-price">{product.originalPrice}</p>
-                )}
-                <p className={`price ${hasInquiryPrice(product) ? "inquiry" : ""}`}>
-                  {displayPrice(product)}
-                </p>
-                <button
-                  className="add-cart-button"
-                  onClick={() => addToCart(product)}
-                  disabled={isSoldOut(product)}
-                >
-                  {isSoldOut(product)
-                    ? "缺貨中"
-                    : hasInquiryPrice(product)
-                    ? "加入詢問清單"
-                    : "加入清單"}
-                </button>
-              </div>
-            </article>
+            <ProductCard product={product} featured key={`featured-${product.id}`} />
           ))}
         </div>
       </section>
@@ -1790,51 +2044,15 @@ export default function Home() {
 
       {filteredProducts.length > 0 ? (
         <section className="product-grid">
-          {filteredProducts.map((product) => {
-            const soldOut = isSoldOut(product);
-            const inquiry = hasInquiryPrice(product);
-
-            return (
-              <article className="product-card" key={product.id}>
-                <ProductVisual product={product} />
-
-                <div className="product-info">
-                  <div className="product-meta-row">
-                    <p className="series-label">{product.series}</p>
-                    {inquiry && !soldOut && <span>可詢價</span>}
-                    {soldOut && <span className="sold-out-badge">缺貨</span>}
-                  </div>
-
-                  <h3>{product.name}</h3>
-                  <p className="description">{product.description}</p>
-
-                  <div className="price-block">
-                    {hasKnownOriginalPrice(product) && (
-                      <p className="original-price">{product.originalPrice}</p>
-                    )}
-
-                    <p className={`price ${inquiry ? "inquiry" : ""}`}>
-                      {displayPrice(product)}
-                    </p>
-                  </div>
-
-                  <button
-                    className="add-cart-button"
-                    onClick={() => addToCart(product)}
-                    disabled={soldOut}
-                  >
-                    {soldOut ? "缺貨中" : inquiry ? "加入詢問清單" : "加入清單"}
-                  </button>
-                </div>
-              </article>
-            );
-          })}
+          {filteredProducts.map((product) => (
+            <ProductCard product={product} key={product.id} />
+          ))}
         </section>
       ) : (
         <section className="empty-section">
           <div className="empty-card">
-            <h3>此分類尚未建立商品</h3>
-            <p>商品圖片、名稱與價格可以之後再逐項加入。</p>
+            <h3>喵～這個條件暫時沒有商品</h3>
+            <p>可以切換其他分類或清除膚質篩選看看。</p>
           </div>
         </section>
       )}
@@ -1852,7 +2070,7 @@ export default function Home() {
               <div>
                 <p className="cart-eyebrow">Order List</p>
                 <h2>訂購清單</h2>
-                <span>送出後由 LINE 客服確認，尚未完成付款。</span>
+                <span>僅提供宅配；送出後由 LINE 客服確認，尚未完成付款。</span>
               </div>
               <button className="cart-close" onClick={() => setIsCartOpen(false)}>
                 ×
@@ -1868,6 +2086,15 @@ export default function Home() {
                         <p className="cart-item-series">{item.product.series}</p>
                         <h3>{item.product.name}</h3>
                         <p>{displayPrice(item.product)}</p>
+                        {hasComboPrice(item.product) && (
+                          <button
+                            type="button"
+                            className="combo-badge-mini"
+                            onClick={goToComboSection}
+                          >
+                            有組合價
+                          </button>
+                        )}
                       </div>
 
                       <div className="cart-quantity-control">
@@ -1896,6 +2123,11 @@ export default function Home() {
                 </button>
 
                 <form className="order-form" onSubmit={submitOrder}>
+                  <div className="delivery-summary">
+                    <strong>配送方式：宅配</strong>
+                    <span>滿 NT$3000 免運，未滿免運門檻將由客服確認運費。</span>
+                  </div>
+
                   <label>
                     姓名 <span>*</span>
                     <input
@@ -1930,18 +2162,14 @@ export default function Home() {
                   </label>
 
                   <label>
-                    取貨 / 配送方式
-                    <select
-                      value={customer.deliveryMethod}
+                    宅配地址 <span>*</span>
+                    <input
+                      value={customer.address}
                       onChange={(event) =>
-                        setCustomer({ ...customer, deliveryMethod: event.target.value })
+                        setCustomer({ ...customer, address: event.target.value })
                       }
-                    >
-                      <option>LINE確認</option>
-                      <option>城堡自取</option>
-                      <option>宅配</option>
-                      <option>其他</option>
-                    </select>
+                      placeholder="請輸入宅配地址"
+                    />
                   </label>
 
                   <label>
@@ -1951,7 +2179,7 @@ export default function Home() {
                       onChange={(event) =>
                         setCustomer({ ...customer, note: event.target.value })
                       }
-                      placeholder="可填寫顏色、口味、想確認庫存、其他需求"
+                      placeholder="可填寫想確認庫存、品項搭配、指定需求"
                     />
                   </label>
 
@@ -1966,7 +2194,7 @@ export default function Home() {
                   </button>
 
                   <p className="order-form-note">
-                    送出清單不代表付款完成。商品價格、庫存、優惠組合與取貨方式，仍依 LINE 客服確認為準。
+                    送出清單不代表付款完成。商品價格、庫存、優惠組合、滿額免運與付款方式，仍依 LINE 客服確認為準。
                   </p>
                 </form>
               </>
@@ -1980,6 +2208,43 @@ export default function Home() {
         </section>
       )}
 
+      {isSuccessOpen && (
+        <section className="success-backdrop" onClick={() => setIsSuccessOpen(false)}>
+          <div className="success-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="success-icon">✓</div>
+            <h2>訂購清單已送出！</h2>
+            <p>
+              我們已收到你的訂購清單。接下來請至 LINE 與客服確認訂單，訂單經確認後才會正式成立。
+            </p>
+
+            <div className="success-checklist">
+              <p>客服會協助確認：商品庫存</p>
+              <p>客服會協助確認：訂單金額與滿 NT$3000 免運資格</p>
+              <p>客服會協助確認：宅配地址與付款方式</p>
+              <p>LINE ID：@chateau-buy</p>
+            </div>
+
+            <div className="success-actions">
+              <a
+                className="success-line-button"
+                href="https://line.me/R/ti/p/@chateau-buy"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                加入 LINE 確認訂單
+              </a>
+
+              <button
+                className="success-continue-button"
+                onClick={() => setIsSuccessOpen(false)}
+              >
+                繼續逛商品
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="notice-section">
         <div className="section-heading compact">
           <p>Notice</p>
@@ -1987,8 +2252,9 @@ export default function Home() {
         </div>
 
         <div className="notice-card">
+          <p><strong>滿 NT$3000 免運，僅提供宅配。</strong></p>
           <p>商品價格與優惠組合依當日公告為準。</p>
-          <p>送出訂購清單後，客服會再透過 LINE 或電話確認庫存、金額與付款方式。</p>
+          <p>送出訂購清單後，客服會再透過 LINE 或電話確認庫存、金額、付款方式與宅配資訊。</p>
           <p>若遇缺貨、價格異動或組合活動調整，將以客服確認內容為準。</p>
         </div>
       </section>
@@ -2016,11 +2282,12 @@ export default function Home() {
         </p>
 
         <p className="footer-price-note">
-          商品價格與優惠組合依當日公告為準。
+          滿 NT$3000 免運，僅提供宅配。商品價格與優惠組合依當日公告為準。
         </p>
       </footer>
 
       <style jsx global>{`
+
         :root {
           --bg: #f8f1ea;
           --card: #fffaf6;
@@ -2973,6 +3240,292 @@ export default function Home() {
             font-size: 17px;
           }
         }
+
+        .announcement-bar {
+          margin: -14px -14px 0;
+          padding: 9px 14px;
+          background: linear-gradient(90deg, #3d3028, #6b4939);
+          color: #fff7ef;
+          font-size: 12px;
+          font-weight: 900;
+          line-height: 1.5;
+          text-align: center;
+          letter-spacing: 0.01em;
+        }
+
+        .top-header {
+          top: 0;
+        }
+
+        .hero-card .shipping-rule {
+          display: grid;
+          gap: 8px;
+          margin-top: 14px;
+          padding-top: 12px;
+          border-top: 1px solid rgba(255, 255, 255, 0.16);
+        }
+
+        .hero-card .shipping-rule em {
+          font-style: normal;
+          color: #fff;
+          font-size: 14px;
+          font-weight: 900;
+        }
+
+        .skin-guide-section {
+          margin-top: 24px;
+          padding: 16px;
+          border: 1px solid rgba(183, 138, 72, 0.24);
+          border-radius: 28px;
+          background:
+            radial-gradient(circle at right top, rgba(255, 221, 183, 0.55), transparent 40%),
+            rgba(255, 250, 246, 0.90);
+          box-shadow: 0 12px 34px rgba(77, 55, 38, 0.08);
+        }
+
+        .skin-guide-copy {
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+
+        .skin-guide-copy h2 {
+          margin: 0 0 5px;
+          color: var(--ink);
+          font-size: 22px;
+          letter-spacing: -0.04em;
+        }
+
+        .skin-guide-copy p {
+          margin: 0;
+          color: var(--muted);
+          font-size: 13px;
+          line-height: 1.6;
+        }
+
+        .skin-mascot {
+          flex-shrink: 0;
+          width: 58px;
+          height: 58px;
+          border-radius: 20px;
+          background: linear-gradient(135deg, #fff2e6, #e9d2bc);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+          color: var(--accent-dark);
+          font-size: 28px;
+        }
+
+        .skin-filter-grid {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          padding-bottom: 2px;
+          scrollbar-width: none;
+        }
+
+        .skin-filter-grid::-webkit-scrollbar {
+          display: none;
+        }
+
+        .skin-filter-button {
+          flex: 0 0 auto;
+          border: 1px solid var(--line);
+          border-radius: 999px;
+          padding: 10px 12px;
+          background: rgba(255,255,255,0.82);
+          color: var(--muted);
+          font-size: 13px;
+          font-weight: 900;
+          white-space: nowrap;
+        }
+
+        .skin-filter-button.active {
+          background: var(--accent);
+          color: #fff;
+          border-color: var(--accent);
+          box-shadow: 0 10px 22px rgba(178, 65, 51, 0.18);
+        }
+
+        .active-filter-note {
+          margin: 10px 0 0;
+          color: var(--accent-dark);
+          font-size: 13px;
+          font-weight: 900;
+          line-height: 1.5;
+        }
+
+        .tag-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 5px;
+          margin: 7px 0 0;
+        }
+
+        .need-tag,
+        .combo-badge,
+        .combo-badge-mini {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 0;
+          border-radius: 999px;
+          padding: 4px 7px;
+          font-size: 10px;
+          font-weight: 900;
+          line-height: 1.2;
+          white-space: nowrap;
+        }
+
+        .need-tag {
+          background: #f4e9df;
+          color: var(--muted);
+        }
+
+        .combo-badge,
+        .combo-badge-mini {
+          background: #fff0df;
+          color: var(--accent-dark);
+          border: 1px solid rgba(183, 138, 72, 0.28);
+          cursor: pointer;
+        }
+
+        .combo-badge-mini {
+          margin-top: 9px;
+          width: fit-content;
+          padding: 6px 9px;
+          font-size: 11px;
+        }
+
+        .delivery-summary {
+          display: grid;
+          gap: 6px;
+          padding: 12px;
+          border-radius: 18px;
+          background: #fff3e6;
+          border: 1px solid rgba(183, 138, 72, 0.26);
+          color: var(--ink);
+          font-size: 13px;
+          line-height: 1.55;
+        }
+
+        .delivery-summary strong {
+          color: var(--accent-dark);
+        }
+
+        .success-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 70;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 18px;
+          background: rgba(0, 0, 0, 0.38);
+        }
+
+        .success-modal {
+          width: min(100%, 460px);
+          border-radius: 30px;
+          padding: 22px 18px 18px;
+          background:
+            radial-gradient(circle at top right, rgba(255, 218, 181, 0.55), transparent 42%),
+            #fffaf5;
+          box-shadow: 0 22px 60px rgba(0,0,0,0.25);
+          border: 1px solid rgba(234, 219, 208, 0.95);
+          text-align: center;
+        }
+
+        .success-icon {
+          width: 62px;
+          height: 62px;
+          margin: 0 auto 12px;
+          border-radius: 24px;
+          background: linear-gradient(135deg, #f8dfcb, #fff4e8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--accent-dark);
+          font-size: 32px;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+
+        .success-modal h2 {
+          margin: 0 0 8px;
+          color: var(--ink);
+          font-size: 25px;
+          letter-spacing: -0.04em;
+        }
+
+        .success-modal > p {
+          margin: 0 auto 14px;
+          color: var(--muted);
+          font-size: 14px;
+          line-height: 1.75;
+        }
+
+        .success-checklist {
+          display: grid;
+          gap: 8px;
+          margin: 14px 0;
+          padding: 14px;
+          border-radius: 20px;
+          background: #ffffff;
+          border: 1px solid var(--line);
+          text-align: left;
+        }
+
+        .success-checklist p {
+          margin: 0;
+          color: var(--ink);
+          font-size: 13px;
+          font-weight: 800;
+          line-height: 1.5;
+        }
+
+        .success-actions {
+          display: grid;
+          gap: 10px;
+          margin-top: 16px;
+        }
+
+        .success-line-button,
+        .success-continue-button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 46px;
+          border-radius: 999px;
+          padding: 12px 15px;
+          font-size: 15px;
+          font-weight: 900;
+          text-decoration: none;
+        }
+
+        .success-line-button {
+          background: var(--accent);
+          color: #fff;
+          box-shadow: 0 12px 24px rgba(178, 65, 51, 0.20);
+        }
+
+        .success-continue-button {
+          border: 1px solid var(--line);
+          background: #fff;
+          color: var(--ink);
+        }
+
+        .notice-card strong {
+          color: var(--accent-dark);
+        }
+
+        @media (max-width: 370px) {
+          .skin-guide-copy {
+            flex-direction: column;
+          }
+        }
+
       `}</style>
     </main>
   );
