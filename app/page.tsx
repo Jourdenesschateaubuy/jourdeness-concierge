@@ -1459,6 +1459,7 @@ export default function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
   const [customer, setCustomer] = useState<CustomerForm>({
@@ -1528,6 +1529,16 @@ export default function Home() {
         block: "start",
       });
     }, 80);
+  }
+
+  function handleDrawerCategory(category: MainCategory, series = "全部") {
+    setIsMenuOpen(false);
+    jumpToCategory(category, series);
+  }
+
+  function handleDrawerSkinFilter(filter: SkinFilter) {
+    setIsMenuOpen(false);
+    handleSkinFilterChange(filter);
   }
 
   function goToComboSection() {
@@ -1896,16 +1907,107 @@ export default function Home() {
       </div>
 
       <header className="top-header">
-        <div>
+        <button
+          className="menu-button"
+          onClick={() => setIsMenuOpen(true)}
+          aria-label="開啟選單"
+        >
+          ☰
+        </button>
+
+        <div className="brand-block">
           <p className="top-eyebrow">Jourdeness Castle</p>
           <h1>佐登妮絲城堡回購群</h1>
           <p>產地價訂購站・滿額宅配免運</p>
         </div>
 
-        <button className="header-cart-button" onClick={() => setIsCartOpen(true)}>
-          清單 <span>{cartTotalQuantity}</span>
-        </button>
+        <div className="header-actions">
+          <button
+            className="icon-button"
+            onClick={() => {
+              document.getElementById("product-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+            aria-label="前往商品"
+          >
+            🔍
+          </button>
+
+          <button className="header-cart-button" onClick={() => setIsCartOpen(true)}>
+            清單 <span>{cartTotalQuantity}</span>
+          </button>
+        </div>
       </header>
+
+      {isMenuOpen && (
+        <section className="drawer-backdrop" onClick={() => setIsMenuOpen(false)}>
+          <aside className="side-drawer" onClick={(event) => event.stopPropagation()}>
+            <div className="drawer-head">
+              <div>
+                <p>Jourdeness Castle</p>
+                <h2>佐登妮絲城堡回購群</h2>
+                <span>產地價訂購站</span>
+              </div>
+              <button onClick={() => setIsMenuOpen(false)} aria-label="關閉選單">×</button>
+            </div>
+
+            <div className="drawer-rule-card">
+              <strong>🚚 滿 NT$3000 免運</strong>
+              <span>📦 僅提供宅配，送出清單後由 LINE 客服確認。</span>
+            </div>
+
+            <nav className="drawer-nav">
+              <div className="drawer-section">
+                <p>快速入口</p>
+                <button onClick={() => handleDrawerCategory("組合價")}>本月主打 / 組合價</button>
+                <button onClick={() => handleDrawerCategory("全部")}>全部商品</button>
+                <button onClick={() => handleDrawerCategory("保養品")}>保養品</button>
+                <button onClick={() => handleDrawerCategory("保健食品")}>保健食品</button>
+                <button onClick={() => handleDrawerCategory("洗沐")}>洗沐</button>
+                <button onClick={() => handleDrawerCategory("外部廠商")}>外部廠商</button>
+              </div>
+
+              <div className="drawer-section">
+                <p>依膚質 / 需求找</p>
+                {skinFilters.filter((filter) => filter !== "全部").map((filter) => (
+                  <button key={`drawer-${filter}`} onClick={() => handleDrawerSkinFilter(filter)}>
+                    {filter}
+                  </button>
+                ))}
+              </div>
+
+              <div className="drawer-section">
+                <p>更多分類</p>
+                <button onClick={() => handleDrawerCategory("精油")}>精油</button>
+                <button onClick={() => handleDrawerCategory("香水")}>香水</button>
+                <button onClick={() => handleDrawerCategory("牙膏")}>牙膏</button>
+                <button onClick={() => handleDrawerCategory("肥皂")}>肥皂</button>
+                <button onClick={() => handleDrawerCategory("護手霜")}>護手霜</button>
+                <button onClick={() => handleDrawerCategory("貼布")}>貼布</button>
+              </div>
+
+              <div className="drawer-section">
+                <p>外部廠商</p>
+                <button onClick={() => handleDrawerCategory("外部廠商", "生福科技")}>生福科技</button>
+                <button onClick={() => handleDrawerCategory("外部廠商", "木匠兄妹")}>木匠兄妹</button>
+                <button onClick={() => handleDrawerCategory("外部廠商", "F.SEASONS 富雨洋傘")}>F.SEASONS 富雨洋傘</button>
+                <button onClick={() => handleDrawerCategory("外部廠商", "良冠")}>良冠</button>
+              </div>
+            </nav>
+
+            <a
+              className="drawer-line-button"
+              href="https://line.me/R/ti/p/@chateau-buy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              加入 LINE：@chateau-buy
+            </a>
+          </aside>
+        </section>
+      )}
 
       <section className="hero-section">
         <div className="hero-copy">
@@ -2397,6 +2499,185 @@ export default function Home() {
           border-radius: 999px;
           background: var(--accent);
           color: #fff;
+        }
+
+
+        .menu-button,
+        .icon-button {
+          flex-shrink: 0;
+          width: 42px;
+          height: 42px;
+          border: 1px solid var(--line);
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.9);
+          color: var(--ink);
+          font-size: 22px;
+          font-weight: 900;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 8px 18px rgba(77, 55, 38, 0.08);
+        }
+
+        .icon-button {
+          font-size: 18px;
+        }
+
+        .brand-block {
+          min-width: 0;
+          flex: 1;
+        }
+
+        .header-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
+        }
+
+        .drawer-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 70;
+          background: rgba(31, 24, 20, 0.42);
+          display: flex;
+          align-items: stretch;
+          justify-content: flex-start;
+        }
+
+        .side-drawer {
+          width: min(88vw, 430px);
+          height: 100vh;
+          overflow-y: auto;
+          padding: 18px 16px 24px;
+          background:
+            linear-gradient(180deg, rgba(255, 250, 246, 0.98), rgba(248, 241, 234, 0.98));
+          box-shadow: 24px 0 60px rgba(31, 24, 20, 0.26);
+          animation: drawerIn 0.18s ease-out;
+        }
+
+        @keyframes drawerIn {
+          from { transform: translateX(-18px); opacity: 0.8; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+
+        .drawer-head {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 12px;
+          padding-bottom: 14px;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .drawer-head p {
+          margin: 0 0 4px;
+          color: var(--gold);
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+
+        .drawer-head h2 {
+          margin: 0 0 4px;
+          color: var(--ink);
+          font-size: 22px;
+          line-height: 1.2;
+          letter-spacing: -0.04em;
+        }
+
+        .drawer-head span {
+          color: var(--muted);
+          font-size: 13px;
+          font-weight: 800;
+        }
+
+        .drawer-head button {
+          width: 40px;
+          height: 40px;
+          border: 0;
+          border-radius: 50%;
+          background: #efe3d8;
+          color: var(--ink);
+          font-size: 28px;
+          line-height: 1;
+        }
+
+        .drawer-rule-card {
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          margin: 14px 0;
+          padding: 14px;
+          border-radius: 20px;
+          background: #3f342c;
+          color: #fff;
+        }
+
+        .drawer-rule-card strong {
+          font-size: 16px;
+          line-height: 1.35;
+        }
+
+        .drawer-rule-card span {
+          color: rgba(255, 255, 255, 0.76);
+          font-size: 13px;
+          line-height: 1.55;
+        }
+
+        .drawer-nav {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .drawer-section {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .drawer-section p {
+          grid-column: 1 / -1;
+          margin: 0 0 2px;
+          color: var(--gold);
+          font-size: 12px;
+          font-weight: 950;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .drawer-section button {
+          min-height: 43px;
+          border: 1px solid var(--line);
+          border-radius: 14px;
+          background: rgba(255, 255, 255, 0.8);
+          color: var(--ink);
+          font-size: 14px;
+          font-weight: 900;
+          text-align: left;
+          padding: 10px 12px;
+        }
+
+        .drawer-section button:hover {
+          border-color: rgba(178, 65, 51, 0.32);
+          background: #fff;
+        }
+
+        .drawer-line-button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 18px;
+          min-height: 48px;
+          border-radius: 999px;
+          background: var(--accent);
+          color: #fff;
+          font-size: 15px;
+          font-weight: 950;
+          text-decoration: none;
+          box-shadow: 0 12px 24px rgba(178, 65, 51, 0.20);
         }
 
         .hero-section {
@@ -3197,6 +3478,61 @@ export default function Home() {
           line-height: 1.7;
         }
 
+
+
+        /* Phase 2: bigger mobile storefront cards */
+        .product-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 14px;
+        }
+
+        .product-card .product-image {
+          aspect-ratio: 4 / 5;
+        }
+
+        .product-image img {
+          transform: scale(1.18);
+        }
+
+        .product-card .description {
+          display: none;
+        }
+
+        .product-info {
+          padding: 13px;
+        }
+
+        .product-info h3 {
+          display: -webkit-box;
+          min-height: 44px;
+          margin-bottom: 9px;
+          font-size: 17px;
+          line-height: 1.3;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
+
+        .product-card .price {
+          font-size: 21px;
+        }
+
+        .product-card .price.inquiry {
+          font-size: 18px;
+        }
+
+        .tag-row {
+          min-height: 30px;
+        }
+
+        .add-cart-button {
+          min-height: 43px;
+        }
+
+        .featured-card .description {
+          display: -webkit-box;
+        }
+
         @media (max-width: 370px) {
           .site-shell {
             padding-left: 10px;
@@ -3518,6 +3854,61 @@ export default function Home() {
 
         .notice-card strong {
           color: var(--accent-dark);
+        }
+
+
+
+        /* Phase 2: bigger mobile storefront cards */
+        .product-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 14px;
+        }
+
+        .product-card .product-image {
+          aspect-ratio: 4 / 5;
+        }
+
+        .product-image img {
+          transform: scale(1.18);
+        }
+
+        .product-card .description {
+          display: none;
+        }
+
+        .product-info {
+          padding: 13px;
+        }
+
+        .product-info h3 {
+          display: -webkit-box;
+          min-height: 44px;
+          margin-bottom: 9px;
+          font-size: 17px;
+          line-height: 1.3;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
+
+        .product-card .price {
+          font-size: 21px;
+        }
+
+        .product-card .price.inquiry {
+          font-size: 18px;
+        }
+
+        .tag-row {
+          min-height: 30px;
+        }
+
+        .add-cart-button {
+          min-height: 43px;
+        }
+
+        .featured-card .description {
+          display: -webkit-box;
         }
 
         @media (max-width: 370px) {
