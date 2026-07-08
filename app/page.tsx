@@ -1519,8 +1519,14 @@ export default function Home() {
     .filter(Boolean) as Product[];
 
   const homeComboProducts = getProductsByIds([100, 83, 84, 101, 91, 92]);
+  const homeDragonBloodProducts = getProductsByIds([17, 19, 20, 18, 54, 55]);
+  const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
+  const homeTeaControlProducts = getProductsByIds([49, 50, 51, 64, 69, 70]);
+  const homeBrighteningProducts = getProductsByIds([68, 71, 72, 106, 127, 128]);
+  const homeFirmingProducts = getProductsByIds([27, 28, 21, 22, 23, 120]);
   const homeMaskProducts = getProductsByIds([126, 128, 123, 129, 131, 132]);
   const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74]);
+  const homeDailyLifeProducts = getProductsByIds([29, 30, 31, 32, 37, 117]);
 
   const skinGuideCards: { title: SkinFilter; text: string }[] = [
     { title: "乾燥缺水", text: "想加強水潤與保濕" },
@@ -1600,11 +1606,13 @@ export default function Home() {
   function handleDrawerCategory(category: MainCategory, series = "全部") {
     setIsMenuOpen(false);
     jumpToCategory(category, series);
+    scrollToSection("product-section");
   }
 
   function handleDrawerSkinFilter(filter: SkinFilter) {
     setIsMenuOpen(false);
     handleSkinFilterChange(filter);
+    scrollToSection("product-section");
   }
 
   function goToComboSection() {
@@ -1888,8 +1896,8 @@ export default function Home() {
     title: string;
     subtitle: string;
     products: Product[];
-    actionLabel: string;
-    onAction: () => void;
+    actionLabel?: string;
+    onAction?: () => void;
   }) {
     return (
       <section className="home-product-section" id={id}>
@@ -1905,9 +1913,11 @@ export default function Home() {
           ))}
         </div>
 
-        <button type="button" className="home-more-button" onClick={onAction}>
-          {actionLabel}
-        </button>
+        {actionLabel && onAction && (
+          <button type="button" className="home-more-button" onClick={onAction}>
+            {actionLabel}
+          </button>
+        )}
       </section>
     );
   }
@@ -2344,10 +2354,10 @@ export default function Home() {
 
             <nav className="drawer-nav">
               <div className="drawer-section">
-                <p>快速入口</p>
-                <button onClick={() => handleDrawerCategory("組合價")}>本月主打 / 組合價</button>
+                <p>商城目錄</p>
+                <button onClick={() => handleDrawerCategory("組合價")}>本月主打優惠</button>
+                <button onClick={() => handleDrawerCategory("組合價")}>組合價</button>
                 <button onClick={() => handleDrawerCategory("全部")}>全部商品</button>
-                <button onClick={() => handleDrawerCategory("保養品")}>保養品</button>
                 <button onClick={() => handleDrawerCategory("保健食品")}>保健食品</button>
                 <button onClick={() => handleDrawerCategory("洗沐")}>洗沐</button>
                 <button onClick={() => handleDrawerCategory("外部廠商")}>外部廠商</button>
@@ -2419,28 +2429,8 @@ export default function Home() {
             <strong>回購群專屬訂購站</strong>
             <span>保養品・保健食品・生活選品<br />滿 NT$3000 免運｜僅提供宅配</span>
 
-            <div className="hero-home-actions">
-              <button type="button" onClick={() => jumpToCategory("組合價")}>查看本月優惠</button>
-              <button type="button" className="ghost" onClick={() => scrollToSection("quick-entry-section")}>開始選購</button>
-            </div>
+            <p className="hero-home-notice">往下瀏覽各系列商品；完整目錄請點左上角 ☰。</p>
           </div>
-        </div>
-      </section>
-
-      <section className="quick-entry-section" id="quick-entry-section">
-        <div className="section-heading compact">
-          <p>Quick Shop</p>
-          <h2>快速選購</h2>
-          <span>依照優惠、膚況或分類快速找到商品</span>
-        </div>
-
-        <div className="quick-entry-grid">
-          <button type="button" onClick={() => jumpToCategory("組合價")}>🎁<strong>本月優惠</strong><span>熱銷組合價</span></button>
-          <button type="button" onClick={() => jumpToCategory("保養品")}>🧴<strong>保養品</strong><span>日常保養系列</span></button>
-          <button type="button" onClick={() => scrollToSection("skin-guide-home")}>📝<strong>依膚質找</strong><span>先看膚況需求</span></button>
-          <button type="button" onClick={() => jumpToCategory("保養品", "面膜")}>✨<strong>面膜保養</strong><span>集中保養推薦</span></button>
-          <button type="button" onClick={() => jumpToCategory("保健食品")}>🌿<strong>保健食品</strong><span>日常營養補給</span></button>
-          <button type="button" onClick={() => jumpToCategory("外部廠商")}>🏷️<strong>外部廠商</strong><span>精選生活選品</span></button>
         </div>
       </section>
 
@@ -2448,8 +2438,8 @@ export default function Home() {
         id="home-combo-banner"
         eyebrow="Monthly Deals"
         title="本月主打優惠"
-        subtitle="熱銷組合價專區"
-        note="益生菌組合｜龍血洗卸組｜面膜桶裝優惠"
+        subtitle="熱銷組合價與限量優惠"
+        note="組合價｜即期優惠｜本月重點"
         image="/banners/banner-combo-deals.png"
         tone="deal"
       >
@@ -2460,83 +2450,111 @@ export default function Home() {
       <HomeProductSection
         id="home-combo-products"
         eyebrow="Featured Deals"
-        title="精選組合價"
-        subtitle="優惠品項與庫存依 LINE 客服確認為準"
+        title="本月主打優惠"
+        subtitle="熱銷組合價與限量優惠，庫存與效期依 LINE 客服確認為準"
         products={homeComboProducts}
-        actionLabel="看更多組合價"
-        onAction={() => jumpToCategory("組合價")}
       />
 
       <HomeBanner
-        id="skin-guide-home"
-        eyebrow="Skin Guide"
-        title="依膚質找商品"
-        subtitle="不知道怎麼選？先從膚況開始"
-        note="乾燥缺水｜油性毛孔｜敏感舒緩｜美白淡斑｜抗皺緊緻"
-        image="/banners/banner-skin-guide.png"
-        tone="cream"
-      >
-        <MascotImage src="/ip/ip-bosi-davinci.png" alt="波絲・達文西" className="single-mascot" />
-      </HomeBanner>
-
-      <section className="skin-guide-home-section">
-        <div className="section-heading compact">
-          <p>Choose Need</p>
-          <h2>選擇你的保養需求</h2>
-          <span>點選後會幫你篩出適合的商品</span>
-        </div>
-
-        <div className="need-card-grid">
-          {skinGuideCards.map((item) => (
-            <button
-              type="button"
-              className={selectedSkinFilter === item.title ? "need-card active" : "need-card"}
-              key={`need-${item.title}`}
-              onClick={() => handleSkinFilterChange(item.title)}
-            >
-              <strong>{item.title}</strong>
-              <span>{item.text}</span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <HomeBanner
-        id="skincare-series-home"
-        eyebrow="Skincare Series"
-        title="保養品系列"
-        subtitle="從清潔到日常保養，挑選適合你的系列"
-        note="龍血｜水光肌能｜茶樹控油｜櫻の雪｜BA-5｜頂級養護"
-        image="/banners/banner-skincare-series.png"
-        tone="pink"
+        id="dragon-blood-home"
+        eyebrow="Dragon Blood"
+        title="龍血系列"
+        subtitle="修護・保濕・洗卸清潔"
+        note="從日常保養到卸妝潔顏，一次看完整系列"
+        image="/banners/banner-dragon-blood.png"
+        tone="deal"
       >
         <MascotImage src="/ip/ip-bosi-davinci.png" alt="波絲・達文西" className="mini-mascot" />
         <MascotImage src="/ip/ip-daimei-angui.png" alt="黛妹・安圭索拉" className="mini-mascot" />
       </HomeBanner>
 
-      <section className="series-entry-section">
-        <div className="section-heading compact">
-          <p>Series</p>
-          <h2>依系列挑選保養品</h2>
-          <span>先從常見保養需求開始選，完整品項可點看更多</span>
-        </div>
+      <HomeProductSection
+        id="home-dragon-blood-products"
+        eyebrow="Repair Care"
+        title="龍血系列"
+        subtitle="修護、保濕、卸妝與潔顏品項"
+        products={homeDragonBloodProducts}
+      />
 
-        <div className="series-entry-grid">
-          {skincareSeriesEntries.map((entry) => (
-            <button
-              type="button"
-              className="series-entry-card"
-              key={entry.title}
-              onClick={() => jumpToCategory("保養品", entry.title)}
-            >
-              <strong>{entry.title}</strong>
-              <span>{entry.text}</span>
-            </button>
-          ))}
-        </div>
+      <HomeBanner
+        id="water-glow-home"
+        eyebrow="Hydration"
+        title="水光肌能系列"
+        subtitle="乾燥缺水・保濕補水"
+        note="清爽水潤感，適合日常保濕保養"
+        image="/banners/banner-water-glow.png"
+        tone="cream"
+      >
+        <MascotImage src="/ip/ip-nini-daisy.png" alt="妮妮・黛西" className="single-mascot" />
+      </HomeBanner>
 
-        <button type="button" className="home-more-button" onClick={() => jumpToCategory("保養品")}>查看全部保養品</button>
-      </section>
+      <HomeProductSection
+        id="home-water-glow-products"
+        eyebrow="Hydrating Picks"
+        title="水光肌能系列"
+        subtitle="乾燥缺水、保濕補水與溫和清潔"
+        products={homeWaterGlowProducts}
+      />
+
+      <HomeBanner
+        id="tea-control-home"
+        eyebrow="Balance Care"
+        title="茶樹控油系列"
+        subtitle="油性毛孔・清爽調理"
+        note="控油、毛孔、角質代謝與清爽保養"
+        image="/banners/banner-tea-control.png"
+        tone="green"
+      >
+        <MascotImage src="/ip/ip-bosi-davinci.png" alt="波絲・達文西" className="single-mascot" />
+      </HomeBanner>
+
+      <HomeProductSection
+        id="home-tea-control-products"
+        eyebrow="Oil Control"
+        title="茶樹控油系列"
+        subtitle="油性毛孔、角質代謝與清爽調理"
+        products={homeTeaControlProducts}
+      />
+
+      <HomeBanner
+        id="brightening-home"
+        eyebrow="Brightening"
+        title="亮白保養系列"
+        subtitle="暗沉・膚色不均・美白淡斑"
+        note="晶淬雪｜櫻の雪｜白金密集煥白｜極光白面膜"
+        image="/banners/banner-brightening-care.png"
+        tone="pink"
+      >
+        <MascotImage src="/ip/ip-daimei-angui.png" alt="黛妹・安圭索拉" className="single-mascot" />
+      </HomeBanner>
+
+      <HomeProductSection
+        id="home-brightening-products"
+        eyebrow="Glow Picks"
+        title="亮白保養系列"
+        subtitle="提亮、淡斑、亮澤與膚色不均保養"
+        products={homeBrighteningProducts}
+      />
+
+      <HomeBanner
+        id="firming-home"
+        eyebrow="Firming Care"
+        title="抗皺緊緻系列"
+        subtitle="熟齡保養・細紋・緊緻"
+        note="BA-5｜肌光緊緻｜頂級養護"
+        image="/banners/banner-firming-care.png"
+        tone="wood"
+      >
+        <MascotImage src="/ip/ip-saso-casper.png" alt="佐佐・卡斯柏" className="single-mascot" />
+      </HomeBanner>
+
+      <HomeProductSection
+        id="home-firming-products"
+        eyebrow="Premium Care"
+        title="抗皺緊緻系列"
+        subtitle="熟齡、細紋、緊緻與高階養護商品"
+        products={homeFirmingProducts}
+      />
 
       <HomeBanner
         id="mask-care-home"
@@ -2554,19 +2572,17 @@ export default function Home() {
       <HomeProductSection
         id="home-mask-products"
         eyebrow="Mask Picks"
-        title="熱門面膜推薦"
+        title="面膜集中保養"
         subtitle="從日常保濕到亮白修護，依需求挑選"
         products={homeMaskProducts}
-        actionLabel="查看全部面膜"
-        onAction={() => jumpToCategory("保養品", "面膜")}
       />
 
       <HomeBanner
         id="health-care-home"
         eyebrow="Wellness"
         title="保健食品專區"
-        subtitle="日常補給與營養保養"
-        note="益生菌｜葉黃素｜膠原蛋白飲｜魚油"
+        subtitle="益生菌・葉黃素・膠原蛋白飲"
+        note="日常補給與營養保養"
         image="/banners/banner-health-care.png"
         tone="green"
       >
@@ -2576,48 +2592,30 @@ export default function Home() {
       <HomeProductSection
         id="home-health-products"
         eyebrow="Daily Care"
-        title="日常保健推薦"
+        title="保健食品專區"
         subtitle="從腸道、晶眸到美容補給，日常保養一起補上"
         products={homeHealthProducts}
-        actionLabel="查看全部保健食品"
-        onAction={() => jumpToCategory("保健食品")}
       />
 
       <HomeBanner
-        id="lifestyle-home"
-        eyebrow="Lifestyle"
-        title="生活選品"
-        subtitle="外部廠商精選推薦"
-        note="生福科技｜木匠兄妹｜F.SEASONS 富雨洋傘｜良冠"
-        image="/banners/banner-lifestyle-picks.png"
+        id="daily-life-home"
+        eyebrow="Daily Life"
+        title="洗沐與生活選品"
+        subtitle="日常清潔・香氛・外部廠商精選"
+        note="洗沐｜精油香氛｜牙膏肥皂｜生活選品"
+        image="/banners/banner-daily-life.png"
         tone="wood"
       >
         <MascotImage src="/ip/ip-gafei-raphael.png" alt="加飛・拉斐爾" className="single-mascot" />
       </HomeBanner>
 
-      <section className="brand-entry-section">
-        <div className="section-heading compact">
-          <p>Brands</p>
-          <h2>精選品牌入口</h2>
-          <span>保健、生活機能、木作小物與日常用品</span>
-        </div>
-
-        <div className="brand-entry-grid">
-          {lifestyleBrandEntries.map((entry) => (
-            <button
-              type="button"
-              className="brand-entry-card"
-              key={entry.title}
-              onClick={() => jumpToCategory("外部廠商", entry.title)}
-            >
-              <strong>{entry.title}</strong>
-              <span>{entry.text}</span>
-            </button>
-          ))}
-        </div>
-
-        <button type="button" className="home-more-button" onClick={() => jumpToCategory("外部廠商")}>查看外部廠商</button>
-      </section>
+      <HomeProductSection
+        id="home-daily-life-products"
+        eyebrow="Daily Picks"
+        title="洗沐與生活選品"
+        subtitle="日常清潔、香氛與精選生活用品"
+        products={homeDailyLifeProducts}
+      />
 
       <HomeBanner
         id="delivery-home"
@@ -5602,6 +5600,178 @@ export default function Home() {
           .search-page-view .search-results-block {
             padding: 10px;
             border-radius: 20px;
+          }
+        }
+
+
+        /* Phase 5: series-style shopping homepage */
+        .hero-home-notice {
+          position: relative;
+          z-index: 2;
+          display: inline-flex;
+          margin: 14px 0 0 !important;
+          padding: 8px 12px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.78);
+          color: var(--muted) !important;
+          font-size: 12px !important;
+          font-weight: 850 !important;
+          line-height: 1.45 !important;
+          box-shadow: 0 10px 20px rgba(77, 55, 38, 0.08);
+        }
+
+        .home-product-section {
+          padding: 0 2px;
+          margin-top: 14px;
+        }
+
+        .home-product-section + .home-banner {
+          margin-top: 34px;
+        }
+
+        .home-product-section .section-heading.compact {
+          padding: 0 2px;
+          margin-bottom: 12px;
+        }
+
+        .home-product-grid {
+          gap: 18px 12px;
+        }
+
+        .home-more-button {
+          display: none;
+        }
+
+        .product-grid {
+          gap: 20px 12px;
+        }
+
+        .product-card {
+          border: 0;
+          border-radius: 0;
+          overflow: visible;
+          background: transparent;
+          box-shadow: none;
+        }
+
+        .product-image {
+          aspect-ratio: 4 / 5;
+          border-radius: 10px;
+          background: #ffffff;
+          box-shadow: 0 8px 18px rgba(77, 55, 38, 0.08);
+        }
+
+        .product-image img {
+          padding: 4px;
+          transform: scale(1.06);
+        }
+
+        .product-info {
+          padding: 10px 2px 0;
+        }
+
+        .product-meta-row {
+          margin-bottom: 3px;
+        }
+
+        .series-label {
+          color: #8e7c70;
+          font-size: 11px;
+          font-weight: 850;
+        }
+
+        .product-meta-row span {
+          padding: 2px 6px;
+          font-size: 10px;
+        }
+
+        .product-info h3 {
+          display: -webkit-box;
+          margin: 5px 0 8px;
+          min-height: 42px;
+          color: #26201d;
+          font-size: 15.5px;
+          line-height: 1.36;
+          letter-spacing: -0.03em;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
+
+        .product-info .description {
+          display: none;
+        }
+
+        .tag-row {
+          min-height: 22px;
+          margin-bottom: 4px;
+        }
+
+        .need-tag,
+        .combo-badge {
+          padding: 3px 6px;
+          font-size: 10.5px;
+        }
+
+        .price-block {
+          padding-top: 4px;
+        }
+
+        .price {
+          font-size: 22px;
+          color: #d94c5c;
+        }
+
+        .price.inquiry {
+          font-size: 18px;
+        }
+
+        .original-price {
+          margin-bottom: 2px;
+          font-size: 13px;
+        }
+
+        .add-cart-button {
+          min-height: 36px;
+          margin-top: 9px;
+          padding: 9px 10px;
+          font-size: 13px;
+          box-shadow: none;
+        }
+
+        .detail-button {
+          min-height: 32px;
+          margin-top: 7px;
+          padding: 8px 10px;
+          font-size: 12.5px;
+          background: #fff;
+        }
+
+        .filter-section {
+          margin-top: 34px;
+        }
+
+        .catalog-helper-card {
+          background: rgba(255, 255, 255, 0.78);
+        }
+
+        @media (max-width: 370px) {
+          .home-product-grid,
+          .product-grid {
+            gap: 18px 10px;
+          }
+
+          .product-info h3 {
+            font-size: 14.5px;
+            min-height: 40px;
+          }
+
+          .price {
+            font-size: 20px;
+          }
+
+          .add-cart-button {
+            font-size: 12.5px;
           }
         }
 
