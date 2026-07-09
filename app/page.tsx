@@ -986,7 +986,7 @@ const products: Product[] = [
     series: "生福科技組合",
     originalPrice: "原價待補",
     price: "3罐贈1條牙膏 $ 1,500",
-    image: "/products/placeholder.jpg",
+    image: "/products/water tooth 3+1.png",
     description: "能量牛樟芝保健潔口液 3罐，贈齒齦保健薰衣草舒緩牙膏120g 1條。",
   },
   {
@@ -1026,7 +1026,7 @@ const products: Product[] = [
     series: "生福科技組合",
     originalPrice: "原價待補",
     price: "買一送一 $ 1,580",
-    image: "/products/placeholder.jpg",
+    image: "/products/fish oil1+1.png",
     description: "挪威 EPAX 高活性 rTG 魚油軟膠囊買1送1，共2盒，規格依商品標示。",
   },
 
@@ -1117,7 +1117,7 @@ const products: Product[] = [
     series: "保養套組",
     originalPrice: "原價待補",
     price: "1+1 兩瓶 $ 1,080",
-    image: "/products/placeholder.jpg",
+    image: "/products/wash11.png",
     description: "龍血求麗潔顏慕絲150mL + 龍血求麗卸妝油150mL，各1瓶，共2瓶。",
   },
 
@@ -1269,7 +1269,7 @@ const products: Product[] = [
     series: "水光肌能系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/glassskin 0.jpg",
     description: "水光肌能系列品項。",
   },
   {
@@ -1279,7 +1279,7 @@ const products: Product[] = [
     series: "香水",
     originalPrice: "牌價 $ 790",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/perpul smell.jpg",
     description: "30mL。香水品項，效期至 2027/03/05。",
   },
   {
@@ -1309,7 +1309,7 @@ const products: Product[] = [
     series: "頂級養護",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/Plant Exosome.jpg",
     description: "頂級養護品項。",
   },
   {
@@ -1319,7 +1319,7 @@ const products: Product[] = [
     series: "頂級養護",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/smell white.jpg",
     description: "500mL。頂級養護身體保養品項。",
   },
   {
@@ -1450,7 +1450,7 @@ const products: Product[] = [
     series: "倍力工房",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/plus patch.jpg",
     description: "倍力工房品項。遠紅外線舒緩貼布。",
   },
   {
