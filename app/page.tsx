@@ -60,6 +60,17 @@ type Product = {
   price: string;
   image: string;
   description: string;
+
+  // 正式商城欄位：首頁商品卡 / 商品資訊頁可分開維護
+  cardName?: string;
+  cardSubtitle?: string;
+  spec?: string;
+  priceNote?: string;
+  features?: string[];
+  suitableFor?: string[];
+  usage?: string;
+  notice?: string;
+  gallery?: string[];
 };
 
 type CartItem = {
@@ -1424,6 +1435,63 @@ const products: Product[] = [
 
 
 
+const productContentOverrides: Record<number, Partial<Product>> = {
+  // 商品資訊頁正式文案可先放這裡；之後要改商品特色、適合需求、使用方式，改這區最快。
+  // 價格仍以 products 商品資料中的 price / originalPrice 為主。
+  3: {
+    cardName: "BC-HA 複合益生菌",
+    cardSubtitle: "60包大容量・日常消化道保養",
+    spec: "3g x 60包 / 盒",
+    features: [
+      "大容量 60 包設計，適合作為日常保健補給。",
+      "複合益生菌配方，協助維持消化道機能。",
+      "可加入清單後由 LINE 客服協助確認優惠組合與庫存。",
+    ],
+    suitableFor: ["日常保健", "益生菌補給", "消化道機能"],
+    usage: "每日建議依產品標示或客服說明食用。",
+    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+  },
+  16: {
+    cardName: "玫瑰瞬效霜",
+    cardSubtitle: "50g・滋潤修護・細緻保養",
+    spec: "50g",
+    features: [
+      "滋潤霜狀質地，適合日常保濕與修護保養。",
+      "可作為保養程序最後一道，幫助維持肌膚潤澤感。",
+      "適合偏乾、想加強滋潤度的保養需求。",
+    ],
+    suitableFor: ["乾燥缺水", "滋潤修護", "日常保養"],
+    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
+    priceNote: "實際優惠依 LINE 客服確認為準。",
+  },
+  55: {
+    cardName: "龍血潔顏慕絲",
+    cardSubtitle: "150mL・溫和潔淨・洗後清爽",
+    spec: "150mL",
+    features: [
+      "細緻慕絲質地，溫和帶走肌膚髒污。",
+      "適合日常清潔與保養前的潔顏步驟。",
+      "可與龍血卸妝油搭配，作為洗卸清潔組合。",
+    ],
+    suitableFor: ["清潔卸妝", "日常潔顏", "龍血系列"],
+    usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
+    priceNote: "若有組合價活動，客服會協助確認最適合的優惠方案。",
+  },
+  71: {
+    cardName: "櫻の雪潔顏慕絲",
+    cardSubtitle: "150mL・溫和潔淨・亮白前導",
+    spec: "150mL",
+    features: [
+      "細緻慕絲質地，溫和帶走肌膚髒污。",
+      "適合日常清潔與亮白保養前使用。",
+      "洗後膚觸清爽，適合搭配櫻の雪系列保養。",
+    ],
+    suitableFor: ["清潔卸妝", "美白淡斑", "日常潔顏"],
+    usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
+    priceNote: "實際優惠依 LINE 客服確認為準。",
+  },
+};
+
 const skinFilters = [
   "全部",
   "乾燥缺水",
@@ -1782,11 +1850,16 @@ export default function Home() {
   function getSearchableText(product: Product) {
     return [
       product.name,
+      getCardName(product),
+      getCardSubtitle(product),
       product.category,
       product.series,
       product.description,
       product.price,
       product.originalPrice ?? "",
+      getPriceNote(product),
+      ...getSuitableItems(product),
+      ...getDetailBullets(product),
       ...getProductTags(product),
       hasComboPrice(product) ? "組合價 有組合價 優惠 任選" : "",
       isExpiringDeal(product) ? "即期 即期優惠 特價" : "",
@@ -1955,7 +2028,87 @@ export default function Home() {
     );
   }
 
+  function productContent(product: Product) {
+    return productContentOverrides[product.id] ?? {};
+  }
+
+  function getCardName(product: Product) {
+    return productContent(product).cardName ?? product.cardName ?? product.name;
+  }
+
+  function getCardSubtitle(product: Product) {
+    return productContent(product).cardSubtitle ?? product.cardSubtitle ?? product.description;
+  }
+
+  function getDetailName(product: Product) {
+    return productContent(product).name ?? product.name;
+  }
+
+  function getSpecLine(product: Product) {
+    const spec = productContent(product).spec ?? product.spec;
+    if (spec) return `${spec}・${product.series}。`;
+    return product.description;
+  }
+
+  function getPriceNote(product: Product) {
+    if (productContent(product).priceNote || product.priceNote) {
+      return productContent(product).priceNote ?? product.priceNote ?? "";
+    }
+
+    if (isExpiringDeal(product)) {
+      return "即期優惠品項，效期與庫存請以 LINE 客服確認為準。";
+    }
+
+    if (hasInquiryPrice(product)) {
+      return "目前售價由 LINE 客服確認，送出清單後會協助回覆。";
+    }
+
+    if (hasComboPrice(product)) {
+      return "若有組合價活動，客服會協助確認最適合的優惠方案。";
+    }
+
+    return "實際優惠與庫存依 LINE 客服確認為準。";
+  }
+
+  function getSuitableItems(product: Product) {
+    const customItems = productContent(product).suitableFor ?? product.suitableFor;
+    if (customItems?.length) return customItems;
+
+    const tags = getProductTags(product);
+    if (tags.length) return tags.slice(0, 5);
+
+    return [product.series, product.category].filter(Boolean);
+  }
+
+  function getUsageText(product: Product) {
+    const customUsage = productContent(product).usage ?? product.usage;
+    if (customUsage) return customUsage;
+
+    const tags = getProductTags(product);
+
+    if (product.category === "保健食品") {
+      return "每日建議依產品標示或客服說明食用。";
+    }
+
+    if (tags.includes("清潔卸妝")) {
+      return "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。";
+    }
+
+    if (tags.includes("面膜保養")) {
+      return "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。";
+    }
+
+    if (product.category === "保養品") {
+      return "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。";
+    }
+
+    return "";
+  }
+
   function getDetailBullets(product: Product) {
+    const customFeatures = productContent(product).features ?? product.features;
+    if (customFeatures?.length) return customFeatures.slice(0, 5);
+
     const tags = getProductTags(product);
     const bullets: string[] = [];
 
@@ -2016,8 +2169,8 @@ export default function Home() {
             {soldOut && <span className="sold-out-badge">缺貨</span>}
           </div>
 
-          <h3>{product.name}</h3>
-          <p className="description">{product.description}</p>
+          <h3>{getCardName(product)}</h3>
+          <p className="description">{getCardSubtitle(product)}</p>
 
           <div className="tag-row">
             {tags.map((tag) => (
@@ -2296,7 +2449,7 @@ export default function Home() {
 
                       <div className="search-result-info">
                         <p>{product.series}</p>
-                        <h3>{product.name}</h3>
+                        <h3>{getCardName(product)}</h3>
 
                         <div className="search-result-tags">
                           {isExpiringDeal(product) && <span>即期優惠</span>}
@@ -2848,8 +3001,8 @@ export default function Home() {
               <div className="detail-title-row">
                 <div>
                   <p className="series-label">{selectedDetailProduct.series}</p>
-                  <h1>{selectedDetailProduct.name}</h1>
-                  <p className="detail-description">{selectedDetailProduct.description}</p>
+                  <h1>{getDetailName(selectedDetailProduct)}</h1>
+                  <p className="detail-description">{getSpecLine(selectedDetailProduct)}</p>
                 </div>
               </div>
 
@@ -2881,6 +3034,7 @@ export default function Home() {
                 <p className={`price ${hasInquiryPrice(selectedDetailProduct) ? "inquiry" : ""}`}>
                   {displayPrice(selectedDetailProduct)}
                 </p>
+                <p className="price-note">{getPriceNote(selectedDetailProduct)}</p>
               </div>
 
               <button
@@ -2901,6 +3055,22 @@ export default function Home() {
                   <p key={bullet}>・{bullet}</p>
                 ))}
               </section>
+
+              <section className="detail-info-block">
+                <h3>適合需求</h3>
+                <div className="detail-suitable-tags">
+                  {getSuitableItems(selectedDetailProduct).map((item) => (
+                    <span key={`suitable-${selectedDetailProduct.id}-${item}`}>{item}</span>
+                  ))}
+                </div>
+              </section>
+
+              {getUsageText(selectedDetailProduct) && (
+                <section className="detail-info-block">
+                  <h3>{selectedDetailProduct.category === "保健食品" ? "食用方式" : "使用方式"}</h3>
+                  <p>{getUsageText(selectedDetailProduct)}</p>
+                </section>
+              )}
 
               <section className="detail-info-block soft">
                 <h3>配送提醒</h3>
@@ -2928,7 +3098,7 @@ export default function Home() {
                           <span>圖片準備中</span>
                         )}
                       </div>
-                      <strong>{item.name}</strong>
+                      <strong>{getCardName(item)}</strong>
                       <p>{displayPrice(item)}</p>
                     </button>
                   ))}
@@ -6014,6 +6184,41 @@ export default function Home() {
           .detail-price-card .price {
             font-size: 25px !important;
           }
+        }
+
+
+        /* Phase 9: formal commerce product content fields */
+        .price-note {
+          margin: 7px 0 0 !important;
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 800;
+          line-height: 1.55;
+        }
+
+        .detail-suitable-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 10px;
+        }
+
+        .detail-suitable-tags span {
+          padding: 7px 10px;
+          border-radius: 999px;
+          background: #f6e8dd;
+          color: var(--accent-dark);
+          font-size: 12px;
+          font-weight: 950;
+          line-height: 1.2;
+        }
+
+        .product-info .description,
+        .featured-info .description {
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 750;
+          line-height: 1.45;
         }
 
 
