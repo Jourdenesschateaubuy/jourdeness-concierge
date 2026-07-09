@@ -5776,6 +5776,81 @@ export default function Home() {
         }
 
 
+        /* Phase 6: image-to-frame auto fit */
+        .hero-home-banner,
+        .home-banner {
+          background-size: cover !important;
+          background-position: center center !important;
+          background-repeat: no-repeat !important;
+        }
+
+        .product-image,
+        .featured-image,
+        .search-result-image,
+        .related-image {
+          background: #fff !important;
+        }
+
+        .product-image img,
+        .featured-image img,
+        .related-image img {
+          width: 100% !important;
+          height: 100% !important;
+          max-width: none !important;
+          max-height: none !important;
+          object-fit: cover !important;
+          object-position: center center !important;
+          padding: 0 !important;
+          transform: none !important;
+        }
+
+        .search-result-image img {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+          object-position: center center !important;
+          padding: 0 !important;
+          transform: none !important;
+        }
+
+        .detail-main-image img {
+          object-fit: contain !important;
+          padding: 8px !important;
+          transform: none !important;
+        }
+
+        .product-card.fit-contain .product-image img {
+          object-fit: contain !important;
+          padding: 6px !important;
+        }
+
+
+        /* Phase 7: product detail image fit */
+        .detail-main-image {
+          aspect-ratio: 1 / 1 !important;
+          background: #fff !important;
+        }
+
+        .detail-main-image img {
+          width: 100% !important;
+          height: 100% !important;
+          max-width: none !important;
+          max-height: none !important;
+          object-fit: cover !important;
+          object-position: center center !important;
+          padding: 0 !important;
+          transform: none !important;
+          filter: none !important;
+        }
+
+        @media (max-width: 430px) {
+          .detail-main-image {
+            width: calc(100% - 18px) !important;
+            border-radius: 22px !important;
+          }
+        }
+
+
       `}</style>
     </main>
   );
