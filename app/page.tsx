@@ -13,6 +13,7 @@ const categoryConfig = {
     "牙膏組合",
     "保養套組",
     "肥皂組合",
+    "香氛組合",
     "面膜組合",
   ],
   全部: ["全部"],
@@ -131,7 +132,7 @@ const products: Product[] = [
     series: "晶眸保健系列",
     originalPrice: "原價 $ ???",
     price: "產地價待補",
-    image: "/products/Lutein.jpg",
+    image: "/products/ec-lutein-set.jpg",
     description: "精華凍 + 精華飲綜合組。",
   },
   {
@@ -141,7 +142,7 @@ const products: Product[] = [
     series: "美妍飲品系列",
     originalPrice: "原價 $ ???",
     price: "產地價待補",
-    image: "/products/FISH-Collagen.jpg",
+    image: "/products/collagen-drink-rose.jpg",
     description: "美妍保健飲品。",
   },
 
@@ -389,7 +390,7 @@ const products: Product[] = [
     series: "洗沐系列",
     originalPrice: "原價 $ 790",
     price: "產地價 任選3瓶 $ 1,100",
-    image: "/products/BDwash2.jpg",
+    image: "/products/dragon-blood-scalp-repair-shampoo.jpg",
     description: "龍血洗髮沐浴系列，可搭配活動組合。",
   },
   {
@@ -852,10 +853,10 @@ const products: Product[] = [
     name: "櫻の雪亮澤護手霜",
     category: "護手霜",
     series: "護手霜",
-    originalPrice: "原價待補",
+    originalPrice: "價值 $ 290",
     price: "產地價待補",
     image: "/products/sakura hand cream.jpg",
-    description: "30mL。護手霜品項。",
+    description: "30g。JDST 護手霜品項。",
   },
   {
     id: 76,
@@ -894,41 +895,40 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "任選4款 $ 799",
     image: "/products/placeholder.jpg",
-    description: "200g。肥皂品項。",
+    description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
   {
     id: 80,
-    name: "龍血艾草皂",
+    name: "龍血艾草保庇皂",
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "任選4顆 $ 799",
+    price: "任選4款 $ 799",
     image: "/products/placeholder.jpg",
-    description: "200g。龍血手工皂品項，可搭配任選4顆活動。",
+    description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
   {
     id: 81,
-    name: "龍血馬鞭草皂",
+    name: "龍血檸檬馬鞭草皂",
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "任選4顆 $ 799",
+    price: "任選4款 $ 799",
     image: "/products/placeholder.jpg",
-    description: "200g。龍血手工皂品項，可搭配任選4顆活動。",
+    description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
   {
     id: 82,
-    name: "龍血薰衣草皂",
+    name: "龍血薰衣草舒緩皂",
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "任選4顆 $ 799",
+    price: "任選4款 $ 799",
     image: "/products/placeholder.jpg",
-    description: "200g。龍血手工皂品項，可搭配任選4顆活動。",
+    description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
-
   {
     id: 83,
     name: "高鈣益生菌 11盒組",
@@ -1037,7 +1037,7 @@ const products: Product[] = [
     series: "洗沐系列",
     originalPrice: "原價 $ 1,680",
     price: "產地價待補",
-    image: "/products/Argan Oil3.jpg",
+    image: "/products/argan-scalp-care-spray.jpg",
     description: "80mL。髮根養護品項。",
   },
   {
@@ -1046,9 +1046,9 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "任選4款 $ 799",
     image: "/products/placeholder.jpg",
-    description: "200g。肥皂品項。",
+    description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
   {
     id: 95,
@@ -1277,10 +1277,10 @@ const products: Product[] = [
     name: "時光瑞亞淡香水",
     category: "香水",
     series: "香水",
-    originalPrice: "原價待補",
+    originalPrice: "牌價 $ 790",
     price: "產地價待補",
     image: "/products/placeholder.jpg",
-    description: "30mL。香水品項。",
+    description: "30mL。香水品項，效期至 2027/03/05。",
   },
   {
     id: 118,
@@ -1455,13 +1455,63 @@ const products: Product[] = [
   },
   {
     id: 135,
-    name: "龍血手工皂任選4顆",
+    name: "龍血手工皂任選4款",
     category: "組合價",
     series: "肥皂組合",
     originalPrice: "原價待補",
-    price: "任選4顆 $ 799",
+    price: "任選4款 $ 799",
     image: "/products/placeholder.jpg",
-    description: "龍血馬鞭草皂 / 龍血艾草皂 / 龍血薰衣草皂可任選，共4顆。",
+    description: "龍血檀香靜心皂 / 龍血艾草保庇皂 / 龍血玫瑰美膚皂 / 龍血檸檬馬鞭草皂 / 龍血薰衣草舒緩皂可任選，共4款。",
+  },
+  {
+    id: 136,
+    name: "櫻の雪傳明酸美白精華液 + 美白乳液贈化妝水",
+    category: "組合價",
+    series: "保養套組",
+    originalPrice: "原價待補",
+    price: "組合價 $ 1,780",
+    image: "/products/placeholder.jpg",
+    description: "購買櫻の雪傳明酸美白精華液30mL + 櫻の雪傳明酸美白乳液100mL，贈送櫻の雪傳明酸美白化妝水150mL。",
+  },
+  {
+    id: 137,
+    name: "龍血潔顏慕絲 / 櫻の雪潔顏慕絲任選2瓶",
+    category: "組合價",
+    series: "保養套組",
+    originalPrice: "原價待補",
+    price: "任選2瓶 $ 980",
+    image: "/products/placeholder.jpg",
+    description: "龍血求麗潔顏慕絲150mL / 櫻の雪淨白潔顏慕絲150mL 可任選搭配，共2瓶。",
+  },
+  {
+    id: 138,
+    name: "亮妍魚膠原蛋白飲兩盒贈 EC 晶眸葉黃素",
+    category: "組合價",
+    series: "保健食品組合",
+    originalPrice: "原價待補",
+    price: "組合價 $ 4,400",
+    image: "/products/combo-collagen-lutein-4400.jpg",
+    description: "亮妍魚膠原蛋白飲-玫瑰風味 50mL/10入 共兩盒，贈 EC 晶眸葉黃素精華凍+精華飲綜合組。",
+  },
+  {
+    id: 139,
+    name: "龍血洗髮精 + 阿甘養髮液 1+1組",
+    category: "組合價",
+    series: "洗沐組合",
+    originalPrice: "原價待補",
+    price: "1+1 $ 1,500",
+    image: "/products/combo-dragon-shampoo-argan-1500.jpg",
+    description: "龍血求麗頭皮修護洗髮精 600mL + 阿甘甦醒髮根養護液 80mL，各1瓶，共2瓶。",
+  },
+  {
+    id: 140,
+    name: "時光瑞亞淡香水贈櫻の雪亮澤護手霜",
+    category: "組合價",
+    series: "香氛組合",
+    originalPrice: "牌價 $ 790",
+    price: "組合價 $ 780",
+    image: "/products/placeholder.jpg",
+    description: "時光瑞亞淡香水30mL，效期至2027/03/05，贈價值290元櫻の雪亮澤護手霜JDST 30g。",
   },
 
 
@@ -2854,22 +2904,25 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   75: {
     cardName: "櫻の雪亮澤護手霜",
-    cardSubtitle: "30mL・護手霜",
-    spec: "30mL",
-    intro: "櫻の雪亮澤護手霜為護手霜日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardSubtitle: "JDST 30g・價值 $290",
+    spec: "JDST 30g",
+    intro: "櫻の雪亮澤護手霜為日常手部保養品項，可搭配時光瑞亞淡香水組合活動。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "30g 護手霜，適合日常手部保養。",
+      "可作為時光瑞亞淡香水組合活動搭配品。",
+      "商品效期與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "護手霜",
+      "香氛組合",
+      "組合優惠",
     ],
     usage: "取適量塗抹於手部肌膚，可依乾燥程度重複使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "可搭配時光瑞亞淡香水組合活動；庫存與效期依 LINE 小幫手確認為準。",
   },
+
   76: {
     cardName: "茶樹防禦護手霜",
     cardSubtitle: "30mL・護手霜",
@@ -2926,31 +2979,13 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   79: {
     cardName: "龍血玫瑰美膚皂",
-    cardSubtitle: "200g・肥皂",
-    spec: "200g",
-    intro: "龍血玫瑰美膚皂為肥皂日常用品，適合搭配日常清潔、保養或香氛使用。",
-    features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
-    ],
-    suitableFor: [
-      "肥皂",
-    ],
-    usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
-  },
-  80: {
-    cardName: "龍血艾草皂",
-    cardSubtitle: "200g・任選4顆 $799",
-    spec: "200g / 顆",
-    intro: "龍血艾草皂為龍血手工皂品項，可搭配龍血馬鞭草皂與龍血薰衣草皂任選4顆活動。",
+    cardSubtitle: "200g±10g・任選4款 $799",
+    spec: "200g±10g / 顆",
+    intro: "龍血玫瑰美膚皂為龍血手工皂品項，可搭配任選4款 $799 活動。",
     features: [
       "龍血手工皂系列，適合日常清潔使用。",
-      "可與龍血馬鞭草皂、龍血薰衣草皂搭配任選。",
-      "任選4顆 $799，庫存與效期依 LINE 客服確認為準。",
+      "可與其他龍血手工皂搭配任選4款活動。",
+      "任選4款 $799，庫存與效期依 LINE 客服確認為準。",
     ],
     suitableFor: [
       "日常清潔",
@@ -2960,18 +2995,39 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "龍血手工皂可任選4顆 $799；庫存與效期依 LINE 客服確認為準。",
+    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 客服確認為準。",
+  },
+
+  80: {
+    cardName: "龍血艾草保庇皂",
+    cardSubtitle: "200g±10g・任選4款 $799",
+    spec: "200g±10g / 顆",
+    intro: "龍血艾草保庇皂為龍血手工皂品項，可搭配任選4款 $799 活動。",
+    features: [
+      "龍血手工皂系列，適合日常清潔使用。",
+      "可與其他龍血手工皂搭配任選4款活動。",
+      "任選4款 $799，庫存與效期依 LINE 客服確認為準。",
+    ],
+    suitableFor: [
+      "日常清潔",
+      "肥皂",
+      "組合優惠",
+    ],
+    usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
+    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 客服確認為準。",
   },
 
   81: {
-    cardName: "龍血馬鞭草皂",
-    cardSubtitle: "200g・任選4顆 $799",
-    spec: "200g / 顆",
-    intro: "龍血馬鞭草皂為龍血手工皂品項，可搭配龍血艾草皂與龍血薰衣草皂任選4顆活動。",
+    cardName: "龍血檸檬馬鞭草皂",
+    cardSubtitle: "200g±10g・任選4款 $799",
+    spec: "200g±10g / 顆",
+    intro: "龍血檸檬馬鞭草皂為龍血手工皂品項，可搭配任選4款 $799 活動。",
     features: [
       "龍血手工皂系列，適合日常清潔使用。",
-      "可與龍血艾草皂、龍血薰衣草皂搭配任選。",
-      "任選4顆 $799，庫存與效期依 LINE 客服確認為準。",
+      "可與其他龍血手工皂搭配任選4款活動。",
+      "任選4款 $799，庫存與效期依 LINE 客服確認為準。",
     ],
     suitableFor: [
       "日常清潔",
@@ -2981,18 +3037,18 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "龍血手工皂可任選4顆 $799；庫存與效期依 LINE 客服確認為準。",
+    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 客服確認為準。",
   },
 
   82: {
-    cardName: "龍血薰衣草皂",
-    cardSubtitle: "200g・任選4顆 $799",
-    spec: "200g / 顆",
-    intro: "龍血薰衣草皂為龍血手工皂品項，可搭配龍血艾草皂與龍血馬鞭草皂任選4顆活動。",
+    cardName: "龍血薰衣草舒緩皂",
+    cardSubtitle: "200g±10g・任選4款 $799",
+    spec: "200g±10g / 顆",
+    intro: "龍血薰衣草舒緩皂為龍血手工皂品項，可搭配任選4款 $799 活動。",
     features: [
       "龍血手工皂系列，適合日常清潔使用。",
-      "可與龍血艾草皂、龍血馬鞭草皂搭配任選。",
-      "任選4顆 $799，庫存與效期依 LINE 客服確認為準。",
+      "可與其他龍血手工皂搭配任選4款活動。",
+      "任選4款 $799，庫存與效期依 LINE 客服確認為準。",
     ],
     suitableFor: [
       "日常清潔",
@@ -3002,7 +3058,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "龍血手工皂可任選4顆 $799；庫存與效期依 LINE 客服確認為準。",
+    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 客服確認為準。",
   },
 
   83: {
@@ -3216,22 +3272,25 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   94: {
     cardName: "龍血檀香靜心皂",
-    cardSubtitle: "200g・肥皂",
-    spec: "200g",
-    intro: "龍血檀香靜心皂為肥皂日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardSubtitle: "200g±10g・任選4款 $799",
+    spec: "200g±10g / 顆",
+    intro: "龍血檀香靜心皂為龍血手工皂品項，可搭配任選4款 $799 活動。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "龍血手工皂系列，適合日常清潔使用。",
+      "可與其他龍血手工皂搭配任選4款活動。",
+      "任選4款 $799，庫存與效期依 LINE 客服確認為準。",
     ],
     suitableFor: [
+      "日常清潔",
       "肥皂",
+      "組合優惠",
     ],
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 客服確認為準。",
   },
+
   95: {
     cardName: "火炙帶",
     cardSubtitle: "生福科技品項・生福科技",
@@ -3648,22 +3707,25 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   117: {
     cardName: "時光瑞亞淡香水",
-    cardSubtitle: "30mL・香水",
+    cardSubtitle: "30mL・效期至2027/03/05",
     spec: "30mL",
-    intro: "時光瑞亞淡香水為香水日常用品，適合搭配日常清潔、保養或香氛使用。",
+    intro: "時光瑞亞淡香水為香氛品項，可搭配櫻の雪亮澤護手霜組合活動。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "淡香水 30mL，日常香氛搭配使用。",
+      "效期至 2027/03/05。",
+      "可搭配櫻の雪亮澤護手霜組合優惠，庫存依 LINE 小幫手確認。",
     ],
     suitableFor: [
       "香水",
+      "香氛組合",
+      "組合優惠",
     ],
     usage: "噴灑於手腕、耳後或衣物適當位置，請避免接觸眼睛。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    notice: "請避免接觸眼睛與敏感部位，並放置於陰涼處保存。",
+    expiryNote: "效期至 2027/03/05。",
+    priceNote: "可搭配櫻の雪亮澤護手霜組合活動；庫存與效期依 LINE 小幫手確認為準。",
   },
+
   118: {
     cardName: "超導水網瞬效面膜",
     cardSubtitle: "頂級養護面膜品項・頂級養護",
@@ -3989,13 +4051,13 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
   },
   135: {
-    cardName: "龍血手工皂任選4顆",
-    cardSubtitle: "馬鞭草 / 艾草 / 薰衣草・$799",
-    spec: "龍血馬鞭草皂 / 龍血艾草皂 / 龍血薰衣草皂可任選，共4顆",
-    intro: "龍血手工皂任選4顆為回購群肥皂組合優惠，馬鞭草、艾草、薰衣草可依需求搭配。",
+    cardName: "龍血手工皂任選4款",
+    cardSubtitle: "5款可選・任選4款 $799",
+    spec: "龍血檀香靜心皂 / 龍血艾草保庇皂 / 龍血玫瑰美膚皂 / 龍血檸檬馬鞭草皂 / 龍血薰衣草舒緩皂可任選，共4款",
+    intro: "龍血手工皂任選4款為回購群肥皂組合優惠，5款香氣可依需求搭配。",
     features: [
-      "龍血馬鞭草皂、龍血艾草皂、龍血薰衣草皂可任選。",
-      "任選4顆 $799，適合日常清潔用品補貨。",
+      "龍血檀香靜心皂、龍血艾草保庇皂、龍血玫瑰美膚皂、龍血檸檬馬鞭草皂、龍血薰衣草舒緩皂可任選。",
+      "任選4款 $799，適合日常清潔用品補貨。",
       "組合內容、效期與庫存依 LINE 客服確認為準。",
     ],
     suitableFor: [
@@ -4006,8 +4068,109 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "龍血手工皂任選4顆 $799；庫存與效期依 LINE 客服確認為準。",
+    priceNote: "龍血手工皂任選4款 $799；庫存與效期依 LINE 客服確認為準。",
   },
+  136: {
+    cardName: "櫻の雪美白精華乳液組",
+    cardSubtitle: "買精華液+乳液・贈化妝水・$1,780",
+    spec: "精華液30mL + 乳液100mL，贈化妝水150mL",
+    intro: "櫻の雪傳明酸美白組合為亮白保養套組，購買精華液與乳液，贈送同系列化妝水。",
+    features: [
+      "購買櫻の雪傳明酸美白精華液30mL + 美白乳液100mL。",
+      "贈送櫻の雪傳明酸美白化妝水150mL。",
+      "組合價 $1,780，庫存與效期依 LINE 客服確認為準。",
+    ],
+    suitableFor: [
+      "組合優惠",
+      "美白淡斑",
+      "櫻の雪系列",
+    ],
+    usage: "清潔後依化妝水、精華液、乳液順序使用；實際使用方式依商品標示為準。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
+    priceNote: "購買精華液30mL + 乳液100mL，贈化妝水150mL，組合價 $1,780；庫存與效期依 LINE 客服確認為準。",
+  },
+  137: {
+    cardName: "龍血 / 櫻の雪潔顏慕絲任選2瓶",
+    cardSubtitle: "150mL 任選2瓶・$980",
+    spec: "龍血求麗潔顏慕絲150mL / 櫻の雪淨白潔顏慕絲150mL 可任選，共2瓶",
+    intro: "潔顏慕絲任選2瓶組合可於龍血求麗潔顏慕絲與櫻の雪淨白潔顏慕絲中自由搭配。",
+    features: [
+      "龍血求麗潔顏慕絲150mL與櫻の雪淨白潔顏慕絲150mL可任選。",
+      "任選2瓶 $980，適合日常潔顏補貨。",
+      "組合內容、效期與庫存依 LINE 客服確認為準。",
+    ],
+    suitableFor: [
+      "組合優惠",
+      "清潔卸妝",
+      "日常潔顏",
+    ],
+    usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
+    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
+    priceNote: "潔顏慕絲任選2瓶 $980；庫存與效期依 LINE 客服確認為準。",
+  },
+  138: {
+    cardName: "亮妍膠原飲兩盒贈晶眸",
+    cardSubtitle: "玫瑰風味50mL/10入兩盒・贈EC晶眸・$4,400",
+    spec: "亮妍魚膠原蛋白飲-玫瑰風味 50mL/10入 x 2盒，贈 EC 晶眸葉黃素精華凍+精華飲綜合組",
+    intro: "亮妍魚膠原蛋白飲兩盒贈 EC 晶眸葉黃素為回購群保健食品組合優惠，適合日常美容與晶眸保健補給。",
+    features: [
+      "購買亮妍魚膠原蛋白飲-玫瑰風味 50mL/10入兩盒。",
+      "贈送 EC 晶眸葉黃素精華凍+精華飲綜合組。",
+      "組合價 $4,400，庫存與效期依 LINE 小幫手確認為準。",
+    ],
+    suitableFor: [
+      "組合優惠",
+      "美容補給",
+      "晶眸保健",
+    ],
+    usage: "每日建議依產品標示或客服說明食用。",
+    notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "亮妍魚膠原蛋白飲兩盒贈 EC 晶眸葉黃素綜合組，組合價 $4,400；庫存與效期依 LINE 小幫手確認為準。",
+  },
+  139: {
+    cardName: "龍血洗髮精 + 阿甘養髮液",
+    cardSubtitle: "1+1組・$1,500",
+    spec: "龍血求麗頭皮修護洗髮精600mL + 阿甘甦醒髮根養護液80mL，各1瓶，共2瓶",
+    intro: "龍血洗髮精 + 阿甘養髮液 1+1 組為洗沐與頭皮養護組合優惠，適合日常頭皮清潔與髮根保養搭配使用。",
+    features: [
+      "龍血求麗頭皮修護洗髮精 600mL + 阿甘甦醒髮根養護液 80mL。",
+      "固定 1+1 搭配，各1瓶，共2瓶。",
+      "組合價 $1,500，庫存與效期依 LINE 小幫手確認為準。",
+    ],
+    suitableFor: [
+      "組合優惠",
+      "洗沐系列",
+      "頭皮養護",
+    ],
+    usage: "先以龍血求麗頭皮修護洗髮精清潔頭皮與髮絲，洗後可依商品標示搭配阿甘甦醒髮根養護液使用。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "龍血求麗頭皮修護洗髮精 + 阿甘甦醒髮根養護液 1+1 組合價 $1,500；庫存與效期依 LINE 小幫手確認為準。",
+  },
+  140: {
+    cardName: "時光瑞亞淡香水贈護手霜",
+    cardSubtitle: "30mL・贈JDST護手霜30g・$780",
+    spec: "時光瑞亞淡香水30mL + 櫻の雪亮澤護手霜JDST 30g",
+    intro: "時光瑞亞淡香水贈櫻の雪亮澤護手霜為香氛組合優惠，淡香水效期至 2027/03/05。",
+    features: [
+      "時光瑞亞淡香水30mL，牌價 $790，效期至 2027/03/05。",
+      "贈送價值 $290 的櫻の雪亮澤護手霜 JDST 30g。",
+      "組合價 $780，庫存與效期依 LINE 小幫手確認為準。",
+    ],
+    suitableFor: [
+      "組合優惠",
+      "香氛組合",
+      "護手霜",
+    ],
+    usage: "淡香水可噴灑於手腕、耳後或衣物適當位置；護手霜取適量塗抹於手部肌膚。",
+    notice: "香水與護手霜請避免接觸眼睛與敏感部位，並放置於陰涼處保存。",
+    expiryNote: "淡香水效期至 2027/03/05；護手霜效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "時光瑞亞淡香水30mL + 櫻の雪亮澤護手霜JDST 30g，組合價 $780；庫存與效期依 LINE 小幫手確認為準。",
+  },
+
 };
 
 const skinFilters = [
@@ -4026,12 +4189,14 @@ type SkinFilter = (typeof skinFilters)[number];
 
 const comboProductIds = new Set<number>([
   1, 2, 3,
+  75, 117,
   29, 30,
   35, 36,
   47, 48,
   54, 55,
   56, 57, 58, 59, 60,
-  80, 81, 82,
+  71,
+  79, 80, 81, 82, 93, 94,
 ]);
 
 const expiringProductIds = new Set<number>([10, 11]);
@@ -4100,12 +4265,12 @@ export default function Home() {
     ? Math.max(filteredProducts.length - searchPreviewProducts.length, 0)
     : 0;
 
-  const featuredProductIds = [83, 100, 101, 89, 91, 88, 135];
+  const featuredProductIds = [140, 139, 138, 136, 137, 83, 100, 101, 89, 91, 88, 135];
   const featuredProducts = featuredProductIds
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([100, 83, 84, 101, 92, 88, 135, 91, 89]);
+  const homeComboProducts = getProductsByIds([140, 139, 138, 136, 137, 100, 83, 84, 101, 92, 88, 135, 91, 89]);
   const homeClearanceProducts = getProductsByIds([10, 11]);
   const homeDragonBloodProducts = getProductsByIds([17, 19, 20, 18, 54, 55]);
   const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
@@ -4113,8 +4278,8 @@ export default function Home() {
   const homeBrighteningProducts = getProductsByIds([68, 71, 72, 106, 127, 128]);
   const homeFirmingProducts = getProductsByIds([27, 28, 21, 22, 23, 120]);
   const homeMaskProducts = getProductsByIds([126, 128, 123, 129, 131, 132]);
-  const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74]);
-  const homeDailyLifeProducts = getProductsByIds([29, 30, 31, 32, 133, 134, 47, 48, 80, 81, 82, 35, 36, 37, 117]);
+  const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74, 138]);
+  const homeDailyLifeProducts = getProductsByIds([29, 30, 93, 31, 32, 140, 117, 75, 133, 134, 47, 48, 79, 80, 81, 82, 94, 35, 36, 37]);
 
   const skinGuideCards: { title: SkinFilter; text: string }[] = [
     { title: "乾燥缺水", text: "想加強水潤與保濕" },
@@ -9386,6 +9551,30 @@ export default function Home() {
           font-size: 13px;
           font-weight: 800;
           line-height: 1.6;
+        }
+
+
+        /* Phase 17: new combo campaigns */
+        .product-info h3 {
+          word-break: break-word;
+        }
+
+
+        /* Phase 18: collagen drink + EC lutein combo */
+        .product-image img {
+          background: #fff;
+        }
+
+
+        /* Phase 19: dragon shampoo + argan scalp care combo */
+        .product-image img {
+          background: #fff;
+        }
+
+
+        /* Phase 20: perfume + hand cream combo */
+        .product-info h3 {
+          word-break: break-word;
         }
 
 
