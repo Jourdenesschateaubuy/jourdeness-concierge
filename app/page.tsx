@@ -980,13 +980,13 @@ const products: Product[] = [
   },
   {
     id: 88,
-    name: "能量牛樟芝保健潔口液 3瓶組",
+    name: "能量牛樟芝保健潔口液 3罐贈薰衣草牙膏1條",
     category: "組合價",
     series: "生福科技組合",
     originalPrice: "原價待補",
-    price: "產地價 $ 1,500",
+    price: "3罐贈1條牙膏 $ 1,500",
     image: "/products/placeholder.jpg",
-    description: "能量牛樟芝保健潔口液 3瓶，送齒齦保健薰衣草舒緩牙膏120g 3條。",
+    description: "能量牛樟芝保健潔口液 3罐，贈齒齦保健薰衣草舒緩牙膏120g 1條。",
   },
   {
     id: 89,
@@ -1017,6 +1017,16 @@ const products: Product[] = [
     price: "1桶 $ 599｜任選2桶 $ 1,100｜任選5桶 $ 2,750",
     image: "/products/placeholder.jpg",
     description: "水搖滾保濕面膜22mL x35pcs / 極光白美白面膜 x35pcs 可任選。任選5桶再送10片水搖滾保濕面膜。",
+  },
+  {
+    id: 92,
+    name: "挪威 EPAX 高活性 rTG 魚油軟膠囊買一送一",
+    category: "組合價",
+    series: "生福科技組合",
+    originalPrice: "原價待補",
+    price: "買一送一 $ 1,580",
+    image: "/products/placeholder.jpg",
+    description: "挪威 EPAX 高活性 rTG 魚油軟膠囊買1送1，共2盒，規格依商品標示。",
   },
 
   {
@@ -1101,13 +1111,13 @@ const products: Product[] = [
   },
   {
     id: 101,
-    name: "龍血卸妝清潔任選2件組",
+    name: "龍血求麗潔顏慕絲 + 龍血求麗卸妝油 1+1組",
     category: "組合價",
     series: "保養套組",
     originalPrice: "原價待補",
-    price: "產地價 任選2件 $ 1,080",
+    price: "1+1 兩瓶 $ 1,080",
     image: "/products/placeholder.jpg",
-    description: "龍血求麗潔顏慕絲 / 龍血求麗卸妝油可任選，共2件。",
+    description: "龍血求麗潔顏慕絲150mL + 龍血求麗卸妝油150mL，各1瓶，共2瓶。",
   },
 
   {
@@ -3048,23 +3058,26 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
   },
   88: {
-    cardName: "能量牛樟芝保健潔口液 3瓶組",
-    cardSubtitle: "能量牛樟芝保健潔口液 3瓶，送齒齦保健薰衣草舒緩牙膏120g 3條・生福科技組合",
-    spec: "能量牛樟芝保健潔口液 3瓶，送齒齦保健薰衣草舒緩牙膏120g 3條",
-    intro: "能量牛樟芝保健潔口液 3瓶組為回購群優惠組合品項，適合想一次補齊常用商品的客人。",
+    cardName: "牛樟芝潔口液3罐組",
+    cardSubtitle: "贈薰衣草牙膏1條・$1,500",
+    spec: "能量牛樟芝保健潔口液 3罐 + 齒齦保健薰衣草舒緩牙膏120g 1條",
+    intro: "能量牛樟芝保健潔口液 3罐組為生福科技組合優惠，贈齒齦保健薰衣草舒緩牙膏120g 1條。",
     features: [
-      "回購群優惠組合，適合一次補齊常用品項。",
-      "組合內容與優惠依當日公告及客服確認為準。",
-      "送出清單後，客服會協助確認最適合的優惠方案。",
+      "能量牛樟芝保健潔口液 3罐，搭配薰衣草舒緩牙膏1條。",
+      "組合價 $1,500，適合日常口腔清潔用品補貨。",
+      "組合內容、效期與庫存依 LINE 客服確認為準。",
     ],
     suitableFor: [
       "組合優惠",
+      "口腔清潔",
+      "生福科技",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
+    usage: "潔口液與牙膏請依商品標示方式使用。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    priceNote: "3罐潔口液贈薰衣草牙膏1條，組合價 $1,500；庫存與效期依 LINE 客服確認為準。",
   },
+
   89: {
     cardName: "龍血洗沐任選3瓶",
     cardSubtitle: "龍血洗髮精 / 龍血沐浴乳可自由搭配，共3瓶・洗沐組合",
@@ -3120,7 +3133,27 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+  },  92: {
+    cardName: "EPAX 魚油買一送一",
+    cardSubtitle: "買1送1・$1,580",
+    spec: "挪威 EPAX 高活性 rTG 魚油軟膠囊買1送1，共2盒，規格依商品標示",
+    intro: "挪威 EPAX 高活性 rTG 魚油軟膠囊買一送一為生福科技組合優惠，適合作為日常營養補給參考。",
+    features: [
+      "買一送一，共2盒，組合價 $1,580。",
+      "適合作為日常營養補給參考。",
+      "組合內容、效期與庫存依 LINE 客服確認為準。",
+    ],
+    suitableFor: [
+      "組合優惠",
+      "營養補給",
+      "生福科技",
+    ],
+    usage: "每日建議依產品標示或客服說明食用。",
+    notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
+    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
+    priceNote: "買一送一 $1,580；庫存與效期依 LINE 客服確認為準。",
   },
+
   93: {
     cardName: "阿甘甦醒髮根養護液",
     cardSubtitle: "80mL・洗沐系列",
@@ -3273,24 +3306,26 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
   },
   101: {
-    cardName: "龍血卸妝清潔任選2件組",
-    cardSubtitle: "龍血求麗潔顏慕絲 / 龍血求麗卸妝油可任選，共2件・保養套組",
-    spec: "龍血求麗潔顏慕絲 / 龍血求麗卸妝油可任選，共2件",
-    intro: "龍血卸妝清潔任選2件組為回購群優惠組合品項，適合想一次補齊常用商品的客人。",
+    cardName: "龍血洗卸1+1組",
+    cardSubtitle: "潔顏慕絲 + 卸妝油・$1,080",
+    spec: "龍血求麗潔顏慕絲150mL + 龍血求麗卸妝油150mL，各1瓶，共2瓶",
+    intro: "龍血洗卸1+1組固定搭配龍血求麗潔顏慕絲與龍血求麗卸妝油，各1瓶，共2瓶。",
     features: [
-      "回購群優惠組合，適合一次補齊常用品項。",
-      "組合內容與優惠依當日公告及客服確認為準。",
-      "送出清單後，客服會協助確認最適合的優惠方案。",
+      "固定搭配潔顏慕絲 1 瓶與卸妝油 1 瓶，不是任選。",
+      "洗卸清潔一次補齊，適合日常卸妝與潔顏流程。",
+      "組合價 $1,080，庫存與效期依 LINE 客服確認為準。",
     ],
     suitableFor: [
       "組合優惠",
       "龍血系列",
+      "清潔卸妝",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
-    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    usage: "先以龍血求麗卸妝油清潔彩妝與髒污，再搭配龍血求麗潔顏慕絲完成日常潔顏。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    priceNote: "潔顏慕絲 1 瓶 + 卸妝油 1 瓶，1+1 兩瓶 $1,080；庫存與效期依 LINE 客服確認為準。",
   },
+
   102: {
     cardName: "糖肽中膠囊",
     cardSubtitle: "生福科技品項・生福科技",
@@ -3967,7 +4002,7 @@ export default function Home() {
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([100, 83, 84, 101, 91]);
+  const homeComboProducts = getProductsByIds([100, 83, 84, 101, 92, 88]);
   const homeDragonBloodProducts = getProductsByIds([17, 19, 20, 18, 54, 55]);
   const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
   const homeTeaControlProducts = getProductsByIds([49, 50, 51, 64, 69, 70]);
