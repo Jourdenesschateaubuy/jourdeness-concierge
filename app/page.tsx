@@ -4002,7 +4002,8 @@ export default function Home() {
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([100, 83, 84, 101, 92, 88]);
+  const homeComboProducts = getProductsByIds([100, 83, 84, 101, 92, 88, 91, 89]);
+  const homeClearanceProducts = getProductsByIds([10, 11]);
   const homeDragonBloodProducts = getProductsByIds([17, 19, 20, 18, 54, 55]);
   const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
   const homeTeaControlProducts = getProductsByIds([49, 50, 51, 64, 69, 70]);
@@ -4087,20 +4088,64 @@ export default function Home() {
     setSearchQuery("");
   }
 
+  function getHomeSectionIdByCategory(category: MainCategory, series = "全部") {
+    if (category === "組合價") return "home-combo-products";
+    if (category === "保健食品") return "home-health-products";
+
+    if (
+      category === "洗沐" ||
+      category === "精油" ||
+      category === "牙膏" ||
+      category === "肥皂" ||
+      category === "護手霜" ||
+      category === "香水" ||
+      category === "貼布" ||
+      category === "外部廠商"
+    ) {
+      return "home-daily-life-products";
+    }
+
+    if (category === "保養品") {
+      if (series.includes("龍血")) return "home-dragon-blood-products";
+      if (series.includes("水光") || series.includes("玫瑰") || series.includes("膠原")) return "home-water-glow-products";
+      if (series.includes("茶樹") || series.includes("杏仁酸") || series.includes("冰河")) return "home-tea-control-products";
+      if (series.includes("晶淬雪") || series.includes("櫻") || series.includes("白金") || series.includes("極光")) return "home-brightening-products";
+      if (series.includes("BA-5") || series.includes("肌光") || series.includes("頂級")) return "home-firming-products";
+      if (series.includes("面膜")) return "home-mask-products";
+      if (series.includes("冷杉")) return "home-combo-products";
+
+      return "home-dragon-blood-products";
+    }
+
+    return "home-combo-products";
+  }
+
+  function getHomeSectionIdBySkinFilter(filter: SkinFilter) {
+    if (filter === "乾燥缺水") return "home-water-glow-products";
+    if (filter === "油性毛孔") return "home-tea-control-products";
+    if (filter === "美白淡斑") return "home-brightening-products";
+    if (filter === "抗皺緊緻") return "home-firming-products";
+    if (filter === "清潔卸妝") return "home-dragon-blood-products";
+    if (filter === "面膜保養") return "home-mask-products";
+    if (filter === "男士保養") return "home-combo-products";
+    return "home-combo-products";
+  }
+
   function handleDrawerCategory(category: MainCategory, series = "全部") {
     setIsMenuOpen(false);
     jumpToCategory(category, series);
-    scrollToSection("product-section");
+    scrollToSection(getHomeSectionIdByCategory(category, series));
   }
 
   function handleDrawerSkinFilter(filter: SkinFilter) {
     setIsMenuOpen(false);
     handleSkinFilterChange(filter);
-    scrollToSection("product-section");
+    scrollToSection(getHomeSectionIdBySkinFilter(filter));
   }
 
   function goToComboSection() {
     jumpToCategory("組合價", "全部");
+    scrollToSection("home-combo-products");
   }
 
   function openRelatedDetail(product: Product) {
@@ -4354,7 +4399,7 @@ export default function Home() {
     title,
     subtitle,
     note,
-    image,
+    image: _image,
     tone = "cream",
     children,
   }: {
@@ -4372,7 +4417,7 @@ export default function Home() {
         className={`home-banner ${tone}`}
         id={id}
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(255, 250, 246, 0.94), rgba(255, 239, 226, 0.88)), url(${image})`,
+          backgroundImage: "linear-gradient(135deg, rgba(255, 250, 246, 0.98), rgba(255, 239, 226, 0.92))",
         }}
       >
         <div className="home-banner-copy">
@@ -4853,8 +4898,8 @@ export default function Home() {
 
         <div className="brand-block">
           <p className="top-eyebrow">Jourdeness Castle</p>
-          <h1>佐登妮絲城堡回購群</h1>
-          <p>產地價訂購站・滿額宅配免運</p>
+          <h1>佐登商城</h1>
+          <p>城堡回購群｜產地價訂購站</p>
         </div>
 
         <div className="header-actions">
@@ -4998,7 +5043,7 @@ export default function Home() {
                 <p>商城目錄</p>
                 <button onClick={() => handleDrawerCategory("組合價")}>本月主打優惠</button>
                 <button onClick={() => handleDrawerCategory("組合價")}>組合價</button>
-                <button onClick={() => handleDrawerCategory("全部")}>全部商品</button>
+                <button onClick={() => handleDrawerCategory("全部")}>回到主打區</button>
                 <button onClick={() => handleDrawerCategory("保健食品")}>保健食品</button>
                 <button onClick={() => handleDrawerCategory("洗沐")}>洗沐</button>
                 <button onClick={() => handleDrawerCategory("外部廠商")}>外部廠商</button>
@@ -5053,47 +5098,42 @@ export default function Home() {
         </section>
       )}
 
-      <section className="hero-home-section">
-        <div
-          className="hero-home-banner"
-          style={{
-            backgroundImage:
-              "linear-gradient(135deg, rgba(255, 250, 246, 0.96), rgba(255, 238, 228, 0.90)), url(/banners/hero-castle-main.png)",
-          }}
-        >
-          <MascotImage src="/ip/ip-nini-daisy.png" alt="妮妮・黛西" className="hero-mascot left" />
-          <MascotImage src="/ip/ip-saso-casper.png" alt="佐佐・卡斯柏" className="hero-mascot right" />
+      <div className="store-promo-stack">
+        <HomeBanner
+          id="home-main-deal"
+          eyebrow="Monthly Deals"
+          title="本月回購優惠"
+          subtitle="人氣組合價・滿額宅配免運"
+          note="益生菌｜龍血洗卸｜EPAX 魚油｜牛樟芝潔口液"
+          image="/banners/banner-combo-deals.png"
+          tone="deal"
+        />
 
-          <div className="hero-home-copy">
-            <p>Jourdeness Castle</p>
-            <h2>佐登妮絲城堡產地價</h2>
-            <strong>回購群專屬訂購站</strong>
-            <span>保養品・保健食品・生活選品<br />滿 NT$3000 免運｜僅提供宅配</span>
-
-            <p className="hero-home-notice">往下瀏覽各系列商品；完整目錄請點左上角 ☰。</p>
-          </div>
-        </div>
-      </section>
-
-      <HomeBanner
-        id="home-combo-banner"
-        eyebrow="Monthly Deals"
-        title="本月主打優惠"
-        subtitle="熱銷組合價與限量優惠"
-        note="組合價｜即期優惠｜本月重點"
-        image="/banners/banner-combo-deals.png"
-        tone="deal"
-      >
-        <MascotImage src="/ip/ip-zheer-michel.png" alt="哲爾・米開朗" className="mini-mascot" />
-        <MascotImage src="/ip/ip-gafei-raphael.png" alt="加飛・拉斐爾" className="mini-mascot" />
-      </HomeBanner>
+        <HomeBanner
+          id="clearance-home"
+          eyebrow="Clearance"
+          title="即期出清專區"
+          subtitle="冷杉型男保養單瓶 $199"
+          note="化妝水 / 保濕乳限量出清，實際效期請以 LINE 客服確認"
+          image="/banners/banner-skincare-series.png"
+          tone="wood"
+        />
+      </div>
 
       <HomeProductSection
         id="home-combo-products"
-        eyebrow="Featured Deals"
-        title="本月主打優惠"
-        subtitle="熱銷組合價與限量優惠，庫存與效期依 LINE 客服確認為準"
+        eyebrow="Hot Deals"
+        title="熱銷組合價"
+        subtitle="回購群人氣優惠，庫存與效期依 LINE 客服確認"
         products={homeComboProducts}
+      />
+
+      <HomeProductSection
+        id="home-clearance-products"
+        eyebrow="Clearance"
+        title="即期出清"
+        subtitle="冷杉型男保養單瓶 $199，數量有限售完為止"
+        products={homeClearanceProducts}
       />
 
       <HomeBanner
@@ -5104,10 +5144,8 @@ export default function Home() {
         note="從日常保養到卸妝潔顏，一次看完整系列"
         image="/banners/banner-dragon-blood.png"
         tone="deal"
-      >
-        <MascotImage src="/ip/ip-bosi-davinci.png" alt="波絲・達文西" className="mini-mascot" />
-        <MascotImage src="/ip/ip-daimei-angui.png" alt="黛妹・安圭索拉" className="mini-mascot" />
-      </HomeBanner>
+      
+      />
 
       <HomeProductSection
         id="home-dragon-blood-products"
@@ -5120,14 +5158,13 @@ export default function Home() {
       <HomeBanner
         id="water-glow-home"
         eyebrow="Hydration"
-        title="水光肌能系列"
-        subtitle="乾燥缺水・保濕補水"
-        note="清爽水潤感，適合日常保濕保養"
+        title="保濕亮白人氣推薦"
+        subtitle="水潤、亮白、集中保養一次看"
+        note="水光肌能｜面膜｜晶淬雪｜櫻の雪｜玫瑰系列"
         image="/banners/banner-water-glow.png"
         tone="cream"
-      >
-        <MascotImage src="/ip/ip-nini-daisy.png" alt="妮妮・黛西" className="single-mascot" />
-      </HomeBanner>
+      
+      />
 
       <HomeProductSection
         id="home-water-glow-products"
@@ -5145,9 +5182,8 @@ export default function Home() {
         note="控油、毛孔、角質代謝與清爽保養"
         image="/banners/banner-tea-control.png"
         tone="green"
-      >
-        <MascotImage src="/ip/ip-bosi-davinci.png" alt="波絲・達文西" className="single-mascot" />
-      </HomeBanner>
+      
+      />
 
       <HomeProductSection
         id="home-tea-control-products"
@@ -5165,9 +5201,8 @@ export default function Home() {
         note="晶淬雪｜櫻の雪｜白金密集煥白｜極光白面膜"
         image="/banners/banner-brightening-care.png"
         tone="pink"
-      >
-        <MascotImage src="/ip/ip-daimei-angui.png" alt="黛妹・安圭索拉" className="single-mascot" />
-      </HomeBanner>
+      
+      />
 
       <HomeProductSection
         id="home-brightening-products"
@@ -5185,9 +5220,8 @@ export default function Home() {
         note="BA-5｜肌光緊緻｜頂級養護"
         image="/banners/banner-firming-care.png"
         tone="wood"
-      >
-        <MascotImage src="/ip/ip-saso-casper.png" alt="佐佐・卡斯柏" className="single-mascot" />
-      </HomeBanner>
+      
+      />
 
       <HomeProductSection
         id="home-firming-products"
@@ -5205,10 +5239,8 @@ export default function Home() {
         note="日常保養與集中保養都能找到適合選擇"
         image="/banners/banner-mask-care.png"
         tone="pink"
-      >
-        <MascotImage src="/ip/ip-nini-daisy.png" alt="妮妮・黛西" className="mini-mascot" />
-        <MascotImage src="/ip/ip-daimei-angui.png" alt="黛妹・安圭索拉" className="mini-mascot" />
-      </HomeBanner>
+      
+      />
 
       <HomeProductSection
         id="home-mask-products"
@@ -5221,14 +5253,13 @@ export default function Home() {
       <HomeBanner
         id="health-care-home"
         eyebrow="Wellness"
-        title="保健食品專區"
-        subtitle="益生菌・葉黃素・膠原蛋白飲"
+        title="日常保健補給"
+        subtitle="益生菌・葉黃素・膠原蛋白飲・魚油"
         note="日常補給與營養保養"
         image="/banners/banner-health-care.png"
         tone="green"
-      >
-        <MascotImage src="/ip/ip-zheer-michel.png" alt="哲爾・米開朗" className="single-mascot" />
-      </HomeBanner>
+      
+      />
 
       <HomeProductSection
         id="home-health-products"
@@ -5246,9 +5277,8 @@ export default function Home() {
         note="洗沐｜精油香氛｜牙膏肥皂｜生活選品"
         image="/banners/banner-daily-life.png"
         tone="wood"
-      >
-        <MascotImage src="/ip/ip-gafei-raphael.png" alt="加飛・拉斐爾" className="single-mascot" />
-      </HomeBanner>
+      
+      />
 
       <HomeProductSection
         id="home-daily-life-products"
@@ -5258,45 +5288,6 @@ export default function Home() {
         products={homeDailyLifeProducts}
       />
 
-      <HomeBanner
-        id="delivery-home"
-        eyebrow="Order Notice"
-        title="訂購與配送提醒"
-        subtitle="滿 NT$3000 免運｜僅提供宅配"
-        note="送出清單不代表付款完成，客服會透過 LINE 確認庫存、金額、宅配地址與付款方式。"
-        image="/banners/banner-delivery-notice.png"
-        tone="cream"
-      >
-        <MascotImage src="/ip/ip-saso-casper.png" alt="佐佐・卡斯柏" className="single-mascot" />
-      </HomeBanner>
-
-      <section className="filter-section" id="product-section">
-        <div className="section-heading compact">
-          <p>Catalog</p>
-          <h2>商品列表</h2>
-          <span>目前顯示 {filteredProducts.length} 項商品</span>
-        </div>
-
-        <div className="catalog-helper-card">
-          <strong>目前檢視：{currentFilterText()}</strong>
-          <span>分類與系列請使用左上角 ☰ 選單切換；搜尋請點右上角 🔍，不會自動跳到這裡。</span>
-        </div>
-      </section>
-
-      {filteredProducts.length > 0 ? (
-        <section className="product-grid">
-          {filteredProducts.map((product) => (
-            <ProductCard product={product} key={product.id} />
-          ))}
-        </section>
-      ) : (
-        <section className="empty-section">
-          <div className="empty-card">
-            <h3>喵～這個條件暫時沒有商品</h3>
-            <p>可以調整搜尋字詞，或從左上角 ☰ 選單切換分類看看。</p>
-          </div>
-        </section>
-      )}
 
       {cartTotalQuantity > 0 && (
         <button className="floating-cart-button" onClick={() => setIsCartOpen(true)}>
@@ -5311,7 +5302,7 @@ export default function Home() {
               <div>
                 <p className="cart-eyebrow">Order List</p>
                 <h2>訂購清單</h2>
-                <span>僅提供宅配；送出後由 LINE 客服確認，尚未完成付款。</span>
+                <span>僅提供宅配；送出後請至 LINE 確認訂單，確認後才會提供匯款資訊。</span>
               </div>
               <button className="cart-close" onClick={() => setIsCartOpen(false)}>
                 ×
@@ -5611,15 +5602,15 @@ export default function Home() {
         <section className="success-backdrop" onClick={() => setIsSuccessOpen(false)}>
           <div className="success-modal" onClick={(event) => event.stopPropagation()}>
             <div className="success-icon">✓</div>
-            <h2>訂購清單已送出！</h2>
+            <h2>訂購清單已送至後台！</h2>
             <p>
-              我們已收到你的訂購清單。接下來請至 LINE 與客服確認訂單，訂單經確認後才會正式成立。
+              我們已收到你的訂購清單。接下來請至 LINE 與小幫手確認商品、金額與宅配資訊。
             </p>
 
             <div className="success-checklist">
-              <p>客服會協助確認：商品庫存</p>
-              <p>客服會協助確認：訂單金額與滿 NT$3000 免運資格</p>
-              <p>客服會協助確認：宅配地址與付款方式</p>
+              <p>請至 LINE 與小幫手確認訂單內容。</p>
+              <p>小幫手會確認：庫存、效期、金額與宅配資訊。</p>
+              <p>確認無誤後，小幫手會傳送匯款資訊給您。</p>
               <p>LINE ID：@chateau-buy</p>
             </div>
 
@@ -5651,10 +5642,11 @@ export default function Home() {
         </div>
 
         <div className="notice-card">
-          <p><strong>滿 NT$3000 免運，僅提供宅配。</strong></p>
-          <p>商品價格與優惠組合依當日公告為準。</p>
-          <p>送出訂購清單後，客服會再透過 LINE 或電話確認庫存、金額、付款方式與宅配資訊。</p>
-          <p>若遇缺貨、價格異動或組合活動調整，將以客服確認內容為準。</p>
+          <p><strong>送出訂購清單後，系統會先將訂單送至後台。</strong></p>
+          <p>請至 LINE 與小幫手確認商品庫存、效期、訂單金額與宅配資訊。</p>
+          <p>確認無誤後，小幫手會提供匯款資訊給您。</p>
+          <p>完成匯款後，訂單才會正式成立。</p>
+          <p>滿 NT$3000 免運，僅提供宅配。</p>
         </div>
       </section>
 
@@ -8801,6 +8793,366 @@ export default function Home() {
 
         .detail-expiry-card {
           display: none !important;
+        }
+
+
+        /* Phase 12: formal mobile mall homepage V1 */
+        .top-header {
+          border-bottom: 1px solid rgba(234, 219, 208, 0.95);
+          background: rgba(255, 255, 255, 0.96);
+          box-shadow: 0 8px 18px rgba(77, 55, 38, 0.06);
+        }
+
+        .brand-block h1 {
+          color: var(--accent);
+          font-size: 25px;
+          letter-spacing: 0.02em;
+        }
+
+        .brand-block h1::after {
+          content: "商城";
+          display: inline-flex;
+          margin-left: 5px;
+          padding: 2px 6px 3px;
+          border-radius: 7px;
+          background: var(--accent);
+          color: #fff;
+          font-size: 17px;
+          letter-spacing: 0;
+          vertical-align: 2px;
+        }
+
+        .brand-block h1 {
+          font-size: 0;
+        }
+
+        .brand-block h1::before {
+          content: "佐登";
+          color: var(--accent);
+          font-size: 25px;
+          letter-spacing: 0.02em;
+        }
+
+        .store-promo-stack {
+          display: grid;
+          gap: 14px;
+          margin-top: 18px;
+        }
+
+        .store-promo-stack .home-banner {
+          margin-top: 0;
+        }
+
+        .home-banner {
+          min-height: 150px !important;
+          border-radius: 10px !important;
+          border: 1px solid rgba(234, 219, 208, 0.98) !important;
+          background-position: center !important;
+          box-shadow: none !important;
+        }
+
+        .home-banner::before {
+          background:
+            linear-gradient(90deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.58) 48%, rgba(255, 255, 255, 0.18)) !important;
+        }
+
+        .home-banner-copy {
+          max-width: 74% !important;
+        }
+
+        .home-banner-copy p {
+          color: var(--accent) !important;
+          font-size: 11px !important;
+          letter-spacing: 0.16em !important;
+        }
+
+        .home-banner-copy h2 {
+          color: #2b221e !important;
+          font-size: 24px !important;
+          letter-spacing: -0.04em !important;
+        }
+
+        .home-banner-copy strong {
+          color: var(--accent-dark) !important;
+          font-size: 15px !important;
+          font-weight: 950 !important;
+        }
+
+        .home-banner-copy span {
+          color: #75665e !important;
+          font-size: 12px !important;
+          font-weight: 850 !important;
+        }
+
+        .home-banner-mascots,
+        .mascot-image,
+        .hero-mascot,
+        .mini-mascot,
+        .single-mascot {
+          display: none !important;
+        }
+
+        .home-product-section {
+          margin-top: 28px !important;
+          padding: 0 !important;
+        }
+
+        .home-product-section + .home-product-section {
+          margin-top: 32px !important;
+        }
+
+        .home-product-section + .home-banner {
+          margin-top: 38px !important;
+        }
+
+        .home-product-section .section-heading.compact {
+          align-items: center;
+          margin-bottom: 16px;
+          text-align: center;
+        }
+
+        .home-product-section .section-heading.compact p {
+          color: var(--accent);
+          font-size: 13px;
+          letter-spacing: 0.18em;
+        }
+
+        .home-product-section .section-heading.compact h2 {
+          font-size: 24px;
+          letter-spacing: 0.02em;
+        }
+
+        .home-product-section .section-heading.compact h2::before,
+        .home-product-section .section-heading.compact h2::after {
+          color: var(--accent);
+          font-weight: 700;
+        }
+
+        .home-product-section .section-heading.compact h2::before {
+          content: "- ";
+        }
+
+        .home-product-section .section-heading.compact h2::after {
+          content: " -";
+        }
+
+        .home-product-section .section-heading.compact span {
+          max-width: 300px;
+          color: #8b7a70;
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .home-product-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 14px 12px !important;
+        }
+
+        .product-card {
+          position: relative !important;
+          display: flex !important;
+          min-height: 100% !important;
+          flex-direction: column !important;
+          border: 1px solid rgba(224, 224, 224, 0.98) !important;
+          border-radius: 0 !important;
+          overflow: hidden !important;
+          background: #fff !important;
+          box-shadow: none !important;
+        }
+
+        .product-card::before {
+          content: "";
+          position: absolute;
+          left: 10px;
+          right: 10px;
+          top: 10px;
+          height: 28px;
+          border-radius: 999px;
+          background: transparent;
+          pointer-events: none;
+        }
+
+        .product-image {
+          aspect-ratio: 1 / 1.05 !important;
+          border-radius: 0 !important;
+          background: #fff !important;
+          box-shadow: none !important;
+          border-bottom: 0 !important;
+        }
+
+        .product-image img {
+          padding: 12px !important;
+          object-fit: contain !important;
+          transform: none !important;
+          filter: none !important;
+        }
+
+        .product-info {
+          display: flex !important;
+          flex: 1 !important;
+          padding: 8px 10px 11px !important;
+          text-align: center;
+        }
+
+        .product-meta-row {
+          justify-content: center !important;
+          gap: 5px !important;
+          min-height: 24px;
+          margin-bottom: 4px !important;
+        }
+
+        .series-label {
+          padding: 5px 10px !important;
+          border-radius: 999px !important;
+          background: #f5eee8 !important;
+          color: var(--accent-dark) !important;
+          font-size: 11px !important;
+          font-weight: 950 !important;
+          line-height: 1 !important;
+        }
+
+        .product-meta-row span,
+        .sold-out-badge {
+          padding: 5px 8px !important;
+          border-radius: 999px !important;
+          background: var(--accent) !important;
+          color: #fff !important;
+          font-size: 11px !important;
+          font-weight: 950 !important;
+        }
+
+        .product-info h3 {
+          display: -webkit-box !important;
+          min-height: 43px !important;
+          margin: 8px 0 6px !important;
+          color: #2b2927 !important;
+          font-size: 15.5px !important;
+          font-weight: 850 !important;
+          line-height: 1.38 !important;
+          letter-spacing: 0 !important;
+          overflow: hidden;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .product-info .description {
+          display: -webkit-box !important;
+          min-height: 34px;
+          color: #9a8b84 !important;
+          font-size: 12px !important;
+          font-weight: 750 !important;
+          line-height: 1.45 !important;
+          overflow: hidden;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .tag-row {
+          justify-content: center !important;
+          min-height: 26px !important;
+          margin-top: 6px !important;
+          margin-bottom: 5px !important;
+        }
+
+        .need-tag,
+        .combo-badge {
+          background: #fff3ed !important;
+          color: var(--accent-dark) !important;
+          border: 0 !important;
+          font-size: 10.5px !important;
+          font-weight: 950 !important;
+        }
+
+        .price-block {
+          margin-top: auto !important;
+          padding-top: 7px !important;
+          text-align: center !important;
+        }
+
+        .original-price {
+          margin-bottom: 2px !important;
+          color: #b9aca4 !important;
+          font-size: 13px !important;
+          text-decoration-thickness: 1px;
+        }
+
+        .price {
+          color: var(--accent) !important;
+          font-size: 20px !important;
+          font-weight: 950 !important;
+          letter-spacing: 0.02em !important;
+        }
+
+        .price.inquiry {
+          color: #db4d65 !important;
+          font-size: 18px !important;
+        }
+
+        .add-cart-button {
+          margin-top: 10px !important;
+          min-height: 38px !important;
+          border-radius: 999px !important;
+          font-size: 13px !important;
+        }
+
+        .detail-button {
+          min-height: 34px !important;
+          margin-top: 7px !important;
+          border-radius: 999px !important;
+          background: #fff !important;
+          font-size: 12px !important;
+        }
+
+        #delivery-home {
+          margin-bottom: 30px !important;
+        }
+
+        @media (max-width: 370px) {
+          .home-product-grid {
+            gap: 12px 9px !important;
+          }
+
+          .product-info h3 {
+            font-size: 14.5px !important;
+          }
+
+          .price {
+            font-size: 18px !important;
+          }
+        }
+
+
+        /* Phase 13: remove all IP/background character images from homepage banners */
+        .home-banner {
+          background-image: linear-gradient(135deg, rgba(255, 250, 246, 0.98), rgba(255, 239, 226, 0.92)) !important;
+        }
+
+        .home-banner::after {
+          content: "";
+          position: absolute;
+          right: 14px;
+          top: 18px;
+          width: 84px;
+          height: 84px;
+          border-radius: 999px;
+          background: radial-gradient(circle, rgba(178, 65, 51, 0.13), rgba(178, 65, 51, 0));
+          pointer-events: none;
+        }
+
+
+        /* Phase 14: single purchase notice */
+        .notice-section {
+          margin-top: 30px !important;
+        }
+
+        .notice-card strong {
+          color: var(--accent-dark);
+        }
+
+        .notice-card p:last-child {
+          margin-top: 10px;
+          font-weight: 900;
+          color: var(--ink);
         }
 
 
