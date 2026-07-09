@@ -1619,6 +1619,18 @@ export default function Home() {
     jumpToCategory("組合價", "全部");
   }
 
+  function openRelatedDetail(product: Product) {
+    setSelectedDetailProduct(product);
+
+    window.setTimeout(() => {
+      const detailScroller = document.querySelector(".detail-backdrop") as HTMLElement | null;
+      detailScroller?.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 0);
+  }
+
   function hasKnownOriginalPrice(product: Product) {
     if (!product.originalPrice) return false;
     return !(
@@ -2907,7 +2919,7 @@ export default function Home() {
                       type="button"
                       className="related-card"
                       key={`related-${item.id}`}
-                      onClick={() => setSelectedDetailProduct(item)}
+                      onClick={() => openRelatedDetail(item)}
                     >
                       <div className="related-image">
                         {hasRealImage(item) ? (
