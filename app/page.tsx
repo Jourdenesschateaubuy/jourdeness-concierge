@@ -1117,7 +1117,7 @@ const products: Product[] = [
     series: "保養套組",
     originalPrice: "原價待補",
     price: "1+1 兩瓶 $ 1,080",
-    image: "/products/wash11.png",
+    image: "/products/placeholder.jpg",
     description: "龍血求麗潔顏慕絲150mL + 龍血求麗卸妝油150mL，各1瓶，共2瓶。",
   },
 
@@ -5213,11 +5213,11 @@ export default function Home() {
         />
 
         <HomeBanner
-          id="clearance-home"
-          eyebrow="Clearance"
-          title="即期出清專區"
-          subtitle="冷杉型男保養單瓶 $199"
-          note="化妝水 / 保濕乳限量出清，實際效期請以 LINE 客服確認"
+          id="popular-home"
+          eyebrow="Best Sellers"
+          title="回購人氣推薦"
+          subtitle="保健食品・洗沐清潔・龍血修護"
+          note="精選回購群常購品項，送出後由 LINE 小幫手確認"
           image="/banners/banner-skincare-series.png"
           tone="wood"
         />
@@ -5234,8 +5234,8 @@ export default function Home() {
       <HomeProductSection
         id="home-clearance-products"
         eyebrow="Clearance"
-        title="即期出清"
-        subtitle="冷杉型男保養單瓶 $199，數量有限售完為止"
+        title="即期良品出清"
+        subtitle="冷杉型男保養單瓶 $199，數量有限，實際效期請以 LINE 小幫手確認"
         products={homeClearanceProducts}
       />
 
