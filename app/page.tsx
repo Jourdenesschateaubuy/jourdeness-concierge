@@ -12,6 +12,7 @@ const categoryConfig = {
     "洗沐組合",
     "牙膏組合",
     "保養套組",
+    "肥皂組合",
     "面膜組合",
   ],
   全部: ["全部"],
@@ -46,7 +47,7 @@ const categoryConfig = {
   護手霜: ["全部", "護手霜"],
   香水: ["全部", "香水"],
   貼布: ["全部", "貼布"],
-  外部廠商: ["全部", "歐思佛", "上山採藥", "生福科技", "良冠", "木匠兄妹", "F.SEASONS 富雨洋傘"],
+  外部廠商: ["全部", "歐思佛", "上山採藥", "生福科技", "倍力工房", "良冠", "木匠兄妹", "F.SEASONS 富雨洋傘"],
 } as const;
 
 type MainCategory = keyof typeof categoryConfig;
@@ -899,33 +900,33 @@ const products: Product[] = [
   },
   {
     id: 80,
-    name: "龍血艾草保庇皂",
+    name: "龍血艾草皂",
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "任選4顆 $ 799",
     image: "/products/placeholder.jpg",
-    description: "200g。肥皂品項。",
+    description: "200g。龍血手工皂品項，可搭配任選4顆活動。",
   },
   {
     id: 81,
-    name: "龍血檸檬馬鞭草皂",
+    name: "龍血馬鞭草皂",
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "任選4顆 $ 799",
     image: "/products/placeholder.jpg",
-    description: "200g。肥皂品項。",
+    description: "200g。龍血手工皂品項，可搭配任選4顆活動。",
   },
   {
     id: 82,
-    name: "龍血薰衣草舒緩皂",
+    name: "龍血薰衣草皂",
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "任選4顆 $ 799",
     image: "/products/placeholder.jpg",
-    description: "200g。肥皂品項。",
+    description: "200g。龍血手工皂品項，可搭配任選4顆活動。",
   },
 
   {
@@ -935,7 +936,7 @@ const products: Product[] = [
     series: "保健食品組合",
     originalPrice: "原價 $ 8,800",
     price: "產地價 $ 3,600",
-    image: "/products/probiotic-bc-ca.jpg",
+    image: "/products/BCCA3600.png",
     description: "BC-CA複合益生菌高鈣活力配方 11盒。",
   },
   {
@@ -945,7 +946,7 @@ const products: Product[] = [
     series: "保健食品組合",
     originalPrice: "原價 $ 9,600",
     price: "產地價 $ 4,200",
-    image: "/products/probiotic-cranberry.jpg",
+    image: "/products/cranberry+BCCA.png",
     description: "BC-CA高鈣益生菌 6盒 + 蔓越莓益生菌 5盒。",
   },
   {
@@ -965,7 +966,7 @@ const products: Product[] = [
     series: "貼布組合",
     originalPrice: "原價 $ 3,200",
     price: "產地價 $ 1,099",
-    image: "/products/placeholder.jpg",
+    image: "/products/patch 1099.png",
     description: "涼感 / 溫感可任選搭配，共4盒。",
   },
   {
@@ -975,7 +976,7 @@ const products: Product[] = [
     series: "貼布組合",
     originalPrice: "原價 $ 8,000",
     price: "產地價 $ 2,500",
-    image: "/products/placeholder.jpg",
+    image: "/products/patch 2500.png",
     description: "涼感 / 溫感可任選搭配，共10盒。",
   },
   {
@@ -1106,7 +1107,7 @@ const products: Product[] = [
     series: "保健食品組合",
     originalPrice: "原價待補",
     price: "產地價 2盒 $ 2,000",
-    image: "/products/BC-HA.jpg",
+    image: "/products/BCHA2000.png",
     description: "BC-HA 複合益生菌 3g x 60包 / 盒，共2盒。",
   },
   {
@@ -1116,7 +1117,7 @@ const products: Product[] = [
     series: "保養套組",
     originalPrice: "原價待補",
     price: "1+1 兩瓶 $ 1,080",
-    image: "/products/placeholder.jpg",
+    image: "/products/wash11.png",
     description: "龍血求麗潔顏慕絲150mL + 龍血求麗卸妝油150mL，各1瓶，共2瓶。",
   },
 
@@ -1430,6 +1431,37 @@ const products: Product[] = [
     price: "產地價待補",
     image: "/products/placeholder.jpg",
     description: "頂級養護面膜品項。",
+  },
+
+  {
+    id: 133,
+    name: "蛋白纖維營養餐",
+    category: "外部廠商",
+    series: "倍力工房",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "倍力工房品項。蛋白纖維營養餐。",
+  },
+  {
+    id: 134,
+    name: "固硒力-遠紅外線舒緩貼布",
+    category: "外部廠商",
+    series: "倍力工房",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "倍力工房品項。遠紅外線舒緩貼布。",
+  },
+  {
+    id: 135,
+    name: "龍血手工皂任選4顆",
+    category: "組合價",
+    series: "肥皂組合",
+    originalPrice: "原價待補",
+    price: "任選4顆 $ 799",
+    image: "/products/placeholder.jpg",
+    description: "龍血馬鞭草皂 / 龍血艾草皂 / 龍血薰衣草皂可任選，共4顆。",
   },
 
 
@@ -2911,59 +2943,68 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
   },
   80: {
-    cardName: "龍血艾草保庇皂",
-    cardSubtitle: "200g・肥皂",
-    spec: "200g",
-    intro: "龍血艾草保庇皂為肥皂日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardName: "龍血艾草皂",
+    cardSubtitle: "200g・任選4顆 $799",
+    spec: "200g / 顆",
+    intro: "龍血艾草皂為龍血手工皂品項，可搭配龍血馬鞭草皂與龍血薰衣草皂任選4顆活動。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "龍血手工皂系列，適合日常清潔使用。",
+      "可與龍血馬鞭草皂、龍血薰衣草皂搭配任選。",
+      "任選4顆 $799，庫存與效期依 LINE 客服確認為準。",
     ],
     suitableFor: [
+      "日常清潔",
       "肥皂",
+      "組合優惠",
     ],
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    priceNote: "龍血手工皂可任選4顆 $799；庫存與效期依 LINE 客服確認為準。",
   },
+
   81: {
-    cardName: "龍血檸檬馬鞭草皂",
-    cardSubtitle: "200g・肥皂",
-    spec: "200g",
-    intro: "龍血檸檬馬鞭草皂為肥皂日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardName: "龍血馬鞭草皂",
+    cardSubtitle: "200g・任選4顆 $799",
+    spec: "200g / 顆",
+    intro: "龍血馬鞭草皂為龍血手工皂品項，可搭配龍血艾草皂與龍血薰衣草皂任選4顆活動。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "龍血手工皂系列，適合日常清潔使用。",
+      "可與龍血艾草皂、龍血薰衣草皂搭配任選。",
+      "任選4顆 $799，庫存與效期依 LINE 客服確認為準。",
     ],
     suitableFor: [
+      "日常清潔",
       "肥皂",
+      "組合優惠",
     ],
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    priceNote: "龍血手工皂可任選4顆 $799；庫存與效期依 LINE 客服確認為準。",
   },
+
   82: {
-    cardName: "龍血薰衣草舒緩皂",
-    cardSubtitle: "200g・肥皂",
-    spec: "200g",
-    intro: "龍血薰衣草舒緩皂為肥皂日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardName: "龍血薰衣草皂",
+    cardSubtitle: "200g・任選4顆 $799",
+    spec: "200g / 顆",
+    intro: "龍血薰衣草皂為龍血手工皂品項，可搭配龍血艾草皂與龍血馬鞭草皂任選4顆活動。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "龍血手工皂系列，適合日常清潔使用。",
+      "可與龍血艾草皂、龍血馬鞭草皂搭配任選。",
+      "任選4顆 $799，庫存與效期依 LINE 客服確認為準。",
     ],
     suitableFor: [
+      "日常清潔",
       "肥皂",
+      "組合優惠",
     ],
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    priceNote: "龍血手工皂可任選4顆 $799；庫存與效期依 LINE 客服確認為準。",
   },
+
   83: {
     cardName: "高鈣益生菌 11盒組",
     cardSubtitle: "BC-CA複合益生菌高鈣活力配方 11盒・保健食品組合",
@@ -3907,6 +3948,66 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
     priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
   },
+  133: {
+    cardName: "蛋白纖維營養餐",
+    cardSubtitle: "倍力工房・營養補給",
+    spec: "規格依商品標示",
+    intro: "蛋白纖維營養餐為倍力工房精選品項，適合作為日常營養補給參考。",
+    features: [
+      "倍力工房精選品項，可加入清單詢問。",
+      "適合作為日常營養補給參考。",
+      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+    ],
+    suitableFor: [
+      "倍力工房",
+      "營養補給",
+      "外部廠商",
+    ],
+    usage: "每日建議依產品標示或客服說明食用。",
+    notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
+    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
+    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+  },
+  134: {
+    cardName: "固硒力遠紅外線舒緩貼布",
+    cardSubtitle: "倍力工房・舒緩貼布",
+    spec: "規格依商品標示",
+    intro: "固硒力-遠紅外線舒緩貼布為倍力工房精選品項，可依日常需求加入清單詢問。",
+    features: [
+      "倍力工房精選舒緩貼布品項。",
+      "適合想詢問貼布類生活選品的客人。",
+      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+    ],
+    suitableFor: [
+      "倍力工房",
+      "貼布",
+      "外部廠商",
+    ],
+    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    notice: "使用後若有不適，請暫停使用。請依商品標示方式使用。",
+    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
+    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+  },
+  135: {
+    cardName: "龍血手工皂任選4顆",
+    cardSubtitle: "馬鞭草 / 艾草 / 薰衣草・$799",
+    spec: "龍血馬鞭草皂 / 龍血艾草皂 / 龍血薰衣草皂可任選，共4顆",
+    intro: "龍血手工皂任選4顆為回購群肥皂組合優惠，馬鞭草、艾草、薰衣草可依需求搭配。",
+    features: [
+      "龍血馬鞭草皂、龍血艾草皂、龍血薰衣草皂可任選。",
+      "任選4顆 $799，適合日常清潔用品補貨。",
+      "組合內容、效期與庫存依 LINE 客服確認為準。",
+    ],
+    suitableFor: [
+      "組合優惠",
+      "肥皂",
+      "日常清潔",
+    ],
+    usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
+    priceNote: "龍血手工皂任選4顆 $799；庫存與效期依 LINE 客服確認為準。",
+  },
 };
 
 const skinFilters = [
@@ -3930,6 +4031,7 @@ const comboProductIds = new Set<number>([
   47, 48,
   54, 55,
   56, 57, 58, 59, 60,
+  80, 81, 82,
 ]);
 
 const expiringProductIds = new Set<number>([10, 11]);
@@ -3997,12 +4099,12 @@ export default function Home() {
     ? Math.max(filteredProducts.length - searchPreviewProducts.length, 0)
     : 0;
 
-  const featuredProductIds = [83, 100, 101, 89, 91, 88];
+  const featuredProductIds = [83, 100, 101, 89, 91, 88, 135];
   const featuredProducts = featuredProductIds
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([100, 83, 84, 101, 92, 88, 91, 89]);
+  const homeComboProducts = getProductsByIds([100, 83, 84, 101, 92, 88, 135, 91, 89]);
   const homeClearanceProducts = getProductsByIds([10, 11]);
   const homeDragonBloodProducts = getProductsByIds([17, 19, 20, 18, 54, 55]);
   const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
@@ -4011,7 +4113,7 @@ export default function Home() {
   const homeFirmingProducts = getProductsByIds([27, 28, 21, 22, 23, 120]);
   const homeMaskProducts = getProductsByIds([126, 128, 123, 129, 131, 132]);
   const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74]);
-  const homeDailyLifeProducts = getProductsByIds([29, 30, 31, 32, 37, 117]);
+  const homeDailyLifeProducts = getProductsByIds([29, 30, 31, 32, 133, 134, 47, 48, 80, 81, 82, 35, 36, 37, 117]);
 
   const skinGuideCards: { title: SkinFilter; text: string }[] = [
     { title: "乾燥缺水", text: "想加強水潤與保濕" },
@@ -5080,6 +5182,7 @@ export default function Home() {
               <div className="drawer-section">
                 <p>外部廠商</p>
                 <button onClick={() => handleDrawerCategory("外部廠商", "生福科技")}>生福科技</button>
+                <button onClick={() => handleDrawerCategory("外部廠商", "倍力工房")}>倍力工房</button>
                 <button onClick={() => handleDrawerCategory("外部廠商", "木匠兄妹")}>木匠兄妹</button>
                 <button onClick={() => handleDrawerCategory("外部廠商", "F.SEASONS 富雨洋傘")}>F.SEASONS 富雨洋傘</button>
                 <button onClick={() => handleDrawerCategory("外部廠商", "良冠")}>良冠</button>
@@ -5274,7 +5377,7 @@ export default function Home() {
         eyebrow="Daily Life"
         title="洗沐與生活選品"
         subtitle="日常清潔・香氛・外部廠商精選"
-        note="洗沐｜精油香氛｜牙膏肥皂｜生活選品"
+        note="洗沐｜牙膏肥皂｜貼布｜倍力工房｜生活選品"
         image="/banners/banner-daily-life.png"
         tone="wood"
       
@@ -5284,7 +5387,7 @@ export default function Home() {
         id="home-daily-life-products"
         eyebrow="Daily Picks"
         title="洗沐與生活選品"
-        subtitle="日常清潔、香氛與精選生活用品"
+        subtitle="日常清潔、貼布、牙膏肥皂與倍力工房選品"
         products={homeDailyLifeProducts}
       />
 
@@ -9153,6 +9256,12 @@ export default function Home() {
           margin-top: 10px;
           font-weight: 900;
           color: var(--ink);
+        }
+
+
+        /* Phase 15: Beili Workshop + soap combo additions */
+        .drawer-section button {
+          word-break: keep-all;
         }
 
 
