@@ -191,7 +191,7 @@ const products: Product[] = [
     category: "保養品",
     series: "冷杉系列",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "即期出清 單瓶 $199",
     image: "/products/Men's Abies3.jpg",
     description: "150mL。冷杉系列保養品。",
   },
@@ -201,7 +201,7 @@ const products: Product[] = [
     category: "保養品",
     series: "冷杉系列",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "即期出清 單瓶 $199",
     image: "/products/Men's Abies1.jpg",
     description: "100mL。冷杉系列保養品。",
   },
@@ -1018,16 +1018,6 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "水搖滾保濕面膜22mL x35pcs / 極光白美白面膜 x35pcs 可任選。任選5桶再送10片水搖滾保濕面膜。",
   },
-  {
-    id: 92,
-    name: "冷杉型男即期保濕任選2瓶",
-    category: "組合價",
-    series: "保養套組",
-    originalPrice: "原價待補",
-    price: "產地價 任選2瓶 $ 590",
-    image: "/products/Men's Abies3.jpg",
-    description: "即期優惠。冷杉型男淨化保濕化妝水150mL / 冷杉型男淨化保濕乳100mL 可任選，共2瓶。"
-  },
 
   {
     id: 93,
@@ -1612,42 +1602,46 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   10: {
     cardName: "冷杉保濕化妝水",
-    cardSubtitle: "150mL・冷杉系列",
+    cardSubtitle: "150mL・即期出清・單瓶 $199",
     spec: "150mL",
-    intro: "冷杉型男淨化保濕化妝水為冷杉系列保養品項，可依日常膚況與保養需求搭配使用。",
+    intro: "冷杉型男淨化保濕化妝水為冷杉系列清爽保濕品項，目前為單瓶 $199 即期出清。",
     features: [
-      "即期優惠品項，價格較一般品項優惠。",
-      "可依膚況搭配同系列精華、乳液或乳霜。",
-      "協助建立日常保養基礎步驟。",
+      "即期出清單瓶 $199，適合想補充清爽保濕品項的客人。",
+      "清爽水感質地，適合男士日常保養使用。",
+      "即期優惠品項，實際效期請以 LINE 客服確認為準。",
     ],
     suitableFor: [
-      "乾燥缺水",
+      "即期出清",
       "男士保養",
+      "清爽保濕",
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "此為即期優惠品項，實際效期請以 LINE 客服確認為準。",
-    priceNote: "此為即期優惠品項，實際效期與優惠請以 LINE 客服確認為準。",
+    notice: "即期商品售出前會由客服協助確認效期。使用後若有不適，請暫停使用。",
+    expiryNote: "此為即期出清品項，實際效期請以 LINE 客服確認為準。",
+    priceNote: "即期出清單瓶 $199，庫存與效期依 LINE 客服確認為準。",
   },
+
   11: {
     cardName: "冷杉保濕乳",
-    cardSubtitle: "100mL・冷杉系列",
+    cardSubtitle: "100mL・即期出清・單瓶 $199",
     spec: "100mL",
-    intro: "冷杉型男淨化保濕乳為冷杉系列保養品項，可依日常膚況與保養需求搭配使用。",
+    intro: "冷杉型男淨化保濕乳為冷杉系列清爽保濕品項，目前為單瓶 $199 即期出清。",
     features: [
-      "即期優惠品項，價格較一般品項優惠。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "即期出清單瓶 $199，適合想補充清爽保濕品項的客人。",
+      "乳液質地可作為日常保濕步驟，適合男士簡單保養。",
+      "即期優惠品項，實際效期請以 LINE 客服確認為準。",
     ],
     suitableFor: [
-      "乾燥缺水",
+      "即期出清",
       "男士保養",
+      "清爽保濕",
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "此為即期優惠品項，實際效期請以 LINE 客服確認為準。",
-    priceNote: "此為即期優惠品項，實際效期與優惠請以 LINE 客服確認為準。",
+    usage: "化妝水後取適量均勻塗抹於臉部與頸部。",
+    notice: "即期商品售出前會由客服協助確認效期。使用後若有不適，請暫停使用。",
+    expiryNote: "此為即期出清品項，實際效期請以 LINE 客服確認為準。",
+    priceNote: "即期出清單瓶 $199，庫存與效期依 LINE 客服確認為準。",
   },
+
   12: {
     cardName: "冷杉酷涼活絡精油滾珠",
     cardSubtitle: "9mL・冷杉系列",
@@ -3896,7 +3890,6 @@ type SkinFilter = (typeof skinFilters)[number];
 
 const comboProductIds = new Set<number>([
   1, 2, 3,
-  10, 11,
   29, 30,
   35, 36,
   47, 48,
@@ -3904,7 +3897,7 @@ const comboProductIds = new Set<number>([
   56, 57, 58, 59, 60,
 ]);
 
-const expiringProductIds = new Set<number>([10, 11, 92]);
+const expiringProductIds = new Set<number>([10, 11]);
 
 
 export default function Home() {
@@ -3974,7 +3967,7 @@ export default function Home() {
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([100, 83, 84, 101, 91, 92]);
+  const homeComboProducts = getProductsByIds([100, 83, 84, 101, 91]);
   const homeDragonBloodProducts = getProductsByIds([17, 19, 20, 18, 54, 55]);
   const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
   const homeTeaControlProducts = getProductsByIds([49, 50, 51, 64, 69, 70]);
