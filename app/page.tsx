@@ -4049,6 +4049,7 @@ export default function Home() {
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isCollectionOpen, setIsCollectionOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<Product | null>(null);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
@@ -4233,21 +4234,34 @@ export default function Home() {
     return "home-combo-products";
   }
 
+  function openCollectionPage() {
+    setIsCollectionOpen(true);
+    setIsSearchOpen(false);
+
+    window.setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 0);
+  }
+
+  function closeCollectionPage() {
+    setIsCollectionOpen(false);
+  }
+
   function handleDrawerCategory(category: MainCategory, series = "全部") {
     setIsMenuOpen(false);
     jumpToCategory(category, series);
-    scrollToSection(getHomeSectionIdByCategory(category, series));
+    openCollectionPage();
   }
 
   function handleDrawerSkinFilter(filter: SkinFilter) {
     setIsMenuOpen(false);
     handleSkinFilterChange(filter);
-    scrollToSection(getHomeSectionIdBySkinFilter(filter));
+    openCollectionPage();
   }
 
   function goToComboSection() {
     jumpToCategory("組合價", "全部");
-    scrollToSection("home-combo-products");
+    openCollectionPage();
   }
 
   function openRelatedDetail(product: Product) {
@@ -5007,7 +5021,10 @@ export default function Home() {
         <div className="header-actions">
           <button
             className={isSearchOpen ? "icon-button active" : "icon-button"}
-            onClick={() => setIsSearchOpen((current) => !current)}
+            onClick={() => {
+              setIsCollectionOpen(false);
+              setIsSearchOpen((current) => !current);
+            }}
             aria-label="開啟搜尋頁面"
           >
             🔍
@@ -5123,6 +5140,44 @@ export default function Home() {
         </section>
       )}
 
+      {isCollectionOpen && (
+        <section className="search-panel search-page-view collection-page-view" aria-label="分類商品頁面">
+          <div className="search-page-head collection-page-head">
+            <button
+              type="button"
+              className="search-back-button"
+              onClick={closeCollectionPage}
+            >
+              ← 返回
+            </button>
+
+            <div>
+              <p>Catalog</p>
+              <h2>{currentFilterText() || "全部商品"}</h2>
+              <span>共 {filteredProducts.length} 項商品｜可加入清單或查看商品資訊</span>
+            </div>
+          </div>
+
+          <div className="collection-helper-card">
+            <strong>{currentFilterText() || "全部商品"}</strong>
+            <span>這裡會顯示你從左上角 ☰ 選單選到的分類 / 系列商品，例如玫瑰系列、龍血系列、倍力工房等。</span>
+          </div>
+
+          {filteredProducts.length > 0 ? (
+            <div className="home-product-grid collection-product-grid">
+              {filteredProducts.map((product) => (
+                <ProductCard product={product} key={`collection-${product.id}`} />
+              ))}
+            </div>
+          ) : (
+            <div className="collection-empty-card">
+              <h3>目前這個分類暫時沒有商品</h3>
+              <p>可以返回選單切換其他分類，或點右上角搜尋商品。</p>
+            </div>
+          )}
+        </section>
+      )}
+
       {isMenuOpen && (
         <section className="drawer-backdrop" onClick={() => setIsMenuOpen(false)}>
           <aside className="side-drawer" onClick={(event) => event.stopPropagation()}>
@@ -5145,7 +5200,7 @@ export default function Home() {
                 <p>商城目錄</p>
                 <button onClick={() => handleDrawerCategory("組合價")}>本月主打優惠</button>
                 <button onClick={() => handleDrawerCategory("組合價")}>組合價</button>
-                <button onClick={() => handleDrawerCategory("全部")}>回到主打區</button>
+                <button onClick={() => handleDrawerCategory("全部")}>全部商品</button>
                 <button onClick={() => handleDrawerCategory("保健食品")}>保健食品</button>
                 <button onClick={() => handleDrawerCategory("洗沐")}>洗沐</button>
                 <button onClick={() => handleDrawerCategory("外部廠商")}>外部廠商</button>
@@ -9262,6 +9317,75 @@ export default function Home() {
         /* Phase 15: Beili Workshop + soap combo additions */
         .drawer-section button {
           word-break: keep-all;
+        }
+
+
+        /* Phase 16: drawer opens real collection pages */
+        .collection-page-view {
+          z-index: 3000 !important;
+        }
+
+        .collection-page-head,
+        .collection-helper-card,
+        .collection-product-grid,
+        .collection-empty-card {
+          width: min(100%, 520px);
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .collection-helper-card {
+          display: grid;
+          gap: 5px;
+          margin-top: 4px;
+          margin-bottom: 14px;
+          padding: 12px 14px;
+          border: 1px solid rgba(234, 219, 208, 0.96);
+          border-radius: 18px;
+          background: rgba(255, 255, 255, 0.88);
+          box-shadow: 0 10px 24px rgba(77, 55, 38, 0.07);
+        }
+
+        .collection-helper-card strong {
+          color: var(--ink);
+          font-size: 14px;
+          font-weight: 950;
+          line-height: 1.4;
+        }
+
+        .collection-helper-card span {
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 800;
+          line-height: 1.55;
+        }
+
+        .collection-product-grid {
+          margin-top: 14px;
+          padding-bottom: 28px;
+        }
+
+        .collection-empty-card {
+          margin-top: 14px;
+          padding: 18px;
+          border: 1px solid rgba(234, 219, 208, 0.95);
+          border-radius: 22px;
+          background: rgba(255, 255, 255, 0.9);
+          text-align: center;
+        }
+
+        .collection-empty-card h3 {
+          margin: 0 0 6px;
+          color: var(--ink);
+          font-size: 18px;
+        }
+
+        .collection-empty-card p {
+          margin: 0;
+          color: var(--muted);
+          font-size: 13px;
+          font-weight: 800;
+          line-height: 1.6;
         }
 
 
