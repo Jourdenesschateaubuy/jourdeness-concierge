@@ -5851,6 +5851,160 @@ export default function Home() {
         }
 
 
+        /* Phase 8: full-page product detail view */
+        .detail-backdrop {
+          position: fixed !important;
+          inset: 0 !important;
+          z-index: 3200 !important;
+          display: block !important;
+          padding: 0 !important;
+          background:
+            radial-gradient(circle at top left, rgba(245, 201, 176, 0.35), transparent 34%),
+            linear-gradient(180deg, #fff8f1 0%, #fffaf5 46%, #f3e1d5 100%) !important;
+          overflow-y: auto !important;
+          overscroll-behavior: contain;
+        }
+
+        .detail-panel {
+          width: min(100%, 520px) !important;
+          min-height: 100dvh !important;
+          max-height: none !important;
+          margin: 0 auto !important;
+          overflow: visible !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          box-shadow: none !important;
+        }
+
+        .detail-header {
+          position: sticky !important;
+          top: 0 !important;
+          z-index: 5 !important;
+          padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px !important;
+          border-bottom: 1px solid rgba(234, 219, 208, 0.95) !important;
+          background: rgba(255, 250, 245, 0.94) !important;
+          backdrop-filter: blur(18px) !important;
+        }
+
+        .detail-header h2 {
+          font-size: 17px !important;
+          font-weight: 950 !important;
+        }
+
+        .detail-close {
+          width: 44px !important;
+          height: 44px !important;
+          background: rgba(239, 228, 219, 0.95) !important;
+          font-size: 30px !important;
+        }
+
+        .detail-cart-button {
+          min-height: 40px !important;
+          padding: 10px 14px !important;
+          background: rgba(239, 228, 219, 0.95) !important;
+        }
+
+        .detail-main-image {
+          width: calc(100% - 28px) !important;
+          aspect-ratio: 1 / 1 !important;
+          margin: 16px auto 0 !important;
+          border-radius: 24px !important;
+          border: 1px solid rgba(234, 219, 208, 0.95) !important;
+          background: #ffffff !important;
+          box-shadow: 0 16px 34px rgba(77, 55, 38, 0.10) !important;
+        }
+
+        .detail-main-image img {
+          width: 100% !important;
+          height: 100% !important;
+          max-width: none !important;
+          max-height: none !important;
+          object-fit: cover !important;
+          object-position: center center !important;
+          padding: 0 !important;
+          transform: none !important;
+          filter: none !important;
+        }
+
+        .detail-content {
+          padding: 18px 18px calc(env(safe-area-inset-bottom, 0px) + 34px) !important;
+        }
+
+        .detail-title-row {
+          padding-top: 2px;
+        }
+
+        .detail-title-row h1 {
+          font-size: 27px !important;
+          line-height: 1.16 !important;
+          letter-spacing: -0.055em !important;
+        }
+
+        .detail-description {
+          font-size: 14px !important;
+          line-height: 1.7 !important;
+        }
+
+        .detail-price-card {
+          margin-top: 16px !important;
+          border-radius: 22px !important;
+          box-shadow: 0 12px 28px rgba(77, 55, 38, 0.08) !important;
+        }
+
+        .detail-price-card .price {
+          font-size: 28px !important;
+          color: #d94c5c !important;
+        }
+
+        .detail-add-button {
+          min-height: 54px !important;
+          margin-top: 14px !important;
+          font-size: 17px !important;
+          box-shadow: 0 14px 30px rgba(178, 65, 51, 0.22) !important;
+        }
+
+        .detail-info-block {
+          margin-top: 16px !important;
+          border-radius: 24px !important;
+          box-shadow: 0 10px 24px rgba(77, 55, 38, 0.06) !important;
+        }
+
+        .related-products {
+          gap: 10px !important;
+        }
+
+        .related-card {
+          border-radius: 18px !important;
+        }
+
+        @media (min-width: 720px) {
+          .detail-panel {
+            border-left: 1px solid rgba(234, 219, 208, 0.95);
+            border-right: 1px solid rgba(234, 219, 208, 0.95);
+          }
+        }
+
+        @media (max-width: 370px) {
+          .detail-main-image {
+            width: calc(100% - 20px) !important;
+            border-radius: 20px !important;
+          }
+
+          .detail-content {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+          }
+
+          .detail-title-row h1 {
+            font-size: 24px !important;
+          }
+
+          .detail-price-card .price {
+            font-size: 25px !important;
+          }
+        }
+
+
       `}</style>
     </main>
   );
