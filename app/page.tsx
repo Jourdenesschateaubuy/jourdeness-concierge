@@ -854,7 +854,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/water tooth 3+1.jpg",
+    image: "/products/water tooth 3+1.png",
     description: "生福科技品項。",
   },
   {
