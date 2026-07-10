@@ -390,7 +390,7 @@ const products: Product[] = [
     series: "洗沐系列",
     originalPrice: "原價 $ 790",
     price: "產地價 任選3瓶 $ 1,100",
-    image: "/products/dragon-blood-scalp-repair-shampoo.jpg",
+    image: "/products/BDwash2.jpg",
     description: "龍血洗髮沐浴系列，可搭配活動組合。",
   },
   {
@@ -854,7 +854,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/water tooth 3+1.jpg",
     description: "生福科技品項。",
   },
   {
@@ -1057,7 +1057,7 @@ const products: Product[] = [
     series: "洗沐系列",
     originalPrice: "原價 $ 1,680",
     price: "產地價待補",
-    image: "/products/argan-scalp-care-spray.jpg",
+    image: "/products/Argan Oil3.jpg",
     description: "80mL。髮根養護品項。",
   },
   {
@@ -1117,7 +1117,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "買一送二 $ 3,600",
-    image: "/products/placeholder.jpg",
+    image: "/products/jourdeness-concierge/public/products/matolo.png.png",
     description: "生福科技品項。可搭配買一送二活動。",
   },
   {
@@ -1540,7 +1540,7 @@ const products: Product[] = [
     series: "生福科技組合",
     originalPrice: "原價待補",
     price: "買一送二 $ 3,600",
-    image: "/products/placeholder.jpg",
+    image: "/products/matolo1+2.png",
     description: "梅托洛買1送2，共3入組合，規格依商品標示。",
   },
 
