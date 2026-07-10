@@ -1500,7 +1500,7 @@ const products: Product[] = [
     series: "保養套組",
     originalPrice: "原價待補",
     price: "任選2瓶 $ 980",
-    image: "/products/placeholder.jpg",
+    image: "/products/db+su1+1.jpg",
     description: "龍血求麗潔顏慕絲150mL / 櫻の雪淨白潔顏慕絲150mL 可任選搭配，共2瓶。",
   },
   {
@@ -1520,7 +1520,7 @@ const products: Product[] = [
     series: "洗沐組合",
     originalPrice: "原價待補",
     price: "1+1 $ 1,500",
-    image: "/products/combo-dragon-shampoo-argan-1500.jpg",
+    image: "/products/hair1+1.jpg",
     description: "龍血求麗頭皮修護洗髮精 600mL + 阿甘甦醒髮根養護液 80mL，各1瓶，共2瓶。",
   },
   {
