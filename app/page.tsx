@@ -916,7 +916,7 @@ const products: Product[] = [
     series: "肥皂",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
-    image: "/products/bd soap.png",
+    image: "/products/soap rose.png",
     description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
   {
