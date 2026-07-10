@@ -1026,7 +1026,7 @@ const products: Product[] = [
     series: "生福科技組合",
     originalPrice: "原價待補",
     price: "買一送一 $ 1,580",
-    image: "/products/fish oil1+1.png",
+    image: "/products/fishoil1+1.png",
     description: "挪威 EPAX 高活性 rTG 魚油軟膠囊買1送1，共2盒，規格依商品標示。",
   },
 
