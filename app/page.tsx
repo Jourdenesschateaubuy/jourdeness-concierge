@@ -132,7 +132,7 @@ const products: Product[] = [
     series: "晶眸保健系列",
     originalPrice: "原價 $ ???",
     price: "產地價待補",
-    image: "/products/ec-lutein-set.jpg",
+    image: "/products/Lutein.jpg",
     description: "精華凍 + 精華飲綜合組。",
   },
   {
@@ -142,7 +142,7 @@ const products: Product[] = [
     series: "美妍飲品系列",
     originalPrice: "原價 $ ???",
     price: "產地價待補",
-    image: "/products/collagen-drink-rose.jpg",
+    image: "/products/FISH-Collagen.jpg",
     description: "美妍保健飲品。",
   },
 
@@ -834,7 +834,7 @@ const products: Product[] = [
     series: "櫻の雪傳明酸美白系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/sukola2.jpg",
+    image: "/products/su2.jpg",
     description: "30mL。櫻の雪傳明酸美白系列。",
   },
   {
@@ -844,7 +844,7 @@ const products: Product[] = [
     series: "櫻の雪傳明酸美白系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/sukola3.jpg",
+    image: "/products/su3.jpg",
     description: "100mL。櫻の雪傳明酸美白系列。",
   },
   {
@@ -864,7 +864,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/fish oil.jpg",
     description: "生福科技品項。",
   },
 
@@ -1026,7 +1026,7 @@ const products: Product[] = [
     series: "牙膏組合",
     originalPrice: "原價 $ 750",
     price: "產地價 $ 500",
-    image: "/products/Lavender-washtoothpaste.jpg",
+    image: "/products/tooth500.png",
     description: "薰衣草舒緩 / 龍血修護可混搭，共3條。",
   },
   {
@@ -1490,7 +1490,7 @@ const products: Product[] = [
     series: "保養套組",
     originalPrice: "原價待補",
     price: "組合價 $ 1,780",
-    image: "/products/placeholder.jpg",
+    image: "/products/su2+1.png",
     description: "購買櫻の雪傳明酸美白精華液30mL + 櫻の雪傳明酸美白乳液100mL，贈送櫻の雪傳明酸美白化妝水150mL。",
   },
   {
@@ -1500,7 +1500,7 @@ const products: Product[] = [
     series: "保養套組",
     originalPrice: "原價待補",
     price: "任選2瓶 $ 980",
-    image: "/products/db+su1+1.jpg",
+    image: "/products/db+su1+1.png",
     description: "龍血求麗潔顏慕絲150mL / 櫻の雪淨白潔顏慕絲150mL 可任選搭配，共2瓶。",
   },
   {
@@ -1520,7 +1520,7 @@ const products: Product[] = [
     series: "洗沐組合",
     originalPrice: "原價待補",
     price: "1+1 $ 1,500",
-    image: "/products/hair1+1.jpg",
+    image: "/products/hair1+1.png",
     description: "龍血求麗頭皮修護洗髮精 600mL + 阿甘甦醒髮根養護液 80mL，各1瓶，共2瓶。",
   },
   {
