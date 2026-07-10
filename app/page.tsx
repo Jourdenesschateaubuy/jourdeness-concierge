@@ -854,7 +854,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/water tooth 3+1.png",
+    image: "/products/watertooth.jpg",
     description: "生福科技品項。",
   },
   {
@@ -1480,7 +1480,7 @@ const products: Product[] = [
     series: "肥皂組合",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
-    image: "/products/bd soap.png",
+    image: "/products/bdsoap.png",
     description: "龍血檀香靜心皂 / 龍血艾草保庇皂 / 龍血玫瑰美膚皂 / 龍血檸檬馬鞭草皂 / 龍血薰衣草舒緩皂可任選，共4款。",
   },
   {
