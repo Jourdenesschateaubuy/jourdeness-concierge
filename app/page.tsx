@@ -966,7 +966,7 @@ const products: Product[] = [
     series: "保健食品組合",
     originalPrice: "原價 $ 9,600",
     price: "產地價 $ 4,200",
-    image: "/products/cranberry+BCCA.png",
+    image: "/products/berry5+bbca6.png",
     description: "BC-CA高鈣益生菌 6盒 + 蔓越莓益生菌 5盒。",
   },
   {
@@ -976,7 +976,7 @@ const products: Product[] = [
     series: "保健食品組合",
     originalPrice: "原價 $ 10,400",
     price: "產地價 $ 4,800",
-    image: "/products/probiotic-cranberry.jpg",
+    image: "/products/cranberry+BCCA.png",
     description: "蔓越莓益生菌 10盒 + BC-CA高鈣益生菌 1盒。",
   },
   {
