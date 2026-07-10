@@ -561,7 +561,7 @@ const products: Product[] = [
     series: "擴香設備",
     originalPrice: "原價 $ 1,980",
     price: "產地價 $ 1,980",
-    image: "/products/placeholder.jpg",
+    image: "/products/Ultrasonic Aroma Diffuser.jpg",
     description: "擴香設備。",
   },
 
@@ -1560,7 +1560,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "BC-CA複合益生菌高鈣活力配方為益生菌系列品項，適合作為日常保健與營養補給參考。",
     features: [
       "適合作為日常保健與營養補給參考。",
-      "可加入清單後由 LINE 客服協助確認優惠與庫存。",
+      "可加入清單後由 LINE 小幫手協助確認優惠與庫存。",
       "實際食用方式請依商品標示或客服說明為準。",
     ],
     suitableFor: [
@@ -1569,8 +1569,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "每日建議依產品標示或客服說明食用。",
     notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   2: {
     cardName: "蔓越莓益生菌",
@@ -1579,7 +1579,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "蔓越莓益生菌速酵力配方為益生菌系列品項，適合作為日常保健與營養補給參考。",
     features: [
       "適合作為日常保健與營養補給參考。",
-      "可加入清單後由 LINE 客服協助確認優惠與庫存。",
+      "可加入清單後由 LINE 小幫手協助確認優惠與庫存。",
       "實際食用方式請依商品標示或客服說明為準。",
     ],
     suitableFor: [
@@ -1588,8 +1588,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "每日建議依產品標示或客服說明食用。",
     notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   3: {
     cardName: "BC-HA 複合益生菌",
@@ -1599,7 +1599,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "大容量 60 包設計，適合作為日常保健補給。",
       "複合益生菌配方，協助維持消化道機能。",
-      "可加入清單後由 LINE 客服協助確認優惠組合與庫存。",
+      "可加入清單後由 LINE 小幫手協助確認優惠組合與庫存。",
     ],
     suitableFor: [
       "日常保健",
@@ -1608,8 +1608,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "每日建議依產品標示或客服說明食用。",
     notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   4: {
     cardName: "EC晶眸葉黃素",
@@ -1618,7 +1618,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "EC晶眸葉黃素為晶眸保健系列品項，適合作為日常保健與營養補給參考。",
     features: [
       "適合作為日常保健與營養補給參考。",
-      "可加入清單後由 LINE 客服協助確認優惠與庫存。",
+      "可加入清單後由 LINE 小幫手協助確認優惠與庫存。",
       "實際食用方式請依商品標示或客服說明為準。",
     ],
     suitableFor: [
@@ -1627,8 +1627,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "每日建議依產品標示或客服說明食用。",
     notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   5: {
     cardName: "亮妍魚膠原蛋白飲",
@@ -1637,7 +1637,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "亮妍魚膠原蛋白飲為美妍飲品系列品項，適合作為日常保健與營養補給參考。",
     features: [
       "適合作為日常保健與營養補給參考。",
-      "可加入清單後由 LINE 客服協助確認優惠與庫存。",
+      "可加入清單後由 LINE 小幫手協助確認優惠與庫存。",
       "實際食用方式請依商品標示或客服說明為準。",
     ],
     suitableFor: [
@@ -1646,8 +1646,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "每日建議依產品標示或客服說明食用。",
     notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   6: {
     cardName: "薰衣草肌安舒緩化妝水",
@@ -1664,8 +1664,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   7: {
     cardName: "薰衣草肌安舒緩精華液",
@@ -1682,8 +1682,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   8: {
     cardName: "薰衣草肌安舒緩保濕乳",
@@ -1700,8 +1700,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   9: {
     cardName: "冷杉潔顏乳",
@@ -1719,8 +1719,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   10: {
     cardName: "冷杉保濕化妝水",
@@ -1730,7 +1730,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "即期出清單瓶 $199，適合想補充清爽保濕品項的客人。",
       "清爽水感質地，適合男士日常保養使用。",
-      "即期優惠品項，實際效期請以 LINE 客服確認為準。",
+      "即期優惠品項，實際效期請以 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "即期出清",
@@ -1739,8 +1739,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "即期商品售出前會由客服協助確認效期。使用後若有不適，請暫停使用。",
-    expiryNote: "此為即期出清品項，實際效期請以 LINE 客服確認為準。",
-    priceNote: "即期出清單瓶 $199，庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "此為即期出清品項，實際效期請以 LINE 小幫手確認為準。",
+    priceNote: "即期出清單瓶 $199，庫存與效期依 LINE 小幫手確認為準。",
   },
 
   11: {
@@ -1751,7 +1751,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "即期出清單瓶 $199，適合想補充清爽保濕品項的客人。",
       "乳液質地可作為日常保濕步驟，適合男士簡單保養。",
-      "即期優惠品項，實際效期請以 LINE 客服確認為準。",
+      "即期優惠品項，實際效期請以 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "即期出清",
@@ -1760,8 +1760,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水後取適量均勻塗抹於臉部與頸部。",
     notice: "即期商品售出前會由客服協助確認效期。使用後若有不適，請暫停使用。",
-    expiryNote: "此為即期出清品項，實際效期請以 LINE 客服確認為準。",
-    priceNote: "即期出清單瓶 $199，庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "此為即期出清品項，實際效期請以 LINE 小幫手確認為準。",
+    priceNote: "即期出清單瓶 $199，庫存與效期依 LINE 小幫手確認為準。",
   },
 
   12: {
@@ -1771,7 +1771,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "冷杉酷涼活絡精油滾珠為冷杉系列保養品項，可依日常膚況與保養需求搭配使用。",
     features: [
       "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 客服協助確認適合搭配。",
+      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
       "商品優惠與庫存依客服確認為準。",
     ],
     suitableFor: [
@@ -1779,8 +1779,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   13: {
     cardName: "玫瑰潔顏慕絲",
@@ -1798,8 +1798,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   14: {
     cardName: "玫瑰活膚液",
@@ -1816,8 +1816,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   15: {
     cardName: "玫瑰瞬效乳",
@@ -1834,8 +1834,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   16: {
     cardName: "玫瑰瞬效霜",
@@ -1854,8 +1854,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠依 LINE 小幫手確認為準。",
   },
   17: {
     cardName: "龍血化妝水",
@@ -1872,8 +1872,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   18: {
     cardName: "龍血精華液",
@@ -1890,8 +1890,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   19: {
     cardName: "龍血修護乳",
@@ -1908,8 +1908,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   20: {
     cardName: "龍血修護霜",
@@ -1926,8 +1926,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   21: {
     cardName: "肌光緊緻速妍雪膚液",
@@ -1944,8 +1944,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   22: {
     cardName: "肌光緊緻速妍精華露",
@@ -1962,8 +1962,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   23: {
     cardName: "肌光緊緻速妍霜",
@@ -1980,8 +1980,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   24: {
     cardName: "肌光緊緻速妍面膜",
@@ -1999,8 +1999,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   25: {
     cardName: "INSK乳酸平衡機能水",
@@ -2017,8 +2017,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   26: {
     cardName: "INSK乳酸平衡修護乳",
@@ -2035,8 +2035,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   27: {
     cardName: "BA-5肌密抗皺精華",
@@ -2053,8 +2053,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   28: {
     cardName: "BA-5肌密抗皺霜",
@@ -2071,8 +2071,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   29: {
     cardName: "龍血頭皮修護洗髮精",
@@ -2082,7 +2082,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "適合日常清潔、保養或香氛搭配使用。",
       "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "商品優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "洗沐",
@@ -2090,8 +2090,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於濕髮或身體肌膚，搓揉清潔後以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   30: {
     cardName: "龍血潤澤修護沐浴乳",
@@ -2101,7 +2101,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "適合日常清潔、保養或香氛搭配使用。",
       "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "商品優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "洗沐",
@@ -2109,8 +2109,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於濕髮或身體肌膚，搓揉清潔後以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   31: {
     cardName: "純淨洗髮精",
@@ -2120,7 +2120,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "適合日常清潔、保養或香氛搭配使用。",
       "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "商品優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "洗沐",
@@ -2128,8 +2128,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於濕髮或身體肌膚，搓揉清潔後以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   32: {
     cardName: "阿甘絲柔洗髮精",
@@ -2139,7 +2139,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "適合日常清潔、保養或香氛搭配使用。",
       "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "商品優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "洗沐",
@@ -2147,8 +2147,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於濕髮或身體肌膚，搓揉清潔後以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   33: {
     cardName: "INSK乳酸淨痘修護膠",
@@ -2165,8 +2165,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   34: {
     cardName: "INSK乳酸平衡水嫩膜",
@@ -2183,8 +2183,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   35: {
     cardName: "薰衣草舒緩牙膏",
@@ -2194,15 +2194,15 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "適合日常清潔、保養或香氛搭配使用。",
       "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "商品優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "牙膏",
     ],
     usage: "取適量刷牙使用，使用後請以清水漱口。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   36: {
     cardName: "龍血修護牙膏",
@@ -2212,15 +2212,15 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "適合日常清潔、保養或香氛搭配使用。",
       "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "商品優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "牙膏",
     ],
     usage: "取適量刷牙使用，使用後請以清水漱口。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   37: {
     cardName: "智慧之冠",
@@ -2238,8 +2238,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "請依商品標示方式使用，可搭配擴香設備或依客服建議使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   38: {
     cardName: "亮采橙真",
@@ -2257,8 +2257,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "請依商品標示方式使用，可搭配擴香設備或依客服建議使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   39: {
     cardName: "呼暢護隨",
@@ -2276,8 +2276,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "請依商品標示方式使用，可搭配擴香設備或依客服建議使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   40: {
     cardName: "魔力輕盈",
@@ -2295,8 +2295,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "請依商品標示方式使用，可搭配擴香設備或依客服建議使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   41: {
     cardName: "順暢平衡",
@@ -2314,8 +2314,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "請依商品標示方式使用，可搭配擴香設備或依客服建議使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   42: {
     cardName: "心之綻放",
@@ -2333,8 +2333,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "請依商品標示方式使用，可搭配擴香設備或依客服建議使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   43: {
     cardName: "青春密碼維 E 精萃油",
@@ -2352,8 +2352,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "請依商品標示方式使用，可搭配擴香設備或依客服建議使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   44: {
     cardName: "防護盾牌維 C 精萃油",
@@ -2371,8 +2371,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "請依商品標示方式使用，可搭配擴香設備或依客服建議使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   45: {
     cardName: "晚安無瑕維 A 精萃油",
@@ -2390,8 +2390,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "請依商品標示方式使用，可搭配擴香設備或依客服建議使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   46: {
     cardName: "高頻霧化香薰機",
@@ -2409,44 +2409,44 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "請依商品標示方式使用，可搭配擴香設備或依客服建議使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   47: {
     cardName: "石墨烯電氣石精油貼布(涼感)",
     cardSubtitle: "商品敘述・貼布",
     spec: "商品敘述",
-    intro: "石墨烯電氣石精油貼布(涼感)為貼布精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "石墨烯電氣石精油貼布(涼感)為貼布精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "貼布",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   48: {
     cardName: "石墨烯電氣石精油貼布(溫感)",
     cardSubtitle: "商品敘述・貼布",
     spec: "商品敘述",
-    intro: "石墨烯電氣石精油貼布(溫感)為貼布精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "石墨烯電氣石精油貼布(溫感)為貼布精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "貼布",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   49: {
     cardName: "茶樹K痘精華",
@@ -2463,8 +2463,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   50: {
     cardName: "茶樹控油化妝水",
@@ -2481,8 +2481,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   51: {
     cardName: "茶樹控油保濕乳",
@@ -2500,8 +2500,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   52: {
     cardName: "肌可佳膠原蛋白彈潤原液",
@@ -2510,7 +2510,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "肌可佳膠原蛋白彈潤原液為膠原蛋白系列保養品項，可依日常膚況與保養需求搭配使用。",
     features: [
       "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 客服協助確認適合搭配。",
+      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
       "商品優惠與庫存依客服確認為準。",
     ],
     suitableFor: [
@@ -2518,8 +2518,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   53: {
     cardName: "龍血玻尿酸保濕精華液",
@@ -2536,8 +2536,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   54: {
     cardName: "龍血卸妝油",
@@ -2554,8 +2554,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於乾手或依商品標示方式使用，輕柔按摩後再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   55: {
     cardName: "龍血潔顏慕絲",
@@ -2574,7 +2574,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "若有組合價活動，客服會協助確認最適合的優惠方案。",
   },
   56: {
@@ -2593,8 +2593,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   57: {
     cardName: "水搖滾保濕面膜",
@@ -2612,8 +2612,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   58: {
     cardName: "水搖滾保濕面膜",
@@ -2631,8 +2631,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   59: {
     cardName: "極光白美白面膜",
@@ -2650,8 +2650,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   60: {
     cardName: "極光白美白面膜",
@@ -2669,8 +2669,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   61: {
     cardName: "水光肌能化妝水",
@@ -2687,8 +2687,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   62: {
     cardName: "水光肌能乳液",
@@ -2705,8 +2705,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   63: {
     cardName: "水光肌能晚霜",
@@ -2723,8 +2723,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   64: {
     cardName: "苦杏仁酸溫和煥顏露",
@@ -2733,7 +2733,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "苦杏仁酸溫和煥顏露為杏仁酸系列保養品項，可依日常膚況與保養需求搭配使用。",
     features: [
       "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 客服協助確認適合搭配。",
+      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
       "商品優惠與庫存依客服確認為準。",
     ],
     suitableFor: [
@@ -2741,8 +2741,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   65: {
     cardName: "冰河淨化潔顏慕絲",
@@ -2760,8 +2760,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   66: {
     cardName: "冰河淨化淨膚露",
@@ -2770,7 +2770,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "冰河淨化淨膚露為冰河淨化系列保養品項，可依日常膚況與保養需求搭配使用。",
     features: [
       "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 客服協助確認適合搭配。",
+      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
       "商品優惠與庫存依客服確認為準。",
     ],
     suitableFor: [
@@ -2778,8 +2778,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   67: {
     cardName: "冰河淨化柔膚面膜",
@@ -2797,8 +2797,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   68: {
     cardName: "晶淬雪潤白乳",
@@ -2815,8 +2815,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   69: {
     cardName: "鳳梨酵素代謝角質凝露",
@@ -2825,7 +2825,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "鳳梨酵素代謝角質凝露為鳳梨酵素系列保養品項，可依日常膚況與保養需求搭配使用。",
     features: [
       "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 客服協助確認適合搭配。",
+      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
       "商品優惠與庫存依客服確認為準。",
     ],
     suitableFor: [
@@ -2834,8 +2834,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   70: {
     cardName: "鳳梨酵素活膚面膜",
@@ -2853,8 +2853,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   71: {
     cardName: "櫻の雪潔顏慕絲",
@@ -2873,8 +2873,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "實際優惠依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "實際優惠依 LINE 小幫手確認為準。",
   },
   72: {
     cardName: "櫻の雪美白化妝水",
@@ -2891,8 +2891,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },  141: {
     cardName: "櫻の雪美白精華液",
     cardSubtitle: "30mL・櫻の雪傳明酸美白系列",
@@ -2938,39 +2938,39 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     cardName: "能量牛樟芝保健潔口液",
     cardSubtitle: "生福科技品項・生福科技",
     spec: "生福科技品項",
-    intro: "能量牛樟芝保健潔口液為生福科技精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "能量牛樟芝保健潔口液為生福科技精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "生福科技",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   74: {
     cardName: "挪威 EPAX 高活性 rTG 魚油軟膠囊",
     cardSubtitle: "生福科技品項・生福科技",
     spec: "生福科技品項",
-    intro: "挪威 EPAX 高活性 rTG 魚油軟膠囊為生福科技精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "挪威 EPAX 高活性 rTG 魚油軟膠囊為生福科技精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "生福科技",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   75: {
     cardName: "櫻の雪亮澤護手霜",
@@ -3001,15 +3001,15 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "適合日常清潔、保養或香氛搭配使用。",
       "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "商品優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "護手霜",
     ],
     usage: "取適量塗抹於手部肌膚，可依乾燥程度重複使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   77: {
     cardName: "薰衣草舒緩護手霜",
@@ -3019,15 +3019,15 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "適合日常清潔、保養或香氛搭配使用。",
       "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "商品優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "護手霜",
     ],
     usage: "取適量塗抹於手部肌膚，可依乾燥程度重複使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   78: {
     cardName: "麝香棉花香氛護手霜",
@@ -3037,15 +3037,15 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "適合日常清潔、保養或香氛搭配使用。",
       "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "商品優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "護手霜",
     ],
     usage: "取適量塗抹於手部肌膚，可依乾燥程度重複使用。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   79: {
     cardName: "龍血玫瑰美膚皂",
@@ -3055,7 +3055,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "龍血手工皂系列，適合日常清潔使用。",
       "可與其他龍血手工皂搭配任選4款活動。",
-      "任選4款 $799，庫存與效期依 LINE 客服確認為準。",
+      "任選4款 $799，庫存與效期依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "日常清潔",
@@ -3064,8 +3064,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
   },
 
   80: {
@@ -3076,7 +3076,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "龍血手工皂系列，適合日常清潔使用。",
       "可與其他龍血手工皂搭配任選4款活動。",
-      "任選4款 $799，庫存與效期依 LINE 客服確認為準。",
+      "任選4款 $799，庫存與效期依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "日常清潔",
@@ -3085,8 +3085,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
   },
 
   81: {
@@ -3097,7 +3097,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "龍血手工皂系列，適合日常清潔使用。",
       "可與其他龍血手工皂搭配任選4款活動。",
-      "任選4款 $799，庫存與效期依 LINE 客服確認為準。",
+      "任選4款 $799，庫存與效期依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "日常清潔",
@@ -3106,8 +3106,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
   },
 
   82: {
@@ -3118,7 +3118,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "龍血手工皂系列，適合日常清潔使用。",
       "可與其他龍血手工皂搭配任選4款活動。",
-      "任選4款 $799，庫存與效期依 LINE 客服確認為準。",
+      "任選4款 $799，庫存與效期依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "日常清潔",
@@ -3127,8 +3127,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
   },
 
   83: {
@@ -3145,10 +3145,10 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "益生菌補給",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
+    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   84: {
     cardName: "高鈣益生菌6盒 + 蔓越莓益生菌5盒",
@@ -3164,10 +3164,10 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "益生菌補給",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
+    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   85: {
     cardName: "蔓越莓益生菌10盒 + 高鈣益生菌1盒",
@@ -3183,10 +3183,10 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "益生菌補給",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
+    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   86: {
     cardName: "石墨烯電氣石精油貼布任選4盒",
@@ -3201,10 +3201,10 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     suitableFor: [
       "組合優惠",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
+    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   87: {
     cardName: "石墨烯電氣石精油貼布任選10盒",
@@ -3219,10 +3219,10 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     suitableFor: [
       "組合優惠",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
+    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   88: {
     cardName: "牛樟芝潔口液3罐組",
@@ -3232,7 +3232,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "能量牛樟芝保健潔口液 3罐，搭配薰衣草舒緩牙膏1條。",
       "組合價 $1,500，適合日常口腔清潔用品補貨。",
-      "組合內容、效期與庫存依 LINE 客服確認為準。",
+      "組合內容、效期與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "組合優惠",
@@ -3241,8 +3241,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "潔口液與牙膏請依商品標示方式使用。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "3罐潔口液贈薰衣草牙膏1條，組合價 $1,500；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "3罐潔口液贈薰衣草牙膏1條，組合價 $1,500；庫存與效期依 LINE 小幫手確認為準。",
   },
 
   89: {
@@ -3259,10 +3259,10 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "龍血系列",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
+    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   90: {
     cardName: "牙膏任選3條",
@@ -3277,10 +3277,10 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     suitableFor: [
       "組合優惠",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
+    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   91: {
     cardName: "水搖滾 / 極光白美白面膜桶裝任選組",
@@ -3296,10 +3296,10 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "面膜保養",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
+    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },  92: {
     cardName: "EPAX 魚油買一送一",
     cardSubtitle: "買1送1・$1,580",
@@ -3308,7 +3308,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "買一送一，共2盒，組合價 $1,580。",
       "適合作為日常營養補給參考。",
-      "組合內容、效期與庫存依 LINE 客服確認為準。",
+      "組合內容、效期與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "組合優惠",
@@ -3317,8 +3317,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "每日建議依產品標示或客服說明食用。",
     notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "買一送一 $1,580；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "買一送一 $1,580；庫存與效期依 LINE 小幫手確認為準。",
   },
 
   93: {
@@ -3329,7 +3329,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "適合日常清潔、保養或香氛搭配使用。",
       "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 客服確認為準。",
+      "商品優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "洗沐",
@@ -3337,8 +3337,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於濕髮或身體肌膚，搓揉清潔後以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   94: {
     cardName: "龍血檀香靜心皂",
@@ -3348,7 +3348,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "龍血手工皂系列，適合日常清潔使用。",
       "可與其他龍血手工皂搭配任選4款活動。",
-      "任選4款 $799，庫存與效期依 LINE 客服確認為準。",
+      "任選4款 $799，庫存與效期依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "日常清潔",
@@ -3357,85 +3357,85 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
   },
 
   95: {
     cardName: "火炙帶",
     cardSubtitle: "生福科技品項・生福科技",
     spec: "生福科技品項",
-    intro: "火炙帶為生福科技精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "火炙帶為生福科技精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "生福科技",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   96: {
     cardName: "好亨睡科技毯",
     cardSubtitle: "生福科技品項・生福科技",
     spec: "生福科技品項",
-    intro: "好亨睡科技毯為生福科技精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "好亨睡科技毯為生福科技精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "生福科技",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   97: {
     cardName: "鴕鳥龜鹿土龍精",
     cardSubtitle: "生福科技品項・生福科技",
     spec: "生福科技品項",
-    intro: "鴕鳥龜鹿土龍精為生福科技精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "鴕鳥龜鹿土龍精為生福科技精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "生福科技",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   98: {
     cardName: "EX+ Q18 魚膠原蛋白粉",
     cardSubtitle: "生福科技品項・生福科技",
     spec: "生福科技品項",
-    intro: "EX+ Q18 魚膠原蛋白粉為生福科技精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "EX+ Q18 魚膠原蛋白粉為生福科技精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "生福科技",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   99: {
     cardName: "梅托洛",
@@ -3472,10 +3472,10 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "益生菌補給",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 客服協助確認組合內容、數量與優惠。",
+    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   101: {
     cardName: "龍血洗卸1+1組",
@@ -3485,7 +3485,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "固定搭配潔顏慕絲 1 瓶與卸妝油 1 瓶，不是任選。",
       "洗卸清潔一次補齊，適合日常卸妝與潔顏流程。",
-      "組合價 $1,080，庫存與效期依 LINE 客服確認為準。",
+      "組合價 $1,080，庫存與效期依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "組合優惠",
@@ -3494,28 +3494,28 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "先以龍血求麗卸妝油清潔彩妝與髒污，再搭配龍血求麗潔顏慕絲完成日常潔顏。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "潔顏慕絲 1 瓶 + 卸妝油 1 瓶，1+1 兩瓶 $1,080；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "潔顏慕絲 1 瓶 + 卸妝油 1 瓶，1+1 兩瓶 $1,080；庫存與效期依 LINE 小幫手確認為準。",
   },
 
   102: {
     cardName: "糖肽中膠囊",
     cardSubtitle: "生福科技品項・生福科技",
     spec: "生福科技品項",
-    intro: "糖肽中膠囊為生福科技精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "糖肽中膠囊為生福科技精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "生福科技",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   103: {
     cardName: "柔焦濾鏡CC霜",
@@ -3532,8 +3532,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   104: {
     cardName: "綠茶多酚保濕平衡精華液",
@@ -3550,8 +3550,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   105: {
     cardName: "綠茶多酚保濕平衡面膜",
@@ -3569,8 +3569,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   106: {
     cardName: "白金密集煥白淡斑筆",
@@ -3579,7 +3579,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "白金密集煥白淡斑筆為白金密集煥白系列保養品項，可依日常膚況與保養需求搭配使用。",
     features: [
       "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 客服協助確認適合搭配。",
+      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
       "商品優惠與庫存依客服確認為準。",
     ],
     suitableFor: [
@@ -3587,8 +3587,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   107: {
     cardName: "賽洛美潤膚美體油(C+E)",
@@ -3597,7 +3597,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "賽洛美潤膚美體油(C+E)為頂級養護保養品項，可依日常膚況與保養需求搭配使用。",
     features: [
       "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 客服協助確認適合搭配。",
+      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
       "商品優惠與庫存依客服確認為準。",
     ],
     suitableFor: [
@@ -3605,8 +3605,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   108: {
     cardName: "24小時賦活液",
@@ -3615,7 +3615,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "24小時賦活液為頂級養護保養品項，可依日常膚況與保養需求搭配使用。",
     features: [
       "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 客服協助確認適合搭配。",
+      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
       "商品優惠與庫存依客服確認為準。",
     ],
     suitableFor: [
@@ -3623,8 +3623,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   109: {
     cardName: "鉑金無痕煥白雙導精華",
@@ -3642,8 +3642,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   110: {
     cardName: "黑耀緊緻奢華眼霜",
@@ -3660,8 +3660,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   111: {
     cardName: "24小時黃金璀璨賦活液",
@@ -3670,7 +3670,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "24小時黃金璀璨賦活液為頂級養護保養品項，可依日常膚況與保養需求搭配使用。",
     features: [
       "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 客服協助確認適合搭配。",
+      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
       "商品優惠與庫存依客服確認為準。",
     ],
     suitableFor: [
@@ -3678,84 +3678,84 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   112: {
     cardName: "大猩猩紅酒架",
     cardSubtitle: "木匠兄妹品項・木匠兄妹",
     spec: "木匠兄妹品項",
-    intro: "大猩猩紅酒架為木匠兄妹精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "大猩猩紅酒架為木匠兄妹精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "木匠兄妹",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   113: {
     cardName: "親子DIY 小花椅",
     cardSubtitle: "居家體驗品項，固碳量 6426 克・木匠兄妹",
     spec: "居家體驗品項，固碳量 6426 克",
-    intro: "親子DIY 小花椅為木匠兄妹精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "親子DIY 小花椅為木匠兄妹精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "木匠兄妹",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   114: {
     cardName: "CARPENTER 漢堡杯墊",
     cardSubtitle: "固碳量 437 克・木匠兄妹",
     spec: "固碳量 437 克",
-    intro: "CARPENTER 漢堡杯墊為木匠兄妹精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "CARPENTER 漢堡杯墊為木匠兄妹精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "木匠兄妹",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   115: {
     cardName: "CARPENTER 法藍獅時計",
     cardSubtitle: "固碳量 280 克・木匠兄妹",
     spec: "固碳量 280 克",
-    intro: "CARPENTER 法藍獅時計為木匠兄妹精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    intro: "CARPENTER 法藍獅時計為木匠兄妹精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
     features: [
       "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
       "適合搭配回購群日常選品一起確認。",
     ],
     suitableFor: [
       "外部廠商",
       "木匠兄妹",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   116: {
     cardName: "水光苦杏仁酸慕絲",
@@ -3774,8 +3774,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   117: {
     cardName: "時光瑞亞淡香水",
@@ -3815,8 +3815,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   119: {
     cardName: "冰河淨化柔膚面膜",
@@ -3835,8 +3835,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   120: {
     cardName: "Exo-雙粹秘泌凍晶組",
@@ -3853,8 +3853,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   121: {
     cardName: "奧勒岡小白花美體乳",
@@ -3871,8 +3871,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   122: {
     cardName: "肌光緊緻速妍面膜",
@@ -3890,8 +3890,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   123: {
     cardName: "INSK乳酸平衡水嫩膜",
@@ -3908,8 +3908,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   124: {
     cardName: "水搖滾保濕面膜",
@@ -3927,8 +3927,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   125: {
     cardName: "水搖滾保濕面膜",
@@ -3946,8 +3946,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   126: {
     cardName: "水搖滾保濕面膜",
@@ -3965,8 +3965,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   127: {
     cardName: "極光白美白面膜",
@@ -3984,8 +3984,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   128: {
     cardName: "極光白美白面膜",
@@ -4003,8 +4003,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   129: {
     cardName: "冰河淨化柔膚面膜",
@@ -4022,8 +4022,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   130: {
     cardName: "鳳梨酵素活膚面膜",
@@ -4041,8 +4041,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   131: {
     cardName: "綠茶多酚保濕平衡面膜",
@@ -4060,8 +4060,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   132: {
     cardName: "超導水網瞬效面膜",
@@ -4079,8 +4079,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   133: {
     cardName: "蛋白纖維營養餐",
@@ -4090,7 +4090,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "倍力工房精選品項，可加入清單詢問。",
       "適合作為日常營養補給參考。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "倍力工房",
@@ -4099,8 +4099,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "每日建議依產品標示或客服說明食用。",
     notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   134: {
     cardName: "固硒力遠紅外線舒緩貼布",
@@ -4110,17 +4110,17 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "倍力工房精選舒緩貼布品項。",
       "適合想詢問貼布類生活選品的客人。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "倍力工房",
       "貼布",
       "外部廠商",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
     notice: "使用後若有不適，請暫停使用。請依商品標示方式使用。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   135: {
     cardName: "龍血手工皂任選4款",
@@ -4130,7 +4130,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "龍血檀香靜心皂、龍血艾草保庇皂、龍血玫瑰美膚皂、龍血檸檬馬鞭草皂、龍血薰衣草舒緩皂可任選。",
       "任選4款 $799，適合日常清潔用品補貨。",
-      "組合內容、效期與庫存依 LINE 客服確認為準。",
+      "組合內容、效期與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "組合優惠",
@@ -4139,8 +4139,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "龍血手工皂任選4款 $799；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "龍血手工皂任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
   },
   136: {
     cardName: "櫻の雪美白精華乳液組",
@@ -4150,7 +4150,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "購買櫻の雪傳明酸美白精華液30mL + 美白乳液100mL。",
       "贈送櫻の雪傳明酸美白化妝水150mL。",
-      "組合價 $1,780，庫存與效期依 LINE 客服確認為準。",
+      "組合價 $1,780，庫存與效期依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "組合優惠",
@@ -4159,8 +4159,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "清潔後依化妝水、精華液、乳液順序使用；實際使用方式依商品標示為準。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "購買精華液30mL + 乳液100mL，贈化妝水150mL，組合價 $1,780；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "購買精華液30mL + 乳液100mL，贈化妝水150mL，組合價 $1,780；庫存與效期依 LINE 小幫手確認為準。",
   },
   137: {
     cardName: "龍血 / 櫻の雪潔顏慕絲任選2瓶",
@@ -4170,7 +4170,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "龍血求麗潔顏慕絲150mL與櫻の雪淨白潔顏慕絲150mL可任選。",
       "任選2瓶 $980，適合日常潔顏補貨。",
-      "組合內容、效期與庫存依 LINE 客服確認為準。",
+      "組合內容、效期與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "組合優惠",
@@ -4179,8 +4179,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "潔顏慕絲任選2瓶 $980；庫存與效期依 LINE 客服確認為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "潔顏慕絲任選2瓶 $980；庫存與效期依 LINE 小幫手確認為準。",
   },
   138: {
     cardName: "亮妍膠原飲兩盒贈晶眸",
@@ -4373,6 +4373,21 @@ export default function Home() {
   const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74, 99, 138, 143]);
   const homeDailyLifeProducts = getProductsByIds([29, 30, 93, 31, 32, 140, 117, 75, 133, 134, 47, 48, 79, 80, 81, 82, 94, 35, 36, 37]);
 
+  const quickSearchTerms = [
+    "組合價",
+    "買一送一",
+    "買一送二",
+    "益生菌",
+    "龍血",
+    "櫻の雪",
+    "生福科技",
+    "面膜",
+  ];
+
+  const collectionSeriesChips = seriesList.filter((series) => series !== "全部").slice(0, 14);
+  const collectionFeaturedProducts = filteredProducts.slice(0, 3);
+  const cartUpsellProducts = getCartUpsellProducts();
+
   const skinGuideCards: { title: SkinFilter; text: string }[] = [
     { title: "乾燥缺水", text: "想加強水潤與保濕" },
     { title: "油性毛孔", text: "控油、毛孔與角質代謝" },
@@ -4547,7 +4562,7 @@ export default function Home() {
   }
 
   function displayPrice(product: Product) {
-    if (hasInquiryPrice(product)) return "LINE 詢價";
+    if (hasInquiryPrice(product)) return "售價請洽小幫手";
     return product.price;
   }
 
@@ -4673,6 +4688,24 @@ export default function Home() {
     return tags.slice(0, 2);
   }
 
+
+  function getCommerceBadgeLabel(product: Product) {
+    const priceText = displayPrice(product);
+    const fullText = `${product.name} ${product.description} ${priceText} ${product.series}`;
+
+    if (isSoldOut(product)) return "缺貨";
+    if (isExpiringDeal(product)) return "即期出清";
+    if (fullText.includes("買一送二")) return "買一送二";
+    if (fullText.includes("買一送一")) return "買一送一";
+    if (fullText.includes("贈")) return "贈品組";
+    if (fullText.includes("任選")) return "任選優惠";
+    if (product.category === "組合價") return "回購優惠";
+    if (hasComboPrice(product)) return "有組合價";
+    if (hasInquiryPrice(product)) return "LINE 詢價";
+
+    return product.series;
+  }
+
   function normalizeSearchText(value: string) {
     return value
       .toLowerCase()
@@ -4731,6 +4764,55 @@ export default function Home() {
 
     const fuzzyScore = fuzzyGapScore(normalizedQuery, fullText);
     return fuzzyScore === null ? null : 20 + fuzzyScore;
+  }
+
+  function openSearchTerm(term: string) {
+    setSearchQuery(term);
+    setIsCollectionOpen(false);
+    setIsSearchOpen(true);
+    window.setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 0);
+  }
+
+  function selectCollectionSeries(series: string) {
+    setSelectedSeries(series);
+    setSelectedSkinFilter("全部");
+    setSearchQuery("");
+  }
+
+  function getCollectionSubtitle() {
+    if (selectedCategory === "組合價") {
+      return "回購群專屬優惠、買一送一、買一送二、任選組合與贈品組都集中在這裡。";
+    }
+
+    if (selectedCategory === "保養品") {
+      return "可依系列或膚況需求快速篩選，找到適合日常保養或加強保養的品項。";
+    }
+
+    if (selectedCategory === "外部廠商") {
+      return "生福科技、倍力工房、木匠兄妹等精選生活與保健選品。";
+    }
+
+    return "可加入清單或查看商品資訊，送出後由 LINE 小幫手確認庫存、效期與金額。";
+  }
+
+  function getCollectionHeroLabel() {
+    if (selectedSeries !== "全部") return selectedSeries;
+    if (selectedSkinFilter !== "全部") return selectedSkinFilter;
+    if (selectedCategory === "全部") return "全部商品";
+    return selectedCategory;
+  }
+
+  function getCartUpsellProducts() {
+    const currentIds = new Set(cartItems.map((item) => item.product.id));
+    const recommendIds = [
+      90, 89, 143, 92, 88, 100, 35, 36, 47, 48, 1, 2, 74, 99, 144, 133, 134,
+    ];
+
+    return getProductsByIds(recommendIds)
+      .filter((product) => !currentIds.has(product.id) && !isSoldOut(product))
+      .slice(0, 4);
   }
 
   function currentFilterText() {
@@ -4854,11 +4936,18 @@ export default function Home() {
     return (
       <div className={`product-image ${variant === "featured" ? "featured-image" : ""}`}>
         {hasRealImage(product) ? (
-          <img src={product.image} alt={product.name} />
+          <img
+            src={product.image}
+            alt={product.name}
+            onError={(event) => {
+              event.currentTarget.parentElement?.classList.add("image-load-failed");
+              event.currentTarget.style.display = "none";
+            }}
+          />
         ) : (
           <div className="image-placeholder">
             <span>Jourdeness Castle</span>
-            <strong>商品圖片準備中</strong>
+            <strong>圖片更新中</strong>
           </div>
         )}
       </div>
@@ -4893,18 +4982,18 @@ export default function Home() {
     }
 
     if (isExpiringDeal(product)) {
-      return "即期優惠品項，效期與庫存請以 LINE 客服確認為準。";
+      return "即期優惠品項，效期與庫存請以 LINE 小幫手確認為準。";
     }
 
     if (hasInquiryPrice(product)) {
-      return "目前售價由 LINE 客服確認，送出清單後會協助回覆。";
+      return "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。";
     }
 
     if (hasComboPrice(product)) {
       return "若有組合價活動，客服會協助確認最適合的優惠方案。";
     }
 
-    return "實際優惠與庫存依 LINE 客服確認為準。";
+    return "實際優惠與庫存依 LINE 小幫手確認為準。";
   }
 
   function getIntroText(product: Product) {
@@ -4954,10 +5043,10 @@ export default function Home() {
     if (product.expiryNote !== undefined) return product.expiryNote;
 
     if (isExpiringDeal(product)) {
-      return "此為即期優惠品項，實際效期請以 LINE 客服確認為準。";
+      return "此為即期優惠品項，實際效期請以 LINE 小幫手確認為準。";
     }
 
-    return "效期依商品標示或 LINE 客服確認為準。";
+    return "效期依商品標示或 LINE 小幫手確認為準。";
   }
 
   function getNoticeText(product: Product) {
@@ -5020,22 +5109,57 @@ export default function Home() {
     }
 
     if (bullets.length === 0) {
-      bullets.push("可先加入清單，送出後由 LINE 客服協助確認庫存、價格與適合搭配品項。");
+      bullets.push("可先加入清單，送出後由 LINE 小幫手協助確認庫存、價格與適合搭配品項。");
     }
 
     return bullets.slice(0, 4);
   }
 
   function getRelatedProducts(product: Product) {
+    const manualRelatedIds: Record<number, number[]> = {
+      99: [144, 92, 88, 74, 143],
+      144: [99, 92, 88, 74, 143],
+      29: [139, 30, 93, 89],
+      30: [89, 29, 139, 93],
+      54: [101, 55, 17, 19],
+      55: [101, 54, 71, 137],
+      71: [137, 136, 72, 141, 142],
+      117: [140, 75, 78, 77],
+      75: [140, 117, 76, 77],
+      74: [92, 99, 144, 88],
+      4: [138, 5, 74, 92],
+      5: [138, 4, 1, 2],
+    };
+
+    const manual = getProductsByIds(manualRelatedIds[product.id] ?? []);
+
     const sameSeries = products.filter(
-      (item) => item.id !== product.id && item.category === product.category && item.series === product.series
+      (item) =>
+        item.id !== product.id &&
+        item.category === product.category &&
+        item.series === product.series
     );
+
+    const comboMatches = products.filter((item) => {
+      if (item.id === product.id || item.category !== "組合價") return false;
+      return item.name.includes(product.name.slice(0, 4)) || item.description.includes(product.name.slice(0, 4));
+    });
 
     const sameCategory = products.filter(
-      (item) => item.id !== product.id && item.category === product.category && item.series !== product.series
+      (item) =>
+        item.id !== product.id &&
+        item.category === product.category &&
+        item.series !== product.series
     );
 
-    return [...sameSeries, ...sameCategory].slice(0, 4);
+    const seen = new Set<number>();
+    return [...manual, ...comboMatches, ...sameSeries, ...sameCategory]
+      .filter((item) => {
+        if (seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      })
+      .slice(0, 6);
   }
 
   function ProductCard({
@@ -5048,15 +5172,20 @@ export default function Home() {
     const soldOut = isSoldOut(product);
     const inquiry = hasInquiryPrice(product);
     const tags = displayTags(product);
+    const badgeLabel = getCommerceBadgeLabel(product);
 
     return (
       <article
-        className={featured ? "featured-card" : "product-card"}
+        className={`${featured ? "featured-card" : "product-card"} commerce-product-card`}
         key={featured ? `featured-${product.id}` : product.id}
       >
+        <div className={`commerce-card-badge ${soldOut ? "soldout" : inquiry ? "inquiry" : ""}`}>
+          {badgeLabel}
+        </div>
+
         <ProductVisual product={product} variant={featured ? "featured" : "normal"} />
 
-        <div className={featured ? "featured-info" : "product-info"}>
+        <div className={featured ? "featured-info product-info" : "product-info"}>
           <div className="product-meta-row">
             <p className="series-label">{product.series}</p>
             {inquiry && !soldOut && <span>可詢價</span>}
@@ -5084,7 +5213,7 @@ export default function Home() {
             )}
           </div>
 
-          <div className="price-block">
+          <div className="price-block commerce-price-block">
             {hasKnownOriginalPrice(product) && (
               <p className="original-price">{product.originalPrice}</p>
             )}
@@ -5094,21 +5223,23 @@ export default function Home() {
             </p>
           </div>
 
-          <button
-            className="add-cart-button"
-            onClick={() => addToCart(product)}
-            disabled={soldOut}
-          >
-            {soldOut ? "缺貨中" : inquiry ? "加入詢問清單" : "加入清單"}
-          </button>
+          <div className="commerce-card-actions">
+            <button
+              className="add-cart-button"
+              onClick={() => addToCart(product)}
+              disabled={soldOut}
+            >
+              {soldOut ? "缺貨中" : inquiry ? "加入詢問" : "加入清單"}
+            </button>
 
-          <button
-            type="button"
-            className="detail-button"
-            onClick={() => setSelectedDetailProduct(product)}
-          >
-            查看商品資訊
-          </button>
+            <button
+              type="button"
+              className="detail-button"
+              onClick={() => setSelectedDetailProduct(product)}
+            >
+              商品詳情
+            </button>
+          </div>
         </div>
       </article>
     );
@@ -5257,7 +5388,7 @@ export default function Home() {
   return (
     <main className="site-shell">
       <div className="announcement-bar">
-        🚚 滿 NT$3000 免運｜📦 僅宅配｜LINE 客服確認
+        城堡回購群專屬商城｜滿 NT$3000 免運｜送出清單後 LINE 小幫手確認
       </div>
 
       <header className="top-header">
@@ -5325,6 +5456,21 @@ export default function Home() {
           </div>
           <p>可輸入部分字詞或簡寫，例如「龍血慕絲」、「bcha」、「冷杉即期」。搜尋結果會顯示在這個搜尋頁，不會顯示在首頁下方。</p>
 
+          <div className="search-hot-panel-v22">
+            <div>
+              <strong>熱門搜尋</strong>
+              <span>不知道要找什麼時，可以先點這些關鍵字逛。</span>
+            </div>
+
+            <div className="search-hot-chip-row-v22">
+              {quickSearchTerms.map((term) => (
+                <button type="button" key={`hot-${term}`} onClick={() => openSearchTerm(term)}>
+                  {term}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {normalizedSearchQuery && (
             <div className="search-results-block">
               <div className="search-results-head">
@@ -5340,7 +5486,7 @@ export default function Home() {
                         {hasRealImage(product) ? (
                           <img src={product.image} alt={product.name} />
                         ) : (
-                          <div className="search-result-placeholder">商品圖準備中</div>
+                          <div className="search-result-placeholder">圖片更新中</div>
                         )}
                       </div>
 
@@ -5398,8 +5544,8 @@ export default function Home() {
       )}
 
       {isCollectionOpen && (
-        <section className="search-panel search-page-view collection-page-view" aria-label="分類商品頁面">
-          <div className="search-page-head collection-page-head">
+        <section className="search-panel search-page-view collection-page-view collection-page-v22" aria-label="分類商品頁面">
+          <div className="search-page-head collection-page-head collection-head-v22">
             <button
               type="button"
               className="search-back-button"
@@ -5410,26 +5556,124 @@ export default function Home() {
 
             <div>
               <p>Catalog</p>
-              <h2>{currentFilterText() || "全部商品"}</h2>
+              <h2>{getCollectionHeroLabel()}</h2>
               <span>共 {filteredProducts.length} 項商品｜可加入清單或查看商品資訊</span>
             </div>
           </div>
 
-          <div className="collection-helper-card">
-            <strong>{currentFilterText() || "全部商品"}</strong>
-            <span>這裡會顯示你從左上角 ☰ 選單選到的分類 / 系列商品，例如玫瑰系列、龍血系列、倍力工房等。</span>
-          </div>
+          <section className="collection-hero-v22">
+            <div>
+              <p>Collection</p>
+              <h2>{getCollectionHeroLabel()}</h2>
+              <span>{getCollectionSubtitle()}</span>
+            </div>
+
+            <div className="collection-stat-grid-v22">
+              <div>
+                <strong>{filteredProducts.length}</strong>
+                <span>商品數</span>
+              </div>
+              <div>
+                <strong>{selectedSeries === "全部" ? "全部" : selectedSeries}</strong>
+                <span>目前系列</span>
+              </div>
+              <div>
+                <strong>{cartTotalQuantity}</strong>
+                <span>清單件數</span>
+              </div>
+            </div>
+          </section>
+
+          <section className="collection-filter-panel-v22">
+            <div className="collection-filter-title-v22">
+              <strong>快速篩選</strong>
+              <span>點選系列或需求，直接切換目前賣場。</span>
+            </div>
+
+            <div className="collection-chip-row-v22">
+              <button
+                type="button"
+                className={selectedSeries === "全部" && selectedSkinFilter === "全部" ? "active" : ""}
+                onClick={() => {
+                  setSelectedSeries("全部");
+                  setSelectedSkinFilter("全部");
+                  setSearchQuery("");
+                }}
+              >
+                全部
+              </button>
+
+              {collectionSeriesChips.map((series) => (
+                <button
+                  type="button"
+                  key={`collection-series-${series}`}
+                  className={selectedSeries === series ? "active" : ""}
+                  onClick={() => selectCollectionSeries(series)}
+                >
+                  {series}
+                </button>
+              ))}
+            </div>
+
+            {selectedCategory === "保養品" && (
+              <div className="collection-chip-row-v22 skin">
+                {skinFilters.filter((filter) => filter !== "全部").slice(0, 8).map((filter) => (
+                  <button
+                    type="button"
+                    key={`collection-skin-${filter}`}
+                    className={selectedSkinFilter === filter ? "active" : ""}
+                    onClick={() => {
+                      setSelectedSkinFilter(filter);
+                      setSelectedSeries("全部");
+                      setSearchQuery("");
+                    }}
+                  >
+                    {filter}
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {collectionFeaturedProducts.length > 0 && (
+            <section className="collection-featured-strip-v22">
+              <div>
+                <p>Featured</p>
+                <h3>這個分類可以先看</h3>
+              </div>
+
+              <div className="collection-featured-list-v22">
+                {collectionFeaturedProducts.map((product) => (
+                  <button
+                    type="button"
+                    key={`collection-featured-${product.id}`}
+                    onClick={() => setSelectedDetailProduct(product)}
+                  >
+                    {hasRealImage(product) ? (
+                      <img src={product.image} alt={product.name} />
+                    ) : (
+                      <span>商品圖</span>
+                    )}
+                    <strong>{getCardName(product)}</strong>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
 
           {filteredProducts.length > 0 ? (
-            <div className="home-product-grid collection-product-grid">
+            <div className="home-product-grid collection-product-grid collection-grid-v22">
               {filteredProducts.map((product) => (
                 <ProductCard product={product} key={`collection-${product.id}`} />
               ))}
             </div>
           ) : (
-            <div className="collection-empty-card">
+            <div className="collection-empty-card collection-empty-v22">
               <h3>目前這個分類暫時沒有商品</h3>
               <p>可以返回選單切換其他分類，或點右上角搜尋商品。</p>
+              <button type="button" onClick={() => openSearchTerm("組合價")}>
+                看本月主打優惠
+              </button>
             </div>
           )}
         </section>
@@ -5449,7 +5693,7 @@ export default function Home() {
 
             <div className="drawer-rule-card">
               <strong>🚚 滿 NT$3000 免運</strong>
-              <span>📦 僅提供宅配，送出清單後由 LINE 客服確認。</span>
+              <span>📦 僅提供宅配，送出清單後由 LINE 小幫手確認。</span>
             </div>
 
             <nav className="drawer-nav">
@@ -5513,6 +5757,89 @@ export default function Home() {
         </section>
       )}
 
+      <section className="commerce-hero-v2" aria-label="佐登商城主視覺">
+        <div className="commerce-hero-copy">
+          <p className="commerce-hero-eyebrow">LINE 回購群專屬輕商城</p>
+          <h2>城堡產地價，先加入清單再由小幫手確認</h2>
+          <span>回購優惠、組合價、即期良品與生活選品一次逛。送出清單後不會直接付款，會先由 LINE 小幫手確認庫存、效期與宅配資訊。</span>
+        </div>
+
+        <div className="commerce-hero-actions">
+          <button type="button" className="hero-primary-button" onClick={() => handleDrawerCategory("組合價")}>
+            看本月優惠
+          </button>
+          <button
+            type="button"
+            className="hero-secondary-button"
+            onClick={() => {
+              setIsCollectionOpen(false);
+              setIsSearchOpen(true);
+              window.setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }, 0);
+            }}
+          >
+            搜尋商品
+          </button>
+        </div>
+
+        <div className="commerce-service-strip">
+          <span>滿 NT$3000 免運</span>
+          <span>僅提供宅配</span>
+          <span>LINE 小幫手確認</span>
+        </div>
+      </section>
+
+      <section className="commerce-shortcut-grid" aria-label="商城快捷入口">
+        <button type="button" onClick={() => handleDrawerCategory("組合價")}>
+          <strong>本月主打</strong>
+          <span>組合價 / 贈品組</span>
+        </button>
+        <button type="button" onClick={() => handleDrawerCategory("保健食品")}>
+          <strong>保健補給</strong>
+          <span>益生菌 / 魚油 / 葉黃素</span>
+        </button>
+        <button type="button" onClick={() => handleDrawerCategory("保養品")}>
+          <strong>保養系列</strong>
+          <span>龍血 / 櫻の雪 / 水光</span>
+        </button>
+        <button type="button" onClick={() => handleDrawerCategory("外部廠商", "生福科技")}>
+          <strong>生福科技</strong>
+          <span>梅托洛 / 視綠佳</span>
+        </button>
+      </section>
+
+      <section className="commerce-trust-flow-v23" aria-label="購買流程">
+        <div className="trust-flow-title-v23">
+          <p>How to Order</p>
+          <h2>安心回購流程</h2>
+          <span>這裡不是直接付款的購物車，送出後會先由 LINE 小幫手確認。</span>
+        </div>
+
+        <div className="trust-flow-steps-v23">
+          <div>
+            <strong>01</strong>
+            <span>加入清單</span>
+            <p>先把想詢問或訂購的商品加入清單。</p>
+          </div>
+          <div>
+            <strong>02</strong>
+            <span>送出資料</span>
+            <p>填寫宅配資訊，送出訂購清單。</p>
+          </div>
+          <div>
+            <strong>03</strong>
+            <span>LINE 確認</span>
+            <p>小幫手確認庫存、效期、金額與優惠。</p>
+          </div>
+          <div>
+            <strong>04</strong>
+            <span>匯款成立</span>
+            <p>確認無誤後提供匯款資訊，完成後成立。</p>
+          </div>
+        </div>
+      </section>
+
       <div className="store-promo-stack">
         <HomeBanner
           id="home-main-deal"
@@ -5537,9 +5864,9 @@ export default function Home() {
 
       <HomeProductSection
         id="home-combo-products"
-        eyebrow="Hot Deals"
-        title="熱銷組合價"
-        subtitle="回購群人氣優惠，庫存與效期依 LINE 客服確認"
+        eyebrow="Monthly Offers"
+        title="本月主打優惠"
+        subtitle="回購群專屬組合價，庫存與效期由 LINE 小幫手確認"
         products={homeComboProducts}
       />
 
@@ -5712,12 +6039,12 @@ export default function Home() {
 
       {isCartOpen && (
         <section className="cart-backdrop" onClick={() => setIsCartOpen(false)}>
-          <div className="cart-panel" onClick={(event) => event.stopPropagation()}>
-            <div className="cart-header">
+          <div className="cart-panel checkout-panel-v21" onClick={(event) => event.stopPropagation()}>
+            <div className="cart-header checkout-header-v21">
               <div>
-                <p className="cart-eyebrow">Order List</p>
-                <h2>訂購清單</h2>
-                <span>僅提供宅配；送出後請至 LINE 確認訂單，確認後才會提供匯款資訊。</span>
+                <p className="cart-eyebrow">Checkout</p>
+                <h2>確認訂購清單</h2>
+                <span>先確認商品明細與宅配資料；送出後由 LINE 小幫手確認庫存、效期、金額與付款方式。</span>
               </div>
               <button className="cart-close" onClick={() => setIsCartOpen(false)}>
                 ×
@@ -5726,109 +6053,202 @@ export default function Home() {
 
             {cartItems.length > 0 ? (
               <>
-                <div className="cart-items">
-                  {cartItems.map((item) => (
-                    <div className="cart-item" key={item.product.id}>
-                      <div>
-                        <p className="cart-item-series">{item.product.series}</p>
-                        <h3>{item.product.name}</h3>
-                        <p>{displayPrice(item.product)}</p>
-                        {hasComboPrice(item.product) && (
-                          <button
-                            type="button"
-                            className="combo-badge-mini"
-                            onClick={goToComboSection}
-                          >
-                            有組合價
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="cart-quantity-control">
-                        <button
-                          onClick={() =>
-                            updateCartQuantity(item.product.id, item.quantity - 1)
-                          }
-                        >
-                          −
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          onClick={() =>
-                            updateCartQuantity(item.product.id, item.quantity + 1)
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                <div className="checkout-step-strip" aria-label="訂購流程">
+                  <div>
+                    <strong>1</strong>
+                    <span>確認清單</span>
+                  </div>
+                  <div>
+                    <strong>2</strong>
+                    <span>填宅配資料</span>
+                  </div>
+                  <div>
+                    <strong>3</strong>
+                    <span>LINE 確認</span>
+                  </div>
                 </div>
 
-                <button className="clear-cart-button" onClick={clearCart}>
-                  清空清單
-                </button>
-
-                <form className="order-form" onSubmit={submitOrder}>
-                  <div className="delivery-summary">
-                    <strong>配送方式：宅配</strong>
-                    <span>滿 NT$3000 免運，未滿免運門檻將由客服確認運費。</span>
+                <section className="checkout-card-v21">
+                  <div className="checkout-card-title">
+                    <p>Order Items</p>
+                    <h3>商品明細</h3>
+                    <span>共 {cartTotalQuantity} 件商品，實際組合優惠與金額由 LINE 小幫手確認。</span>
                   </div>
 
-                  <label>
-                    姓名 <span>*</span>
-                    <input
-                      value={customer.customerName}
-                      onChange={(event) =>
-                        setCustomer({ ...customer, customerName: event.target.value })
-                      }
-                      placeholder="請輸入姓名"
-                    />
-                  </label>
+                  <div className="cart-items checkout-items-v21">
+                    {cartItems.map((item) => (
+                      <div className="cart-item checkout-item-v21" key={item.product.id}>
+                        <div className="checkout-item-image">
+                          {hasRealImage(item.product) ? (
+                            <img src={item.product.image} alt={item.product.name} />
+                          ) : (
+                            <span>圖片準備中</span>
+                          )}
+                        </div>
 
-                  <label>
-                    LINE ID
-                    <input
-                      value={customer.lineId}
-                      onChange={(event) =>
-                        setCustomer({ ...customer, lineId: event.target.value })
-                      }
-                      placeholder="例如：@chateau-buy"
-                    />
-                  </label>
+                        <div className="checkout-item-main">
+                          <p className="cart-item-series">{item.product.series}</p>
+                          <h3>{item.product.name}</h3>
+                          <p>{displayPrice(item.product)}</p>
+                          {hasComboPrice(item.product) && (
+                            <button
+                              type="button"
+                              className="combo-badge-mini"
+                              onClick={goToComboSection}
+                            >
+                              有組合價
+                            </button>
+                          )}
+                        </div>
 
-                  <label>
-                    電話
-                    <input
-                      value={customer.phone}
-                      onChange={(event) =>
-                        setCustomer({ ...customer, phone: event.target.value })
-                      }
-                      placeholder="請輸入電話"
-                    />
-                  </label>
+                        <div className="cart-quantity-control checkout-quantity-v21">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateCartQuantity(item.product.id, item.quantity - 1)
+                            }
+                          >
+                            −
+                          </button>
+                          <span>{item.quantity}</span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateCartQuantity(item.product.id, item.quantity + 1)
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-                  <label>
-                    宅配地址 <span>*</span>
-                    <input
-                      value={customer.address}
-                      onChange={(event) =>
-                        setCustomer({ ...customer, address: event.target.value })
-                      }
-                      placeholder="請輸入宅配地址"
-                    />
-                  </label>
+                  <button className="clear-cart-button" onClick={clearCart}>
+                    清空清單
+                  </button>
+                </section>
 
-                  <label>
-                    備註
-                    <textarea
-                      value={customer.note}
-                      onChange={(event) =>
-                        setCustomer({ ...customer, note: event.target.value })
-                      }
-                      placeholder="可填寫想確認庫存、品項搭配、指定需求"
-                    />
-                  </label>
+                <section className="checkout-free-shipping-card">
+                  <div>
+                    <p>Free Shipping</p>
+                    <h3>滿 NT$3000 免運</h3>
+                    <span>部分商品為任選、組合價或待確認價格，最終免運金額以 LINE 小幫手確認為準。</span>
+                  </div>
+                  <strong>宅配限定</strong>
+                </section>
+
+                {cartUpsellProducts.length > 0 && (
+                  <section className="checkout-upsell-card-v22">
+                    <div className="checkout-card-title">
+                      <p>Add-on Ideas</p>
+                      <h3>可加購湊免運</h3>
+                      <span>先加入清單也沒關係，實際金額仍由 LINE 小幫手確認。</span>
+                    </div>
+
+                    <div className="checkout-upsell-list-v22">
+                      {cartUpsellProducts.map((product) => (
+                        <button
+                          type="button"
+                          key={`cart-upsell-${product.id}`}
+                          onClick={() => addToCart(product)}
+                        >
+                          {hasRealImage(product) ? (
+                            <img src={product.image} alt={product.name} />
+                          ) : (
+                            <span>商品圖</span>
+                          )}
+                          <strong>{getCardName(product)}</strong>
+                          <em>{displayPrice(product)}</em>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                <form className="order-form checkout-form-v21" onSubmit={submitOrder}>
+                  <div className="checkout-card-title">
+                    <p>Delivery Info</p>
+                    <h3>宅配資料</h3>
+                    <span>這裡只做訂購清單送出，不會直接付款。</span>
+                  </div>
+
+                  <div className="delivery-summary checkout-line-flow">
+                    <strong>送出後流程</strong>
+                    <span>LINE 小幫手會確認商品庫存、效期、訂單金額與宅配資訊；確認無誤後才會提供匯款資訊。</span>
+                  </div>
+
+                  <div className="checkout-assurance-grid-v23" aria-label="訂購保障">
+                    <div>
+                      <strong>不會直接付款</strong>
+                      <span>送出後只是建立清單。</span>
+                    </div>
+                    <div>
+                      <strong>先確認再成立</strong>
+                      <span>庫存、效期、金額先對齊。</span>
+                    </div>
+                    <div>
+                      <strong>滿額免運</strong>
+                      <span>滿 NT$3000 免運。</span>
+                    </div>
+                  </div>
+
+                  <div className="checkout-field-grid">
+                    <label>
+                      姓名 <span>*</span>
+                      <input
+                        value={customer.customerName}
+                        onChange={(event) =>
+                          setCustomer({ ...customer, customerName: event.target.value })
+                        }
+                        placeholder="請輸入姓名"
+                      />
+                    </label>
+
+                    <label>
+                      LINE ID
+                      <input
+                        value={customer.lineId}
+                        onChange={(event) =>
+                          setCustomer({ ...customer, lineId: event.target.value })
+                        }
+                        placeholder="例如：@chateau-buy"
+                      />
+                    </label>
+
+                    <label>
+                      電話
+                      <input
+                        value={customer.phone}
+                        onChange={(event) =>
+                          setCustomer({ ...customer, phone: event.target.value })
+                        }
+                        placeholder="請輸入電話"
+                      />
+                    </label>
+
+                    <label className="checkout-field-full">
+                      宅配地址 <span>*</span>
+                      <input
+                        value={customer.address}
+                        onChange={(event) =>
+                          setCustomer({ ...customer, address: event.target.value })
+                        }
+                        placeholder="請輸入宅配地址"
+                      />
+                    </label>
+
+                    <label className="checkout-field-full">
+                      備註
+                      <textarea
+                        value={customer.note}
+                        onChange={(event) =>
+                          setCustomer({ ...customer, note: event.target.value })
+                        }
+                        placeholder="可填寫想確認庫存、品項搭配、指定需求"
+                      />
+                    </label>
+                  </div>
 
                   {submitMessage && (
                     <p className={submitStatus === "success" ? "form-message success" : "form-message error"}>
@@ -5836,17 +6256,17 @@ export default function Home() {
                     </p>
                   )}
 
-                  <button className="submit-order-button" type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "送出中..." : "送出清單，等待 LINE 確認"}
+                  <button className="submit-order-button checkout-submit-v21" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "送出中..." : "送出訂購清單"}
                   </button>
 
                   <p className="order-form-note">
-                    送出清單不代表付款完成。商品價格、庫存、優惠組合、滿額免運與付款方式，仍依 LINE 客服確認為準。
+                    送出清單不代表付款完成。商品價格、庫存、優惠組合、滿額免運與付款方式，仍依 LINE 小幫手確認為準。
                   </p>
                 </form>
               </>
             ) : (
-              <div className="empty-cart">
+              <div className="empty-cart checkout-empty-v21">
                 <h3>清單目前是空的</h3>
                 <p>可以先回商品列表加入想詢問或訂購的品項。</p>
               </div>
@@ -5862,7 +6282,7 @@ export default function Home() {
               <button className="detail-close" onClick={() => setSelectedDetailProduct(null)}>
                 ‹
               </button>
-              <h2>商品詳情</h2>
+              <h2>商品頁</h2>
               <button className="detail-cart-button" onClick={() => setIsCartOpen(true)}>
                 清單 {cartTotalQuantity}
               </button>
@@ -5870,25 +6290,36 @@ export default function Home() {
 
             <div className="detail-main-image">
               {hasRealImage(selectedDetailProduct) ? (
-                <img src={selectedDetailProduct.image} alt={selectedDetailProduct.name} />
+                <img
+                  src={selectedDetailProduct.image}
+                  alt={selectedDetailProduct.name}
+                  onError={(event) => {
+                    event.currentTarget.parentElement?.classList.add("image-load-failed");
+                    event.currentTarget.style.display = "none";
+                  }}
+                />
               ) : (
                 <div className="image-placeholder detail-placeholder">
                   <span>Jourdeness Castle</span>
-                  <strong>商品圖片準備中</strong>
+                  <strong>圖片更新中</strong>
                 </div>
               )}
             </div>
 
-            <div className="detail-content">
-              <div className="detail-title-row">
+            <div className="detail-content commerce-detail-content-v21">
+              <div className="detail-title-row commerce-detail-title-v21">
                 <div>
-                  <p className="series-label">{selectedDetailProduct.series}</p>
+                  <div className="detail-commerce-badge-row">
+                    <p className="series-label">{selectedDetailProduct.series}</p>
+                    <span className="detail-commerce-badge">{getCommerceBadgeLabel(selectedDetailProduct)}</span>
+                  </div>
+
                   <h1>{getDetailName(selectedDetailProduct)}</h1>
                   <p className="detail-description">{getSpecLine(selectedDetailProduct)}</p>
                 </div>
               </div>
 
-              <div className="detail-tags">
+              <div className="detail-tags commerce-detail-tags-v21">
                 {displayTags(selectedDetailProduct).map((tag) => (
                   <span className="need-tag" key={`detail-${selectedDetailProduct.id}-${tag}`}>
                     {tag}
@@ -5909,12 +6340,37 @@ export default function Home() {
                 )}
               </div>
 
-              <section className="detail-info-block product-summary-card">
+              <section className="detail-buybox-v21">
+                <div>
+                  <p>回購群專屬價</p>
+                  {hasKnownOriginalPrice(selectedDetailProduct) && (
+                    <span className="original-price">{selectedDetailProduct.originalPrice}</span>
+                  )}
+                  <strong className={`price ${hasInquiryPrice(selectedDetailProduct) ? "inquiry" : ""}`}>
+                    {displayPrice(selectedDetailProduct)}
+                  </strong>
+                  <em>{getPriceNote(selectedDetailProduct)}</em>
+                </div>
+
+                <button
+                  className="detail-add-button detail-buybox-button-v21"
+                  disabled={isSoldOut(selectedDetailProduct)}
+                  onClick={() => addToCart(selectedDetailProduct)}
+                >
+                  {isSoldOut(selectedDetailProduct)
+                    ? "缺貨中"
+                    : hasInquiryPrice(selectedDetailProduct)
+                    ? "加入詢問清單"
+                    : "加入清單"}
+                </button>
+              </section>
+
+              <section className="detail-info-block product-summary-card commerce-summary-v21">
                 <h3>商品資訊</h3>
 
                 <div className="product-info-lines">
                   <div>
-                    <span>規格</span>
+                    <span>規格 / 組合內容</span>
                     <p>{getSpecText(selectedDetailProduct)}</p>
                   </div>
 
@@ -5931,27 +6387,20 @@ export default function Home() {
                 )}
               </section>
 
-              <div className="detail-price-card">
-                {hasKnownOriginalPrice(selectedDetailProduct) && (
-                  <p className="original-price">{selectedDetailProduct.originalPrice}</p>
-                )}
-                <p className={`price ${hasInquiryPrice(selectedDetailProduct) ? "inquiry" : ""}`}>
-                  {displayPrice(selectedDetailProduct)}
-                </p>
-                <p className="price-note">{getPriceNote(selectedDetailProduct)}</p>
-              </div>
-
-              <button
-                className="detail-add-button"
-                disabled={isSoldOut(selectedDetailProduct)}
-                onClick={() => addToCart(selectedDetailProduct)}
-              >
-                {isSoldOut(selectedDetailProduct)
-                  ? "缺貨中"
-                  : hasInquiryPrice(selectedDetailProduct)
-                  ? "加入詢問清單"
-                  : "加入清單"}
-              </button>
+              <section className="detail-service-grid-v21" aria-label="購買服務提醒">
+                <div>
+                  <strong>滿額免運</strong>
+                  <span>滿 NT$3000 免運</span>
+                </div>
+                <div>
+                  <strong>宅配出貨</strong>
+                  <span>目前僅提供宅配</span>
+                </div>
+                <div>
+                  <strong>LINE 確認</strong>
+                  <span>庫存效期先確認</span>
+                </div>
+              </section>
 
               <section className="detail-info-block">
                 <h3>商品特色</h3>
@@ -5979,15 +6428,15 @@ export default function Home() {
               <section className="detail-info-block soft">
                 <h3>配送提醒</h3>
                 <p>滿 NT$3000 免運，僅提供宅配。</p>
-                <p>送出清單後，請至 LINE 與客服確認庫存、金額、付款方式與宅配資訊。</p>
+                <p>送出清單後，請至 LINE 與小幫手確認庫存、效期、金額、付款方式與宅配資訊。</p>
               </section>
 
               <section className="detail-info-block">
-                <div className="related-heading">
-                  <h3>相關商品</h3>
-                  <span>同系列 / 同分類推薦</span>
+                <div className="related-heading related-heading-v22">
+                  <h3>你可能也會喜歡</h3>
+                  <span>同系列、同分類或可搭配的回購推薦</span>
                 </div>
-                <div className="related-products">
+                <div className="related-products related-products-v22">
                   {getRelatedProducts(selectedDetailProduct).map((item) => (
                     <button
                       type="button"
@@ -9673,6 +10122,1651 @@ export default function Home() {
         /* Phase 21: Metolo combo + missing combo singles */
         .product-info h3 {
           word-break: break-word;
+        }
+
+
+        /* Commerce Visual V2：首頁 + 商品卡 + 商品頁 + 清單頁更像手機電商 */
+        .announcement-bar {
+          position: sticky !important;
+          top: 0 !important;
+          z-index: 40 !important;
+          margin: -14px -14px 0 !important;
+          padding: 8px 12px !important;
+          background: linear-gradient(90deg, #2f241f, #7b2d24) !important;
+          color: #fff8ef !important;
+          font-size: 12px !important;
+          font-weight: 950 !important;
+          text-align: center !important;
+          letter-spacing: 0.02em !important;
+          box-shadow: 0 8px 20px rgba(61, 48, 40, 0.18) !important;
+        }
+
+        .top-header {
+          top: 31px !important;
+          margin-top: 0 !important;
+          border-bottom: 1px solid rgba(226, 211, 199, 0.9) !important;
+          background: rgba(255, 255, 255, 0.94) !important;
+          box-shadow: 0 10px 26px rgba(61, 48, 40, 0.08) !important;
+        }
+
+        .brand-block h1,
+        .top-header h1 {
+          font-size: 19px !important;
+          font-weight: 1000 !important;
+          letter-spacing: -0.04em !important;
+        }
+
+        .header-cart-button {
+          background: linear-gradient(135deg, var(--accent-dark), var(--accent)) !important;
+          box-shadow: 0 10px 22px rgba(178, 65, 51, 0.22) !important;
+        }
+
+        .commerce-hero-v2 {
+          position: relative;
+          overflow: hidden;
+          margin: 12px 0 12px;
+          padding: 22px 18px 16px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 30px;
+          background:
+            radial-gradient(circle at 92% 12%, rgba(183, 138, 72, 0.22), transparent 28%),
+            linear-gradient(135deg, #fff8ef 0%, #fff 43%, #f4e2d4 100%);
+          box-shadow: 0 20px 44px rgba(77, 55, 38, 0.12);
+        }
+
+        .commerce-hero-v2::before {
+          content: "";
+          position: absolute;
+          right: -28px;
+          bottom: -48px;
+          width: 170px;
+          height: 170px;
+          border-radius: 999px;
+          background: rgba(178, 65, 51, 0.10);
+          pointer-events: none;
+        }
+
+        .commerce-hero-copy {
+          position: relative;
+          z-index: 1;
+          display: grid;
+          gap: 8px;
+        }
+
+        .commerce-hero-eyebrow {
+          width: fit-content;
+          margin: 0;
+          padding: 6px 10px;
+          border: 1px solid rgba(178, 65, 51, 0.18);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.75);
+          color: var(--accent-dark);
+          font-size: 12px;
+          font-weight: 1000;
+          letter-spacing: 0.08em;
+        }
+
+        .commerce-hero-copy h2 {
+          margin: 0;
+          max-width: 370px;
+          color: var(--ink);
+          font-size: 28px;
+          line-height: 1.12;
+          letter-spacing: -0.07em;
+        }
+
+        .commerce-hero-copy span {
+          max-width: 390px;
+          color: #76645a;
+          font-size: 13px;
+          font-weight: 800;
+          line-height: 1.65;
+        }
+
+        .commerce-hero-actions {
+          position: relative;
+          z-index: 1;
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 10px;
+          margin-top: 16px;
+        }
+
+        .hero-primary-button,
+        .hero-secondary-button {
+          min-height: 44px;
+          border-radius: 999px;
+          font-size: 14px;
+          font-weight: 1000;
+        }
+
+        .hero-primary-button {
+          border: 0;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          color: #fff;
+          box-shadow: 0 13px 26px rgba(178, 65, 51, 0.24);
+        }
+
+        .hero-secondary-button {
+          border: 1px solid rgba(178, 65, 51, 0.20);
+          background: #fff;
+          color: var(--accent-dark);
+        }
+
+        .commerce-service-strip {
+          position: relative;
+          z-index: 1;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 7px;
+          margin-top: 14px;
+        }
+
+        .commerce-service-strip span {
+          padding: 8px 6px;
+          border-radius: 14px;
+          background: rgba(255, 255, 255, 0.72);
+          color: #6d5b51;
+          font-size: 11px;
+          font-weight: 950;
+          text-align: center;
+          box-shadow: inset 0 0 0 1px rgba(232, 214, 198, 0.75);
+        }
+
+        .commerce-shortcut-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+          margin: 0 0 14px;
+        }
+
+        .commerce-shortcut-grid button {
+          display: grid;
+          gap: 4px;
+          min-height: 72px;
+          padding: 12px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.88);
+          text-align: left;
+          box-shadow: 0 12px 28px rgba(77, 55, 38, 0.07);
+        }
+
+        .commerce-shortcut-grid strong {
+          color: var(--ink);
+          font-size: 15px;
+          font-weight: 1000;
+          letter-spacing: -0.03em;
+        }
+
+        .commerce-shortcut-grid span {
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 850;
+          line-height: 1.35;
+        }
+
+        .store-promo-stack {
+          display: grid !important;
+          grid-template-columns: 1fr !important;
+          gap: 12px !important;
+          margin-top: 12px !important;
+        }
+
+        .home-banner {
+          min-height: 132px !important;
+          padding: 18px !important;
+          border: 1px solid rgba(232, 214, 198, 0.95) !important;
+          border-radius: 26px !important;
+          background:
+            radial-gradient(circle at 90% 20%, rgba(178, 65, 51, 0.15), transparent 27%),
+            linear-gradient(135deg, #fff, #fff4eb) !important;
+          box-shadow: 0 16px 34px rgba(77, 55, 38, 0.10) !important;
+        }
+
+        .home-banner-copy p,
+        .section-heading.compact p {
+          color: var(--accent) !important;
+          font-weight: 1000 !important;
+          letter-spacing: 0.12em !important;
+        }
+
+        .home-banner-copy h2 {
+          color: var(--ink) !important;
+          font-size: 24px !important;
+          font-weight: 1000 !important;
+          letter-spacing: -0.055em !important;
+        }
+
+        .home-banner-copy strong {
+          display: inline-flex !important;
+          width: fit-content !important;
+          padding: 6px 10px !important;
+          border-radius: 999px !important;
+          background: rgba(178, 65, 51, 0.09) !important;
+          color: var(--accent-dark) !important;
+          font-size: 12px !important;
+        }
+
+        .home-product-section {
+          margin-top: 16px !important;
+          padding: 14px 0 2px !important;
+        }
+
+        .home-product-section .section-heading.compact {
+          align-items: flex-start !important;
+          margin-bottom: 12px !important;
+          padding: 0 2px !important;
+          text-align: left !important;
+        }
+
+        .home-product-section .section-heading.compact h2 {
+          font-size: 24px !important;
+          font-weight: 1000 !important;
+          letter-spacing: -0.06em !important;
+        }
+
+        .home-product-section .section-heading.compact span {
+          max-width: 100% !important;
+          font-size: 13px !important;
+          line-height: 1.55 !important;
+        }
+
+        .home-product-grid {
+          gap: 12px !important;
+        }
+
+        .product-card.commerce-product-card,
+        .featured-card.commerce-product-card {
+          position: relative !important;
+          border: 1px solid rgba(226, 226, 226, 0.98) !important;
+          border-radius: 22px !important;
+          overflow: hidden !important;
+          background: #fff !important;
+          box-shadow: 0 12px 28px rgba(77, 55, 38, 0.08) !important;
+          transform: translateZ(0);
+        }
+
+        .commerce-card-badge {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          z-index: 3;
+          max-width: calc(100% - 20px);
+          padding: 6px 9px;
+          border-radius: 999px;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          color: #fff;
+          font-size: 11px;
+          font-weight: 1000;
+          line-height: 1;
+          box-shadow: 0 8px 16px rgba(178, 65, 51, 0.22);
+        }
+
+        .commerce-card-badge.inquiry {
+          background: linear-gradient(135deg, #8a7669, #5d4b41);
+        }
+
+        .commerce-card-badge.soldout {
+          background: linear-gradient(135deg, #8d8d8d, #555);
+        }
+
+        .product-card .product-image,
+        .featured-card .product-image {
+          aspect-ratio: 1 / 1.02 !important;
+          border-bottom: 1px solid rgba(238, 232, 226, 0.9) !important;
+          background:
+            linear-gradient(180deg, #fff, #fffaf6) !important;
+        }
+
+        .product-card .product-image img,
+        .featured-card .product-image img {
+          padding: 18px 14px 14px !important;
+          object-fit: contain !important;
+        }
+
+        .product-info {
+          gap: 6px !important;
+          padding: 10px 10px 12px !important;
+          text-align: left !important;
+        }
+
+        .product-meta-row {
+          justify-content: flex-start !important;
+          min-height: 20px !important;
+          margin-bottom: 0 !important;
+        }
+
+        .series-label {
+          max-width: 100%;
+          padding: 5px 8px !important;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          background: #f7eee7 !important;
+          color: var(--accent-dark) !important;
+          font-size: 10.5px !important;
+        }
+
+        .product-info h3 {
+          min-height: 42px !important;
+          margin: 0 !important;
+          color: #2f2621 !important;
+          font-size: 15.5px !important;
+          font-weight: 1000 !important;
+          line-height: 1.32 !important;
+          letter-spacing: -0.04em !important;
+          text-align: left !important;
+        }
+
+        .product-info .description {
+          display: -webkit-box !important;
+          min-height: 36px !important;
+          margin: 0 !important;
+          overflow: hidden !important;
+          color: #88766c !important;
+          font-size: 12px !important;
+          font-weight: 760 !important;
+          line-height: 1.5 !important;
+          text-align: left !important;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .tag-row {
+          min-height: 26px !important;
+          justify-content: flex-start !important;
+          gap: 5px !important;
+        }
+
+        .need-tag,
+        .combo-badge {
+          border-radius: 999px !important;
+          font-size: 10.5px !important;
+          font-weight: 950 !important;
+        }
+
+        .commerce-price-block {
+          margin-top: auto !important;
+          padding-top: 6px !important;
+          text-align: left !important;
+        }
+
+        .original-price {
+          margin: 0 0 2px !important;
+          color: #b4a59c !important;
+          font-size: 12px !important;
+          font-weight: 850 !important;
+          text-decoration: line-through !important;
+        }
+
+        .price {
+          margin: 0 !important;
+          color: #c0352a !important;
+          font-size: 19px !important;
+          font-weight: 1000 !important;
+          line-height: 1.15 !important;
+          letter-spacing: -0.04em !important;
+        }
+
+        .price.inquiry {
+          color: #755f53 !important;
+          font-size: 17px !important;
+        }
+
+        .commerce-card-actions {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 7px;
+          margin-top: 8px;
+        }
+
+        .add-cart-button {
+          min-height: 39px !important;
+          margin-top: 0 !important;
+          border: 0 !important;
+          border-radius: 14px !important;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
+          color: #fff !important;
+          font-size: 13px !important;
+          font-weight: 1000 !important;
+          box-shadow: 0 10px 20px rgba(178, 65, 51, 0.18) !important;
+        }
+
+        .add-cart-button:disabled {
+          background: #aaa !important;
+          box-shadow: none !important;
+        }
+
+        .detail-button {
+          min-height: 34px !important;
+          margin-top: 0 !important;
+          border: 1px solid rgba(178, 65, 51, 0.18) !important;
+          border-radius: 14px !important;
+          background: #fff !important;
+          color: var(--accent-dark) !important;
+          font-size: 12px !important;
+          font-weight: 1000 !important;
+        }
+
+        .cart-panel {
+          border-radius: 30px 30px 18px 18px !important;
+          background: #fff !important;
+        }
+
+        .cart-eyebrow {
+          color: var(--accent) !important;
+        }
+
+        .cart-header h2 {
+          font-size: 25px !important;
+          font-weight: 1000 !important;
+          letter-spacing: -0.06em !important;
+        }
+
+        .cart-item {
+          border: 1px solid rgba(232, 214, 198, 0.9) !important;
+          background: #fffaf6 !important;
+        }
+
+        .delivery-summary {
+          border: 1px solid rgba(178, 65, 51, 0.14) !important;
+          background: linear-gradient(135deg, #fff8ef, #fff) !important;
+        }
+
+        .order-form label {
+          padding: 11px 12px !important;
+          border: 1px solid rgba(232, 214, 198, 0.9) !important;
+          border-radius: 18px !important;
+          background: #fff !important;
+        }
+
+        .submit-order-button {
+          min-height: 48px !important;
+          border-radius: 999px !important;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
+          box-shadow: 0 12px 24px rgba(178, 65, 51, 0.22) !important;
+        }
+
+        .detail-panel {
+          border-radius: 28px 28px 0 0 !important;
+          background: #fff !important;
+        }
+
+        .detail-header {
+          position: sticky !important;
+          top: 0 !important;
+          z-index: 2 !important;
+          background: rgba(255, 255, 255, 0.94) !important;
+          backdrop-filter: blur(16px) !important;
+          border-bottom: 1px solid rgba(232, 214, 198, 0.8) !important;
+        }
+
+        .detail-main-image {
+          margin: 12px !important;
+          border: 1px solid rgba(232, 214, 198, 0.9) !important;
+          border-radius: 24px !important;
+          background: linear-gradient(180deg, #fff, #fffaf6) !important;
+        }
+
+        .detail-content {
+          padding-bottom: 88px !important;
+        }
+
+        .detail-price-card {
+          border: 1px solid rgba(178, 65, 51, 0.14) !important;
+          background: linear-gradient(135deg, #fff8ef, #fff) !important;
+        }
+
+        .detail-add-button {
+          position: sticky !important;
+          bottom: 10px !important;
+          z-index: 3 !important;
+          min-height: 50px !important;
+          border-radius: 999px !important;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
+          box-shadow: 0 14px 26px rgba(178, 65, 51, 0.28) !important;
+        }
+
+        .floating-cart-button {
+          border-radius: 999px !important;
+          background: linear-gradient(135deg, #2f241f, var(--accent-dark)) !important;
+          box-shadow: 0 14px 30px rgba(61, 48, 40, 0.25) !important;
+        }
+
+        .notice-card,
+        .footer,
+        .search-panel {
+          border-radius: 24px !important;
+          background: rgba(255, 255, 255, 0.92) !important;
+          box-shadow: 0 12px 28px rgba(77, 55, 38, 0.08) !important;
+        }
+
+        @media (max-width: 370px) {
+          .commerce-hero-copy h2 {
+            font-size: 24px !important;
+          }
+
+          .commerce-service-strip {
+            grid-template-columns: 1fr !important;
+          }
+
+          .product-info h3 {
+            font-size: 14px !important;
+          }
+
+          .price {
+            font-size: 17px !important;
+          }
+        }
+
+
+        /* Commerce V2.1：商品頁 + 結帳頁升級 */
+        .checkout-panel-v21 {
+          max-height: 94vh !important;
+          padding: 16px !important;
+          background:
+            linear-gradient(180deg, rgba(255, 250, 246, 0.98), #fff) !important;
+        }
+
+        .checkout-header-v21 {
+          position: sticky;
+          top: 0;
+          z-index: 4;
+          margin: -16px -16px 14px;
+          padding: 16px;
+          border-bottom: 1px solid rgba(232, 214, 198, 0.9);
+          background: rgba(255, 255, 255, 0.96);
+          backdrop-filter: blur(18px);
+        }
+
+        .checkout-step-strip {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+          margin: 8px 0 14px;
+        }
+
+        .checkout-step-strip div {
+          display: grid;
+          place-items: center;
+          gap: 5px;
+          min-height: 70px;
+          padding: 10px 6px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 18px;
+          background: #fff;
+          box-shadow: 0 10px 22px rgba(77, 55, 38, 0.06);
+        }
+
+        .checkout-step-strip strong {
+          display: grid;
+          place-items: center;
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          color: #fff;
+          font-size: 13px;
+          font-weight: 1000;
+        }
+
+        .checkout-step-strip span {
+          color: #6f5d53;
+          font-size: 11.5px;
+          font-weight: 950;
+          text-align: center;
+        }
+
+        .checkout-card-v21,
+        .checkout-form-v21 {
+          padding: 14px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 24px;
+          background: #fff;
+          box-shadow: 0 14px 30px rgba(77, 55, 38, 0.08);
+        }
+
+        .checkout-card-title {
+          display: grid;
+          gap: 3px;
+          margin-bottom: 12px;
+        }
+
+        .checkout-card-title p {
+          margin: 0;
+          color: var(--accent);
+          font-size: 11px;
+          font-weight: 1000;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+        }
+
+        .checkout-card-title h3 {
+          margin: 0;
+          color: var(--ink);
+          font-size: 20px;
+          font-weight: 1000;
+          letter-spacing: -0.05em;
+        }
+
+        .checkout-card-title span {
+          color: var(--muted);
+          font-size: 12.5px;
+          font-weight: 800;
+          line-height: 1.55;
+        }
+
+        .checkout-items-v21 {
+          gap: 10px !important;
+        }
+
+        .checkout-item-v21 {
+          display: grid !important;
+          grid-template-columns: 68px 1fr auto;
+          align-items: center;
+          gap: 10px !important;
+          padding: 10px !important;
+          border-radius: 20px !important;
+          background: #fffaf6 !important;
+        }
+
+        .checkout-item-image {
+          display: grid;
+          place-items: center;
+          width: 68px;
+          height: 68px;
+          overflow: hidden;
+          border: 1px solid rgba(232, 214, 198, 0.9);
+          border-radius: 16px;
+          background: #fff;
+        }
+
+        .checkout-item-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 5px;
+        }
+
+        .checkout-item-image span {
+          padding: 6px;
+          color: var(--muted);
+          font-size: 10px;
+          font-weight: 900;
+          text-align: center;
+          line-height: 1.25;
+        }
+
+        .checkout-item-main {
+          min-width: 0;
+        }
+
+        .checkout-item-main h3 {
+          display: -webkit-box;
+          margin: 3px 0 5px !important;
+          overflow: hidden;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .checkout-quantity-v21 {
+          flex-direction: column;
+          gap: 5px !important;
+        }
+
+        .checkout-quantity-v21 button {
+          width: 28px !important;
+          height: 28px !important;
+          background: #fff !important;
+          box-shadow: inset 0 0 0 1px rgba(232, 214, 198, 0.9);
+        }
+
+        .checkout-free-shipping-card {
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          margin: 12px 0;
+          padding: 14px;
+          border: 1px solid rgba(178, 65, 51, 0.14);
+          border-radius: 22px;
+          background:
+            radial-gradient(circle at 96% 10%, rgba(178, 65, 51, 0.12), transparent 28%),
+            linear-gradient(135deg, #fff8ef, #fff);
+          box-shadow: 0 12px 26px rgba(77, 55, 38, 0.06);
+        }
+
+        .checkout-free-shipping-card p {
+          margin: 0 0 3px;
+          color: var(--accent);
+          font-size: 11px;
+          font-weight: 1000;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+
+        .checkout-free-shipping-card h3 {
+          margin: 0 0 4px;
+          color: var(--ink);
+          font-size: 18px;
+          font-weight: 1000;
+          letter-spacing: -0.04em;
+        }
+
+        .checkout-free-shipping-card span {
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 820;
+          line-height: 1.55;
+        }
+
+        .checkout-free-shipping-card > strong {
+          align-self: flex-start;
+          padding: 7px 9px;
+          border-radius: 999px;
+          background: var(--accent);
+          color: #fff;
+          font-size: 11px;
+          font-weight: 1000;
+          white-space: nowrap;
+        }
+
+        .checkout-line-flow {
+          display: grid;
+          gap: 5px;
+          margin-bottom: 12px !important;
+          padding: 12px 13px !important;
+          border-style: solid !important;
+          border-radius: 18px !important;
+        }
+
+        .checkout-line-flow strong {
+          color: var(--accent-dark);
+          font-size: 14px;
+          font-weight: 1000;
+        }
+
+        .checkout-line-flow span {
+          color: #746257;
+          font-size: 12.5px;
+          font-weight: 850;
+          line-height: 1.6;
+        }
+
+        .checkout-field-grid {
+          display: grid;
+          gap: 10px;
+        }
+
+        .checkout-field-full {
+          grid-column: 1 / -1;
+        }
+
+        .checkout-submit-v21 {
+          margin-top: 12px !important;
+          font-size: 15px !important;
+        }
+
+        .checkout-empty-v21 {
+          padding: 34px 18px !important;
+          border: 1px dashed rgba(178, 65, 51, 0.22);
+          border-radius: 24px;
+          background: #fffaf6;
+        }
+
+        .commerce-detail-content-v21 {
+          padding: 16px 16px 96px !important;
+        }
+
+        .commerce-detail-title-v21 {
+          margin-top: 2px;
+        }
+
+        .detail-commerce-badge-row {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 8px;
+        }
+
+        .detail-commerce-badge {
+          display: inline-flex;
+          align-items: center;
+          min-height: 26px;
+          padding: 6px 10px;
+          border-radius: 999px;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          color: #fff;
+          font-size: 11px;
+          font-weight: 1000;
+          box-shadow: 0 8px 18px rgba(178, 65, 51, 0.18);
+        }
+
+        .commerce-detail-tags-v21 {
+          margin-top: 10px !important;
+        }
+
+        .detail-buybox-v21 {
+          display: grid;
+          gap: 12px;
+          margin-top: 14px;
+          padding: 15px;
+          border: 1px solid rgba(178, 65, 51, 0.15);
+          border-radius: 24px;
+          background:
+            radial-gradient(circle at 94% 0%, rgba(178, 65, 51, 0.12), transparent 32%),
+            linear-gradient(135deg, #fff8ef, #fff);
+          box-shadow: 0 16px 32px rgba(77, 55, 38, 0.08);
+        }
+
+        .detail-buybox-v21 p {
+          margin: 0 0 5px;
+          color: var(--accent);
+          font-size: 11px;
+          font-weight: 1000;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+        }
+
+        .detail-buybox-v21 .original-price {
+          display: block;
+          margin-bottom: 2px !important;
+        }
+
+        .detail-buybox-v21 strong.price {
+          display: block;
+          color: #c0352a !important;
+          font-size: 30px !important;
+          font-weight: 1000;
+          letter-spacing: -0.055em;
+          line-height: 1.08;
+        }
+
+        .detail-buybox-v21 em {
+          display: block;
+          margin-top: 7px;
+          color: var(--muted);
+          font-size: 12.5px;
+          font-style: normal;
+          font-weight: 800;
+          line-height: 1.55;
+        }
+
+        .detail-buybox-button-v21 {
+          position: static !important;
+          bottom: auto !important;
+          margin-top: 0 !important;
+          min-height: 48px !important;
+        }
+
+        .commerce-summary-v21 {
+          margin-top: 12px !important;
+        }
+
+        .detail-service-grid-v21 {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+          margin-top: 12px;
+        }
+
+        .detail-service-grid-v21 div {
+          display: grid;
+          gap: 4px;
+          min-height: 68px;
+          padding: 10px 7px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 18px;
+          background: #fff;
+          text-align: center;
+          box-shadow: 0 10px 22px rgba(77, 55, 38, 0.05);
+        }
+
+        .detail-service-grid-v21 strong {
+          color: var(--ink);
+          font-size: 12.5px;
+          font-weight: 1000;
+        }
+
+        .detail-service-grid-v21 span {
+          color: var(--muted);
+          font-size: 11px;
+          font-weight: 850;
+          line-height: 1.35;
+        }
+
+        .detail-info-block {
+          box-shadow: 0 10px 24px rgba(77, 55, 38, 0.05);
+        }
+
+        .detail-info-block.soft {
+          background:
+            linear-gradient(135deg, #fff8ef, #fff) !important;
+          border-style: solid !important;
+        }
+
+        @media (min-width: 560px) {
+          .checkout-field-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 380px) {
+          .checkout-item-v21 {
+            grid-template-columns: 58px 1fr auto;
+            gap: 8px !important;
+          }
+
+          .checkout-item-image {
+            width: 58px;
+            height: 58px;
+          }
+
+          .detail-service-grid-v21,
+          .checkout-step-strip {
+            grid-template-columns: 1fr;
+          }
+
+          .detail-buybox-v21 strong.price {
+            font-size: 25px !important;
+          }
+        }
+
+
+        /* Commerce V2.2：導購動線 + 分類頁 + 搜尋 + 推薦升級 */
+        .search-hot-panel-v22 {
+          display: grid;
+          gap: 12px;
+          margin: 12px 0 16px;
+          padding: 14px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 22px;
+          background: linear-gradient(135deg, #fff8ef, #fff);
+          box-shadow: 0 12px 26px rgba(77, 55, 38, 0.07);
+        }
+
+        .search-hot-panel-v22 strong {
+          display: block;
+          margin-bottom: 4px;
+          color: var(--ink);
+          font-size: 16px;
+          font-weight: 1000;
+          letter-spacing: -0.04em;
+        }
+
+        .search-hot-panel-v22 span {
+          color: var(--muted);
+          font-size: 12.5px;
+          font-weight: 820;
+          line-height: 1.55;
+        }
+
+        .search-hot-chip-row-v22 {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          padding-bottom: 2px;
+          scrollbar-width: none;
+        }
+
+        .search-hot-chip-row-v22::-webkit-scrollbar {
+          display: none;
+        }
+
+        .search-hot-chip-row-v22 button {
+          flex: 0 0 auto;
+          min-height: 36px;
+          padding: 8px 12px;
+          border: 1px solid rgba(178, 65, 51, 0.18);
+          border-radius: 999px;
+          background: #fff;
+          color: var(--accent-dark);
+          font-size: 12px;
+          font-weight: 1000;
+        }
+
+        .collection-page-v22 {
+          background:
+            linear-gradient(180deg, rgba(255, 250, 246, 0.98), #fff) !important;
+        }
+
+        .collection-head-v22 {
+          position: sticky;
+          top: 0;
+          z-index: 6;
+          margin: -18px -18px 12px;
+          padding: 16px 18px;
+          border-bottom: 1px solid rgba(232, 214, 198, 0.95);
+          background: rgba(255, 255, 255, 0.96);
+          backdrop-filter: blur(18px);
+        }
+
+        .collection-hero-v22 {
+          position: relative;
+          overflow: hidden;
+          display: grid;
+          gap: 14px;
+          margin-bottom: 12px;
+          padding: 18px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 28px;
+          background:
+            radial-gradient(circle at 94% 8%, rgba(178, 65, 51, 0.13), transparent 30%),
+            linear-gradient(135deg, #fff8ef, #fff);
+          box-shadow: 0 16px 34px rgba(77, 55, 38, 0.09);
+        }
+
+        .collection-hero-v22 p,
+        .collection-featured-strip-v22 p {
+          margin: 0;
+          color: var(--accent);
+          font-size: 11px;
+          font-weight: 1000;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+        }
+
+        .collection-hero-v22 h2 {
+          margin: 4px 0 6px;
+          color: var(--ink);
+          font-size: 27px;
+          font-weight: 1000;
+          letter-spacing: -0.065em;
+          line-height: 1.15;
+        }
+
+        .collection-hero-v22 span {
+          color: var(--muted);
+          font-size: 13px;
+          font-weight: 840;
+          line-height: 1.65;
+        }
+
+        .collection-stat-grid-v22 {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .collection-stat-grid-v22 div {
+          display: grid;
+          gap: 4px;
+          min-height: 66px;
+          padding: 10px 8px;
+          border-radius: 18px;
+          background: rgba(255, 255, 255, 0.82);
+          box-shadow: inset 0 0 0 1px rgba(232, 214, 198, 0.82);
+          text-align: center;
+        }
+
+        .collection-stat-grid-v22 strong {
+          overflow: hidden;
+          color: var(--ink);
+          font-size: 17px;
+          font-weight: 1000;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .collection-stat-grid-v22 span {
+          color: var(--muted);
+          font-size: 11px;
+          font-weight: 900;
+        }
+
+        .collection-filter-panel-v22 {
+          display: grid;
+          gap: 10px;
+          margin-bottom: 12px;
+          padding: 13px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 24px;
+          background: #fff;
+          box-shadow: 0 12px 26px rgba(77, 55, 38, 0.06);
+        }
+
+        .collection-filter-title-v22 {
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          align-items: end;
+        }
+
+        .collection-filter-title-v22 strong {
+          color: var(--ink);
+          font-size: 16px;
+          font-weight: 1000;
+          letter-spacing: -0.04em;
+        }
+
+        .collection-filter-title-v22 span {
+          color: var(--muted);
+          font-size: 11.5px;
+          font-weight: 820;
+          text-align: right;
+        }
+
+        .collection-chip-row-v22 {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          padding-bottom: 2px;
+          scrollbar-width: none;
+        }
+
+        .collection-chip-row-v22::-webkit-scrollbar {
+          display: none;
+        }
+
+        .collection-chip-row-v22 button {
+          flex: 0 0 auto;
+          min-height: 36px;
+          padding: 8px 12px;
+          border: 1px solid rgba(178, 65, 51, 0.16);
+          border-radius: 999px;
+          background: #fffaf6;
+          color: #6f5d53;
+          font-size: 12px;
+          font-weight: 1000;
+        }
+
+        .collection-chip-row-v22 button.active {
+          border-color: transparent;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          color: #fff;
+          box-shadow: 0 9px 18px rgba(178, 65, 51, 0.18);
+        }
+
+        .collection-chip-row-v22.skin button {
+          background: #f8f2ed;
+        }
+
+        .collection-featured-strip-v22 {
+          display: grid;
+          gap: 10px;
+          margin-bottom: 14px;
+          padding: 13px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 24px;
+          background: linear-gradient(135deg, #fff, #fff8ef);
+          box-shadow: 0 12px 26px rgba(77, 55, 38, 0.06);
+        }
+
+        .collection-featured-strip-v22 h3 {
+          margin: 2px 0 0;
+          color: var(--ink);
+          font-size: 18px;
+          font-weight: 1000;
+          letter-spacing: -0.04em;
+        }
+
+        .collection-featured-list-v22 {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .collection-featured-list-v22 button {
+          display: grid;
+          gap: 7px;
+          justify-items: center;
+          min-height: 116px;
+          padding: 8px;
+          border: 1px solid rgba(232, 214, 198, 0.9);
+          border-radius: 18px;
+          background: #fff;
+          color: var(--ink);
+          text-align: center;
+        }
+
+        .collection-featured-list-v22 img,
+        .collection-featured-list-v22 span {
+          display: grid;
+          place-items: center;
+          width: 58px;
+          height: 58px;
+          object-fit: contain;
+          border-radius: 15px;
+          background: #fffaf6;
+        }
+
+        .collection-featured-list-v22 strong {
+          display: -webkit-box;
+          overflow: hidden;
+          color: var(--ink);
+          font-size: 11.5px;
+          font-weight: 950;
+          line-height: 1.35;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .collection-grid-v22 {
+          padding-bottom: 24px;
+        }
+
+        .collection-empty-v22 {
+          display: grid;
+          gap: 10px;
+          justify-items: center;
+        }
+
+        .collection-empty-v22 button {
+          min-height: 42px;
+          padding: 9px 14px;
+          border: 0;
+          border-radius: 999px;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          color: #fff;
+          font-size: 13px;
+          font-weight: 1000;
+        }
+
+        .related-heading-v22 span {
+          color: var(--accent-dark) !important;
+          font-weight: 900 !important;
+        }
+
+        .related-products-v22 {
+          display: grid !important;
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 10px !important;
+        }
+
+        .related-products-v22 .related-card {
+          min-height: 156px !important;
+          padding: 10px !important;
+          border: 1px solid rgba(232, 214, 198, 0.95) !important;
+          border-radius: 20px !important;
+          background: #fff !important;
+          box-shadow: 0 10px 22px rgba(77, 55, 38, 0.06) !important;
+        }
+
+        .related-products-v22 .related-image {
+          height: 82px !important;
+          border-radius: 16px !important;
+          background: #fffaf6 !important;
+        }
+
+        .related-products-v22 strong {
+          display: -webkit-box;
+          overflow: hidden;
+          min-height: 34px;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .checkout-upsell-card-v22 {
+          margin: 12px 0;
+          padding: 14px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 24px;
+          background: #fff;
+          box-shadow: 0 12px 26px rgba(77, 55, 38, 0.06);
+        }
+
+        .checkout-upsell-list-v22 {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 9px;
+        }
+
+        .checkout-upsell-list-v22 button {
+          display: grid;
+          grid-template-columns: 52px 1fr;
+          grid-template-rows: auto auto;
+          align-items: center;
+          column-gap: 9px;
+          min-height: 76px;
+          padding: 8px;
+          border: 1px solid rgba(232, 214, 198, 0.9);
+          border-radius: 18px;
+          background: #fffaf6;
+          text-align: left;
+        }
+
+        .checkout-upsell-list-v22 img,
+        .checkout-upsell-list-v22 > button > span {
+          grid-row: 1 / 3;
+          display: grid;
+          place-items: center;
+          width: 52px;
+          height: 52px;
+          object-fit: contain;
+          border-radius: 14px;
+          background: #fff;
+          color: var(--muted);
+          font-size: 10px;
+          font-weight: 900;
+          text-align: center;
+        }
+
+        .checkout-upsell-list-v22 strong {
+          display: -webkit-box;
+          overflow: hidden;
+          color: var(--ink);
+          font-size: 12px;
+          font-weight: 1000;
+          line-height: 1.35;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .checkout-upsell-list-v22 em {
+          color: #c0352a;
+          font-size: 11.5px;
+          font-style: normal;
+          font-weight: 1000;
+        }
+
+        @media (max-width: 380px) {
+          .collection-stat-grid-v22,
+          .collection-featured-list-v22 {
+            grid-template-columns: 1fr;
+          }
+
+          .checkout-upsell-list-v22 {
+            grid-template-columns: 1fr;
+          }
+
+          .related-products-v22 {
+            grid-template-columns: 1fr !important;
+          }
+        }
+
+
+        /* Commerce V2.3：上線前精修 + 轉換率優化 */
+        .site-shell {
+          background:
+            radial-gradient(circle at 50% -10%, rgba(178, 65, 51, 0.06), transparent 34%),
+            linear-gradient(180deg, #fffaf6 0%, #fff 44%, #fffaf6 100%) !important;
+        }
+
+        .commerce-product-card {
+          display: flex !important;
+          flex-direction: column !important;
+          height: 100% !important;
+          min-height: 455px !important;
+        }
+
+        .home-product-grid,
+        .collection-product-grid,
+        .collection-grid-v22 {
+          align-items: stretch !important;
+        }
+
+        .commerce-product-card .product-image {
+          flex: 0 0 auto !important;
+          min-height: 178px !important;
+          max-height: 205px !important;
+        }
+
+        .commerce-product-card .product-info {
+          display: flex !important;
+          flex: 1 1 auto !important;
+          flex-direction: column !important;
+          min-height: 242px !important;
+        }
+
+        .commerce-product-card .tag-row {
+          flex-wrap: wrap !important;
+          align-content: flex-start !important;
+        }
+
+        .commerce-product-card .commerce-price-block {
+          min-height: 50px !important;
+        }
+
+        .commerce-product-card .commerce-card-actions {
+          margin-top: auto !important;
+        }
+
+        .product-info h3 {
+          display: -webkit-box !important;
+          overflow: hidden !important;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .commerce-product-card .product-info .description {
+          -webkit-line-clamp: 2 !important;
+        }
+
+        .price.inquiry,
+        .search-result-price strong:has(+ span) {
+          letter-spacing: -0.03em !important;
+        }
+
+        .price.inquiry {
+          color: #6f5d53 !important;
+          font-size: 16px !important;
+        }
+
+        .image-load-failed {
+          position: relative !important;
+          display: grid !important;
+          place-items: center !important;
+          background:
+            linear-gradient(135deg, #fff8ef, #fff) !important;
+        }
+
+        .image-load-failed::after {
+          content: "圖片更新中";
+          display: grid;
+          place-items: center;
+          width: calc(100% - 24px);
+          height: calc(100% - 24px);
+          border: 1px dashed rgba(178, 65, 51, 0.22);
+          border-radius: 18px;
+          color: #9a8378;
+          font-size: 12px;
+          font-weight: 1000;
+          letter-spacing: 0.04em;
+        }
+
+        .image-placeholder,
+        .detail-placeholder,
+        .search-result-placeholder {
+          border: 1px dashed rgba(178, 65, 51, 0.22) !important;
+          background:
+            linear-gradient(135deg, #fff8ef, #fff) !important;
+          color: #9a8378 !important;
+        }
+
+        .image-placeholder strong,
+        .detail-placeholder strong {
+          color: #9a8378 !important;
+        }
+
+        .commerce-trust-flow-v23 {
+          margin: 14px 0 14px;
+          padding: 15px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 26px;
+          background:
+            radial-gradient(circle at 94% 8%, rgba(178, 65, 51, 0.10), transparent 28%),
+            linear-gradient(135deg, #fff, #fff8ef);
+          box-shadow: 0 14px 30px rgba(77, 55, 38, 0.08);
+        }
+
+        .trust-flow-title-v23 {
+          display: grid;
+          gap: 4px;
+          margin-bottom: 12px;
+        }
+
+        .trust-flow-title-v23 p {
+          margin: 0;
+          color: var(--accent);
+          font-size: 11px;
+          font-weight: 1000;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+        }
+
+        .trust-flow-title-v23 h2 {
+          margin: 0;
+          color: var(--ink);
+          font-size: 22px;
+          font-weight: 1000;
+          letter-spacing: -0.055em;
+        }
+
+        .trust-flow-title-v23 span {
+          color: var(--muted);
+          font-size: 12.5px;
+          font-weight: 850;
+          line-height: 1.55;
+        }
+
+        .trust-flow-steps-v23 {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .trust-flow-steps-v23 div {
+          display: grid;
+          gap: 5px;
+          min-height: 108px;
+          padding: 10px 8px;
+          border: 1px solid rgba(232, 214, 198, 0.92);
+          border-radius: 18px;
+          background: rgba(255, 255, 255, 0.78);
+        }
+
+        .trust-flow-steps-v23 strong {
+          width: fit-content;
+          padding: 4px 7px;
+          border-radius: 999px;
+          background: rgba(178, 65, 51, 0.10);
+          color: var(--accent-dark);
+          font-size: 10px;
+          font-weight: 1000;
+          letter-spacing: 0.04em;
+        }
+
+        .trust-flow-steps-v23 span {
+          color: var(--ink);
+          font-size: 13px;
+          font-weight: 1000;
+          line-height: 1.2;
+        }
+
+        .trust-flow-steps-v23 p {
+          margin: 0;
+          color: var(--muted);
+          font-size: 11px;
+          font-weight: 820;
+          line-height: 1.45;
+        }
+
+        .checkout-assurance-grid-v23 {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+          margin: 0 0 12px;
+        }
+
+        .checkout-assurance-grid-v23 div {
+          display: grid;
+          gap: 4px;
+          min-height: 70px;
+          padding: 10px 8px;
+          border: 1px solid rgba(232, 214, 198, 0.92);
+          border-radius: 17px;
+          background: #fffaf6;
+          text-align: center;
+        }
+
+        .checkout-assurance-grid-v23 strong {
+          color: var(--accent-dark);
+          font-size: 12px;
+          font-weight: 1000;
+          line-height: 1.25;
+        }
+
+        .checkout-assurance-grid-v23 span {
+          color: var(--muted);
+          font-size: 10.5px;
+          font-weight: 850;
+          line-height: 1.35;
+        }
+
+        .order-form-note {
+          padding: 10px 12px !important;
+          border: 1px solid rgba(178, 65, 51, 0.12) !important;
+          border-radius: 16px !important;
+          background: #fff8ef !important;
+          color: #705d52 !important;
+          font-weight: 850 !important;
+          line-height: 1.65 !important;
+        }
+
+        .detail-buybox-v21,
+        .checkout-free-shipping-card,
+        .checkout-upsell-card-v22,
+        .collection-hero-v22,
+        .collection-filter-panel-v22,
+        .search-hot-panel-v22 {
+          box-shadow: 0 14px 30px rgba(77, 55, 38, 0.07) !important;
+        }
+
+        .search-result-card,
+        .related-card,
+        .checkout-item-v21 {
+          box-shadow: 0 10px 22px rgba(77, 55, 38, 0.055) !important;
+        }
+
+        .search-back-button,
+        .detail-close,
+        .cart-close {
+          touch-action: manipulation;
+        }
+
+        button {
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (max-width: 520px) {
+          .trust-flow-steps-v23 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .checkout-assurance-grid-v23 {
+            grid-template-columns: 1fr;
+          }
+
+          .commerce-product-card {
+            min-height: 438px !important;
+          }
+
+          .commerce-product-card .product-image {
+            min-height: 160px !important;
+          }
+
+          .commerce-product-card .product-info {
+            min-height: 246px !important;
+          }
+        }
+
+        @media (max-width: 370px) {
+          .trust-flow-steps-v23 {
+            grid-template-columns: 1fr;
+          }
+
+          .commerce-product-card {
+            min-height: 420px !important;
+          }
+
+          .commerce-product-card .product-image {
+            min-height: 150px !important;
+          }
+
+          .commerce-product-card .product-info {
+            min-height: 238px !important;
+          }
         }
 
 
