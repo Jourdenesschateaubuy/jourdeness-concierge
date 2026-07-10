@@ -1530,7 +1530,7 @@ const products: Product[] = [
     series: "香氛組合",
     originalPrice: "牌價 $ 790",
     price: "組合價 $ 780",
-    image: "/products/perfume+hand cream.png",
+    image: "/products/perfumehandcream.png",
     description: "時光瑞亞淡香水30mL，效期至2027/03/05，贈價值290元櫻の雪亮澤護手霜JDST 30g。",
   },
   {
