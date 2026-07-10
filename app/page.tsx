@@ -1460,7 +1460,7 @@ const products: Product[] = [
     series: "倍力工房",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/meel2.png",
     description: "倍力工房品項。蛋白纖維營養餐。",
   },
   {
@@ -1510,7 +1510,7 @@ const products: Product[] = [
     series: "保健食品組合",
     originalPrice: "原價待補",
     price: "組合價 $ 4,400",
-    image: "/products/combo-collagen-lutein-4400.jpg",
+    image: "/products/bb2+1.png",
     description: "亮妍魚膠原蛋白飲-玫瑰風味 50mL/10入 共兩盒，贈 EC 晶眸葉黃素精華凍+精華飲綜合組。",
   },
   {
