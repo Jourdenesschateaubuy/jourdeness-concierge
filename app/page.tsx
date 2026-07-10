@@ -916,7 +916,7 @@ const products: Product[] = [
     series: "肥皂",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
-    image: "/products/placeholder.jpg",
+    image: "/products/bd soap.png",
     description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
   {
@@ -1016,7 +1016,7 @@ const products: Product[] = [
     series: "洗沐組合",
     originalPrice: "原價 $ 2,370",
     price: "產地價 $ 1,100",
-    image: "/products/BDwash2.jpg",
+    image: "/products/wash31100.png",
     description: "龍血洗髮精 / 龍血沐浴乳可自由搭配，共3瓶。",
   },
   {
@@ -1036,7 +1036,7 @@ const products: Product[] = [
     series: "面膜組合",
     originalPrice: "原價待補",
     price: "1桶 $ 599｜任選2桶 $ 1,100｜任選5桶 $ 2,750",
-    image: "/products/placeholder.jpg",
+    image: "/products/white water 5.png",
     description: "水搖滾保濕面膜22mL x35pcs / 極光白美白面膜 x35pcs 可任選。任選5桶再送10片水搖滾保濕面膜。",
   },
   {
@@ -1117,7 +1117,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "買一送二 $ 3,600",
-    image: "/products/jourdeness-concierge/public/products/matolo.png.png",
+    image: "/products/jourdeness-concierge/public/products/matolo.png",
     description: "生福科技品項。可搭配買一送二活動。",
   },
   {
@@ -1389,7 +1389,7 @@ const products: Product[] = [
     series: "面膜",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/water 5.jpg",
+    image: "/products/water 35.png",
     description: "22mL x 35pcs。",
   },
   {
@@ -1409,7 +1409,7 @@ const products: Product[] = [
     series: "面膜",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/white 5.jpg",
+    image: "/products/white 35.png",
     description: "x 35pcs。",
   },
   {
@@ -1449,7 +1449,7 @@ const products: Product[] = [
     series: "面膜",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/super water.png",
     description: "頂級養護面膜品項。",
   },
 
@@ -1480,7 +1480,7 @@ const products: Product[] = [
     series: "肥皂組合",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
-    image: "/products/placeholder.jpg",
+    image: "/products/bd soap.png",
     description: "龍血檀香靜心皂 / 龍血艾草保庇皂 / 龍血玫瑰美膚皂 / 龍血檸檬馬鞭草皂 / 龍血薰衣草舒緩皂可任選，共4款。",
   },
   {
