@@ -926,7 +926,7 @@ const products: Product[] = [
     series: "肥皂",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
-    image: "/products/placeholder.jpg",
+    image: "/products/soap Artemisia.png",
     description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
   {
@@ -936,7 +936,7 @@ const products: Product[] = [
     series: "肥皂",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
-    image: "/products/placeholder.jpg",
+    image: "/products/soap lemo.png",
     description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
   {
@@ -946,7 +946,7 @@ const products: Product[] = [
     series: "肥皂",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
-    image: "/products/placeholder.jpg",
+    image: "/products/soap lav.png",
     description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
   {
@@ -1067,7 +1067,7 @@ const products: Product[] = [
     series: "肥皂",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
-    image: "/products/placeholder.jpg",
+    image: "/products/soap sandalwood.png",
     description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
   },
   {
@@ -1117,7 +1117,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "買一送二 $ 3,600",
-    image: "/products/jourdeness-concierge/public/products/matolo.png",
+    image: "/products/matolo.png",
     description: "生福科技品項。可搭配買一送二活動。",
   },
   {
@@ -1530,7 +1530,7 @@ const products: Product[] = [
     series: "香氛組合",
     originalPrice: "牌價 $ 790",
     price: "組合價 $ 780",
-    image: "/products/placeholder.jpg",
+    image: "/products/perfume+hand cream.png",
     description: "時光瑞亞淡香水30mL，效期至2027/03/05，贈價值290元櫻の雪亮澤護手霜JDST 30g。",
   },
   {
