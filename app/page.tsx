@@ -4405,6 +4405,59 @@ export default function Home() {
   const campaignHeroProducts = getProductsByIds([53, 19, 20, 139]);
   const campaignSpotlightProducts = getProductsByIds([136, 137, 17, 55]);
 
+  const heroTopProduct = products.find((product) => product.id === 53);
+  const heroSecondaryProducts = getProductsByIds([19, 20]);
+  const heroComboProducts = getProductsByIds([139, 101, 136, 137]);
+  const heroSeriesEntries: {
+    title: string;
+    text: string;
+    category: MainCategory;
+    series?: string;
+    product?: Product;
+  }[] = [
+    {
+      title: "龍血系列",
+      text: "修護、保濕、洗卸清潔人氣系列",
+      category: "保養品",
+      series: "龍血系列",
+      product: products.find((product) => product.id === 19),
+    },
+    {
+      title: "櫻の雪系列",
+      text: "美白透亮、亮澤保養與潔顏組合",
+      category: "保養品",
+      series: "櫻の雪傳明酸美白系列",
+      product: products.find((product) => product.id === 72),
+    },
+    {
+      title: "玫瑰系列",
+      text: "水潤、柔嫩與日常修護保養",
+      category: "保養品",
+      series: "玫瑰超微晶萃系列",
+      product: products.find((product) => product.id === 13),
+    },
+    {
+      title: "水光肌能",
+      text: "乾燥缺水、保濕補水推薦",
+      category: "保養品",
+      series: "水光肌能系列",
+      product: products.find((product) => product.id === 62),
+    },
+    {
+      title: "洗沐系列",
+      text: "龍血洗髮、沐浴與髮根養護",
+      category: "洗沐",
+      series: "洗沐系列",
+      product: products.find((product) => product.id === 29),
+    },
+    {
+      title: "保健食品",
+      text: "益生菌、葉黃素、膠原飲品",
+      category: "保健食品",
+      product: products.find((product) => product.id === 5),
+    },
+  ];
+
   const quickSearchTerms = [
     "組合價",
     "買一送一",
@@ -5789,37 +5842,95 @@ export default function Home() {
         </section>
       )}
 
-      <section className="campaign-hero-v24" aria-label="本月回購活動主視覺">
-        <div className="campaign-copy-v24">
-          <p className="campaign-eyebrow-v24">自家熱賣爆品</p>
-          <h2>龍血保濕修護熱賣</h2>
-          <strong>龍血玻尿酸・修護乳霜・人氣洗沐組</strong>
-          <span>回購群熱賣自家保養品，先加入清單，送出後由 LINE 小幫手確認庫存、效期與金額。</span>
+      {heroTopProduct && (
+        <section className="best-hero-v242" aria-label="本月爆品主打">
+          <div className="best-hero-copy-v242">
+            <p className="best-hero-eyebrow-v242">本月熱賣 TOP 1</p>
+            <h2>{getCardName(heroTopProduct)}</h2>
+            <strong>龍血系列人氣保濕修護單品</strong>
+            <span>回購群常見詢問款，適合想加強水潤、保濕與修護感的日常保養需求。</span>
 
-          <div className="campaign-hero-actions-v24">
-            <button type="button" className="hero-primary-button" onClick={() => handleDrawerCategory("組合價")}>
-              看自家熱賣
-            </button>
-            <button
-              type="button"
-              className="hero-secondary-button"
-              onClick={() => openSearchTerm("龍血")}
-            >
-              搜尋龍血
-            </button>
+            <div className="best-tag-row-v242">
+              <span>保濕修護</span>
+              <span>龍血系列</span>
+              <span>回購熱賣</span>
+            </div>
+
+            <div className="best-hero-actions-v242">
+              <button type="button" className="hero-primary-button" onClick={() => setSelectedDetailProduct(heroTopProduct)}>
+                查看商品
+              </button>
+              <button type="button" className="hero-secondary-button" onClick={() => handleDrawerCategory("保養品", "龍血系列")}>
+                看龍血系列
+              </button>
+            </div>
           </div>
+
+          <button
+            type="button"
+            className="best-hero-image-card-v242"
+            onClick={() => setSelectedDetailProduct(heroTopProduct)}
+          >
+            <span className="best-top-badge-v242">TOP 1</span>
+            {hasRealImage(heroTopProduct) ? (
+              <img
+                src={heroTopProduct.image}
+                alt={heroTopProduct.name}
+                onError={(event) => {
+                  event.currentTarget.parentElement?.classList.add("image-load-failed");
+                  event.currentTarget.style.display = "none";
+                }}
+              />
+            ) : (
+              <span className="best-image-placeholder-v242">圖片更新中</span>
+            )}
+            <strong>{displayPrice(heroTopProduct)}</strong>
+          </button>
+        </section>
+      )}
+
+      <section className="secondary-best-grid-v242" aria-label="龍血次主打商品">
+        {heroSecondaryProducts.map((product) => (
+          <article className="secondary-best-card-v242" key={`secondary-best-${product.id}`}>
+            <button type="button" className="secondary-best-image-v242" onClick={() => setSelectedDetailProduct(product)}>
+              {hasRealImage(product) ? (
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  onError={(event) => {
+                    event.currentTarget.parentElement?.classList.add("image-load-failed");
+                    event.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : (
+                <span>圖片更新中</span>
+              )}
+            </button>
+
+            <div>
+              <span>{getCommerceBadgeLabel(product)}</span>
+              <h3>{getCardName(product)}</h3>
+              <p>{getCardSubtitle(product)}</p>
+              <strong>{displayPrice(product)}</strong>
+              <button type="button" onClick={() => setSelectedDetailProduct(product)}>
+                查看商品
+              </button>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section className="combo-showcase-v242" aria-label="人氣組合價">
+        <div className="combo-showcase-head-v242">
+          <p>Combo Deals</p>
+          <h2>人氣組合價</h2>
+          <span>回購群常詢問的優惠組合，先加入清單再由 LINE 小幫手確認庫存與效期。</span>
         </div>
 
-        <div className="campaign-deal-board-v24" aria-label="人氣優惠商品">
-          <div className="campaign-board-sticker-v24">HOT</div>
-
-          {campaignHeroProducts.map((product, index) => (
-            <article className={`campaign-deal-card-v24 deal-${index + 1}`} key={`campaign-${product.id}`}>
-              <button
-                type="button"
-                className="campaign-deal-image-v24"
-                onClick={() => setSelectedDetailProduct(product)}
-              >
+        <div className="combo-showcase-list-v242">
+          {heroComboProducts.map((product, index) => (
+            <article className={index === 0 ? "combo-feature-card-v242" : "combo-mini-card-v242"} key={`hero-combo-${product.id}`}>
+              <button type="button" onClick={() => setSelectedDetailProduct(product)}>
                 {hasRealImage(product) ? (
                   <img
                     src={product.image}
@@ -5834,65 +5945,48 @@ export default function Home() {
                 )}
               </button>
 
-              <div className="campaign-deal-info-v24">
+              <div>
                 <span>{getCommerceBadgeLabel(product)}</span>
-                <strong>{getCardName(product)}</strong>
-                <p>{displayPrice(product)}</p>
+                <h3>{getCardName(product)}</h3>
+                <p>{getCardSubtitle(product)}</p>
+                <strong>{displayPrice(product)}</strong>
               </div>
             </article>
           ))}
         </div>
-
-        <div className="campaign-service-strip-v24">
-          <span>滿 NT$3000 免運</span>
-          <span>僅提供宅配</span>
-          <span>LINE 確認後付款</span>
-        </div>
       </section>
 
-      <section className="campaign-promo-rail-v24" aria-label="促銷入口">
-        <button type="button" onClick={() => handleDrawerCategory("保養品", "龍血系列")}>
-          <strong>龍血熱賣</strong>
-          <span>玻尿酸 / 修護乳霜</span>
-        </button>
-        <button type="button" onClick={() => handleDrawerCategory("組合價", "保養套組")}>
-          <strong>保養套組</strong>
-          <span>櫻の雪 / 潔顏組</span>
-        </button>
-        <button type="button" onClick={() => handleDrawerCategory("組合價", "洗沐組合")}>
-          <strong>洗沐組合</strong>
-          <span>龍血洗髮 / 阿甘養髮</span>
-        </button>
-        <button type="button" onClick={() => handleDrawerCategory("組合價", "面膜組合")}>
-          <strong>面膜優惠</strong>
-          <span>水搖滾 / 極光白</span>
-        </button>
-        <button type="button" onClick={() => handleDrawerCategory("保健食品")}>
-          <strong>保健補給</strong>
-          <span>益生菌 / 葉黃素</span>
-        </button>
-        <button type="button" onClick={() => handleDrawerCategory("外部廠商", "生福科技")}>
-          <strong>精選外品</strong>
-          <span>生福科技</span>
-        </button>
-      </section>
-
-      <section className="campaign-spotlight-strip-v24" aria-label="小編精選優惠">
-        <div className="spotlight-title-v24">
-          <p>Editor Picks</p>
-          <h3>自家熱賣先看這幾款</h3>
+      <section className="series-entry-section-v242" aria-label="熱門系列入口">
+        <div className="series-entry-head-v242">
+          <p>Shop by Series</p>
+          <h2>熱門系列入口</h2>
+          <span>想從系列開始逛，可以先從自家保養、洗沐與保健補給進入。</span>
         </div>
 
-        <div className="spotlight-list-v24">
-          {campaignSpotlightProducts.map((product) => (
+        <div className="series-entry-grid-v242">
+          {heroSeriesEntries.map((entry) => (
             <button
               type="button"
-              key={`spotlight-${product.id}`}
-              onClick={() => setSelectedDetailProduct(product)}
+              key={`series-entry-${entry.title}`}
+              onClick={() => handleDrawerCategory(entry.category, entry.series ?? "全部")}
             >
-              <span>{getCommerceBadgeLabel(product)}</span>
-              <strong>{getCardName(product)}</strong>
-              <em>{displayPrice(product)}</em>
+              <div>
+                {entry.product && hasRealImage(entry.product) ? (
+                  <img
+                    src={entry.product.image}
+                    alt={entry.title}
+                    onError={(event) => {
+                      event.currentTarget.parentElement?.classList.add("image-load-failed");
+                      event.currentTarget.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <span>系列圖</span>
+                )}
+              </div>
+              <strong>{entry.title}</strong>
+              <p>{entry.text}</p>
+              <em>進入系列</em>
             </button>
           ))}
         </div>
@@ -5900,9 +5994,9 @@ export default function Home() {
 
       <HomeProductSection
         id="home-combo-products"
-        eyebrow="Monthly Hot Deals"
-        title="回購人氣優惠"
-        subtitle="自家保養、洗沐與組合價優先展示，外部廠商優惠放後面慢慢逛"
+        eyebrow="More Deals"
+        title="更多回購優惠"
+        subtitle="自家保養、洗沐與組合價往下逛，外部廠商優惠也會在後段整理"
         products={homeComboProducts}
       />
 
@@ -6566,47 +6660,39 @@ export default function Home() {
         </section>
       )}
 
-      <section className="notice-section">
-        <div className="section-heading compact">
-          <p>Notice</p>
-          <h2>購買提醒</h2>
-        </div>
+      <section className="line-confirm-section-v244" aria-label="LINE 訂單確認">
+        <div className="line-confirm-card-v244">
+          <div className="line-confirm-copy-v244">
+            <p>Order Confirm</p>
+            <h2>LINE 訂單確認</h2>
+            <span>
+              送出清單後，請加入 LINE 小幫手確認訂單。小幫手會協助確認庫存、效期、金額與宅配資訊，確認完成後才會提供匯款資訊。
+            </span>
 
-        <div className="notice-card">
-          <p><strong>送出訂購清單後，系統會先將訂單送至後台。</strong></p>
-          <p>請至 LINE 與小幫手確認商品庫存、效期、訂單金額與宅配資訊。</p>
-          <p>確認無誤後，小幫手會提供匯款資訊給您。</p>
-          <p>完成匯款後，訂單才會正式成立。</p>
-          <p>滿 NT$3000 免運，僅提供宅配。</p>
+            <strong>LINE ID：@chateau-buy</strong>
+
+            <a
+              className="line-confirm-button-v244"
+              href="https://line.me/R/ti/p/@chateau-buy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              點我加入 LINE
+            </a>
+          </div>
+
+          <div className="line-confirm-qr-wrap-v244">
+            <div className="line-confirm-qr-v244">
+              <img src="/line-qrcode.png" alt="LINE QR Code" />
+            </div>
+            <span>掃碼加入</span>
+          </div>
+
+          <div className="line-confirm-rule-v244">
+            滿 NT$3000 免運｜僅提供宅配｜付款完成後訂單才正式成立
+          </div>
         </div>
       </section>
-
-      <footer className="footer">
-        <h2>加入 LINE 詢問</h2>
-
-        <p className="line-id">LINE ID：@chateau-buy</p>
-
-        <a
-          className="line-button"
-          href="https://line.me/R/ti/p/@chateau-buy"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          點我加入 LINE
-        </a>
-
-        <div className="line-qr-card">
-          <img src="/line-qrcode.png" alt="LINE QR Code" />
-        </div>
-
-        <p className="footer-note">
-          掃描 QR Code 或搜尋 LINE ID：@chateau-buy
-        </p>
-
-        <p className="footer-price-note">
-          滿 NT$3000 免運，僅提供宅配。商品價格與優惠組合依當日公告為準。
-        </p>
-      </footer>
 
       <style jsx global>{`
 
@@ -12337,6 +12423,916 @@ export default function Home() {
           .campaign-deal-card-v24,
           .campaign-deal-card-v24.deal-1 {
             min-height: 108px !important;
+          }
+        }
+
+
+        /* Commerce V2.4.2：爆品區新版，一大卡 + 兩中卡 + 組合價 + 系列入口 */
+        .best-hero-v242 {
+          position: relative;
+          overflow: hidden;
+          display: grid;
+          gap: 16px;
+          margin: 12px 0;
+          padding: 20px 18px 18px;
+          border: 1px solid rgba(236, 202, 174, 0.95);
+          border-radius: 30px;
+          background:
+            radial-gradient(circle at 92% 14%, rgba(178, 65, 51, 0.12), transparent 28%),
+            radial-gradient(circle at 5% 100%, rgba(255, 217, 164, 0.38), transparent 30%),
+            linear-gradient(135deg, #fffaf4 0%, #fff 45%, #f4dfd1 100%);
+          box-shadow: 0 20px 46px rgba(87, 48, 34, 0.15);
+        }
+
+        .best-hero-v242::before {
+          content: "BEST";
+          position: absolute;
+          right: -8px;
+          top: 16px;
+          transform: rotate(10deg);
+          color: rgba(178, 65, 51, 0.07);
+          font-size: 72px;
+          font-weight: 1000;
+          letter-spacing: -0.08em;
+          pointer-events: none;
+        }
+
+        .best-hero-copy-v242 {
+          position: relative;
+          z-index: 2;
+          display: grid;
+          gap: 9px;
+        }
+
+        .best-hero-eyebrow-v242 {
+          width: fit-content;
+          margin: 0;
+          padding: 7px 11px;
+          border: 1px solid rgba(178, 65, 51, 0.22);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.78);
+          color: var(--accent-dark);
+          font-size: 12px;
+          font-weight: 1000;
+          letter-spacing: 0.08em;
+        }
+
+        .best-hero-copy-v242 h2 {
+          margin: 0;
+          color: #2c211d;
+          font-size: 31px;
+          font-weight: 1000;
+          line-height: 1.08;
+          letter-spacing: -0.075em;
+        }
+
+        .best-hero-copy-v242 > strong {
+          color: #9f2f27;
+          font-size: 15px;
+          font-weight: 1000;
+          line-height: 1.35;
+        }
+
+        .best-hero-copy-v242 > span {
+          color: #68564d;
+          font-size: 13px;
+          font-weight: 850;
+          line-height: 1.65;
+        }
+
+        .best-tag-row-v242 {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 7px;
+        }
+
+        .best-tag-row-v242 span {
+          padding: 6px 9px;
+          border-radius: 999px;
+          background: rgba(178, 65, 51, 0.09);
+          color: var(--accent-dark);
+          font-size: 11px;
+          font-weight: 1000;
+        }
+
+        .best-hero-actions-v242 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          margin-top: 3px;
+        }
+
+        .best-hero-image-card-v242 {
+          position: relative;
+          z-index: 2;
+          display: grid;
+          place-items: center;
+          gap: 8px;
+          min-height: 260px;
+          padding: 18px;
+          overflow: hidden;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 28px;
+          background: rgba(255, 255, 255, 0.86);
+          box-shadow: 0 16px 32px rgba(77, 55, 38, 0.10);
+        }
+
+        .best-hero-image-card-v242 img {
+          width: 100%;
+          height: 218px;
+          object-fit: contain;
+        }
+
+        .best-top-badge-v242 {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          padding: 7px 10px;
+          border-radius: 999px;
+          background: linear-gradient(135deg, #b53b30, #7c251f);
+          color: #fff;
+          font-size: 11px;
+          font-weight: 1000;
+          box-shadow: 0 9px 18px rgba(178, 65, 51, 0.20);
+        }
+
+        .best-hero-image-card-v242 > strong {
+          color: #b72f28;
+          font-size: 18px;
+          font-weight: 1000;
+          line-height: 1.2;
+          text-align: center;
+        }
+
+        .best-image-placeholder-v242 {
+          display: grid;
+          place-items: center;
+          width: 100%;
+          height: 218px;
+          border: 1px dashed rgba(178, 65, 51, 0.24);
+          border-radius: 20px;
+          color: #9a8378;
+          font-size: 13px;
+          font-weight: 1000;
+        }
+
+        .secondary-best-grid-v242 {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 12px;
+          margin: 0 0 14px;
+        }
+
+        .secondary-best-card-v242 {
+          overflow: hidden;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 24px;
+          background: #fff;
+          box-shadow: 0 14px 28px rgba(77, 55, 38, 0.08);
+        }
+
+        .secondary-best-image-v242 {
+          display: grid;
+          place-items: center;
+          width: 100%;
+          min-height: 142px;
+          padding: 12px;
+          border: 0;
+          border-bottom: 1px solid rgba(232, 214, 198, 0.82);
+          background: linear-gradient(135deg, #fff, #fff8ef);
+        }
+
+        .secondary-best-image-v242 img {
+          width: 100%;
+          height: 126px;
+          object-fit: contain;
+        }
+
+        .secondary-best-image-v242 span {
+          color: #9a8378;
+          font-size: 12px;
+          font-weight: 1000;
+        }
+
+        .secondary-best-card-v242 > div {
+          display: grid;
+          gap: 6px;
+          padding: 12px;
+        }
+
+        .secondary-best-card-v242 > div > span,
+        .combo-showcase-list-v242 span {
+          width: fit-content;
+          padding: 5px 8px;
+          border-radius: 999px;
+          background: rgba(178, 65, 51, 0.09);
+          color: var(--accent-dark);
+          font-size: 10.5px;
+          font-weight: 1000;
+        }
+
+        .secondary-best-card-v242 h3 {
+          display: -webkit-box;
+          min-height: 40px;
+          margin: 0;
+          overflow: hidden;
+          color: var(--ink);
+          font-size: 15px;
+          font-weight: 1000;
+          line-height: 1.34;
+          letter-spacing: -0.04em;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .secondary-best-card-v242 p {
+          display: -webkit-box;
+          min-height: 34px;
+          margin: 0;
+          overflow: hidden;
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 820;
+          line-height: 1.45;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .secondary-best-card-v242 strong {
+          color: #b72f28;
+          font-size: 15px;
+          font-weight: 1000;
+        }
+
+        .secondary-best-card-v242 button:not(.secondary-best-image-v242) {
+          min-height: 36px;
+          border: 1px solid rgba(178, 65, 51, 0.18);
+          border-radius: 999px;
+          background: #fff;
+          color: var(--accent-dark);
+          font-size: 12px;
+          font-weight: 1000;
+        }
+
+        .combo-showcase-v242,
+        .series-entry-section-v242 {
+          margin: 0 0 14px;
+          padding: 14px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 26px;
+          background: #fff;
+          box-shadow: 0 14px 30px rgba(77, 55, 38, 0.07);
+        }
+
+        .combo-showcase-head-v242,
+        .series-entry-head-v242 {
+          display: grid;
+          gap: 4px;
+          margin-bottom: 12px;
+        }
+
+        .combo-showcase-head-v242 p,
+        .series-entry-head-v242 p {
+          margin: 0;
+          color: var(--accent);
+          font-size: 11px;
+          font-weight: 1000;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+        }
+
+        .combo-showcase-head-v242 h2,
+        .series-entry-head-v242 h2 {
+          margin: 0;
+          color: var(--ink);
+          font-size: 23px;
+          font-weight: 1000;
+          letter-spacing: -0.055em;
+        }
+
+        .combo-showcase-head-v242 span,
+        .series-entry-head-v242 span {
+          color: var(--muted);
+          font-size: 12.5px;
+          font-weight: 840;
+          line-height: 1.55;
+        }
+
+        .combo-showcase-list-v242 {
+          display: flex;
+          gap: 10px;
+          overflow-x: auto;
+          padding-bottom: 4px;
+          scrollbar-width: none;
+        }
+
+        .combo-showcase-list-v242::-webkit-scrollbar {
+          display: none;
+        }
+
+        .combo-feature-card-v242,
+        .combo-mini-card-v242 {
+          flex: 0 0 250px;
+          display: grid;
+          grid-template-columns: 92px 1fr;
+          gap: 10px;
+          align-items: center;
+          min-height: 124px;
+          padding: 10px;
+          border: 1px solid rgba(232, 214, 198, 0.92);
+          border-radius: 22px;
+          background: linear-gradient(135deg, #fff, #fff8ef);
+        }
+
+        .combo-feature-card-v242 {
+          flex-basis: 300px;
+          border-color: rgba(178, 65, 51, 0.20);
+        }
+
+        .combo-showcase-list-v242 button {
+          display: grid;
+          place-items: center;
+          width: 92px;
+          height: 92px;
+          overflow: hidden;
+          border: 0;
+          border-radius: 17px;
+          background: #fff;
+        }
+
+        .combo-showcase-list-v242 img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 6px;
+        }
+
+        .combo-showcase-list-v242 button > span {
+          color: #9a8378;
+          font-size: 11px;
+          font-weight: 1000;
+        }
+
+        .combo-showcase-list-v242 div {
+          display: grid;
+          gap: 5px;
+          min-width: 0;
+        }
+
+        .combo-showcase-list-v242 h3 {
+          display: -webkit-box;
+          margin: 0;
+          overflow: hidden;
+          color: var(--ink);
+          font-size: 14px;
+          font-weight: 1000;
+          line-height: 1.34;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .combo-showcase-list-v242 p {
+          display: -webkit-box;
+          margin: 0;
+          overflow: hidden;
+          color: var(--muted);
+          font-size: 11.5px;
+          font-weight: 820;
+          line-height: 1.4;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .combo-showcase-list-v242 strong {
+          color: #b72f28;
+          font-size: 14px;
+          font-weight: 1000;
+          line-height: 1.2;
+        }
+
+        .series-entry-grid-v242 {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+        }
+
+        .series-entry-grid-v242 button {
+          display: grid;
+          gap: 7px;
+          min-height: 166px;
+          padding: 10px;
+          border: 1px solid rgba(232, 214, 198, 0.92);
+          border-radius: 20px;
+          background: linear-gradient(135deg, #fff, #fff8ef);
+          text-align: left;
+        }
+
+        .series-entry-grid-v242 button > div {
+          display: grid;
+          place-items: center;
+          height: 78px;
+          overflow: hidden;
+          border-radius: 16px;
+          background: #fff;
+        }
+
+        .series-entry-grid-v242 img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 6px;
+        }
+
+        .series-entry-grid-v242 button > div > span {
+          color: #9a8378;
+          font-size: 11px;
+          font-weight: 1000;
+        }
+
+        .series-entry-grid-v242 strong {
+          color: var(--ink);
+          font-size: 14px;
+          font-weight: 1000;
+          letter-spacing: -0.03em;
+        }
+
+        .series-entry-grid-v242 p {
+          margin: 0;
+          color: var(--muted);
+          font-size: 11.5px;
+          font-weight: 820;
+          line-height: 1.45;
+        }
+
+        .series-entry-grid-v242 em {
+          color: var(--accent-dark);
+          font-size: 11px;
+          font-style: normal;
+          font-weight: 1000;
+        }
+
+        .campaign-hero-v24,
+        .campaign-promo-rail-v24,
+        .campaign-spotlight-strip-v24 {
+          display: none !important;
+        }
+
+        @media (min-width: 560px) {
+          .best-hero-v242 {
+            grid-template-columns: 1fr 0.86fr;
+            align-items: center;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .best-hero-copy-v242 h2 {
+            font-size: 27px;
+          }
+
+          .best-hero-actions-v242,
+          .secondary-best-grid-v242,
+          .series-entry-grid-v242 {
+            grid-template-columns: 1fr;
+          }
+
+          .best-hero-image-card-v242 {
+            min-height: 220px;
+          }
+
+          .best-hero-image-card-v242 img,
+          .best-image-placeholder-v242 {
+            height: 176px;
+          }
+
+          .combo-feature-card-v242,
+          .combo-mini-card-v242 {
+            flex-basis: 260px;
+          }
+        }
+
+
+        /* Commerce V2.4.3：系列入口圖片 + LINE QR 區塊修正 */
+        .series-entry-section-v242 {
+          padding: 14px !important;
+        }
+
+        .series-entry-grid-v242 {
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 12px !important;
+        }
+
+        .series-entry-grid-v242 button {
+          display: grid !important;
+          grid-template-rows: auto auto auto auto !important;
+          gap: 8px !important;
+          min-height: 212px !important;
+          padding: 12px !important;
+          overflow: hidden !important;
+        }
+
+        .series-entry-grid-v242 button > div {
+          width: 100% !important;
+          height: 112px !important;
+          overflow: hidden !important;
+          border: 1px solid rgba(232, 214, 198, 0.86) !important;
+          border-radius: 18px !important;
+          background:
+            linear-gradient(135deg, #fff, #fff8ef) !important;
+        }
+
+        .series-entry-grid-v242 img {
+          width: 100% !important;
+          height: 100% !important;
+          max-width: 100% !important;
+          max-height: 100% !important;
+          object-fit: contain !important;
+          object-position: center center !important;
+          padding: 8px !important;
+          transform: none !important;
+          filter: none !important;
+          background: transparent !important;
+        }
+
+        .series-entry-grid-v242 strong {
+          min-height: 22px !important;
+          font-size: 15px !important;
+          line-height: 1.25 !important;
+        }
+
+        .series-entry-grid-v242 p {
+          display: -webkit-box !important;
+          min-height: 34px !important;
+          overflow: hidden !important;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .series-entry-grid-v242 em {
+          margin-top: auto !important;
+          width: fit-content !important;
+          padding: 5px 8px !important;
+          border-radius: 999px !important;
+          background: rgba(178, 65, 51, 0.08) !important;
+        }
+
+        .footer-compact-v243 {
+          margin-top: 22px !important;
+          padding: 16px !important;
+          border-radius: 24px !important;
+          text-align: left !important;
+        }
+
+        .footer-line-main-v243 {
+          display: grid;
+          grid-template-columns: 1fr 104px;
+          gap: 14px;
+          align-items: center;
+        }
+
+        .footer-line-copy-v243 {
+          min-width: 0;
+        }
+
+        .footer-line-copy-v243 p {
+          margin: 0 0 4px;
+          color: rgba(255, 255, 255, 0.66);
+          font-size: 11px;
+          font-weight: 1000;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+
+        .footer-line-copy-v243 h2 {
+          margin: 0 0 7px !important;
+          font-size: 20px !important;
+          line-height: 1.2 !important;
+          letter-spacing: -0.04em !important;
+        }
+
+        .footer-line-copy-v243 span {
+          display: block;
+          margin-bottom: 10px;
+          color: rgba(255, 255, 255, 0.84);
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .footer-compact-v243 .line-button {
+          margin: 0 !important;
+          min-height: 40px !important;
+          padding: 9px 15px !important;
+          font-size: 13px !important;
+        }
+
+        .line-qr-compact-v243 {
+          width: 104px !important;
+          height: 104px !important;
+          margin: 0 !important;
+          padding: 6px !important;
+          overflow: hidden !important;
+          border-radius: 18px !important;
+          background: #fff !important;
+        }
+
+        .line-qr-compact-v243 img {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+          object-position: center center !important;
+          transform: scale(1.28) !important;
+          transform-origin: center center !important;
+        }
+
+        .footer-compact-v243 .footer-note {
+          margin: 13px 0 0 !important;
+          color: rgba(255, 255, 255, 0.76) !important;
+          font-size: 12.5px !important;
+          line-height: 1.55 !important;
+        }
+
+        .footer-compact-v243 .footer-price-note {
+          margin: 8px 0 0 !important;
+          color: rgba(255, 255, 255, 0.52) !important;
+          font-size: 11.5px !important;
+          line-height: 1.55 !important;
+        }
+
+        @media (max-width: 380px) {
+          .series-entry-grid-v242 {
+            grid-template-columns: 1fr !important;
+          }
+
+          .series-entry-grid-v242 button {
+            grid-template-columns: 112px 1fr !important;
+            grid-template-rows: auto auto auto !important;
+            align-items: center !important;
+            min-height: 132px !important;
+          }
+
+          .series-entry-grid-v242 button > div {
+            grid-row: 1 / 4;
+            width: 112px !important;
+            height: 112px !important;
+          }
+
+          .footer-line-main-v243 {
+            grid-template-columns: 1fr 92px;
+            gap: 12px;
+          }
+
+          .line-qr-compact-v243 {
+            width: 92px !important;
+            height: 92px !important;
+          }
+        }
+
+
+        /* Commerce V2.4.3.1：修正最後 LINE QR 白色大方塊 */
+        .footer.footer-compact-v243 {
+          margin-top: 18px !important;
+          padding: 14px !important;
+          border: 1px solid rgba(132, 97, 76, 0.18) !important;
+          border-radius: 26px !important;
+          background: linear-gradient(135deg, #5a4034, #3f2d25) !important;
+          color: #fff !important;
+          text-align: left !important;
+          box-shadow: 0 16px 34px rgba(66, 43, 31, 0.18) !important;
+        }
+
+        .footer-compact-v243 h2 {
+          color: #fff !important;
+        }
+
+        .footer-line-main-v243 {
+          grid-template-columns: 1fr 88px !important;
+          gap: 12px !important;
+          align-items: center !important;
+        }
+
+        .footer-line-copy-v243 p {
+          color: rgba(255, 244, 238, 0.7) !important;
+        }
+
+        .footer-line-copy-v243 h2 {
+          font-size: 18px !important;
+          margin-bottom: 6px !important;
+        }
+
+        .footer-line-copy-v243 span {
+          margin-bottom: 8px !important;
+          color: rgba(255, 246, 240, 0.84) !important;
+          font-size: 12.5px !important;
+        }
+
+        .footer-compact-v243 .line-button {
+          display: inline-flex !important;
+          width: fit-content !important;
+          min-height: 38px !important;
+          padding: 8px 14px !important;
+          border-radius: 999px !important;
+          background: #fff7f1 !important;
+          color: #9d2f23 !important;
+          box-shadow: none !important;
+        }
+
+        .line-qr-card.line-qr-compact-v243 {
+          width: 88px !important;
+          height: 88px !important;
+          padding: 5px !important;
+          border-radius: 18px !important;
+          background: rgba(255, 255, 255, 0.96) !important;
+          border: 1px solid rgba(214, 193, 181, 0.7) !important;
+          box-shadow: none !important;
+          justify-self: end !important;
+        }
+
+        .line-qr-card.line-qr-compact-v243 img {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+          object-position: center center !important;
+          transform: scale(1.18) !important;
+          border-radius: 12px !important;
+        }
+
+        .footer-compact-v243 .footer-note {
+          margin-top: 12px !important;
+          color: rgba(255, 247, 241, 0.76) !important;
+          font-size: 12px !important;
+        }
+
+        .footer-compact-v243 .footer-price-note {
+          margin-top: 6px !important;
+          color: rgba(255, 247, 241, 0.54) !important;
+          font-size: 11px !important;
+        }
+
+        @media (max-width: 380px) {
+          .footer.footer-compact-v243 {
+            padding: 12px !important;
+            border-radius: 22px !important;
+          }
+
+          .footer-line-main-v243 {
+            grid-template-columns: 1fr 76px !important;
+            gap: 10px !important;
+          }
+
+          .line-qr-card.line-qr-compact-v243 {
+            width: 76px !important;
+            height: 76px !important;
+          }
+
+          .footer-line-copy-v243 h2 {
+            font-size: 17px !important;
+          }
+        }
+
+
+        /* Commerce V2.4.4：LINE 訂單確認極簡整合版 */
+        .line-confirm-section-v244 {
+          margin: 18px 0 0 !important;
+        }
+
+        .line-confirm-card-v244 {
+          display: grid;
+          grid-template-columns: 1fr 104px;
+          gap: 14px;
+          align-items: center;
+          padding: 16px;
+          border: 1px solid rgba(132, 97, 76, 0.18);
+          border-radius: 26px;
+          background:
+            radial-gradient(circle at 92% 12%, rgba(255, 223, 188, 0.12), transparent 24%),
+            linear-gradient(135deg, #5a4034, #3f2d25);
+          color: #fff;
+          box-shadow: 0 16px 34px rgba(66, 43, 31, 0.18);
+        }
+
+        .line-confirm-copy-v244 {
+          min-width: 0;
+          display: grid;
+          gap: 7px;
+        }
+
+        .line-confirm-copy-v244 p {
+          margin: 0;
+          color: rgba(255, 244, 238, 0.68);
+          font-size: 11px;
+          font-weight: 1000;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+        }
+
+        .line-confirm-copy-v244 h2 {
+          margin: 0;
+          color: #fff;
+          font-size: 22px;
+          font-weight: 1000;
+          line-height: 1.16;
+          letter-spacing: -0.05em;
+        }
+
+        .line-confirm-copy-v244 span {
+          color: rgba(255, 247, 241, 0.80);
+          font-size: 12.5px;
+          font-weight: 820;
+          line-height: 1.6;
+        }
+
+        .line-confirm-copy-v244 strong {
+          color: #fff;
+          font-size: 13px;
+          font-weight: 1000;
+        }
+
+        .line-confirm-button-v244 {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: fit-content;
+          min-height: 38px;
+          padding: 8px 14px;
+          border-radius: 999px;
+          background: #fff7f1;
+          color: #9d2f23;
+          font-size: 13px;
+          font-weight: 1000;
+          text-decoration: none;
+        }
+
+        .line-confirm-qr-wrap-v244 {
+          display: grid;
+          justify-items: center;
+          gap: 6px;
+        }
+
+        .line-confirm-qr-v244 {
+          display: grid;
+          place-items: center;
+          width: 104px;
+          height: 104px;
+          padding: 6px;
+          overflow: hidden;
+          border: 1px solid rgba(214, 193, 181, 0.74);
+          border-radius: 18px;
+          background: #fff;
+        }
+
+        .line-confirm-qr-v244 img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center center;
+          transform: scale(1.16);
+          border-radius: 12px;
+        }
+
+        .line-confirm-qr-wrap-v244 > span {
+          color: rgba(255, 247, 241, 0.74);
+          font-size: 11px;
+          font-weight: 900;
+        }
+
+        .line-confirm-rule-v244 {
+          grid-column: 1 / -1;
+          padding-top: 12px;
+          border-top: 1px solid rgba(255, 255, 255, 0.12);
+          color: rgba(255, 247, 241, 0.62);
+          font-size: 11.5px;
+          font-weight: 820;
+          line-height: 1.45;
+        }
+
+        @media (max-width: 380px) {
+          .line-confirm-card-v244 {
+            grid-template-columns: 1fr 82px;
+            gap: 10px;
+            padding: 13px;
+            border-radius: 22px;
+          }
+
+          .line-confirm-copy-v244 h2 {
+            font-size: 19px;
+          }
+
+          .line-confirm-copy-v244 span {
+            display: -webkit-box;
+            overflow: hidden;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+          }
+
+          .line-confirm-qr-v244 {
+            width: 82px;
+            height: 82px;
+            border-radius: 16px;
+          }
+
+          .line-confirm-button-v244 {
+            min-height: 36px;
+            padding: 7px 12px;
+            font-size: 12.5px;
           }
         }
 
