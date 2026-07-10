@@ -1121,6 +1121,16 @@ const products: Product[] = [
     description: "生福科技品項。可搭配買一送二活動。",
   },
   {
+    id: 144,
+    name: "視綠佳",
+    category: "外部廠商",
+    series: "生福科技",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/placeholder.jpg",
+    description: "生福科技品項。",
+  },
+  {
     id: 100,
     name: "BC-HA 複合益生菌 2盒組",
     category: "組合價",
@@ -3457,6 +3467,25 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "梅托洛買一送二組合價 $3,600；庫存與效期依 LINE 小幫手確認為準。",
   },
+  144: {
+    cardName: "視綠佳",
+    cardSubtitle: "生福科技品項・生福科技",
+    spec: "規格依商品標示",
+    intro: "視綠佳為生福科技精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
+    features: [
+      "生福科技精選品項，可依需求加入清單詢問。",
+      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
+      "適合搭配回購群日常選品一起確認。",
+    ],
+    suitableFor: [
+      "外部廠商",
+      "生福科技",
+    ],
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或小幫手說明為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
+  },
 
   100: {
     cardName: "BC-HA 複合益生菌 2盒組",
@@ -4370,8 +4399,11 @@ export default function Home() {
   const homeBrighteningProducts = getProductsByIds([68, 71, 72, 141, 142, 106, 127, 128]);
   const homeFirmingProducts = getProductsByIds([27, 28, 21, 22, 23, 120]);
   const homeMaskProducts = getProductsByIds([126, 128, 123, 129, 131, 132]);
-  const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74, 99, 138, 143]);
+  const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74, 99, 144, 138, 143]);
   const homeDailyLifeProducts = getProductsByIds([29, 30, 93, 31, 32, 140, 117, 75, 133, 134, 47, 48, 79, 80, 81, 82, 94, 35, 36, 37]);
+
+  const campaignHeroProducts = getProductsByIds([143, 92, 138, 139]);
+  const campaignSpotlightProducts = getProductsByIds([136, 140, 89, 90]);
 
   const quickSearchTerms = [
     "組合價",
@@ -5388,7 +5420,7 @@ export default function Home() {
   return (
     <main className="site-shell">
       <div className="announcement-bar">
-        城堡回購群專屬商城｜滿 NT$3000 免運｜送出清單後 LINE 小幫手確認
+        滿 NT$3000 免運｜LINE 小幫手確認後付款
       </div>
 
       <header className="top-header">
@@ -5757,62 +5789,127 @@ export default function Home() {
         </section>
       )}
 
-      <section className="commerce-hero-v2" aria-label="佐登商城主視覺">
-        <div className="commerce-hero-copy">
-          <p className="commerce-hero-eyebrow">LINE 回購群專屬輕商城</p>
-          <h2>城堡產地價，先加入清單再由小幫手確認</h2>
-          <span>回購優惠、組合價、即期良品與生活選品一次逛。送出清單後不會直接付款，會先由 LINE 小幫手確認庫存、效期與宅配資訊。</span>
+      <section className="campaign-hero-v24" aria-label="本月回購活動主視覺">
+        <div className="campaign-copy-v24">
+          <p className="campaign-eyebrow-v24">本月回購爆品</p>
+          <h2>佐登城堡回購季</h2>
+          <strong>買一送二・買一送一・人氣組合價</strong>
+          <span>回購群專屬產地價，先加入清單，送出後由 LINE 小幫手確認庫存、效期與金額。</span>
+
+          <div className="campaign-hero-actions-v24">
+            <button type="button" className="hero-primary-button" onClick={() => handleDrawerCategory("組合價")}>
+              立即看優惠
+            </button>
+            <button
+              type="button"
+              className="hero-secondary-button"
+              onClick={() => openSearchTerm("買一送一")}
+            >
+              搜尋爆品
+            </button>
+          </div>
         </div>
 
-        <div className="commerce-hero-actions">
-          <button type="button" className="hero-primary-button" onClick={() => handleDrawerCategory("組合價")}>
-            看本月優惠
-          </button>
-          <button
-            type="button"
-            className="hero-secondary-button"
-            onClick={() => {
-              setIsCollectionOpen(false);
-              setIsSearchOpen(true);
-              window.setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }, 0);
-            }}
-          >
-            搜尋商品
-          </button>
+        <div className="campaign-deal-board-v24" aria-label="人氣優惠商品">
+          <div className="campaign-board-sticker-v24">HOT</div>
+
+          {campaignHeroProducts.map((product, index) => (
+            <article className={`campaign-deal-card-v24 deal-${index + 1}`} key={`campaign-${product.id}`}>
+              <button
+                type="button"
+                className="campaign-deal-image-v24"
+                onClick={() => setSelectedDetailProduct(product)}
+              >
+                {hasRealImage(product) ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    onError={(event) => {
+                      event.currentTarget.parentElement?.classList.add("image-load-failed");
+                      event.currentTarget.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <span>圖片更新中</span>
+                )}
+              </button>
+
+              <div className="campaign-deal-info-v24">
+                <span>{getCommerceBadgeLabel(product)}</span>
+                <strong>{getCardName(product)}</strong>
+                <p>{displayPrice(product)}</p>
+              </div>
+            </article>
+          ))}
         </div>
 
-        <div className="commerce-service-strip">
+        <div className="campaign-service-strip-v24">
           <span>滿 NT$3000 免運</span>
           <span>僅提供宅配</span>
-          <span>LINE 小幫手確認</span>
+          <span>LINE 確認後付款</span>
         </div>
       </section>
 
-      <section className="commerce-shortcut-grid" aria-label="商城快捷入口">
-        <button type="button" onClick={() => handleDrawerCategory("組合價")}>
-          <strong>本月主打</strong>
-          <span>組合價 / 贈品組</span>
+      <section className="campaign-promo-rail-v24" aria-label="促銷入口">
+        <button type="button" onClick={() => openSearchTerm("買一送二")}>
+          <strong>買一送二</strong>
+          <span>梅托洛爆品</span>
+        </button>
+        <button type="button" onClick={() => openSearchTerm("買一送一")}>
+          <strong>買一送一</strong>
+          <span>魚油 / 優惠組</span>
+        </button>
+        <button type="button" onClick={() => openSearchTerm("任選")}>
+          <strong>任選優惠</strong>
+          <span>牙膏 / 貼布 / 面膜</span>
         </button>
         <button type="button" onClick={() => handleDrawerCategory("保健食品")}>
           <strong>保健補給</strong>
-          <span>益生菌 / 魚油 / 葉黃素</span>
+          <span>益生菌 / 葉黃素</span>
         </button>
-        <button type="button" onClick={() => handleDrawerCategory("保養品")}>
-          <strong>保養系列</strong>
-          <span>龍血 / 櫻の雪 / 水光</span>
+        <button type="button" onClick={() => handleDrawerCategory("保養品", "櫻の雪傳明酸美白系列")}>
+          <strong>美白保養</strong>
+          <span>櫻の雪 / 亮白</span>
         </button>
-        <button type="button" onClick={() => handleDrawerCategory("外部廠商", "生福科技")}>
-          <strong>生福科技</strong>
-          <span>梅托洛 / 視綠佳</span>
+        <button type="button" onClick={() => handleDrawerCategory("洗沐")}>
+          <strong>洗沐生活</strong>
+          <span>龍血 / 阿甘</span>
         </button>
       </section>
 
-      <section className="commerce-trust-flow-v23" aria-label="購買流程">
+      <section className="campaign-spotlight-strip-v24" aria-label="小編精選優惠">
+        <div className="spotlight-title-v24">
+          <p>Editor Picks</p>
+          <h3>小編先推這幾組</h3>
+        </div>
+
+        <div className="spotlight-list-v24">
+          {campaignSpotlightProducts.map((product) => (
+            <button
+              type="button"
+              key={`spotlight-${product.id}`}
+              onClick={() => setSelectedDetailProduct(product)}
+            >
+              <span>{getCommerceBadgeLabel(product)}</span>
+              <strong>{getCardName(product)}</strong>
+              <em>{displayPrice(product)}</em>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <HomeProductSection
+        id="home-combo-products"
+        eyebrow="Monthly Hot Deals"
+        title="本月主打優惠"
+        subtitle="買一送二、買一送一、贈品組與回購人氣組合，先把想要的加入清單"
+        products={homeComboProducts}
+      />
+
+      <section className="commerce-trust-flow-v23 trust-flow-after-deals-v24" aria-label="購買流程">
         <div className="trust-flow-title-v23">
           <p>How to Order</p>
-          <h2>安心回購流程</h2>
+          <h2>第一次訂購嗎？</h2>
           <span>這裡不是直接付款的購物車，送出後會先由 LINE 小幫手確認。</span>
         </div>
 
@@ -5839,36 +5936,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <div className="store-promo-stack">
-        <HomeBanner
-          id="home-main-deal"
-          eyebrow="Monthly Deals"
-          title="本月回購優惠"
-          subtitle="人氣組合價・滿額宅配免運"
-          note="益生菌｜龍血洗卸｜EPAX 魚油｜牛樟芝潔口液"
-          image="/banners/banner-combo-deals.png"
-          tone="deal"
-        />
-
-        <HomeBanner
-          id="popular-home"
-          eyebrow="Best Sellers"
-          title="回購人氣推薦"
-          subtitle="保健食品・洗沐清潔・龍血修護"
-          note="精選回購群常購品項，送出後由 LINE 小幫手確認"
-          image="/banners/banner-skincare-series.png"
-          tone="wood"
-        />
-      </div>
-
-      <HomeProductSection
-        id="home-combo-products"
-        eyebrow="Monthly Offers"
-        title="本月主打優惠"
-        subtitle="回購群專屬組合價，庫存與效期由 LINE 小幫手確認"
-        products={homeComboProducts}
-      />
 
       <HomeProductSection
         id="home-clearance-products"
@@ -11766,6 +11833,428 @@ export default function Home() {
 
           .commerce-product-card .product-info {
             min-height: 238px !important;
+          }
+        }
+
+
+        /* Commerce V2.4：首頁吸引力重做版 */
+        .announcement-bar {
+          background: linear-gradient(90deg, #341d18, #a2362b, #6f211c) !important;
+          font-size: 12px !important;
+          letter-spacing: 0.04em !important;
+        }
+
+        .campaign-hero-v24 {
+          position: relative;
+          overflow: hidden;
+          display: grid;
+          gap: 16px;
+          margin: 12px 0 12px;
+          padding: 20px 18px 16px;
+          border: 1px solid rgba(236, 202, 174, 0.95);
+          border-radius: 30px;
+          background:
+            radial-gradient(circle at 88% 16%, rgba(255, 217, 164, 0.42), transparent 24%),
+            radial-gradient(circle at 98% 86%, rgba(178, 65, 51, 0.18), transparent 30%),
+            linear-gradient(135deg, #fff8ed 0%, #fff 44%, #f2d9c8 100%);
+          box-shadow: 0 20px 46px rgba(87, 48, 34, 0.16);
+        }
+
+        .campaign-hero-v24::before {
+          content: "SALE";
+          position: absolute;
+          right: -18px;
+          top: 16px;
+          transform: rotate(12deg);
+          color: rgba(178, 65, 51, 0.08);
+          font-size: 74px;
+          font-weight: 1000;
+          letter-spacing: -0.08em;
+          pointer-events: none;
+        }
+
+        .campaign-copy-v24 {
+          position: relative;
+          z-index: 2;
+          display: grid;
+          gap: 8px;
+        }
+
+        .campaign-eyebrow-v24 {
+          width: fit-content;
+          margin: 0;
+          padding: 7px 11px;
+          border: 1px solid rgba(178, 65, 51, 0.20);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.76);
+          color: var(--accent-dark);
+          font-size: 12px;
+          font-weight: 1000;
+          letter-spacing: 0.10em;
+        }
+
+        .campaign-copy-v24 h2 {
+          margin: 0;
+          color: #2c211d;
+          font-size: 34px;
+          font-weight: 1000;
+          line-height: 1.02;
+          letter-spacing: -0.085em;
+        }
+
+        .campaign-copy-v24 > strong {
+          display: inline-flex;
+          width: fit-content;
+          padding: 7px 10px;
+          border-radius: 999px;
+          background: linear-gradient(135deg, #b53b30, #7c251f);
+          color: #fff;
+          font-size: 13px;
+          font-weight: 1000;
+          box-shadow: 0 10px 20px rgba(178, 65, 51, 0.22);
+        }
+
+        .campaign-copy-v24 > span {
+          max-width: 390px;
+          color: #66544c;
+          font-size: 13px;
+          font-weight: 850;
+          line-height: 1.65;
+        }
+
+        .campaign-hero-actions-v24 {
+          display: grid;
+          grid-template-columns: 1.15fr 1fr;
+          gap: 10px;
+          margin-top: 4px;
+        }
+
+        .campaign-deal-board-v24 {
+          position: relative;
+          z-index: 2;
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 9px;
+        }
+
+        .campaign-board-sticker-v24 {
+          position: absolute;
+          z-index: 5;
+          right: 10px;
+          top: -10px;
+          display: grid;
+          place-items: center;
+          width: 44px;
+          height: 44px;
+          border: 2px solid #fff;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #f7c46a, #b53b30);
+          color: #fff;
+          font-size: 11px;
+          font-weight: 1000;
+          box-shadow: 0 10px 18px rgba(101, 52, 30, 0.22);
+        }
+
+        .campaign-deal-card-v24 {
+          position: relative;
+          overflow: hidden;
+          display: grid;
+          grid-template-columns: 74px 1fr;
+          gap: 9px;
+          min-height: 96px;
+          padding: 9px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.86);
+          box-shadow: 0 12px 24px rgba(77, 55, 38, 0.08);
+        }
+
+        .campaign-deal-card-v24.deal-1 {
+          grid-column: 1 / -1;
+          grid-template-columns: 96px 1fr;
+          min-height: 118px;
+          border-color: rgba(178, 65, 51, 0.23);
+          background: linear-gradient(135deg, #fff, #fff1e8);
+        }
+
+        .campaign-deal-image-v24 {
+          display: grid;
+          place-items: center;
+          width: 100%;
+          min-height: 74px;
+          overflow: hidden;
+          border: 0;
+          border-radius: 16px;
+          background: #fffaf6;
+        }
+
+        .campaign-deal-card-v24.deal-1 .campaign-deal-image-v24 {
+          min-height: 96px;
+        }
+
+        .campaign-deal-image-v24 img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 6px;
+        }
+
+        .campaign-deal-image-v24 > span {
+          color: #a48b7e;
+          font-size: 10px;
+          font-weight: 950;
+        }
+
+        .campaign-deal-info-v24 {
+          display: grid;
+          align-content: center;
+          gap: 5px;
+          min-width: 0;
+        }
+
+        .campaign-deal-info-v24 span {
+          width: fit-content;
+          padding: 5px 8px;
+          border-radius: 999px;
+          background: rgba(178, 65, 51, 0.10);
+          color: var(--accent-dark);
+          font-size: 10px;
+          font-weight: 1000;
+        }
+
+        .campaign-deal-info-v24 strong {
+          display: -webkit-box;
+          overflow: hidden;
+          color: var(--ink);
+          font-size: 13px;
+          font-weight: 1000;
+          line-height: 1.3;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .campaign-deal-card-v24.deal-1 strong {
+          font-size: 16px;
+        }
+
+        .campaign-deal-info-v24 p {
+          margin: 0;
+          color: #c0352a;
+          font-size: 13px;
+          font-weight: 1000;
+          line-height: 1.25;
+        }
+
+        .campaign-deal-card-v24.deal-1 p {
+          font-size: 18px;
+          letter-spacing: -0.04em;
+        }
+
+        .campaign-service-strip-v24 {
+          position: relative;
+          z-index: 2;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 7px;
+        }
+
+        .campaign-service-strip-v24 span {
+          display: grid;
+          place-items: center;
+          min-height: 31px;
+          padding: 7px 5px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.80);
+          color: #674f45;
+          font-size: 11px;
+          font-weight: 1000;
+          text-align: center;
+          box-shadow: inset 0 0 0 1px rgba(232, 214, 198, 0.86);
+        }
+
+        .campaign-promo-rail-v24 {
+          display: flex;
+          gap: 10px;
+          margin: 0 0 13px;
+          overflow-x: auto;
+          padding: 1px 1px 5px;
+          scrollbar-width: none;
+        }
+
+        .campaign-promo-rail-v24::-webkit-scrollbar {
+          display: none;
+        }
+
+        .campaign-promo-rail-v24 button {
+          position: relative;
+          flex: 0 0 132px;
+          display: grid;
+          gap: 5px;
+          min-height: 72px;
+          padding: 12px;
+          overflow: hidden;
+          border: 1px solid rgba(236, 202, 174, 0.95);
+          border-radius: 20px;
+          background: linear-gradient(135deg, #fff, #fff7ef);
+          text-align: left;
+          box-shadow: 0 12px 24px rgba(77, 55, 38, 0.07);
+        }
+
+        .campaign-promo-rail-v24 button::after {
+          content: "";
+          position: absolute;
+          right: -18px;
+          bottom: -20px;
+          width: 62px;
+          height: 62px;
+          border-radius: 50%;
+          background: rgba(178, 65, 51, 0.08);
+        }
+
+        .campaign-promo-rail-v24 strong {
+          position: relative;
+          z-index: 1;
+          color: var(--ink);
+          font-size: 15px;
+          font-weight: 1000;
+          letter-spacing: -0.04em;
+        }
+
+        .campaign-promo-rail-v24 span {
+          position: relative;
+          z-index: 1;
+          color: var(--accent-dark);
+          font-size: 11.5px;
+          font-weight: 900;
+          line-height: 1.35;
+        }
+
+        .campaign-spotlight-strip-v24 {
+          display: grid;
+          gap: 10px;
+          margin: 0 0 14px;
+          padding: 14px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 24px;
+          background: #fff;
+          box-shadow: 0 12px 26px rgba(77, 55, 38, 0.07);
+        }
+
+        .spotlight-title-v24 p {
+          margin: 0 0 2px;
+          color: var(--accent);
+          font-size: 11px;
+          font-weight: 1000;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+        }
+
+        .spotlight-title-v24 h3 {
+          margin: 0;
+          color: var(--ink);
+          font-size: 19px;
+          font-weight: 1000;
+          letter-spacing: -0.05em;
+        }
+
+        .spotlight-list-v24 {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 9px;
+        }
+
+        .spotlight-list-v24 button {
+          display: grid;
+          gap: 5px;
+          min-height: 92px;
+          padding: 10px;
+          border: 1px solid rgba(232, 214, 198, 0.92);
+          border-radius: 18px;
+          background: #fffaf6;
+          text-align: left;
+        }
+
+        .spotlight-list-v24 span {
+          width: fit-content;
+          padding: 4px 7px;
+          border-radius: 999px;
+          background: rgba(178, 65, 51, 0.10);
+          color: var(--accent-dark);
+          font-size: 10px;
+          font-weight: 1000;
+        }
+
+        .spotlight-list-v24 strong {
+          display: -webkit-box;
+          overflow: hidden;
+          color: var(--ink);
+          font-size: 13px;
+          font-weight: 1000;
+          line-height: 1.35;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .spotlight-list-v24 em {
+          color: #c0352a;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 1000;
+        }
+
+        .home-product-section#home-combo-products {
+          margin-top: 12px !important;
+          padding: 16px 0 4px !important;
+          border-top: 1px solid rgba(232, 214, 198, 0.55);
+        }
+
+        .home-product-section#home-combo-products .section-heading.compact h2 {
+          font-size: 28px !important;
+        }
+
+        .trust-flow-after-deals-v24 {
+          margin-top: 16px !important;
+        }
+
+        .store-promo-stack {
+          display: none !important;
+        }
+
+        @media (min-width: 560px) {
+          .campaign-hero-v24 {
+            grid-template-columns: 0.92fr 1.08fr;
+            align-items: center;
+          }
+
+          .campaign-service-strip-v24 {
+            grid-column: 1 / -1;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .campaign-copy-v24 h2 {
+            font-size: 29px;
+          }
+
+          .campaign-hero-actions-v24,
+          .campaign-service-strip-v24,
+          .spotlight-list-v24 {
+            grid-template-columns: 1fr;
+          }
+
+          .campaign-deal-board-v24 {
+            grid-template-columns: 1fr;
+          }
+
+          .campaign-deal-card-v24,
+          .campaign-deal-card-v24.deal-1 {
+            grid-column: auto;
+            grid-template-columns: 72px 1fr;
+            min-height: 96px;
+          }
+
+          .campaign-deal-card-v24.deal-1 .campaign-deal-image-v24 {
+            min-height: 74px;
           }
         }
 
