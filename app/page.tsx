@@ -4402,8 +4402,8 @@ export default function Home() {
   const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74, 99, 144, 138, 143]);
   const homeDailyLifeProducts = getProductsByIds([29, 30, 93, 31, 32, 140, 117, 75, 133, 134, 47, 48, 79, 80, 81, 82, 94, 35, 36, 37]);
 
-  const campaignHeroProducts = getProductsByIds([143, 92, 138, 139]);
-  const campaignSpotlightProducts = getProductsByIds([136, 140, 89, 90]);
+  const campaignHeroProducts = getProductsByIds([53, 19, 20, 139]);
+  const campaignSpotlightProducts = getProductsByIds([136, 137, 17, 55]);
 
   const quickSearchTerms = [
     "組合價",
@@ -5791,21 +5791,21 @@ export default function Home() {
 
       <section className="campaign-hero-v24" aria-label="本月回購活動主視覺">
         <div className="campaign-copy-v24">
-          <p className="campaign-eyebrow-v24">本月回購爆品</p>
-          <h2>佐登城堡回購季</h2>
-          <strong>買一送二・買一送一・人氣組合價</strong>
-          <span>回購群專屬產地價，先加入清單，送出後由 LINE 小幫手確認庫存、效期與金額。</span>
+          <p className="campaign-eyebrow-v24">自家熱賣爆品</p>
+          <h2>龍血保濕修護熱賣</h2>
+          <strong>龍血玻尿酸・修護乳霜・人氣洗沐組</strong>
+          <span>回購群熱賣自家保養品，先加入清單，送出後由 LINE 小幫手確認庫存、效期與金額。</span>
 
           <div className="campaign-hero-actions-v24">
             <button type="button" className="hero-primary-button" onClick={() => handleDrawerCategory("組合價")}>
-              立即看優惠
+              看自家熱賣
             </button>
             <button
               type="button"
               className="hero-secondary-button"
-              onClick={() => openSearchTerm("買一送一")}
+              onClick={() => openSearchTerm("龍血")}
             >
-              搜尋爆品
+              搜尋龍血
             </button>
           </div>
         </div>
@@ -5851,36 +5851,36 @@ export default function Home() {
       </section>
 
       <section className="campaign-promo-rail-v24" aria-label="促銷入口">
-        <button type="button" onClick={() => openSearchTerm("買一送二")}>
-          <strong>買一送二</strong>
-          <span>梅托洛爆品</span>
+        <button type="button" onClick={() => handleDrawerCategory("保養品", "龍血系列")}>
+          <strong>龍血熱賣</strong>
+          <span>玻尿酸 / 修護乳霜</span>
         </button>
-        <button type="button" onClick={() => openSearchTerm("買一送一")}>
-          <strong>買一送一</strong>
-          <span>魚油 / 優惠組</span>
+        <button type="button" onClick={() => handleDrawerCategory("組合價", "保養套組")}>
+          <strong>保養套組</strong>
+          <span>櫻の雪 / 潔顏組</span>
         </button>
-        <button type="button" onClick={() => openSearchTerm("任選")}>
-          <strong>任選優惠</strong>
-          <span>牙膏 / 貼布 / 面膜</span>
+        <button type="button" onClick={() => handleDrawerCategory("組合價", "洗沐組合")}>
+          <strong>洗沐組合</strong>
+          <span>龍血洗髮 / 阿甘養髮</span>
+        </button>
+        <button type="button" onClick={() => handleDrawerCategory("組合價", "面膜組合")}>
+          <strong>面膜優惠</strong>
+          <span>水搖滾 / 極光白</span>
         </button>
         <button type="button" onClick={() => handleDrawerCategory("保健食品")}>
           <strong>保健補給</strong>
           <span>益生菌 / 葉黃素</span>
         </button>
-        <button type="button" onClick={() => handleDrawerCategory("保養品", "櫻の雪傳明酸美白系列")}>
-          <strong>美白保養</strong>
-          <span>櫻の雪 / 亮白</span>
-        </button>
-        <button type="button" onClick={() => handleDrawerCategory("洗沐")}>
-          <strong>洗沐生活</strong>
-          <span>龍血 / 阿甘</span>
+        <button type="button" onClick={() => handleDrawerCategory("外部廠商", "生福科技")}>
+          <strong>精選外品</strong>
+          <span>生福科技</span>
         </button>
       </section>
 
       <section className="campaign-spotlight-strip-v24" aria-label="小編精選優惠">
         <div className="spotlight-title-v24">
           <p>Editor Picks</p>
-          <h3>小編先推這幾組</h3>
+          <h3>自家熱賣先看這幾款</h3>
         </div>
 
         <div className="spotlight-list-v24">
@@ -5901,8 +5901,8 @@ export default function Home() {
       <HomeProductSection
         id="home-combo-products"
         eyebrow="Monthly Hot Deals"
-        title="本月主打優惠"
-        subtitle="買一送二、買一送一、贈品組與回購人氣組合，先把想要的加入清單"
+        title="回購人氣優惠"
+        subtitle="自家保養、洗沐與組合價優先展示，外部廠商優惠放後面慢慢逛"
         products={homeComboProducts}
       />
 
@@ -12255,6 +12255,88 @@ export default function Home() {
 
           .campaign-deal-card-v24.deal-1 .campaign-deal-image-v24 {
             min-height: 74px;
+          }
+        }
+
+
+        /* Commerce V2.4.1：首屏爆品改以自家產品為主 */
+        .campaign-hero-v24 {
+          background:
+            radial-gradient(circle at 88% 16%, rgba(255, 217, 164, 0.36), transparent 24%),
+            radial-gradient(circle at 98% 86%, rgba(178, 65, 51, 0.14), transparent 30%),
+            linear-gradient(135deg, #fffaf4 0%, #fff 42%, #f4dfd1 100%) !important;
+        }
+
+        .campaign-hero-v24::before {
+          content: "BEST";
+          right: -10px;
+          top: 22px;
+          font-size: 68px;
+        }
+
+        .campaign-copy-v24 h2 {
+          max-width: 430px;
+          font-size: 32px !important;
+          line-height: 1.08 !important;
+        }
+
+        .campaign-copy-v24 > strong {
+          background: linear-gradient(135deg, #9f2f27, #6f211c) !important;
+        }
+
+        .campaign-deal-board-v24 {
+          align-items: stretch;
+        }
+
+        .campaign-deal-card-v24 {
+          min-height: 118px !important;
+          align-items: center;
+        }
+
+        .campaign-deal-card-v24.deal-1 {
+          min-height: 132px !important;
+        }
+
+        .campaign-deal-image-v24 {
+          min-height: 86px !important;
+          background: linear-gradient(135deg, #fff, #fff8ef) !important;
+        }
+
+        .campaign-deal-card-v24.deal-1 .campaign-deal-image-v24 {
+          min-height: 104px !important;
+        }
+
+        .campaign-deal-info-v24 strong {
+          font-size: 14px !important;
+        }
+
+        .campaign-deal-card-v24.deal-1 strong {
+          font-size: 18px !important;
+        }
+
+        .campaign-deal-info-v24 p {
+          color: #b72f28 !important;
+        }
+
+        .campaign-promo-rail-v24 button:first-child {
+          border-color: rgba(178, 65, 51, 0.26);
+          background:
+            radial-gradient(circle at 92% 10%, rgba(178, 65, 51, 0.12), transparent 28%),
+            linear-gradient(135deg, #fff, #fff2eb);
+        }
+
+        .spotlight-list-v24 button {
+          background: linear-gradient(135deg, #fff, #fff8ef) !important;
+        }
+
+        @media (max-width: 380px) {
+          .campaign-copy-v24 h2 {
+            font-size: 27px !important;
+          }
+
+          .campaign-deal-card-v24,
+          .campaign-deal-card-v24.deal-1 {
+            min-height: 108px !important;
           }
         }
 
