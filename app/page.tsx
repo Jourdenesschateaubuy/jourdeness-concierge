@@ -4329,6 +4329,9 @@ export default function Home() {
   const [selectedSeries, setSelectedSeries] = useState("全部");
   const [selectedSkinFilter, setSelectedSkinFilter] =
     useState<SkinFilter>("全部");
+  const [commerceFilter, setCommerceFilter] = useState("");
+  const [collectionViewLabel, setCollectionViewLabel] = useState("");
+  const [expandedDrawerGroup, setExpandedDrawerGroup] = useState<string | null>("本月優惠");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -4363,6 +4366,10 @@ export default function Home() {
     }))
     .filter(({ product, searchScore }) => {
       if (normalizedSearchQuery) return searchScore !== null;
+
+      if (commerceFilter) {
+        return productMatchesCommerceFilter(product, commerceFilter);
+      }
 
       const matchCategory =
         selectedCategory === "全部" || product.category === selectedCategory;
@@ -4522,6 +4529,8 @@ export default function Home() {
   }
 
   function handleCategoryChange(category: MainCategory) {
+    setCommerceFilter("");
+    setCollectionViewLabel("");
     setSelectedCategory(category);
     setSelectedSeries("全部");
     setSelectedSkinFilter("全部");
@@ -4529,6 +4538,8 @@ export default function Home() {
   }
 
   function jumpToCategory(category: MainCategory, series = "全部") {
+    setCommerceFilter("");
+    setCollectionViewLabel("");
     setSelectedCategory(category);
     setSelectedSeries(series);
     setSelectedSkinFilter("全部");
@@ -4536,6 +4547,8 @@ export default function Home() {
   }
 
   function handleSkinFilterChange(filter: SkinFilter) {
+    setCommerceFilter("");
+    setCollectionViewLabel("");
     setSelectedSkinFilter(filter);
     setSearchQuery("");
 
@@ -4547,6 +4560,146 @@ export default function Home() {
 
   function clearSearch() {
     setSearchQuery("");
+  }
+
+  function productMatchesCommerceFilter(product: Product, filter: string) {
+    const fullText = `${product.name} ${product.series} ${product.description} ${product.price}`;
+    const tags = getProductTags(product);
+    const externalVendors = [
+      "生福科技",
+      "倍力工房",
+      "良冠",
+      "木匠兄妹",
+      "F.SEASONS 富雨洋傘",
+      "歐思佛",
+      "上山採藥",
+    ];
+
+    const isExternal =
+      product.category === "外部廠商" ||
+      (product.category === "組合價" &&
+        externalVendors.some((vendor) => product.series.includes(vendor) || fullText.includes(vendor)));
+
+    const isLife =
+      ["牙膏", "肥皂", "護手霜", "香水", "精油", "貼布"].includes(product.category) ||
+      (product.category === "組合價" &&
+        ["牙膏組合", "貼布組合", "肥皂組合", "香氛組合"].some((series) => product.series.includes(series)));
+
+    const isHealth =
+      product.category === "保健食品" ||
+      (product.category === "組合價" && product.series.includes("保健食品組合"));
+
+    const isMask =
+      product.series.includes("面膜") ||
+      product.name.includes("面膜") ||
+      product.description.includes("面膜");
+
+    const isWashHair =
+      product.category === "洗沐" ||
+      (product.category === "組合價" && product.series.includes("洗沐組合"));
+
+    switch (filter) {
+      case "deals-all":
+        return product.category === "組合價" || hasComboPrice(product);
+      case "deals-monthly":
+        return product.category === "組合價" && product.series.includes("本月主打");
+      case "deals-combo":
+        return product.category === "組合價";
+      case "deals-bogo":
+        return fullText.includes("買一送一") || fullText.includes("買一送二") || fullText.includes("1+1");
+      case "deals-pick":
+        return fullText.includes("任選");
+
+      case "skincare-all":
+        return product.category === "保養品";
+      case "skincare-dragon":
+        return product.category === "保養品" && product.series.includes("龍血");
+      case "skincare-hydration":
+        return product.category === "保養品" && (tags.includes("乾燥缺水") || product.series.includes("水光") || product.series.includes("玫瑰"));
+      case "skincare-brightening":
+        return product.category === "保養品" && tags.includes("美白淡斑");
+      case "skincare-firming":
+        return product.category === "保養品" && tags.includes("抗皺緊緻");
+      case "skincare-oil":
+        return product.category === "保養品" && tags.includes("油性毛孔");
+      case "skincare-sensitive":
+        return product.category === "保養品" && tags.includes("敏感舒緩");
+      case "skincare-men":
+        return product.category === "保養品" && tags.includes("男士保養");
+
+      case "wash-all":
+        return isWashHair;
+      case "wash-shampoo":
+        return isWashHair && product.name.includes("洗髮");
+      case "wash-body":
+        return isWashHair && product.name.includes("沐浴");
+      case "wash-scalp":
+        return isWashHair && (fullText.includes("頭皮") || fullText.includes("髮根") || fullText.includes("養護"));
+      case "wash-combo":
+        return product.category === "組合價" && product.series.includes("洗沐組合");
+
+      case "health-all":
+        return isHealth && !isExternal;
+      case "health-probiotic":
+        return product.category === "保健食品" && product.series.includes("益生菌");
+      case "health-eye":
+        return product.category === "保健食品" && (product.series.includes("晶眸") || fullText.includes("葉黃素"));
+      case "health-collagen":
+        return product.category === "保健食品" && (product.series.includes("美妍") || fullText.includes("膠原"));
+
+      case "mask-all":
+        return isMask;
+      case "mask-hydration":
+        return isMask && (fullText.includes("保濕") || fullText.includes("水") || tags.includes("乾燥缺水"));
+      case "mask-brightening":
+        return isMask && (fullText.includes("亮白") || fullText.includes("美白") || fullText.includes("極光") || tags.includes("美白淡斑"));
+      case "mask-repair":
+        return isMask && (fullText.includes("修護") || fullText.includes("龍血") || fullText.includes("舒緩"));
+      case "mask-combo":
+        return product.category === "組合價" && product.series.includes("面膜組合");
+
+      case "life-all":
+        return isLife;
+      case "life-tooth":
+        return product.category === "牙膏" || fullText.includes("牙膏") || fullText.includes("潔口");
+      case "life-patch":
+        return product.category === "貼布" || product.series.includes("貼布");
+      case "life-soap":
+        return product.category === "肥皂" || product.series.includes("肥皂");
+      case "life-handcream":
+        return product.category === "護手霜" || fullText.includes("護手霜");
+      case "life-perfume":
+        return product.category === "香水" || fullText.includes("香水");
+      case "life-essential":
+        return product.category === "精油" || fullText.includes("精油") || fullText.includes("擴香");
+
+      case "vendor-all":
+        return isExternal;
+      case "vendor-sunfu":
+        return isExternal && (product.series.includes("生福科技") || fullText.includes("生福科技") || fullText.includes("梅托洛") || fullText.includes("視綠佳"));
+      case "vendor-beili":
+        return isExternal && (product.series.includes("倍力工房") || fullText.includes("倍力"));
+      case "vendor-liangguan":
+        return isExternal && (product.series.includes("良冠") || fullText.includes("良冠"));
+      case "vendor-wooderful":
+        return isExternal && (product.series.includes("木匠兄妹") || fullText.includes("木匠兄妹"));
+      case "vendor-fseasons":
+        return isExternal && (product.series.includes("F.SEASONS") || fullText.includes("富雨") || fullText.includes("洋傘"));
+      case "vendor-osifu":
+        return isExternal && (product.series.includes("歐思佛") || fullText.includes("歐思佛"));
+      case "vendor-herb":
+        return isExternal && (product.series.includes("上山採藥") || fullText.includes("上山採藥"));
+
+      case "clearance-all":
+        return isExpiringDeal(product) || fullText.includes("即期") || fullText.includes("效期至");
+      case "clearance-fir":
+        return product.series.includes("冷杉") && (isExpiringDeal(product) || fullText.includes("即期"));
+      case "clearance-limited":
+        return fullText.includes("即期") || fullText.includes("限量") || fullText.includes("效期至");
+
+      default:
+        return true;
+    }
   }
 
   function getHomeSectionIdByCategory(category: MainCategory, series = "全部") {
@@ -4615,6 +4768,21 @@ export default function Home() {
     setIsMenuOpen(false);
     handleSkinFilterChange(filter);
     openCollectionPage();
+  }
+
+  function openCommerceFilter(filter: string, label: string) {
+    setIsMenuOpen(false);
+    setCommerceFilter(filter);
+    setCollectionViewLabel(label);
+    setSearchQuery("");
+    setSelectedCategory("全部");
+    setSelectedSeries("全部");
+    setSelectedSkinFilter("全部");
+    openCollectionPage();
+  }
+
+  function toggleDrawerGroup(group: string) {
+    setExpandedDrawerGroup((current) => (current === group ? null : group));
   }
 
   function goToComboSection() {
@@ -4845,6 +5013,8 @@ export default function Home() {
   }
 
   function openSearchTerm(term: string) {
+    setCommerceFilter("");
+    setCollectionViewLabel("");
     setSearchQuery(term);
     setIsCollectionOpen(false);
     setIsSearchOpen(true);
@@ -4854,14 +5024,20 @@ export default function Home() {
   }
 
   function selectCollectionSeries(series: string) {
+    setCommerceFilter("");
+    setCollectionViewLabel("");
     setSelectedSeries(series);
     setSelectedSkinFilter("全部");
     setSearchQuery("");
   }
 
   function getCollectionSubtitle() {
+    if (collectionViewLabel) {
+      return "依照前台購物分類整理商品，讓客人可以用需求、優惠與品牌來源快速找到想看的品項。";
+    }
+
     if (selectedCategory === "組合價") {
-      return "回購群專屬優惠、買一送一、買一送二、任選組合與贈品組都集中在這裡。";
+      return "回購群專屬優惠、買一送一、買一送二與任選優惠都集中在這裡。";
     }
 
     if (selectedCategory === "保養品") {
@@ -4876,6 +5052,7 @@ export default function Home() {
   }
 
   function getCollectionHeroLabel() {
+    if (collectionViewLabel) return collectionViewLabel;
     if (selectedSeries !== "全部") return selectedSeries;
     if (selectedSkinFilter !== "全部") return selectedSkinFilter;
     if (selectedCategory === "全部") return "全部商品";
@@ -4939,6 +5116,7 @@ export default function Home() {
 
   function currentFilterText() {
     if (searchQuery.trim()) return `模糊搜尋：${searchQuery.trim()}`;
+    if (collectionViewLabel) return collectionViewLabel;
 
     return [
       selectedCategory,
@@ -5849,52 +6027,151 @@ export default function Home() {
               <span>📦 僅提供宅配，送出清單後由 LINE 小幫手確認。</span>
             </div>
 
-            <nav className="drawer-nav">
-              <div className="drawer-section">
-                <p>商城目錄</p>
-                <button onClick={() => handleDrawerCategory("組合價")}>本月主打優惠</button>
-                <button onClick={() => handleDrawerCategory("組合價")}>組合價</button>
-                <button onClick={() => handleDrawerCategory("全部")}>全部商品</button>
-                <button onClick={() => handleDrawerCategory("保健食品")}>保健食品</button>
-                <button onClick={() => handleDrawerCategory("洗沐")}>洗沐</button>
-                <button onClick={() => handleDrawerCategory("外部廠商")}>外部廠商</button>
+            <nav className="drawer-nav drawer-accordion-v25" aria-label="商城分類選單">
+              <div className="drawer-category-intro-v25">
+                <strong>商城分類</strong>
+                <span>先點大分類，再選細分類看商品。</span>
               </div>
 
-              <div className="drawer-section drawer-section-wide">
-                <p>保養品系列</p>
-                {categoryConfig.保養品.filter((series) => series !== "全部").map((series) => (
-                  <button key={`drawer-skincare-${series}`} onClick={() => handleDrawerCategory("保養品", series)}>
-                    {series}
-                  </button>
-                ))}
+              <div className="drawer-accordion-item-v25">
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("本月優惠")}>
+                  <span>本月優惠</span>
+                  <em>{expandedDrawerGroup === "本月優惠" ? "收合" : "展開"}</em>
+                </button>
+
+                {expandedDrawerGroup === "本月優惠" && (
+                  <div className="drawer-sublist-v25">
+                    <button type="button" onClick={() => openCommerceFilter("deals-all", "本月優惠 / 全部優惠")}>全部優惠</button>
+                    <button type="button" onClick={() => openCommerceFilter("deals-monthly", "本月優惠 / 本月主打")}>本月主打</button>
+                    <button type="button" onClick={() => openCommerceFilter("deals-combo", "本月優惠 / 組合價")}>組合價</button>
+                    <button type="button" onClick={() => openCommerceFilter("deals-bogo", "本月優惠 / 買一送一・買一送二")}>買一送一 / 買一送二</button>
+                    <button type="button" onClick={() => openCommerceFilter("deals-pick", "本月優惠 / 任選優惠")}>任選優惠</button>
+                  </div>
+                )}
               </div>
 
-              <div className="drawer-section">
-                <p>依膚質 / 需求找</p>
-                {skinFilters.filter((filter) => filter !== "全部").map((filter) => (
-                  <button key={`drawer-${filter}`} onClick={() => handleDrawerSkinFilter(filter)}>
-                    {filter}
-                  </button>
-                ))}
+              <div className="drawer-accordion-item-v25">
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("自家保養")}>
+                  <span>自家保養</span>
+                  <em>{expandedDrawerGroup === "自家保養" ? "收合" : "展開"}</em>
+                </button>
+
+                {expandedDrawerGroup === "自家保養" && (
+                  <div className="drawer-sublist-v25">
+                    <button type="button" onClick={() => openCommerceFilter("skincare-all", "自家保養 / 全部保養")}>全部保養</button>
+                    <button type="button" onClick={() => openCommerceFilter("skincare-dragon", "自家保養 / 龍血熱賣")}>龍血熱賣</button>
+                    <button type="button" onClick={() => openCommerceFilter("skincare-hydration", "自家保養 / 保濕修護")}>保濕修護</button>
+                    <button type="button" onClick={() => openCommerceFilter("skincare-brightening", "自家保養 / 亮白淡斑")}>亮白淡斑</button>
+                    <button type="button" onClick={() => openCommerceFilter("skincare-firming", "自家保養 / 抗皺緊緻")}>抗皺緊緻</button>
+                    <button type="button" onClick={() => openCommerceFilter("skincare-oil", "自家保養 / 控油穩膚")}>控油穩膚</button>
+                    <button type="button" onClick={() => openCommerceFilter("skincare-sensitive", "自家保養 / 舒緩敏感")}>舒緩敏感</button>
+                    <button type="button" onClick={() => openCommerceFilter("skincare-men", "自家保養 / 男士保養")}>男士保養</button>
+                  </div>
+                )}
               </div>
 
-              <div className="drawer-section">
-                <p>更多分類</p>
-                <button onClick={() => handleDrawerCategory("精油")}>精油</button>
-                <button onClick={() => handleDrawerCategory("香水")}>香水</button>
-                <button onClick={() => handleDrawerCategory("牙膏")}>牙膏</button>
-                <button onClick={() => handleDrawerCategory("肥皂")}>肥皂</button>
-                <button onClick={() => handleDrawerCategory("護手霜")}>護手霜</button>
-                <button onClick={() => handleDrawerCategory("貼布")}>貼布</button>
+              <div className="drawer-accordion-item-v25">
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("洗沐髮品")}>
+                  <span>洗沐髮品</span>
+                  <em>{expandedDrawerGroup === "洗沐髮品" ? "收合" : "展開"}</em>
+                </button>
+
+                {expandedDrawerGroup === "洗沐髮品" && (
+                  <div className="drawer-sublist-v25">
+                    <button type="button" onClick={() => openCommerceFilter("wash-all", "洗沐髮品 / 全部洗沐髮品")}>全部洗沐髮品</button>
+                    <button type="button" onClick={() => openCommerceFilter("wash-shampoo", "洗沐髮品 / 洗髮精")}>洗髮精</button>
+                    <button type="button" onClick={() => openCommerceFilter("wash-body", "洗沐髮品 / 沐浴乳")}>沐浴乳</button>
+                    <button type="button" onClick={() => openCommerceFilter("wash-scalp", "洗沐髮品 / 頭皮養護")}>頭皮養護</button>
+                    <button type="button" onClick={() => openCommerceFilter("wash-combo", "洗沐髮品 / 洗沐組合")}>洗沐組合</button>
+                  </div>
+                )}
               </div>
 
-              <div className="drawer-section">
-                <p>外部廠商</p>
-                <button onClick={() => handleDrawerCategory("外部廠商", "生福科技")}>生福科技</button>
-                <button onClick={() => handleDrawerCategory("外部廠商", "倍力工房")}>倍力工房</button>
-                <button onClick={() => handleDrawerCategory("外部廠商", "木匠兄妹")}>木匠兄妹</button>
-                <button onClick={() => handleDrawerCategory("外部廠商", "F.SEASONS 富雨洋傘")}>F.SEASONS 富雨洋傘</button>
-                <button onClick={() => handleDrawerCategory("外部廠商", "良冠")}>良冠</button>
+              <div className="drawer-accordion-item-v25">
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("保健食品")}>
+                  <span>保健食品</span>
+                  <em>{expandedDrawerGroup === "保健食品" ? "收合" : "展開"}</em>
+                </button>
+
+                {expandedDrawerGroup === "保健食品" && (
+                  <div className="drawer-sublist-v25">
+                    <button type="button" onClick={() => openCommerceFilter("health-all", "保健食品 / 全部保健食品")}>全部保健食品</button>
+                    <button type="button" onClick={() => openCommerceFilter("health-probiotic", "保健食品 / 益生菌")}>益生菌</button>
+                    <button type="button" onClick={() => openCommerceFilter("health-eye", "保健食品 / 葉黃素・晶眸")}>葉黃素 / 晶眸</button>
+                    <button type="button" onClick={() => openCommerceFilter("health-collagen", "保健食品 / 膠原飲品")}>膠原飲品</button>
+                  </div>
+                )}
+              </div>
+
+              <div className="drawer-accordion-item-v25">
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("面膜專區")}>
+                  <span>面膜專區</span>
+                  <em>{expandedDrawerGroup === "面膜專區" ? "收合" : "展開"}</em>
+                </button>
+
+                {expandedDrawerGroup === "面膜專區" && (
+                  <div className="drawer-sublist-v25">
+                    <button type="button" onClick={() => openCommerceFilter("mask-all", "面膜專區 / 全部面膜")}>全部面膜</button>
+                    <button type="button" onClick={() => openCommerceFilter("mask-hydration", "面膜專區 / 保濕面膜")}>保濕面膜</button>
+                    <button type="button" onClick={() => openCommerceFilter("mask-brightening", "面膜專區 / 亮白面膜")}>亮白面膜</button>
+                    <button type="button" onClick={() => openCommerceFilter("mask-repair", "面膜專區 / 修護面膜")}>修護面膜</button>
+                    <button type="button" onClick={() => openCommerceFilter("mask-combo", "面膜專區 / 面膜組合")}>面膜組合</button>
+                  </div>
+                )}
+              </div>
+
+              <div className="drawer-accordion-item-v25">
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("生活選品")}>
+                  <span>生活選品</span>
+                  <em>{expandedDrawerGroup === "生活選品" ? "收合" : "展開"}</em>
+                </button>
+
+                {expandedDrawerGroup === "生活選品" && (
+                  <div className="drawer-sublist-v25">
+                    <button type="button" onClick={() => openCommerceFilter("life-all", "生活選品 / 全部生活選品")}>全部生活選品</button>
+                    <button type="button" onClick={() => openCommerceFilter("life-tooth", "生活選品 / 牙膏・口腔")}>牙膏 / 口腔</button>
+                    <button type="button" onClick={() => openCommerceFilter("life-patch", "生活選品 / 貼布")}>貼布</button>
+                    <button type="button" onClick={() => openCommerceFilter("life-soap", "生活選品 / 肥皂")}>肥皂</button>
+                    <button type="button" onClick={() => openCommerceFilter("life-handcream", "生活選品 / 護手霜")}>護手霜</button>
+                    <button type="button" onClick={() => openCommerceFilter("life-perfume", "生活選品 / 香水")}>香水</button>
+                    <button type="button" onClick={() => openCommerceFilter("life-essential", "生活選品 / 精油")}>精油</button>
+                  </div>
+                )}
+              </div>
+
+              <div className="drawer-accordion-item-v25">
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("外部廠商")}>
+                  <span>外部廠商</span>
+                  <em>{expandedDrawerGroup === "外部廠商" ? "收合" : "展開"}</em>
+                </button>
+
+                {expandedDrawerGroup === "外部廠商" && (
+                  <div className="drawer-sublist-v25">
+                    <button type="button" onClick={() => openCommerceFilter("vendor-all", "外部廠商 / 全部外部廠商")}>全部外部廠商</button>
+                    <button type="button" onClick={() => openCommerceFilter("vendor-sunfu", "外部廠商 / 生福科技")}>生福科技</button>
+                    <button type="button" onClick={() => openCommerceFilter("vendor-beili", "外部廠商 / 倍力工房")}>倍力工房</button>
+                    <button type="button" onClick={() => openCommerceFilter("vendor-liangguan", "外部廠商 / 良冠")}>良冠</button>
+                    <button type="button" onClick={() => openCommerceFilter("vendor-wooderful", "外部廠商 / 木匠兄妹")}>木匠兄妹</button>
+                    <button type="button" onClick={() => openCommerceFilter("vendor-fseasons", "外部廠商 / F.SEASONS 富雨洋傘")}>F.SEASONS 富雨洋傘</button>
+                    <button type="button" onClick={() => openCommerceFilter("vendor-osifu", "外部廠商 / 歐思佛")}>歐思佛</button>
+                    <button type="button" onClick={() => openCommerceFilter("vendor-herb", "外部廠商 / 上山採藥")}>上山採藥</button>
+                  </div>
+                )}
+              </div>
+
+              <div className="drawer-accordion-item-v25">
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("即期良品")}>
+                  <span>即期良品</span>
+                  <em>{expandedDrawerGroup === "即期良品" ? "收合" : "展開"}</em>
+                </button>
+
+                {expandedDrawerGroup === "即期良品" && (
+                  <div className="drawer-sublist-v25">
+                    <button type="button" onClick={() => openCommerceFilter("clearance-all", "即期良品 / 全部即期良品")}>全部即期良品</button>
+                    <button type="button" onClick={() => openCommerceFilter("clearance-fir", "即期良品 / 冷杉出清")}>冷杉出清</button>
+                    <button type="button" onClick={() => openCommerceFilter("clearance-limited", "即期良品 / 限量效期優惠")}>限量效期優惠</button>
+                  </div>
+                )}
               </div>
             </nav>
 
@@ -13444,6 +13721,107 @@ export default function Home() {
 
         .detail-close {
           cursor: pointer;
+        }
+
+
+        /* Commerce V2.5：前台購物分類手風琴選單 */
+        .drawer-accordion-v25 {
+          gap: 10px !important;
+        }
+
+        .drawer-category-intro-v25 {
+          display: grid;
+          gap: 4px;
+          padding: 12px 13px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 18px;
+          background: rgba(255, 255, 255, 0.72);
+        }
+
+        .drawer-category-intro-v25 strong {
+          color: var(--ink);
+          font-size: 16px;
+          font-weight: 1000;
+          letter-spacing: -0.04em;
+        }
+
+        .drawer-category-intro-v25 span {
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 820;
+          line-height: 1.45;
+        }
+
+        .drawer-accordion-item-v25 {
+          overflow: hidden;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 19px;
+          background: rgba(255, 255, 255, 0.82);
+          box-shadow: 0 10px 24px rgba(77, 55, 38, 0.06);
+        }
+
+        .drawer-accordion-title-v25 {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          width: 100% !important;
+          min-height: 52px !important;
+          padding: 13px 14px !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          color: var(--ink) !important;
+          text-align: left !important;
+        }
+
+        .drawer-accordion-title-v25 span {
+          color: var(--ink);
+          font-size: 16px;
+          font-weight: 1000;
+          letter-spacing: -0.035em;
+        }
+
+        .drawer-accordion-title-v25 em {
+          padding: 5px 8px;
+          border-radius: 999px;
+          background: rgba(178, 65, 51, 0.08);
+          color: var(--accent-dark);
+          font-size: 11px;
+          font-style: normal;
+          font-weight: 1000;
+        }
+
+        .drawer-sublist-v25 {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
+          padding: 0 12px 12px;
+        }
+
+        .drawer-sublist-v25 button {
+          min-height: 40px;
+          padding: 9px 11px;
+          border: 1px solid rgba(232, 214, 198, 0.95);
+          border-radius: 14px;
+          background: #fffaf6;
+          color: #5c473d;
+          font-size: 13px;
+          font-weight: 900;
+          text-align: left;
+        }
+
+        .drawer-sublist-v25 button:active {
+          transform: scale(0.985);
+        }
+
+        .collection-hero-v22 h2 {
+          word-break: keep-all;
+        }
+
+        @media (max-width: 380px) {
+          .drawer-sublist-v25 {
+            grid-template-columns: 1fr;
+          }
         }
 
 
