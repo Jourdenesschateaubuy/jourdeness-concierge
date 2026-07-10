@@ -828,6 +828,26 @@ const products: Product[] = [
   },
 
   {
+    id: 141,
+    name: "櫻の雪傳明酸美白精華液",
+    category: "保養品",
+    series: "櫻の雪傳明酸美白系列",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/sukola2.jpg",
+    description: "30mL。櫻の雪傳明酸美白系列。",
+  },
+  {
+    id: 142,
+    name: "櫻の雪傳明酸美白乳液",
+    category: "保養品",
+    series: "櫻の雪傳明酸美白系列",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/sukola3.jpg",
+    description: "100mL。櫻の雪傳明酸美白系列。",
+  },
+  {
     id: 73,
     name: "能量牛樟芝保健潔口液",
     category: "外部廠商",
@@ -1096,9 +1116,9 @@ const products: Product[] = [
     category: "外部廠商",
     series: "生福科技",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "買一送二 $ 3,600",
     image: "/products/placeholder.jpg",
-    description: "生福科技品項。",
+    description: "生福科技品項。可搭配買一送二活動。",
   },
   {
     id: 100,
@@ -1512,6 +1532,16 @@ const products: Product[] = [
     price: "組合價 $ 780",
     image: "/products/placeholder.jpg",
     description: "時光瑞亞淡香水30mL，效期至2027/03/05，贈價值290元櫻の雪亮澤護手霜JDST 30g。",
+  },
+  {
+    id: 143,
+    name: "梅托洛買一送二",
+    category: "組合價",
+    series: "生福科技組合",
+    originalPrice: "原價待補",
+    price: "買一送二 $ 3,600",
+    image: "/products/placeholder.jpg",
+    description: "梅托洛買1送2，共3入組合，規格依商品標示。",
   },
 
 
@@ -2863,7 +2893,47 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 客服確認為準。",
     priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+  },  141: {
+    cardName: "櫻の雪美白精華液",
+    cardSubtitle: "30mL・櫻の雪傳明酸美白系列",
+    spec: "30mL",
+    intro: "櫻の雪傳明酸美白精華液為亮白保養加強型品項，可搭配同系列化妝水與乳液使用。",
+    features: [
+      "適合作為日常亮白保養中的精華步驟。",
+      "可搭配櫻の雪傳明酸美白化妝水與乳液使用。",
+      "亦可搭配精華液 + 乳液贈化妝水組合活動。",
+    ],
+    suitableFor: [
+      "美白淡斑",
+      "櫻の雪系列",
+      "組合優惠",
+    ],
+    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "可搭配櫻の雪美白組合；庫存與效期依 LINE 小幫手確認為準。",
   },
+  142: {
+    cardName: "櫻の雪美白乳液",
+    cardSubtitle: "100mL・櫻の雪傳明酸美白系列",
+    spec: "100mL",
+    intro: "櫻の雪傳明酸美白乳液為亮白保養中的保濕乳液步驟，可搭配同系列化妝水與精華液使用。",
+    features: [
+      "適合作為日常亮白保養中的乳液步驟。",
+      "可搭配櫻の雪傳明酸美白化妝水與精華液使用。",
+      "亦可搭配精華液 + 乳液贈化妝水組合活動。",
+    ],
+    suitableFor: [
+      "美白淡斑",
+      "櫻の雪系列",
+      "組合優惠",
+    ],
+    usage: "精華液後取適量均勻塗抹於臉部與頸部。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "可搭配櫻の雪美白組合；庫存與效期依 LINE 小幫手確認為準。",
+  },
+
   73: {
     cardName: "能量牛樟芝保健潔口液",
     cardSubtitle: "生福科技品項・生福科技",
@@ -3369,23 +3439,25 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   99: {
     cardName: "梅托洛",
-    cardSubtitle: "生福科技品項・生福科技",
-    spec: "生福科技品項",
-    intro: "梅托洛為生福科技精選品項，商品細節與適合搭配可由 LINE 客服協助確認。",
+    cardSubtitle: "生福科技・買一送二 $3,600",
+    spec: "規格依商品標示",
+    intro: "梅托洛為生福科技精選品項，目前可搭配買一送二組合優惠。",
     features: [
-      "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 客服確認為準。",
-      "適合搭配回購群日常選品一起確認。",
+      "梅托洛買一送二，共3入組合。",
+      "組合價 $3,600，適合一次補齊常用品項。",
+      "商品規格、效期與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
-      "外部廠商",
       "生福科技",
+      "組合優惠",
+      "外部廠商",
     ],
-    usage: "使用方式依商品標示或 LINE 客服說明為準。",
-    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 客服確認為準。",
-    priceNote: "目前售價由 LINE 客服確認，送出清單後會協助回覆。",
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或小幫手說明為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "梅托洛買一送二組合價 $3,600；庫存與效期依 LINE 小幫手確認為準。",
   },
+
   100: {
     cardName: "BC-HA 複合益生菌 2盒組",
     cardSubtitle: "BC-HA 複合益生菌 3g x 60包 / 盒，共2盒・保健食品組合",
@@ -4170,6 +4242,26 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "淡香水效期至 2027/03/05；護手霜效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "時光瑞亞淡香水30mL + 櫻の雪亮澤護手霜JDST 30g，組合價 $780；庫存與效期依 LINE 小幫手確認為準。",
   },
+  143: {
+    cardName: "梅托洛買一送二",
+    cardSubtitle: "生福科技組合・$3,600",
+    spec: "梅托洛買1送2，共3入組合，規格依商品標示",
+    intro: "梅托洛買一送二為生福科技組合優惠，適合一次補齊常用品項。",
+    features: [
+      "梅托洛買1送2，共3入組合。",
+      "組合價 $3,600。",
+      "組合內容、規格、效期與庫存依 LINE 小幫手確認為準。",
+    ],
+    suitableFor: [
+      "組合優惠",
+      "生福科技",
+      "外部廠商",
+    ],
+    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或小幫手說明為準。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "梅托洛買一送二 $3,600；庫存與效期依 LINE 小幫手確認為準。",
+  },
 
 };
 
@@ -4189,7 +4281,7 @@ type SkinFilter = (typeof skinFilters)[number];
 
 const comboProductIds = new Set<number>([
   1, 2, 3,
-  75, 117,
+  75, 99, 117, 141, 142,
   29, 30,
   35, 36,
   47, 48,
@@ -4265,20 +4357,20 @@ export default function Home() {
     ? Math.max(filteredProducts.length - searchPreviewProducts.length, 0)
     : 0;
 
-  const featuredProductIds = [140, 139, 138, 136, 137, 83, 100, 101, 89, 91, 88, 135];
+  const featuredProductIds = [143, 140, 139, 138, 136, 137, 83, 100, 101, 89, 91, 88, 135];
   const featuredProducts = featuredProductIds
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([140, 139, 138, 136, 137, 100, 83, 84, 101, 92, 88, 135, 91, 89]);
+  const homeComboProducts = getProductsByIds([143, 140, 139, 138, 136, 137, 100, 83, 84, 101, 92, 88, 135, 91, 89]);
   const homeClearanceProducts = getProductsByIds([10, 11]);
   const homeDragonBloodProducts = getProductsByIds([17, 19, 20, 18, 54, 55]);
   const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
   const homeTeaControlProducts = getProductsByIds([49, 50, 51, 64, 69, 70]);
-  const homeBrighteningProducts = getProductsByIds([68, 71, 72, 106, 127, 128]);
+  const homeBrighteningProducts = getProductsByIds([68, 71, 72, 141, 142, 106, 127, 128]);
   const homeFirmingProducts = getProductsByIds([27, 28, 21, 22, 23, 120]);
   const homeMaskProducts = getProductsByIds([126, 128, 123, 129, 131, 132]);
-  const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74, 138]);
+  const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74, 99, 138, 143]);
   const homeDailyLifeProducts = getProductsByIds([29, 30, 93, 31, 32, 140, 117, 75, 133, 134, 47, 48, 79, 80, 81, 82, 94, 35, 36, 37]);
 
   const skinGuideCards: { title: SkinFilter; text: string }[] = [
@@ -9573,6 +9665,12 @@ export default function Home() {
 
 
         /* Phase 20: perfume + hand cream combo */
+        .product-info h3 {
+          word-break: break-word;
+        }
+
+
+        /* Phase 21: Metolo combo + missing combo singles */
         .product-info h3 {
           word-break: break-word;
         }
