@@ -1006,7 +1006,7 @@ const products: Product[] = [
     series: "生福科技組合",
     originalPrice: "原價待補",
     price: "3罐贈1條牙膏 $ 1,500",
-    image: "/products/water tooth 3+1.png",
+    image: "/products/watertooth31.png",
     description: "能量牛樟芝保健潔口液 3罐，贈齒齦保健薰衣草舒緩牙膏120g 1條。",
   },
   {
