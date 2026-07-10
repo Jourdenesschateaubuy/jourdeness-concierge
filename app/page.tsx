@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 
 const categoryConfig = {
   組合價: [
@@ -4338,6 +4338,7 @@ export default function Home() {
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<Product | null>(null);
+  const [detailHistoryActive, setDetailHistoryActive] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
   const [customer, setCustomer] = useState<CustomerForm>({
@@ -4622,15 +4623,7 @@ export default function Home() {
   }
 
   function openRelatedDetail(product: Product) {
-    setSelectedDetailProduct(product);
-
-    window.setTimeout(() => {
-      const detailScroller = document.querySelector(".detail-backdrop") as HTMLElement | null;
-      detailScroller?.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }, 0);
+    openProductDetail(product);
   }
 
   function hasKnownOriginalPrice(product: Product) {
@@ -4898,6 +4891,50 @@ export default function Home() {
     return getProductsByIds(recommendIds)
       .filter((product) => !currentIds.has(product.id) && !isSoldOut(product))
       .slice(0, 4);
+  }
+
+  function openProductDetail(product: Product, pushHistory = true) {
+    setSelectedDetailProduct(product);
+
+    if (pushHistory && typeof window !== "undefined") {
+      const currentHash = window.location.hash;
+      const nextHash = `#product-${product.id}`;
+
+      if (currentHash !== nextHash) {
+        window.history.pushState(
+          {
+            jourdenessDetail: true,
+            productId: product.id,
+          },
+          "",
+          nextHash
+        );
+      }
+
+      setDetailHistoryActive(true);
+    }
+
+    window.setTimeout(() => {
+      const detailScroller = document.querySelector(".detail-backdrop") as HTMLElement | null;
+      detailScroller?.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 0);
+  }
+
+  function closeProductDetail(useBrowserBack = true) {
+    if (useBrowserBack && detailHistoryActive && typeof window !== "undefined") {
+      window.history.back();
+      return;
+    }
+
+    setSelectedDetailProduct(null);
+    setDetailHistoryActive(false);
+
+    if (typeof window !== "undefined" && window.location.hash.startsWith("#product-")) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
   }
 
   function currentFilterText() {
@@ -5261,8 +5298,17 @@ export default function Home() {
 
     return (
       <article
-        className={`${featured ? "featured-card" : "product-card"} commerce-product-card`}
+        className={`${featured ? "featured-card" : "product-card"} commerce-product-card clickable-product-card-v246`}
         key={featured ? `featured-${product.id}` : product.id}
+        role="button"
+        tabIndex={0}
+        onClick={() => openProductDetail(product)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openProductDetail(product);
+          }
+        }}
       >
         <div className={`commerce-card-badge ${soldOut ? "soldout" : inquiry ? "inquiry" : ""}`}>
           {badgeLabel}
@@ -5291,7 +5337,10 @@ export default function Home() {
               <button
                 type="button"
                 className="combo-badge"
-                onClick={goToComboSection}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  goToComboSection();
+                }}
               >
                 有組合價
               </button>
@@ -5311,7 +5360,10 @@ export default function Home() {
           <div className="commerce-card-actions">
             <button
               className="add-cart-button"
-              onClick={() => addToCart(product)}
+              onClick={(event) => {
+                event.stopPropagation();
+                addToCart(product);
+              }}
               disabled={soldOut}
             >
               {soldOut ? "缺貨中" : inquiry ? "加入詢問" : "加入清單"}
@@ -5320,7 +5372,10 @@ export default function Home() {
             <button
               type="button"
               className="detail-button"
-              onClick={() => setSelectedDetailProduct(product)}
+              onClick={(event) => {
+                event.stopPropagation();
+                openProductDetail(product);
+              }}
             >
               商品詳情
             </button>
@@ -5378,6 +5433,19 @@ export default function Home() {
     setSubmitStatus("idle");
     setSubmitMessage("");
   }
+
+  useEffect(() => {
+    function handlePopState() {
+      setSelectedDetailProduct(null);
+      setDetailHistoryActive(false);
+    }
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   async function submitOrder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -5596,7 +5664,7 @@ export default function Home() {
                         </div>
 
                         <div className="search-result-actions">
-                          <button type="button" onClick={() => setSelectedDetailProduct(product)}>
+                          <button type="button" onClick={() => openProductDetail(product)}>
                             查看
                           </button>
                           <button
@@ -5732,7 +5800,7 @@ export default function Home() {
                   <button
                     type="button"
                     key={`collection-featured-${product.id}`}
-                    onClick={() => setSelectedDetailProduct(product)}
+                    onClick={() => openProductDetail(product)}
                   >
                     {hasRealImage(product) ? (
                       <img src={product.image} alt={product.name} />
@@ -5857,7 +5925,7 @@ export default function Home() {
             </div>
 
             <div className="best-hero-actions-v242">
-              <button type="button" className="hero-primary-button" onClick={() => setSelectedDetailProduct(heroTopProduct)}>
+              <button type="button" className="hero-primary-button" onClick={() => openProductDetail(heroTopProduct)}>
                 查看商品
               </button>
               <button type="button" className="hero-secondary-button" onClick={() => handleDrawerCategory("保養品", "龍血系列")}>
@@ -5869,7 +5937,7 @@ export default function Home() {
           <button
             type="button"
             className="best-hero-image-card-v242"
-            onClick={() => setSelectedDetailProduct(heroTopProduct)}
+            onClick={() => openProductDetail(heroTopProduct)}
           >
             <span className="best-top-badge-v242">TOP 1</span>
             {hasRealImage(heroTopProduct) ? (
@@ -5892,7 +5960,7 @@ export default function Home() {
       <section className="secondary-best-grid-v242" aria-label="龍血次主打商品">
         {heroSecondaryProducts.map((product) => (
           <article className="secondary-best-card-v242" key={`secondary-best-${product.id}`}>
-            <button type="button" className="secondary-best-image-v242" onClick={() => setSelectedDetailProduct(product)}>
+            <button type="button" className="secondary-best-image-v242" onClick={() => openProductDetail(product)}>
               {hasRealImage(product) ? (
                 <img
                   src={product.image}
@@ -5912,7 +5980,7 @@ export default function Home() {
               <h3>{getCardName(product)}</h3>
               <p>{getCardSubtitle(product)}</p>
               <strong>{displayPrice(product)}</strong>
-              <button type="button" onClick={() => setSelectedDetailProduct(product)}>
+              <button type="button" onClick={() => openProductDetail(product)}>
                 查看商品
               </button>
             </div>
@@ -5930,7 +5998,7 @@ export default function Home() {
         <div className="combo-showcase-list-v242">
           {heroComboProducts.map((product, index) => (
             <article className={index === 0 ? "combo-feature-card-v242" : "combo-mini-card-v242"} key={`hero-combo-${product.id}`}>
-              <button type="button" onClick={() => setSelectedDetailProduct(product)}>
+              <button type="button" onClick={() => openProductDetail(product)}>
                 {hasRealImage(product) ? (
                   <img
                     src={product.image}
@@ -6437,10 +6505,10 @@ export default function Home() {
       )}
 
       {selectedDetailProduct && (
-        <section className="detail-backdrop" onClick={() => setSelectedDetailProduct(null)}>
+        <section className="detail-backdrop" onClick={() => closeProductDetail()}>
           <div className="detail-panel" onClick={(event) => event.stopPropagation()}>
             <div className="detail-header">
-              <button className="detail-close" onClick={() => setSelectedDetailProduct(null)}>
+              <button className="detail-close" onClick={() => closeProductDetail()}>
                 ‹
               </button>
               <h2>商品頁</h2>
@@ -6501,31 +6569,6 @@ export default function Home() {
                 )}
               </div>
 
-              <section className="detail-buybox-v21">
-                <div>
-                  <p>回購群專屬價</p>
-                  {hasKnownOriginalPrice(selectedDetailProduct) && (
-                    <span className="original-price">{selectedDetailProduct.originalPrice}</span>
-                  )}
-                  <strong className={`price ${hasInquiryPrice(selectedDetailProduct) ? "inquiry" : ""}`}>
-                    {displayPrice(selectedDetailProduct)}
-                  </strong>
-                  <em>{getPriceNote(selectedDetailProduct)}</em>
-                </div>
-
-                <button
-                  className="detail-add-button detail-buybox-button-v21"
-                  disabled={isSoldOut(selectedDetailProduct)}
-                  onClick={() => addToCart(selectedDetailProduct)}
-                >
-                  {isSoldOut(selectedDetailProduct)
-                    ? "缺貨中"
-                    : hasInquiryPrice(selectedDetailProduct)
-                    ? "加入詢問清單"
-                    : "加入清單"}
-                </button>
-              </section>
-
               <section className="detail-info-block product-summary-card commerce-summary-v21">
                 <h3>商品資訊</h3>
 
@@ -6585,6 +6628,31 @@ export default function Home() {
                   <p>{getUsageText(selectedDetailProduct)}</p>
                 </section>
               )}
+
+              <section className="detail-buybox-v21">
+                <div>
+                  <p>回購群專屬價</p>
+                  {hasKnownOriginalPrice(selectedDetailProduct) && (
+                    <span className="original-price">{selectedDetailProduct.originalPrice}</span>
+                  )}
+                  <strong className={`price ${hasInquiryPrice(selectedDetailProduct) ? "inquiry" : ""}`}>
+                    {displayPrice(selectedDetailProduct)}
+                  </strong>
+                  <em>{getPriceNote(selectedDetailProduct)}</em>
+                </div>
+
+                <button
+                  className="detail-add-button detail-buybox-button-v21"
+                  disabled={isSoldOut(selectedDetailProduct)}
+                  onClick={() => addToCart(selectedDetailProduct)}
+                >
+                  {isSoldOut(selectedDetailProduct)
+                    ? "缺貨中"
+                    : hasInquiryPrice(selectedDetailProduct)
+                    ? "加入詢問清單"
+                    : "加入清單"}
+                </button>
+              </section>
 
               <section className="detail-info-block soft">
                 <h3>配送提醒</h3>
@@ -13334,6 +13402,48 @@ export default function Home() {
             padding: 7px 12px;
             font-size: 12.5px;
           }
+        }
+
+
+        /* Commerce V2.4.5：商品頁售價卡移到配送提醒上方 */
+        .detail-buybox-v21 {
+          margin-top: 14px !important;
+          margin-bottom: 12px !important;
+        }
+
+        .detail-info-block.soft {
+          margin-top: 0 !important;
+        }
+
+        .detail-buybox-button-v21 {
+          width: 100% !important;
+        }
+
+
+        /* Commerce V2.4.6：商品卡整張可點 + 手機返回鍵回商品列表 */
+        .clickable-product-card-v246 {
+          cursor: pointer;
+          transition: transform 0.16s ease, box-shadow 0.16s ease;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .clickable-product-card-v246:active {
+          transform: scale(0.985);
+        }
+
+        .clickable-product-card-v246 .product-image,
+        .clickable-product-card-v246 .product-info h3,
+        .clickable-product-card-v246 .description {
+          pointer-events: none;
+        }
+
+        .clickable-product-card-v246 button,
+        .clickable-product-card-v246 .combo-badge {
+          pointer-events: auto;
+        }
+
+        .detail-close {
+          cursor: pointer;
         }
 
 
