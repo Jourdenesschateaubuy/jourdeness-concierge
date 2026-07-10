@@ -1006,7 +1006,7 @@ const products: Product[] = [
     series: "生福科技組合",
     originalPrice: "原價待補",
     price: "3罐贈1條牙膏 $ 1,500",
-    image: "/products/watertooth31.png",
+    image: "/products/watertooth 31.png",
     description: "能量牛樟芝保健潔口液 3罐，贈齒齦保健薰衣草舒緩牙膏120g 1條。",
   },
   {
@@ -1077,7 +1077,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/fire belt.png",
     description: "生福科技品項。",
   },
   {
@@ -1087,7 +1087,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/tan.jpg",
     description: "生福科技品項。",
   },
   {
@@ -1097,7 +1097,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/toolong.png",
     description: "生福科技品項。",
   },
   {
@@ -1107,7 +1107,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/collagen q10.png",
     description: "生福科技品項。",
   },
   {
@@ -1148,7 +1148,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/tomtaithon.png",
     description: "生福科技品項。",
   },
   {
