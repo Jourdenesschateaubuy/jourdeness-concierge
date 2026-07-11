@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
   組合價: [
@@ -92,7 +92,7 @@ type CustomerForm = {
   note: string;
 };
 
-// V2.5.3：補齊 54 個新品 / 規格的正式商品文案。
+// V2.5.3.3：修正商品卡圖片備援、放大卡片字體、商品卡改用吸引人的短文案，並補上已知活動價格。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -391,7 +391,7 @@ const products: Product[] = [
     category: "洗沐",
     series: "洗沐系列",
     originalPrice: "原價 $ 790",
-    price: "產地價 $ 590",
+    price: "任選3瓶 $ 1,100",
     image: "/products/BDwash2.jpg",
     description: "500mL / 瓶。龍血頭皮修護洗髮精，0矽靈配方，洗後蓬鬆柔順。",
   },
@@ -401,7 +401,7 @@ const products: Product[] = [
     category: "洗沐",
     series: "洗沐系列",
     originalPrice: "原價 $ 790",
-    price: "產地價 $ 590",
+    price: "任選3瓶 $ 1,100",
     image: "/products/BDwash1.jpg",
     description: "500mL / 瓶。龍血潤澤修護沐浴乳，洗後水潤柔嫩不緊繃。",
   },
@@ -451,8 +451,8 @@ const products: Product[] = [
     category: "牙膏",
     series: "牙膏",
     originalPrice: "原價待補",
-    price: "產地價待補",
-    image: "/products/toothpaste lav.png",
+    price: "任選3條 $ 500",
+    image: "/products/lav-washtoothpaste.jpg",
     description: "120g / 支。薰衣草草本香氣，溫和潔牙並維持口氣清新。",
   },
   {
@@ -461,8 +461,8 @@ const products: Product[] = [
     category: "牙膏",
     series: "牙膏",
     originalPrice: "原價待補",
-    price: "產地價待補",
-    image: "/products/toothpaste bd.png",
+    price: "任選3條 $ 500",
+    image: "/products/bd-washtoothpaste.jpg",
     description: "120g / 支。龍血齒齦保健牙膏，溫和清潔牙齒與齒齦邊緣。",
   },
 
@@ -664,7 +664,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "5片裝售價請洽小幫手",
     image: "/products/DBMUSK 5.jpg",
     description: "22mL x 5pcs / 盒。水搖滾保濕面膜，適合乾燥缺水與急救補水。",
   },
@@ -674,7 +674,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "10片裝售價請洽小幫手",
     image: "/products/water 5.jpg",
     description: "22mL x 10pcs / 盒。水搖滾保濕面膜，日常補水與集中保養。",
   },
@@ -684,7 +684,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "1桶 $ 599",
     image: "/products/water 35.png",
     description: "22mL x 35pcs / 桶。水搖滾保濕面膜大容量桶裝，適合長期補水保養。",
   },
@@ -694,7 +694,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "5片裝售價請洽小幫手",
     image: "/products/DBMUSK 5 W.jpg",
     description: "5pcs / 盒。極光白美白面膜，集中亮白調理膚色不均與熬夜暗沉。",
   },
@@ -704,7 +704,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "1桶 $ 599",
     image: "/products/white 35.png",
     description: "35pcs / 桶。極光白美白面膜大容量桶裝，適合日常亮白集中保養。",
   },
@@ -917,7 +917,7 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "單入 $ 290",
     image: "/products/soap rose.png",
     description: "200g±10g / 塊。龍血玫瑰美膚皂，洗後柔嫩不緊繃，散發玫瑰香氛。",
   },
@@ -927,7 +927,7 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "單入 $ 290",
     image: "/products/soap Artemisia.png",
     description: "200g±10g / 塊。龍血艾草保庇皂，草本舒緩，適合換季不穩膚況。",
   },
@@ -937,7 +937,7 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "單入 $ 290",
     image: "/products/soap lemo.png",
     description: "200g±10g / 塊。龍血檸檬馬鞭草皂，清爽控油，適合油性毛孔與背部出油。",
   },
@@ -947,7 +947,7 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "單入 $ 290",
     image: "/products/soap lav.png",
     description: "200g±10g / 塊。龍血薰衣草舒緩皂，夜間沐浴放鬆，洗後柔嫩持潤。",
   },
@@ -1068,7 +1068,7 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "單入 $ 290",
     image: "/products/soap sandalwood.png",
     description: "200g±10g / 塊。龍血檀香靜心皂，沉穩木質香調，高滋潤養膚。",
   },
@@ -1380,7 +1380,7 @@ const products: Product[] = [
     category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "5片裝售價請洽小幫手",
     image: "/products/DBMUSK 5.jpg",
     description: "22mL x 5pcs / 盒。水搖滾保濕面膜，適合乾燥缺水與急救補水。",
   },
@@ -1390,7 +1390,7 @@ const products: Product[] = [
     category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "10片裝售價請洽小幫手",
     image: "/products/water 5.jpg",
     description: "22mL x 10pcs / 盒。水搖滾保濕面膜，日常補水與集中保養。",
   },
@@ -1400,7 +1400,7 @@ const products: Product[] = [
     category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "1桶 $ 599",
     image: "/products/water 35.png",
     description: "22mL x 35pcs / 桶。水搖滾保濕面膜大容量桶裝，適合長期補水保養。",
   },
@@ -1410,7 +1410,7 @@ const products: Product[] = [
     category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "5片裝售價請洽小幫手",
     image: "/products/DBMUSK 5 W.jpg",
     description: "5pcs / 盒。極光白美白面膜，集中亮白調理膚色不均與熬夜暗沉。",
   },
@@ -1420,7 +1420,7 @@ const products: Product[] = [
     category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "1桶 $ 599",
     image: "/products/white 35.png",
     description: "35pcs / 桶。極光白美白面膜大容量桶裝，適合日常亮白集中保養。",
   },
@@ -4496,6 +4496,29 @@ const comboProductIds = new Set<number>([
 const expiringProductIds = new Set<number>([10, 11]);
 
 
+const productImageFallbacks: Record<number, string[]> = {
+  35: [
+    "/products/lav-washtoothpaste.jpg",
+    "/products/toothpaste lav.png",
+    "/products/toothpaste-lav.png",
+    "/products/toothpaste_lav.png",
+    "/products/tooth500.png",
+  ],
+  36: [
+    "/products/bd-washtoothpaste.jpg",
+    "/products/toothpaste bd.png",
+    "/products/toothpaste-bd.png",
+    "/products/toothpaste_bd.png",
+    "/products/tooth500.png",
+  ],
+  79: ["/products/soap rose.png", "/products/bdsoap.png"],
+  80: ["/products/soap Artemisia.png", "/products/bdsoap.png"],
+  81: ["/products/soap lemo.png", "/products/bdsoap.png"],
+  82: ["/products/soap lav.png", "/products/bdsoap.png"],
+  94: ["/products/soap sandalwood.png", "/products/bdsoap.png"],
+};
+
+
 export default function Home() {
   const [selectedCategory, setSelectedCategory] =
     useState<MainCategory>("組合價");
@@ -4991,8 +5014,41 @@ export default function Home() {
     return product.price.includes("缺貨");
   }
 
+  function getImageCandidates(product: Product) {
+    const override = productContent(product);
+    const candidates = [
+      product.image,
+      ...(override.gallery ?? []),
+      ...(product.gallery ?? []),
+      ...(productImageFallbacks[product.id] ?? []),
+    ].filter((image): image is string => Boolean(image && !image.includes("placeholder")));
+
+    return Array.from(new Set(candidates));
+  }
+
+  function getPrimaryImage(product: Product) {
+    return getImageCandidates(product)[0] ?? product.image;
+  }
+
   function hasRealImage(product: Product) {
-    return Boolean(product.image && !product.image.includes("placeholder"));
+    return getImageCandidates(product).length > 0;
+  }
+
+  function handleProductImageError(product: Product, event: SyntheticEvent<HTMLImageElement>) {
+    const target = event.currentTarget;
+    const candidates = getImageCandidates(product);
+    const currentIndex = Number(target.dataset.fallbackIndex ?? "0");
+    const nextIndex = currentIndex + 1;
+    const nextImage = candidates[nextIndex];
+
+    if (nextImage) {
+      target.dataset.fallbackIndex = String(nextIndex);
+      target.src = nextImage;
+      return;
+    }
+
+    target.parentElement?.classList.add("image-load-failed");
+    target.style.display = "none";
   }
 
   function hasComboPrice(product: Product) {
@@ -5427,12 +5483,10 @@ export default function Home() {
       <div className={`product-image ${variant === "featured" ? "featured-image" : ""}`}>
         {hasRealImage(product) ? (
           <img
-            src={product.image}
+            src={getPrimaryImage(product)}
             alt={product.name}
-            onError={(event) => {
-              event.currentTarget.parentElement?.classList.add("image-load-failed");
-              event.currentTarget.style.display = "none";
-            }}
+            data-fallback-index="0"
+            onError={(event) => handleProductImageError(product, event)}
           />
         ) : (
           <div className="image-placeholder">
@@ -5452,8 +5506,33 @@ export default function Home() {
     return productContent(product).cardName ?? product.cardName ?? product.name;
   }
 
+  function compactCardText(text: string) {
+    return text.replace(/\s+/g, " ").replace(/。$/, "").trim();
+  }
+
+  function isSpecOnlySubtitle(text: string) {
+    const cleaned = text.trim();
+    return (
+      cleaned.length <= 18 &&
+      (/\d/.test(cleaned) || cleaned.includes("mL") || cleaned.includes("g") || cleaned.includes("片") || cleaned.includes("支")) &&
+      (cleaned.includes("・") || cleaned.includes("/") || cleaned.includes("系列") || cleaned.includes("牙膏") || cleaned.includes("面膜"))
+    );
+  }
+
   function getCardSubtitle(product: Product) {
-    return productContent(product).cardSubtitle ?? product.cardSubtitle ?? product.description;
+    const content = productContent(product);
+    const customSubtitle = content.cardSubtitle ?? product.cardSubtitle;
+    const intro = content.intro ?? product.intro;
+
+    if (customSubtitle && !isSpecOnlySubtitle(customSubtitle)) {
+      return customSubtitle;
+    }
+
+    if (intro) {
+      return compactCardText(intro).slice(0, 72);
+    }
+
+    return customSubtitle ?? product.description;
   }
 
   function getDetailName(product: Product) {
@@ -6005,7 +6084,7 @@ export default function Home() {
                     <article className="search-result-card" key={`search-${product.id}`}>
                       <div className="search-result-image">
                         {hasRealImage(product) ? (
-                          <img src={product.image} alt={product.name} />
+                          <img src={getPrimaryImage(product)} alt={product.name} data-fallback-index="0" onError={(event) => handleProductImageError(product, event)} />
                         ) : (
                           <div className="search-result-placeholder">圖片更新中</div>
                         )}
@@ -6171,7 +6250,7 @@ export default function Home() {
                     onClick={() => openProductDetail(product)}
                   >
                     {hasRealImage(product) ? (
-                      <img src={product.image} alt={product.name} />
+                      <img src={getPrimaryImage(product)} alt={product.name} data-fallback-index="0" onError={(event) => handleProductImageError(product, event)} />
                     ) : (
                       <span>商品圖</span>
                     )}
@@ -6409,12 +6488,10 @@ export default function Home() {
             <span className="best-top-badge-v242">TOP 1</span>
             {hasRealImage(heroTopProduct) ? (
               <img
-                src={heroTopProduct.image}
+                src={getPrimaryImage(heroTopProduct)}
                 alt={heroTopProduct.name}
-                onError={(event) => {
-                  event.currentTarget.parentElement?.classList.add("image-load-failed");
-                  event.currentTarget.style.display = "none";
-                }}
+                data-fallback-index="0"
+                onError={(event) => handleProductImageError(heroTopProduct, event)}
               />
             ) : (
               <span className="best-image-placeholder-v242">圖片更新中</span>
@@ -6430,12 +6507,10 @@ export default function Home() {
             <button type="button" className="secondary-best-image-v242" onClick={() => openProductDetail(product)}>
               {hasRealImage(product) ? (
                 <img
-                  src={product.image}
+                  src={getPrimaryImage(product)}
                   alt={product.name}
-                  onError={(event) => {
-                    event.currentTarget.parentElement?.classList.add("image-load-failed");
-                    event.currentTarget.style.display = "none";
-                  }}
+                  data-fallback-index="0"
+                  onError={(event) => handleProductImageError(product, event)}
                 />
               ) : (
                 <span>圖片更新中</span>
@@ -6468,12 +6543,10 @@ export default function Home() {
               <button type="button" onClick={() => openProductDetail(product)}>
                 {hasRealImage(product) ? (
                   <img
-                    src={product.image}
+                    src={getPrimaryImage(product)}
                     alt={product.name}
-                    onError={(event) => {
-                      event.currentTarget.parentElement?.classList.add("image-load-failed");
-                      event.currentTarget.style.display = "none";
-                    }}
+                    data-fallback-index="0"
+                    onError={(event) => handleProductImageError(product, event)}
                   />
                 ) : (
                   <span>圖片更新中</span>
@@ -6508,12 +6581,10 @@ export default function Home() {
               <div>
                 {entry.product && hasRealImage(entry.product) ? (
                   <img
-                    src={entry.product.image}
+                    src={getPrimaryImage(entry.product)}
                     alt={entry.title}
-                    onError={(event) => {
-                      event.currentTarget.parentElement?.classList.add("image-load-failed");
-                      event.currentTarget.style.display = "none";
-                    }}
+                    data-fallback-index="0"
+                    onError={(event) => handleProductImageError(entry.product!, event)}
                   />
                 ) : (
                   <span>系列圖</span>
@@ -6850,7 +6921,7 @@ export default function Home() {
                           onClick={() => addToCart(product)}
                         >
                           {hasRealImage(product) ? (
-                            <img src={product.image} alt={product.name} />
+                            <img src={getPrimaryImage(product)} alt={product.name} data-fallback-index="0" onError={(event) => handleProductImageError(product, event)} />
                           ) : (
                             <span>商品圖</span>
                           )}
@@ -6987,12 +7058,10 @@ export default function Home() {
             <div className="detail-main-image">
               {hasRealImage(selectedDetailProduct) ? (
                 <img
-                  src={selectedDetailProduct.image}
+                  src={getPrimaryImage(selectedDetailProduct)}
                   alt={selectedDetailProduct.name}
-                  onError={(event) => {
-                    event.currentTarget.parentElement?.classList.add("image-load-failed");
-                    event.currentTarget.style.display = "none";
-                  }}
+                  data-fallback-index="0"
+                  onError={(event) => handleProductImageError(selectedDetailProduct, event)}
                 />
               ) : (
                 <div className="image-placeholder detail-placeholder">
@@ -11109,8 +11178,13 @@ export default function Home() {
 
         .product-card .product-image img,
         .featured-card .product-image img {
-          padding: 18px 14px 14px !important;
+          width: 100% !important;
+          height: 100% !important;
+          max-width: 100% !important;
+          max-height: 100% !important;
+          padding: 10px !important;
           object-fit: contain !important;
+          transform: none !important;
         }
 
         .product-info {
@@ -11133,31 +11207,31 @@ export default function Home() {
           white-space: nowrap;
           background: #f7eee7 !important;
           color: var(--accent-dark) !important;
-          font-size: 10.5px !important;
+          font-size: 11.5px !important;
         }
 
         .product-info h3 {
-          min-height: 42px !important;
+          min-height: 48px !important;
           margin: 0 !important;
           color: #2f2621 !important;
-          font-size: 15.5px !important;
+          font-size: 18px !important;
           font-weight: 1000 !important;
-          line-height: 1.32 !important;
-          letter-spacing: -0.04em !important;
+          line-height: 1.28 !important;
+          letter-spacing: -0.05em !important;
           text-align: left !important;
         }
 
         .product-info .description {
           display: -webkit-box !important;
-          min-height: 36px !important;
+          min-height: 59px !important;
           margin: 0 !important;
           overflow: hidden !important;
-          color: #88766c !important;
-          font-size: 12px !important;
-          font-weight: 760 !important;
-          line-height: 1.5 !important;
+          color: #7d6b62 !important;
+          font-size: 13.4px !important;
+          font-weight: 780 !important;
+          line-height: 1.45 !important;
           text-align: left !important;
-          -webkit-line-clamp: 2;
+          -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
         }
 
@@ -11191,7 +11265,7 @@ export default function Home() {
         .price {
           margin: 0 !important;
           color: #c0352a !important;
-          font-size: 19px !important;
+          font-size: 21px !important;
           font-weight: 1000 !important;
           line-height: 1.15 !important;
           letter-spacing: -0.04em !important;
@@ -11199,7 +11273,7 @@ export default function Home() {
 
         .price.inquiry {
           color: #755f53 !important;
-          font-size: 17px !important;
+          font-size: 19px !important;
         }
 
         .commerce-card-actions {
@@ -11210,13 +11284,13 @@ export default function Home() {
         }
 
         .add-cart-button {
-          min-height: 39px !important;
+          min-height: 42px !important;
           margin-top: 0 !important;
           border: 0 !important;
           border-radius: 14px !important;
           background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
           color: #fff !important;
-          font-size: 13px !important;
+          font-size: 14px !important;
           font-weight: 1000 !important;
           box-shadow: 0 10px 20px rgba(178, 65, 51, 0.18) !important;
         }
@@ -11227,13 +11301,13 @@ export default function Home() {
         }
 
         .detail-button {
-          min-height: 34px !important;
+          min-height: 36px !important;
           margin-top: 0 !important;
           border: 1px solid rgba(178, 65, 51, 0.18) !important;
           border-radius: 14px !important;
           background: #fff !important;
           color: var(--accent-dark) !important;
-          font-size: 12px !important;
+          font-size: 13px !important;
           font-weight: 1000 !important;
         }
 
@@ -12243,12 +12317,13 @@ export default function Home() {
           content: "圖片更新中";
           display: grid;
           place-items: center;
-          width: calc(100% - 24px);
-          height: calc(100% - 24px);
+          width: calc(100% - 28px);
+          min-width: calc(100% - 28px);
+          height: calc(100% - 28px);
           border: 1px dashed rgba(178, 65, 51, 0.22);
           border-radius: 18px;
           color: #9a8378;
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 1000;
           letter-spacing: 0.04em;
         }
@@ -14089,7 +14164,31 @@ export default function Home() {
         }
 
 
-      `}</style>
+
+
+        /* V2.5.3.3：商品卡可讀性強化與圖片不裁切 */
+        .product-card .product-image img,
+        .featured-card .product-image img {
+          object-fit: contain !important;
+          transform: none !important;
+          padding: 10px !important;
+        }
+
+        .product-info h3 {
+          font-size: 18px !important;
+          line-height: 1.28 !important;
+          min-height: 48px !important;
+        }
+
+        .product-info .description {
+          font-size: 13.4px !important;
+          line-height: 1.45 !important;
+          -webkit-line-clamp: 3 !important;
+          min-height: 59px !important;
+        }
+
+      `}
+</style>
     </main>
   );
 }
