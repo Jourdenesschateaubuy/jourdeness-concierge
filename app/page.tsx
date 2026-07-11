@@ -1494,7 +1494,7 @@ const products: Product[] = [
     series: "肥皂組合",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
-    image: "/products/Hydrangea Floral.png",
+    image: "/products/bdsoap.png",
     description: "龍血手工皂與繡球花漾香氛皂可任選搭配，共4款。",
   },
   {
@@ -1564,7 +1564,7 @@ const products: Product[] = [
     series: "精油",
     originalPrice: "牌價 $ 390",
     price: "$ 390",
-    image: "/products/DB Essential Oil.png",
+    image: "/products/dragon roller.png",
     description: "9mL。龍血系列隨身精油滾珠，適合日常香氛與放鬆舒緩保養。",
   },
   {
@@ -1574,7 +1574,7 @@ const products: Product[] = [
     series: "精油",
     originalPrice: "牌價 $ 390",
     price: "$ 390",
-    image: "/products/Lavender Essential Oil.png",
+    image: "/products/lavender roller.png",
     description: "9mL。薰衣草香氛精油滾珠，適合睡前放鬆與日常隨身舒緩。",
   },
   {
@@ -6755,7 +6755,7 @@ export default function Home() {
       {heroTopProduct && (
         <section className="best-hero-v242" aria-label="本月爆品主打">
           <div className="best-hero-copy-v242">
-            <p className="best-hero-eyebrow-v242">本月熱賣 TOP 1</p>
+            <p className="best-hero-eyebrow-v242"><span>本月熱賣</span><strong>TOP 1</strong></p>
             <h2>{getCardName(heroTopProduct)}</h2>
             <strong>龍血系列主打爆品</strong>
             <span>買一送一熱賣款，乾燥缺水肌的水潤修護精華。</span>
@@ -7459,10 +7459,6 @@ export default function Home() {
           <div>
             <span>訂購流程</span>
             <strong>加入清單送出後，由 LINE 小幫手確認庫存、效期、金額與付款資訊。</strong>
-          </div>
-          <div>
-            <span>客服時間</span>
-            <strong>週一至週五 09:00–18:00</strong>
           </div>
           <div>
             <span>公司名稱</span>
@@ -12582,11 +12578,11 @@ export default function Home() {
 
         .trust-flow-steps-v23 strong {
           width: fit-content;
-          padding: 4px 7px;
-          border-radius: 999px;
-          background: rgba(178, 65, 51, 0.10);
-          color: var(--accent-dark);
-          font-size: 10px;
+          padding: 0;
+          border-radius: 0;
+          background: transparent;
+          color: var(--accent);
+          font-size: 13px;
           font-weight: 1000;
           letter-spacing: 0.04em;
         }
@@ -13257,24 +13253,41 @@ export default function Home() {
 
         .best-hero-eyebrow-v242 {
           width: fit-content;
-          margin: 0;
-          padding: 7px 11px;
-          border: 1px solid rgba(178, 65, 51, 0.22);
-          border-radius: 999px;
-          background: rgba(255, 255, 255, 0.78);
-          color: var(--accent-dark);
-          font-size: 12px;
+          margin: 0 0 2px;
+          padding: 10px 14px 11px;
+          border: 1px solid rgba(178, 65, 51, 0.24);
+          border-radius: 20px;
+          background: linear-gradient(135deg, #b43a31, #872820);
+          color: #fff;
+          box-shadow: 0 14px 26px rgba(178, 65, 51, 0.20);
+        }
+
+        .best-hero-eyebrow-v242 span {
+          display: block;
+          color: rgba(255, 247, 241, 0.86);
+          font-size: 11px;
           font-weight: 1000;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.16em;
+          line-height: 1;
+        }
+
+        .best-hero-eyebrow-v242 strong {
+          display: block;
+          margin-top: 4px;
+          color: #fff;
+          font-size: 34px;
+          font-weight: 1000;
+          line-height: 0.92;
+          letter-spacing: -0.08em;
         }
 
         .best-hero-copy-v242 h2 {
           margin: 0;
           color: #2c211d;
-          font-size: 31px;
+          font-size: 24px;
           font-weight: 1000;
-          line-height: 1.08;
-          letter-spacing: -0.075em;
+          line-height: 1.14;
+          letter-spacing: -0.05em;
         }
 
         .best-hero-copy-v242 > strong {
@@ -13676,8 +13689,12 @@ export default function Home() {
         }
 
         @media (max-width: 380px) {
+          .best-hero-eyebrow-v242 strong {
+            font-size: 30px;
+          }
+
           .best-hero-copy-v242 h2 {
-            font-size: 27px;
+            font-size: 22px;
           }
 
           .best-hero-actions-v242,
