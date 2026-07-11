@@ -5529,7 +5529,7 @@ export default function Home() {
     return text.replace(/\s+/g, " ").replace(/。$/, "").trim();
   }
 
-  function shortCardText(text: string, maxLength = 32) {
+  function shortCardText(text: string, maxLength = 22) {
     const cleaned = compactCardText(text);
     const firstSentence = cleaned.split(/[。！!；;]/)[0]?.trim() || cleaned;
     const source = firstSentence.length >= 10 ? firstSentence : cleaned;
@@ -14438,6 +14438,43 @@ export default function Home() {
           .brand-logo-wrap {
             display: none;
           }
+        }
+
+
+        /* Commerce V2.5.3.6：商品卡一句話短文案 + 價格置中 */
+        .product-info .description,
+        .commerce-product-card .product-info .description,
+        .featured-info .description {
+          font-size: 13.8px !important;
+          line-height: 1.42 !important;
+          font-weight: 800 !important;
+          display: -webkit-box !important;
+          -webkit-line-clamp: 2 !important;
+          -webkit-box-orient: vertical !important;
+          overflow: hidden !important;
+          min-height: 38px !important;
+          max-height: 39px !important;
+        }
+
+        .commerce-price-block,
+        .product-card .price-block,
+        .featured-card .price-block {
+          width: 100% !important;
+          align-items: center !important;
+          justify-content: center !important;
+          text-align: center !important;
+        }
+
+        .commerce-price-block .original-price,
+        .commerce-price-block .price,
+        .product-card .price-block .original-price,
+        .product-card .price-block .price,
+        .featured-card .price-block .original-price,
+        .featured-card .price-block .price {
+          width: 100% !important;
+          text-align: center !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
         }
 
       `}
