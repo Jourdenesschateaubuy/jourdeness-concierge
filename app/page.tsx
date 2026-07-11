@@ -94,7 +94,7 @@ type CustomerForm = {
   note: string;
 };
 
-// V2.5.3.11：新增精油滾珠、香氛皂與護唇膏任選優惠。
+// V2.5.3.11.6.1：修正 TOP1 膠囊手機版換行，維持同字級與原本質感。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -6204,6 +6204,40 @@ export default function Home() {
     };
   }, []);
 
+  function formatTaiwanOrderTime(date: Date) {
+    return new Intl.DateTimeFormat("zh-TW", {
+      timeZone: "Asia/Taipei",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).format(date);
+  }
+
+  function createOrderNumber(date: Date) {
+    const taipeiParts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Taipei",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    })
+      .formatToParts(date)
+      .reduce<Record<string, string>>((parts, part) => {
+        if (part.type !== "literal") parts[part.type] = part.value;
+        return parts;
+      }, {});
+
+    const randomCode = Math.floor(100 + Math.random() * 900);
+    return `JD${taipeiParts.year}${taipeiParts.month}${taipeiParts.day}${taipeiParts.hour}${taipeiParts.minute}${taipeiParts.second}${randomCode}`;
+  }
+
   async function submitOrder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -6235,19 +6269,58 @@ export default function Home() {
     setSubmitStatus("idle");
     setSubmitMessage("");
 
+    const orderCreatedAt = new Date();
+    const orderTime = formatTaiwanOrderTime(orderCreatedAt);
+    const orderNumber = createOrderNumber(orderCreatedAt);
+    const customerNote = customer.note.trim();
     const noteWithAddress = [
       `宅配地址：${customer.address.trim()}`,
-      customer.note.trim() ? `備註：${customer.note.trim()}` : "",
+      customerNote ? `備註：${customerNote}` : "",
     ]
       .filter(Boolean)
       .join("\n");
 
+    const itemsText = cartItems
+      .map((item) => `${item.product.name} × ${item.quantity}｜${displayPrice(item.product)}`)
+      .join("\n");
+
+    const sheetHeaders = [
+      "訂單時間",
+      "訂單編號",
+      "姓名",
+      "LINE ID",
+      "電話",
+      "取貨方式",
+      "商品內容",
+      "備註",
+      "狀態",
+    ];
+
+    const sheetRow = {
+      訂單時間: orderTime,
+      訂單編號: orderNumber,
+      姓名: customer.customerName.trim(),
+      "LINE ID": customer.lineId.trim(),
+      電話: customer.phone.trim(),
+      取貨方式: "宅配",
+      商品內容: itemsText,
+      備註: noteWithAddress,
+      狀態: "待確認",
+    };
+
     const payload = {
+      orderTime,
+      orderNumber,
+      status: "待確認",
+      sheetHeaders,
+      sheetRow,
       customerName: customer.customerName.trim(),
       lineId: customer.lineId.trim(),
       phone: customer.phone.trim(),
       deliveryMethod: "宅配",
+      address: customer.address.trim(),
       note: noteWithAddress,
+      itemsText,
       items: cartItems.map((item) => ({
         id: item.product.id,
         name: item.product.name,
@@ -7462,11 +7535,15 @@ export default function Home() {
           </div>
           <div>
             <span>公司名稱</span>
-            <strong>待補</strong>
+            <strong>佐登妮絲國際股份有限公司</strong>
           </div>
           <div>
-            <span>統一編號 / 地址</span>
-            <strong>待補</strong>
+            <span>統一編號</span>
+            <strong>89826011</strong>
+          </div>
+          <div>
+            <span>公司地址</span>
+            <strong>臺中市北區賴旺里中清路一段812號、816號</strong>
           </div>
         </div>
 
@@ -13252,42 +13329,48 @@ export default function Home() {
         }
 
         .best-hero-eyebrow-v242 {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 14px;
           width: fit-content;
-          margin: 0 0 2px;
-          padding: 10px 14px 11px;
-          border: 1px solid rgba(178, 65, 51, 0.24);
-          border-radius: 20px;
-          background: linear-gradient(135deg, #b43a31, #872820);
-          color: #fff;
-          box-shadow: 0 14px 26px rgba(178, 65, 51, 0.20);
+          max-width: 100%;
+          margin: 0 0 7px;
+          padding: 10px 18px 11px;
+          border: 1px solid rgba(178, 65, 51, 0.25);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.94);
+          color: #8f2f2a;
+          white-space: nowrap;
+          box-shadow: 0 10px 22px rgba(178, 65, 51, 0.10);
+        }
+
+        .best-hero-eyebrow-v242 span,
+        .best-hero-eyebrow-v242 strong {
+          display: inline-block;
+          color: #8f2f2a;
+          font-size: clamp(22px, 6.2vw, 30px);
+          font-weight: 1000;
+          line-height: 1;
+          white-space: nowrap;
         }
 
         .best-hero-eyebrow-v242 span {
-          display: block;
-          color: rgba(255, 247, 241, 0.86);
-          font-size: 11px;
-          font-weight: 1000;
-          letter-spacing: 0.16em;
-          line-height: 1;
+          letter-spacing: 0.02em;
         }
 
         .best-hero-eyebrow-v242 strong {
-          display: block;
-          margin-top: 4px;
-          color: #fff;
-          font-size: 34px;
-          font-weight: 1000;
-          line-height: 0.92;
-          letter-spacing: -0.08em;
+          margin-top: 0;
+          letter-spacing: -0.025em;
         }
 
         .best-hero-copy-v242 h2 {
           margin: 0;
           color: #2c211d;
-          font-size: 24px;
+          font-size: 23px;
           font-weight: 1000;
-          line-height: 1.14;
-          letter-spacing: -0.05em;
+          line-height: 1.16;
+          letter-spacing: -0.04em;
         }
 
         .best-hero-copy-v242 > strong {
@@ -13689,12 +13772,22 @@ export default function Home() {
         }
 
         @media (max-width: 380px) {
+          .best-hero-eyebrow-v242 {
+            padding: 9px 13px 10px;
+            gap: 10px;
+          }
+
+          .best-hero-eyebrow-v242 span,
           .best-hero-eyebrow-v242 strong {
-            font-size: 30px;
+            font-size: clamp(21px, 6.4vw, 25px);
+          }
+
+          .best-hero-eyebrow-v242 span {
+            letter-spacing: 0.01em;
           }
 
           .best-hero-copy-v242 h2 {
-            font-size: 22px;
+            font-size: 21px;
           }
 
           .best-hero-actions-v242,
