@@ -1494,7 +1494,7 @@ const products: Product[] = [
     series: "肥皂組合",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
-    image: "/products/bdsoap.png",
+    image: "/products/Hydrangea Floral.png",
     description: "龍血手工皂與繡球花漾香氛皂可任選搭配，共4款。",
   },
   {
@@ -1564,7 +1564,7 @@ const products: Product[] = [
     series: "精油",
     originalPrice: "牌價 $ 390",
     price: "$ 390",
-    image: "/products/dragon roller.png",
+    image: "/products/DB Essential Oil.png",
     description: "9mL。龍血系列隨身精油滾珠，適合日常香氛與放鬆舒緩保養。",
   },
   {
@@ -1574,7 +1574,7 @@ const products: Product[] = [
     series: "精油",
     originalPrice: "牌價 $ 390",
     price: "$ 390",
-    image: "/products/lavender roller.png",
+    image: "/products/Lavender Essential Oil.png",
     description: "9mL。薰衣草香氛精油滾珠，適合睡前放鬆與日常隨身舒緩。",
   },
   {
