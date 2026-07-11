@@ -46,6 +46,7 @@ const categoryConfig = {
   牙膏: ["全部", "牙膏"],
   肥皂: ["全部", "肥皂"],
   護手霜: ["全部", "護手霜"],
+  面膜: ["全部", "保濕面膜", "亮白面膜", "修護面膜", "面膜組合"],
   香水: ["全部", "香水"],
   貼布: ["全部", "貼布"],
   外部廠商: ["全部", "歐思佛", "上山採藥", "生福科技", "倍力工房", "良冠", "木匠兄妹", "F.SEASONS 富雨洋傘"],
@@ -91,6 +92,7 @@ type CustomerForm = {
   note: string;
 };
 
+// V2.5.3：補齊 54 個新品 / 規格的正式商品文案。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -305,40 +307,40 @@ const products: Product[] = [
     name: "肌光緊緻速妍雪膚液",
     category: "保養品",
     series: "肌光緊緻速妍系列",
-    originalPrice: "原價 $ 3,280",
+    originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Radiance and Lifting1.jpg",
-    description: "肌光緊緻速妍系列。",
+    description: "130mL / 瓶。緊緻前導雪膚液，洗臉後調理肌膚紋理與彈力光澤。",
   },
   {
     id: 22,
     name: "肌光緊緻速妍精華露",
     category: "保養品",
     series: "肌光緊緻速妍系列",
-    originalPrice: "原價 $ 3,880",
+    originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Radiance and Lifting2.jpg",
-    description: "肌光緊緻速妍系列。",
+    description: "30mL / 瓶。高濃縮緊緻精華，適合細紋、鬆弛與熬夜疲憊肌加強修護。",
   },
   {
     id: 23,
     name: "肌光緊緻速妍霜",
     category: "保養品",
     series: "肌光緊緻速妍系列",
-    originalPrice: "原價 $ 4,680",
+    originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Radiance and Lifting4.jpg",
-    description: "肌光緊緻速妍系列。",
+    description: "50mL / 瓶。緊緻修護霜，保養最後一步鎖住水分與滋養。",
   },
   {
     id: 24,
     name: "肌光緊緻速妍面膜",
     category: "保養品",
     series: "肌光緊緻速妍系列",
-    originalPrice: "原價 $ 3,680",
+    originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Radiance and Lifting5.jpg",
-    description: "肌光緊緻速妍系列。",
+    description: "單片 / 盒裝。集中型緊緻修護面膜，適合約會前、熬夜後與急救保養。",
   },
 
   {
@@ -349,7 +351,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/INSK 001.jpg",
-    description: "INSK乳酸平衡系列。",
+    description: "150mL / 瓶。洗臉後的乳酸平衡前導水，維持油水平衡與健康膚況。",
   },
   {
     id: 26,
@@ -359,7 +361,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/INSK1.jpg",
-    description: "INSK乳酸平衡系列。",
+    description: "100mL / 瓶。輕盈修護乳，滋潤並修護肌膚水脂膜，改善粗糙與油水失衡。",
   },
 
   {
@@ -367,20 +369,20 @@ const products: Product[] = [
     name: "BA-5肌密抗皺精華",
     category: "保養品",
     series: "BA-5肌密抗皺系列",
-    originalPrice: "原價 $ 4,880",
-    price: "缺貨中",
+    originalPrice: "原價待補",
+    price: "產地價待補",
     image: "/products/BA-5 2.jpg",
-    description: "BA-5肌密抗皺系列。",
+    description: "30mL / 瓶。高階密集抗皺精華，針對細紋、乾紋與熟齡肌加強修護。",
   },
   {
     id: 28,
     name: "BA-5肌密抗皺霜",
     category: "保養品",
     series: "BA-5肌密抗皺系列",
-    originalPrice: "原價 $ 9,280",
-    price: "缺貨中",
+    originalPrice: "原價待補",
+    price: "產地價待補",
     image: "/products/BA-5 4.png",
-    description: "BA-5肌密抗皺系列。",
+    description: "50mL / 瓶。奢華豐潤抗皺霜，保養最後一步封存滋養與鎖水。",
   },
 
   {
@@ -389,9 +391,9 @@ const products: Product[] = [
     category: "洗沐",
     series: "洗沐系列",
     originalPrice: "原價 $ 790",
-    price: "產地價 任選3瓶 $ 1,100",
+    price: "產地價 $ 590",
     image: "/products/BDwash2.jpg",
-    description: "龍血洗髮沐浴系列，可搭配活動組合。",
+    description: "500mL / 瓶。龍血頭皮修護洗髮精，0矽靈配方，洗後蓬鬆柔順。",
   },
   {
     id: 30,
@@ -399,9 +401,9 @@ const products: Product[] = [
     category: "洗沐",
     series: "洗沐系列",
     originalPrice: "原價 $ 790",
-    price: "產地價 任選3瓶 $ 1,100",
+    price: "產地價 $ 590",
     image: "/products/BDwash1.jpg",
-    description: "龍血洗髮沐浴系列，可搭配活動組合。",
+    description: "500mL / 瓶。龍血潤澤修護沐浴乳，洗後水潤柔嫩不緊繃。",
   },
   {
     id: 31,
@@ -428,40 +430,40 @@ const products: Product[] = [
     name: "INSK乳酸淨痘修護膠",
     category: "保養品",
     series: "INSK乳酸平衡系列",
-    originalPrice: "原價 $ 1,080",
+    originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/INSK6.jpg",
-    description: "15mL。INSK乳酸平衡系列。",
+    description: "15mL / 支。局部淨痘修護膠，針對粉刺、痘痘與易出油部位調理。",
   },
   {
     id: 34,
     name: "INSK乳酸平衡水嫩膜",
     category: "保養品",
     series: "INSK乳酸平衡系列",
-    originalPrice: "原價 $ 1,280",
+    originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/INSK5.jpg",
-    description: "23mL x 6片 / 盒。INSK乳酸平衡系列。",
+    description: "23mL x 6片 / 盒。乳酸平衡集中保養面膜，快速補水並穩定膚況。",
   },
   {
     id: 35,
-    name: "齒齦保健薰衣草舒緩牙膏",
-    category: "牙膏",
-    series: "牙膏",
-    originalPrice: "原價 $ 000",
-    price: "產地價 單價 $ 250 、任選3條 $ 500",
-    image: "/products/Lavender-washtoothpaste.jpg",
-    description: "120g。齒齦保健牙膏。",
-  },
-  {
-    id: 36,
-    name: "齒齦保健龍血修護牙膏",
+    name: "薰衣草齒齦保健牙膏",
     category: "牙膏",
     series: "牙膏",
     originalPrice: "原價待補",
-    price: "產地價 單價 $ 250 、任選3條 $ 500",
-    image: "/products/bd-washtoothpaste.jpg",
-    description: "120g / 單支。齒齦保健牙膏。",
+    price: "產地價待補",
+    image: "/products/toothpaste lav.png",
+    description: "120g / 支。薰衣草草本香氣，溫和潔牙並維持口氣清新。",
+  },
+  {
+    id: 36,
+    name: "龍血齒齦保健牙膏",
+    category: "牙膏",
+    series: "牙膏",
+    originalPrice: "原價待補",
+    price: "產地價待補",
+    image: "/products/toothpaste bd.png",
+    description: "120g / 支。龍血齒齦保健牙膏，溫和清潔牙齒與齒齦邊緣。",
   },
 
   {
@@ -594,7 +596,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/tt6.jpg",
-    description: "8mL / 盒。茶樹控油系列。",
+    description: "8mL / 盒。局部控油淨痘精華，適合粉刺、痘痘與局部油光調理。",
   },
   {
     id: 50,
@@ -604,7 +606,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/tt1.jpg",
-    description: "150mL。茶樹控油系列。",
+    description: "150mL / 瓶。清潔後的控油第一步，清爽調理毛孔與油光。",
   },
   {
     id: 51,
@@ -614,7 +616,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/tee3.jpg",
-    description: "100mL。茶樹控油系列。",
+    description: "100mL / 瓶。清爽不悶厚的控油保濕乳，維持油水平衡。",
   },
   {
     id: 52,
@@ -644,7 +646,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/BD001.jpg",
-    description: "150mL。龍血系列保養品。",
+    description: "150mL / 瓶。輕盈卸妝油，快速溶解彩妝、防曬與毛孔髒污。",
   },
   {
     id: 55,
@@ -654,57 +656,57 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/BD0.jpg",
-    description: "150mL。龍血系列保養品。",
+    description: "150mL / 瓶。細緻綿密潔顏慕絲，洗後不緊繃、不乾澀。",
   },
   {
     id: 56,
-    name: "水搖滾保濕面膜",
+    name: "水搖滾保濕面膜 (5片裝)",
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/DBMUSK 5.jpg",
-    description: "22mL x 5pcs。",
+    description: "22mL x 5pcs / 盒。水搖滾保濕面膜，適合乾燥缺水與急救補水。",
   },
   {
     id: 57,
-    name: "水搖滾保濕面膜",
+    name: "水搖滾保濕面膜 (10片裝)",
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/water 5.jpg",
-    description: "22mL x 10pcs。",
+    description: "22mL x 10pcs / 盒。水搖滾保濕面膜，日常補水與集中保養。",
   },
   {
     id: 58,
-    name: "水搖滾保濕面膜",
+    name: "水搖滾保濕面膜 (35片大容量桶裝)",
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/water 5.jpg",
-    description: "22mL x 35pcs。",
+    image: "/products/water 35.png",
+    description: "22mL x 35pcs / 桶。水搖滾保濕面膜大容量桶裝，適合長期補水保養。",
   },
   {
     id: 59,
-    name: "極光白美白面膜",
+    name: "極光白美白面膜 (5片裝)",
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/DBMUSK 5 W.jpg",
-    description: "x 5pcs。",
+    description: "5pcs / 盒。極光白美白面膜，集中亮白調理膚色不均與熬夜暗沉。",
   },
   {
     id: 60,
-    name: "極光白美白面膜",
+    name: "極光白美白面膜 (35片大容量桶裝)",
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/white 5.jpg",
-    description: "x 35pcs。",
+    image: "/products/white 35.png",
+    description: "35pcs / 桶。極光白美白面膜大容量桶裝，適合日常亮白集中保養。",
   },
   {
     id: 61,
@@ -714,7 +716,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/glassskin 1.jpg",
-    description: "140mL。水光肌能系列。",
+    description: "130mL / 瓶。水光肌能前導化妝水，補水並打開後續保養通道。",
   },
   {
     id: 62,
@@ -724,7 +726,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/glassskin 3.jpg",
-    description: "130mL。水光肌能系列。",
+    description: "130mL / 瓶。清爽鎖水乳液，維持水屏障與柔嫩彈潤感。",
   },
   {
     id: 63,
@@ -734,7 +736,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/glassskin 4.jpg",
-    description: "50mL。水光肌能系列。",
+    description: "50mL / 瓶。夜間深度潤澤晚霜，適合乾燥缺水與細紋感加強保養。",
   },
   {
     id: 64,
@@ -754,7 +756,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Glacial 0.jpg",
-    description: "150mL。冰河淨化系列。",
+    description: "150mL / 瓶。冰河淨化潔顏慕絲，溫和洗去多餘皮脂與環境髒污。",
   },
   {
     id: 66,
@@ -764,17 +766,17 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Glacial 1.jpg",
-    description: "120mL。冰河淨化系列。",
+    description: "120mL / 瓶。冰河淨化淨膚露，調理老廢皮脂、油光與毛孔。",
   },
   {
     id: 67,
-    name: "【新品】冰河淨化柔膚面膜",
+    name: "冰河淨化柔膚面膜",
     category: "保養品",
     series: "冰河淨化系列",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Glacial 5.jpg",
-    description: "100mL。冰河淨化系列。",
+    description: "100mL / 瓶。水洗式冰河淨化泥膜，深層淨化毛孔髒污。",
   },
   {
     id: 68,
@@ -784,7 +786,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Crystal Radiance Brightening Emulsion.jpg",
-    description: "100mL。晶淬雪系列。",
+    description: "100mL / 瓶。亮白與高保濕乳液，改善暗沉、膚色不均與乾燥粗糙。",
   },
   {
     id: 69,
@@ -794,7 +796,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/pineapple 0.jpg",
-    description: "120g。鳳梨酵素系列。",
+    description: "120g / 瓶。溫和代謝老廢角質，改善粗糙暗沉與吸收感不佳。",
   },
   {
     id: 70,
@@ -804,7 +806,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/pineapple 5.jpg",
-    description: "22mL x 5pcs。鳳梨酵素系列。",
+    description: "22mL x 5pcs / 盒。鳳梨酵素活膚面膜，補水並提升透亮細緻感。",
   },
   {
     id: 71,
@@ -814,7 +816,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/sukola0.jpg",
-    description: "150mL。櫻の雪傳明酸美白系列。",
+    description: "150mL / 瓶。櫻の雪淨白潔顏慕絲，美白保養第一步，洗後水嫩不緊繃。",
   },
   {
     id: 72,
@@ -824,7 +826,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/sukola1.jpg",
-    description: "150mL。櫻の雪傳明酸美白系列。",
+    description: "150mL / 瓶。亮白前導化妝水，補充亮白水分並打開吸收通道。",
   },
 
   {
@@ -835,7 +837,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/su2.jpg",
-    description: "30mL。櫻の雪傳明酸美白系列。",
+    description: "30mL / 瓶。密集亮白核心精華，針對斑點、暗沉與膚色不均加強調理。",
   },
   {
     id: 142,
@@ -845,7 +847,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/su3.jpg",
-    description: "100mL。櫻の雪傳明酸美白系列。",
+    description: "100mL / 瓶。美白乳液，鎖住亮白保養並維持水嫩不黏膩。",
   },
   {
     id: 73,
@@ -873,10 +875,10 @@ const products: Product[] = [
     name: "櫻の雪亮澤護手霜",
     category: "護手霜",
     series: "護手霜",
-    originalPrice: "價值 $ 290",
+    originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/sakura hand cream.jpg",
-    description: "30g。JDST 護手霜品項。",
+    image: "/products/hand cream cherry.png",
+    description: "50mL / 支。亮澤護手霜，改善手背暗沉、乾燥粗糙與關節黯沉感。",
   },
   {
     id: 76,
@@ -885,8 +887,8 @@ const products: Product[] = [
     series: "護手霜",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/tea tree hand cream.jpg",
-    description: "30mL。護手霜品項。",
+    image: "/products/hand cream tea.png",
+    description: "50mL / 支。茶樹清爽護手霜，適合怕黏膩、易流手汗與夏天使用。",
   },
   {
     id: 77,
@@ -895,8 +897,8 @@ const products: Product[] = [
     series: "護手霜",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/lavender hand cream.jpg",
-    description: "30mL。護手霜品項。",
+    image: "/products/hand cream lav.png",
+    description: "50mL / 支。薰衣草舒緩護手霜，適合睡前滋養與乾燥粗糙手部。",
   },
   {
     id: 78,
@@ -905,8 +907,8 @@ const products: Product[] = [
     series: "護手霜",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/musk hand cream.jpg",
-    description: "30g。護手霜品項。",
+    image: "/products/hand cream musk.png",
+    description: "50mL / 支。白麝香棉花香氛護手霜，滋潤柔膚、香氣乾淨溫柔。",
   },
 
   {
@@ -915,9 +917,9 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "任選4款 $ 799",
+    price: "產地價待補",
     image: "/products/soap rose.png",
-    description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
+    description: "200g±10g / 塊。龍血玫瑰美膚皂，洗後柔嫩不緊繃，散發玫瑰香氛。",
   },
   {
     id: 80,
@@ -925,9 +927,9 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "任選4款 $ 799",
+    price: "產地價待補",
     image: "/products/soap Artemisia.png",
-    description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
+    description: "200g±10g / 塊。龍血艾草保庇皂，草本舒緩，適合換季不穩膚況。",
   },
   {
     id: 81,
@@ -935,9 +937,9 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "任選4款 $ 799",
+    price: "產地價待補",
     image: "/products/soap lemo.png",
-    description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
+    description: "200g±10g / 塊。龍血檸檬馬鞭草皂，清爽控油，適合油性毛孔與背部出油。",
   },
   {
     id: 82,
@@ -945,9 +947,9 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "任選4款 $ 799",
+    price: "產地價待補",
     image: "/products/soap lav.png",
-    description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
+    description: "200g±10g / 塊。龍血薰衣草舒緩皂，夜間沐浴放鬆，洗後柔嫩持潤。",
   },
   {
     id: 83,
@@ -1066,9 +1068,9 @@ const products: Product[] = [
     category: "肥皂",
     series: "肥皂",
     originalPrice: "原價待補",
-    price: "任選4款 $ 799",
+    price: "產地價待補",
     image: "/products/soap sandalwood.png",
-    description: "200g±10g。龍血手工皂品項，可搭配任選4款活動。",
+    description: "200g±10g / 塊。龍血檀香靜心皂，沉穩木質香調，高滋潤養膚。",
   },
   {
     id: 95,
@@ -1199,7 +1201,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Dark Spot Eraser.jpg",
-    description: "白金密集煥白系列。",
+    description: "單支 / 盒裝。精準淡斑筆，針對局部斑點、曬斑與痘疤暗沉加強保養。",
   },
   {
     id: 107,
@@ -1209,7 +1211,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Ceramide Body Oil (C+E).jpg",
-    description: "頂級養護品項。",
+    description: "單瓶 / 盒裝。賽洛美 C+E 美體油，沐浴後滋潤乾燥粗糙肌膚。",
   },
   {
     id: 108,
@@ -1219,7 +1221,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/24H Revitalizing Essence.jpg",
-    description: "頂級養護品項。",
+    description: "單瓶 / 盒裝。頂級抗老前導賦活液，適合疲憊暗沉與保養撞牆期。",
   },
   {
     id: 109,
@@ -1229,7 +1231,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Platinum.jpg",
-    description: "頂級養護品項。",
+    description: "單瓶 / 盒裝。雙管雙導精華，結合緊緻抗老與煥白保養。",
   },
   {
     id: 110,
@@ -1239,7 +1241,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Obsidian Firming Luxury Eye Cream.jpg",
-    description: "頂級養護品項。",
+    description: "單瓶 / 盒裝。奢華緊緻眼霜，滋養眼周乾紋、細紋與鬆弛感。",
   },
   {
     id: 111,
@@ -1249,7 +1251,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/24K Gold.jpg",
-    description: "頂級養護品項。",
+    description: "單瓶 / 盒裝。24K 金箔前導賦活液，維持澎潤、透亮與細緻光澤。",
   },
   {
     id: 112,
@@ -1340,7 +1342,7 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Plant Exosome.jpg",
-    description: "頂級養護品項。",
+    description: "一組 / 盒裝。頂級凍晶密集保養組，使用時混合激活，適合急救修護。",
   },
   {
     id: 121,
@@ -1350,97 +1352,97 @@ const products: Product[] = [
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/smell white.jpg",
-    description: "500mL。頂級養護身體保養品項。",
+    description: "500mL / 瓶。小白花美體乳，水潤好推不黏膩，適合每日全身保養。",
   },
   {
     id: 122,
     name: "肌光緊緻速妍面膜",
-    category: "保養品",
+    category: "面膜",
     series: "面膜",
-    originalPrice: "原價 $ 3,680",
+    originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Radiance and Lifting5.jpg",
-    description: "肌光緊緻速妍系列面膜。",
+    description: "單片 / 盒裝。集中型緊緻修護面膜，適合約會前、熬夜後與急救保養。",
   },
   {
     id: 123,
     name: "INSK乳酸平衡水嫩膜",
-    category: "保養品",
+    category: "面膜",
     series: "面膜",
-    originalPrice: "原價 $ 1,280",
+    originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/INSK5.jpg",
-    description: "23mL x 6片 / 盒。INSK乳酸平衡系列面膜。",
+    description: "23mL x 6片 / 盒。乳酸平衡集中保養面膜，快速補水並穩定膚況。",
   },
   {
     id: 124,
-    name: "水搖滾保濕面膜",
-    category: "保養品",
+    name: "水搖滾保濕面膜 (5片裝)",
+    category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/DBMUSK 5.jpg",
-    description: "22mL x 5pcs。",
+    description: "22mL x 5pcs / 盒。水搖滾保濕面膜，適合乾燥缺水與急救補水。",
   },
   {
     id: 125,
-    name: "水搖滾保濕面膜",
-    category: "保養品",
+    name: "水搖滾保濕面膜 (10片裝)",
+    category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/water 5.jpg",
-    description: "22mL x 10pcs。",
+    description: "22mL x 10pcs / 盒。水搖滾保濕面膜，日常補水與集中保養。",
   },
   {
     id: 126,
-    name: "水搖滾保濕面膜",
-    category: "保養品",
+    name: "水搖滾保濕面膜 (35片大容量桶裝)",
+    category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/water 35.png",
-    description: "22mL x 35pcs。",
+    description: "22mL x 35pcs / 桶。水搖滾保濕面膜大容量桶裝，適合長期補水保養。",
   },
   {
     id: 127,
-    name: "極光白美白面膜",
-    category: "保養品",
+    name: "極光白美白面膜 (5片裝)",
+    category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/DBMUSK 5 W.jpg",
-    description: "x 5pcs。",
+    description: "5pcs / 盒。極光白美白面膜，集中亮白調理膚色不均與熬夜暗沉。",
   },
   {
     id: 128,
-    name: "極光白美白面膜",
-    category: "保養品",
+    name: "極光白美白面膜 (35片大容量桶裝)",
+    category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/white 35.png",
-    description: "x 35pcs。",
+    description: "35pcs / 桶。極光白美白面膜大容量桶裝，適合日常亮白集中保養。",
   },
   {
     id: 129,
     name: "冰河淨化柔膚面膜",
-    category: "保養品",
+    category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/Glacial 5.jpg",
-    description: "100mL。冰河淨化系列面膜。",
+    description: "100mL / 瓶。水洗式冰河淨化泥膜，深層淨化毛孔髒污。",
   },
   {
     id: 130,
     name: "鳳梨酵素活膚面膜",
-    category: "保養品",
+    category: "面膜",
     series: "面膜",
     originalPrice: "原價待補",
     price: "產地價待補",
     image: "/products/pineapple 5.jpg",
-    description: "22mL x 5pcs。鳳梨酵素系列面膜。",
+    description: "22mL x 5pcs / 盒。鳳梨酵素活膚面膜，補水並提升透亮細緻感。",
   },
   {
     id: 131,
@@ -1962,16 +1964,19 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   21: {
     cardName: "肌光緊緻速妍雪膚液",
-    cardSubtitle: "肌光緊緻速妍系列・肌光緊緻速妍系列",
-    spec: "肌光緊緻速妍系列",
-    intro: "肌光緊緻速妍雪膚液為肌光緊緻速妍系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "130mL・肌光緊緻速妍系列",
+    spec: "130mL / 瓶",
+    intro: "洗臉後的緊緻前導第一步，幫助調理肌膚紋理，為肌底注入細緻彈力與光澤。",
     features: [
-      "適合清潔後作為保養前導使用。",
-      "可依膚況搭配同系列精華、乳液或乳霜。",
-      "協助建立日常保養基礎步驟。",
+      "清潔後第一道緊緻前導保養。",
+      "可搭配同系列精華露、霜與面膜層層加乘。",
+      "支援初老、暗沉與彈力不足的日常保養。"
     ],
     suitableFor: [
       "抗皺緊緻",
+      "初老保養",
+      "彈力光澤",
+      "肌光緊緻速妍系列"
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
@@ -1980,53 +1985,61 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   22: {
     cardName: "肌光緊緻速妍精華露",
-    cardSubtitle: "肌光緊緻速妍系列・肌光緊緻速妍系列",
-    spec: "肌光緊緻速妍系列",
-    intro: "肌光緊緻速妍精華露為肌光緊緻速妍系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "30mL・肌光緊緻速妍系列",
+    spec: "30mL / 瓶",
+    intro: "高濃縮加強型緊緻精華，適合局部細紋、鬆弛與熬夜疲憊肌，幫助密集修護老態感。",
     features: [
-      "適合作為日常保養中的加強型品項。",
-      "可依需求搭配化妝水與乳霜使用。",
-      "適合想加強特定保養需求的客人。",
+      "加強型精華品項，密集補充緊緻修護能量。",
+      "可搭配雪膚液與霜，封存保養活性。",
+      "適合細紋、鬆弛與熟齡修護需求。"
     ],
     suitableFor: [
       "抗皺緊緻",
+      "局部細紋",
+      "熟齡修護",
+      "熬夜疲憊肌"
     ],
-    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
+    usage: "化妝水後取適量塗抹全臉，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   23: {
     cardName: "肌光緊緻速妍霜",
-    cardSubtitle: "肌光緊緻速妍系列・肌光緊緻速妍系列",
-    spec: "肌光緊緻速妍系列",
-    intro: "肌光緊緻速妍霜為肌光緊緻速妍系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "50mL・肌光緊緻速妍系列",
+    spec: "50mL / 瓶",
+    intro: "滋潤細緻的緊緻修護霜，適合保養後段使用，幫助鎖住水分與滋養，維持澎彈立體感。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "保養最後步驟，長效潤澤並鎖住前序保養。",
+      "適合搭配雪膚液與精華露加強抗皺修護。",
+      "支援乾燥、彈力不足與熟齡肌日常保養。"
     ],
     suitableFor: [
       "抗皺緊緻",
+      "長效潤澤",
+      "熟齡肌",
+      "乾燥缺水"
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
+    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   24: {
     cardName: "肌光緊緻速妍面膜",
-    cardSubtitle: "肌光緊緻速妍系列・肌光緊緻速妍系列",
-    spec: "肌光緊緻速妍系列",
-    intro: "肌光緊緻速妍面膜為肌光緊緻速妍系列集中保養品項，適合依膚況加強日常保養。",
+    cardSubtitle: "單片 / 盒裝・肌光緊緻速妍系列",
+    spec: "單片 / 盒裝",
+    intro: "集中型緊緻修護面膜，適合約會前、熬夜後或需要快速加強保養時使用。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "特殊場合與急救保養時的集中修護。",
+      "敷後幫助肌膚維持水亮、潤澤與彈力感。",
+      "可搭配同系列日常保養維持緊緻光澤。"
     ],
     suitableFor: [
       "抗皺緊緻",
       "面膜保養",
+      "約會前",
+      "熬夜後"
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
@@ -2035,16 +2048,19 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   25: {
     cardName: "INSK乳酸平衡機能水",
-    cardSubtitle: "INSK乳酸平衡系列・INSK乳酸平衡系列",
-    spec: "INSK乳酸平衡系列",
-    intro: "INSK乳酸平衡機能水為INSK乳酸平衡系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "150mL・INSK乳酸平衡系列",
+    spec: "150mL / 瓶",
+    intro: "INSK乳酸平衡機能水是洗臉後的關鍵第一步，幫助溫和調理肌膚表層，維持健康菌叢與油水平衡。",
     features: [
-      "適合清潔後作為保養前導使用。",
-      "可依膚況搭配同系列精華、乳液或乳霜。",
-      "協助建立日常保養基礎步驟。",
+      "清潔後作為保養前導，幫助平衡肌膚環境。",
+      "可搭配同系列精華、乳液或乳霜，層層加乘。",
+      "建立日常保養基礎步驟，提升肌膚自我防禦力。"
     ],
     suitableFor: [
       "INSK乳酸平衡系列",
+      "外油內乾",
+      "油水平衡",
+      "不穩定膚況"
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
@@ -2053,16 +2069,19 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   26: {
     cardName: "INSK乳酸平衡修護乳",
-    cardSubtitle: "INSK乳酸平衡系列・INSK乳酸平衡系列",
-    spec: "INSK乳酸平衡系列",
-    intro: "INSK乳酸平衡修護乳為INSK乳酸平衡系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "100mL・INSK乳酸平衡系列",
+    spec: "100mL / 瓶",
+    intro: "質地輕盈好吸收的乳酸平衡修護乳，深度滋潤並修護肌膚水脂膜，長效鎖水、告別粗糙紊亂。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "保養程序後段使用，幫助維持肌膚潤澤度。",
+      "可搭配同系列化妝水或精華，加強鎖水屏障。",
+      "適合日常保濕、修護與平衡滋潤需求。"
     ],
     suitableFor: [
       "INSK乳酸平衡系列",
+      "乾燥缺水",
+      "油水平衡",
+      "外油內乾"
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
@@ -2071,77 +2090,87 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   27: {
     cardName: "BA-5肌密抗皺精華",
-    cardSubtitle: "BA-5肌密抗皺系列・BA-5肌密抗皺系列",
-    spec: "BA-5肌密抗皺系列",
-    intro: "BA-5肌密抗皺精華為BA-5肌密抗皺系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "30mL・BA-5肌密抗皺系列",
+    spec: "30mL / 瓶",
+    intro: "高階密集抗皺精華，質地細緻高滲透，針對細紋、乾紋與熟齡肌膚進行深度修護。",
     features: [
-      "適合作為日常保養中的加強型品項。",
-      "可依需求搭配化妝水與乳霜使用。",
-      "適合想加強特定保養需求的客人。",
+      "日常保養中的加強型精華，密集補充抗老能量。",
+      "可搭配同系列化妝水與抗皺霜，層層封存營養。",
+      "適合特定抗皺、淡化細紋與極致修護需求。"
     ],
     suitableFor: [
       "抗皺緊緻",
+      "熟齡肌",
+      "初老細紋",
+      "高階保養"
     ],
-    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
+    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或抗皺霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   28: {
     cardName: "BA-5肌密抗皺霜",
-    cardSubtitle: "BA-5肌密抗皺系列・BA-5肌密抗皺系列",
-    spec: "BA-5肌密抗皺系列",
-    intro: "BA-5肌密抗皺霜為BA-5肌密抗皺系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "50mL・BA-5肌密抗皺系列",
+    spec: "50mL / 瓶",
+    intro: "奢華豐潤抗皺霜，作為保養最後一道鎖水修護防線，幫助封存抗老成分與滋養。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "保養程序最後步驟使用，維持長效潤澤。",
+      "搭配同系列化妝水或精華，帶來深層滋養與撫紋修護。",
+      "適合高階保濕、密集修護與深度抗老保養。"
     ],
     suitableFor: [
       "抗皺緊緻",
+      "極度乾燥",
+      "熟齡肌",
+      "夜間鎖水"
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
+    usage: "化妝水與精華液後，取適量均勻塗抹於臉部與頸部肌膚，並以指腹按摩至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   29: {
-    cardName: "龍血頭皮修護洗髮精",
-    cardSubtitle: "龍血洗髮沐浴系列，可搭配活動組合・洗沐系列",
-    spec: "龍血洗髮沐浴系列，可搭配活動組合",
-    intro: "龍血求麗頭皮修護洗髮精為洗沐系列日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardName: "龍血求麗頭皮修護洗髮精",
+    cardSubtitle: "500mL・龍血洗沐髮品",
+    spec: "500mL / 瓶",
+    intro: "沙龍級頭皮能量系洗髮精，採用秘魯龍血樹脂與 0 矽靈配方，深層潔淨並修護頭皮，幫助改善髮根扁塌。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 小幫手確認為準。",
+      "0 矽靈配方，洗後蓬鬆不厚重。",
+      "龍血修護概念，幫助頭皮與髮根維持健康狀態。",
+      "搭配自然精油草本香氣，洗後柔順有光澤。"
     ],
     suitableFor: [
-      "洗沐",
-      "洗沐系列",
+      "頭皮修護",
+      "髮根扁塌",
+      "乾枯受損髮",
+      "任選3瓶1100"
     ],
-    usage: "取適量於濕髮或身體肌膚，搓揉清潔後以清水洗淨。",
+    usage: "取適量洗髮精於濕髮與頭皮，按摩起泡後以清水沖洗；可視需求重複清潔一次。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
+    priceNote: "單瓶產地價 $590；同系列可搭配任選 3 瓶 $1,100 活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
   30: {
-    cardName: "龍血潤澤修護沐浴乳",
-    cardSubtitle: "龍血洗髮沐浴系列，可搭配活動組合・洗沐系列",
-    spec: "龍血洗髮沐浴系列，可搭配活動組合",
-    intro: "龍血求麗潤澤修護沐浴乳為洗沐系列日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardName: "龍血求麗潤澤修護沐浴乳",
+    cardSubtitle: "500mL・龍血洗沐髮品",
+    spec: "500mL / 瓶",
+    intro: "主打肌質養潤的龍血沐浴乳，結合秘魯龍血樹脂與多重植萃，洗後肌膚水潤柔嫩、不緊繃。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 小幫手確認為準。",
+      "龍血修護概念，洗淨同時維持肌膚柔嫩。",
+      "燕麥、洋甘菊等舒緩植萃，適合乾燥粗糙肌日常使用。",
+      "水潤滑順不緊繃，搭配精油香氛提升沐浴感。"
     ],
     suitableFor: [
-      "洗沐",
-      "洗沐系列",
+      "乾燥粗糙",
+      "水潤不緊繃",
+      "沐浴乳",
+      "任選3瓶1100"
     ],
-    usage: "取適量於濕髮或身體肌膚，搓揉清潔後以清水洗淨。",
+    usage: "取適量沐浴乳於濕潤肌膚或沐浴球，搓揉起泡後按摩全身，再以清水沖洗。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
+    priceNote: "單瓶產地價 $590；同系列可搭配任選 3 瓶 $1,100 活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
   31: {
     cardName: "純淨洗髮精",
@@ -2184,33 +2213,39 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   33: {
     cardName: "INSK乳酸淨痘修護膠",
     cardSubtitle: "15mL・INSK乳酸平衡系列",
-    spec: "15mL",
-    intro: "INSK乳酸淨痘修護膠為INSK乳酸平衡系列保養品項，可依日常膚況與保養需求搭配使用。",
+    spec: "15mL / 支",
+    intro: "針對局部瑕疵與不安定膚況設計，溫和調理毛孔、安撫粉刺與痘痘問題，是隨身控油修護好物。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "保養程序後段使用，針對局部瑕疵密集調理。",
+      "可搭配同系列化妝水或精華，維持全臉油水平衡。",
+      "適合局部保濕、控油、修護與面皰保養需求。"
     ],
     suitableFor: [
-      "INSK乳酸平衡系列",
+      "油性毛孔",
+      "粉刺痘痘",
+      "控油調理",
+      "INSK乳酸平衡系列"
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
+    usage: "化妝水與精華後，取適量局部塗抹於臉部瑕疵或易出油部位。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   34: {
     cardName: "INSK乳酸平衡水嫩膜",
-    cardSubtitle: "23mL x 6片 / 盒・INSK乳酸平衡系列",
+    cardSubtitle: "23mL x 6片・INSK乳酸平衡系列",
     spec: "23mL x 6片 / 盒",
-    intro: "INSK乳酸平衡水嫩膜為INSK乳酸平衡系列集中保養品項，適合依膚況加強日常保養。",
+    intro: "集中型乳酸平衡水嫩膜，適合乾燥缺水與膚況不穩時加強保養，快速補水並回復透亮。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "日常保養或急救保養時搭配使用。",
+      "幫助補充水分、舒緩與平衡不穩定膚況。",
+      "敷臉後再搭配日常保養程序，維持潤澤感。"
     ],
     suitableFor: [
       "面膜保養",
+      "乾燥缺水",
+      "不穩定膚況",
+      "INSK乳酸平衡系列"
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
@@ -2218,40 +2253,46 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   35: {
-    cardName: "薰衣草舒緩牙膏",
+    cardName: "薰衣草齒齦保健牙膏",
     cardSubtitle: "120g・牙膏",
-    spec: "120g",
-    intro: "齒齦保健薰衣草舒緩牙膏為牙膏日常用品，適合搭配日常清潔、保養或香氛使用。",
+    spec: "120g / 支",
+    intro: "薰衣草齒齦保健牙膏，添加薰衣草植萃香氣，溫和清潔牙齒與牙齦邊緣，適合喜歡草本香氛與夜間舒緩潔牙的人。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 小幫手確認為準。",
+      "薰衣草精油草本調理，帶來溫和口腔舒適感。",
+      "泡沫細緻，協助維護牙齒與牙齦健康。",
+      "天然薰衣草氣息，刷牙同時維持口氣怡人。"
     ],
     suitableFor: [
-      "牙膏",
+      "口腔清潔",
+      "齒齦保健",
+      "薰衣草香氣",
+      "夜間潔牙"
     ],
-    usage: "取適量刷牙使用，使用後請以清水漱口。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "每天至少刷牙兩次，取適量牙膏於牙刷上，輕柔刷洗牙齒與牙齦邊緣，最後以清水徹底漱口吐出。",
+    notice: "請配合正確刷牙習慣。不可吞食，刷牙後應徹底漱口吐出。若不慎出現敏感不適，請暫停使用並諮詢牙醫師。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
+    priceNote: "可搭配齒齦保健牙膏任選活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
   36: {
-    cardName: "龍血修護牙膏",
-    cardSubtitle: "120g / 單支・牙膏",
-    spec: "120g / 單支",
-    intro: "齒齦保健龍血修護牙膏為牙膏日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardName: "龍血齒齦保健牙膏",
+    cardSubtitle: "120g・牙膏",
+    spec: "120g / 支",
+    intro: "龍血齒齦保健牙膏，將秘魯龍血樹脂調理概念融入日常潔牙，幫助溫和清潔牙齒與齒縫，維持牙齦健康與清新口氣。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 小幫手確認為準。",
+      "秘魯龍血調理概念，溫和呵護牙齦與口腔環境。",
+      "協助維持日常口腔清潔與牙齦健康。",
+      "溫和潔淨不刺激，刷後維持乾淨舒爽。"
     ],
     suitableFor: [
-      "牙膏",
+      "口腔清潔",
+      "齒齦保健",
+      "龍血牙膏",
+      "清新口氣"
     ],
-    usage: "取適量刷牙使用，使用後請以清水漱口。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "每天至少刷牙兩次，每次 2–3 分鐘；取適量牙膏於牙刷上仔細刷洗牙齒各面，最後以清水徹底漱口吐出。",
+    notice: "請配合正確刷牙習慣。不可吞食，刷牙後應徹底漱口吐出。6 歲以下孩童使用量約綠豆大小，需成人在旁指導。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
+    priceNote: "可搭配齒齦保健牙膏任選活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
   37: {
     cardName: "智慧之冠",
@@ -2481,18 +2522,21 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   49: {
     cardName: "茶樹K痘精華",
-    cardSubtitle: "8mL / 盒・茶樹控油系列",
+    cardSubtitle: "8mL・茶樹控油系列",
     spec: "8mL / 盒",
-    intro: "茶樹K痘精華為茶樹控油系列保養品項，可依日常膚況與保養需求搭配使用。",
+    intro: "高濃縮茶樹局部精華，針對局部出油、粗大毛孔與不安定油脂肌膚進行重點平衡調理。",
     features: [
-      "適合作為日常保養中的加強型品項。",
-      "可依需求搭配化妝水與乳霜使用。",
-      "適合想加強特定保養需求的客人。",
+      "日常控油保養中的局部加強品項。",
+      "可搭配茶樹化妝水與保濕乳，形成完整控油流程。",
+      "適合特定皮脂粗糙、毛孔油光與面皰瑕疵需求。"
     ],
     suitableFor: [
       "油性毛孔",
+      "粉刺痘痘",
+      "局部控油",
+      "茶樹控油系列"
     ],
-    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
+    usage: "化妝水後取適量點塗於局部出油或面皰瑕疵部位，再依需求搭配乳液。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -2500,15 +2544,18 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   50: {
     cardName: "茶樹控油化妝水",
     cardSubtitle: "150mL・茶樹控油系列",
-    spec: "150mL",
-    intro: "茶樹控油化妝水為茶樹控油系列保養品項，可依日常膚況與保養需求搭配使用。",
+    spec: "150mL / 瓶",
+    intro: "清潔後的控油第一步，質地清爽如水，幫助安撫油性肌膚、清透毛孔並建立控油基礎。",
     features: [
-      "適合清潔後作為保養前導使用。",
-      "可依膚況搭配同系列精華、乳液或乳霜。",
-      "協助建立日常保養基礎步驟。",
+      "洗臉清潔後作為皮脂調理前導補水。",
+      "可搭配同系列精華與控油保濕乳，使流程完整。",
+      "建立日常控油基礎步驟，揮別油光滿面。"
     ],
     suitableFor: [
       "油性毛孔",
+      "混合偏油",
+      "熬夜出油",
+      "粉刺粗糙"
     ],
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
@@ -2518,16 +2565,18 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   51: {
     cardName: "茶樹控油保濕乳",
     cardSubtitle: "100mL・茶樹控油系列",
-    spec: "100mL",
-    intro: "茶樹控油保濕乳為茶樹控油系列保養品項，可依日常膚況與保養需求搭配使用。",
+    spec: "100mL / 瓶",
+    intro: "清爽不悶厚的控油保濕乳，補水同時維持油水平衡，讓肌膚維持乾淨不黏膩的清爽膚觸。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "保養程序最後階段使用，封存水分並控油潤澤。",
+      "可搭配化妝水或 K 痘精華，強化水脂防禦網。",
+      "適合日常保濕、調理油光與舒緩修護。"
     ],
     suitableFor: [
       "乾燥缺水",
       "油性毛孔",
+      "外油內乾",
+      "季節皮脂不穩"
     ],
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
@@ -2576,152 +2625,169 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "買一送一，依通路活動為準。實際活動、庫存與最終金額依 LINE 小幫手確認。",
   },
   54: {
-    cardName: "龍血卸妝油",
+    cardName: "龍血求麗卸妝油",
     cardSubtitle: "150mL・龍血系列",
-    spec: "150mL",
-    intro: "龍血求麗卸妝油為龍血系列清潔保養品項，適合日常清潔與保養前使用。",
+    spec: "150mL / 瓶",
+    intro: "龍血系列卸妝油，輕盈高親膚質地能快速溶解彩妝、防曬與毛孔髒污，遇水迅速乳化、好沖洗。",
     features: [
-      "適合日常清潔、卸妝或保養前的潔膚步驟。",
-      "可依膚況搭配同系列保養品使用。",
-      "洗卸清潔後再進行後續保養，保養流程更完整。",
+      "柔滑好推勻，能包覆並溶解頑固彩妝與防曬。",
+      "溫和潔膚，卸妝同時維持肌膚水潤舒適。",
+      "乳化快速、洗後不留厚重殘留感，可搭配龍血潔顏慕絲。"
     ],
     suitableFor: [
       "清潔卸妝",
+      "毛孔潔淨",
+      "卸後不緊繃",
+      "龍血系列"
     ],
-    usage: "取適量於乾手或依商品標示方式使用，輕柔按摩後再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "保持雙手及臉部乾燥，取適量卸妝油按摩全臉；加少量清水乳化變白後，以清水徹底沖洗。",
+    notice: "使用後若有不適，請暫停使用。請避免直接接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   55: {
-    cardName: "龍血潔顏慕絲",
-    cardSubtitle: "150mL・溫和潔淨・洗後清爽",
-    spec: "150mL",
-    intro: "龍血求麗潔顏慕絲為龍血系列清潔品項，適合日常潔顏與保養前清潔使用。",
+    cardName: "龍血求麗潔顏慕絲",
+    cardSubtitle: "150mL・龍血系列",
+    spec: "150mL / 瓶",
+    intro: "龍血系列潔顏慕絲，細緻綿密泡泡溫和帶走毛孔髒污與多餘皮脂，洗後不緊繃、不乾澀。",
     features: [
-      "細緻慕絲質地，溫和帶走肌膚髒污。",
-      "適合日常清潔與保養前的潔顏步驟。",
-      "可與龍血卸妝油搭配，作為洗卸清潔組合。",
+      "免手動搓泡，超微米泡泡溫和包覆髒污。",
+      "日常潔顏與保養前清潔使用，為後續保養打好基礎。",
+      "溫和潔淨不傷肌膚屏障，可與龍血卸妝油搭配雙重清潔。"
     ],
     suitableFor: [
       "清潔卸妝",
-      "日常潔顏",
+      "洗後不緊繃",
       "龍血系列",
+      "日常潔顏"
     ],
-    usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
+    usage: "每日早晚打濕臉部後，按壓適量慕絲於掌心，均勻塗抹全臉並輕柔按摩，再以清水洗淨。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請立即以大量清水沖洗。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "若有組合價活動，客服會協助確認最適合的優惠方案。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   56: {
-    cardName: "水搖滾保濕面膜",
-    cardSubtitle: "22mL x 5pcs・龍血系列",
-    spec: "22mL x 5pcs",
-    intro: "水搖滾保濕面膜為龍血系列集中保養品項，適合依膚況加強日常保養。",
+    cardName: "水搖滾保濕面膜 (5片裝)",
+    cardSubtitle: "22mL x 5pcs・保濕面膜",
+    spec: "22mL x 5pcs / 盒",
+    intro: "明星保濕面膜，滿載澎湃保濕精華，快速浸潤乾燥缺水肌，適合日常補水、熬夜後急救與集中保養。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "長效爆水續航力，適合日常基礎保養或急救補水。",
+      "高持水面膜剪裁，快速補足肌膚日常保濕需求。",
+      "敷臉後搭配乳液或乳霜，封存透亮水光感。"
     ],
     suitableFor: [
       "乾燥缺水",
+      "外油內乾",
       "面膜保養",
+      "龍血系列"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後取出面膜並撕下外層襯膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   57: {
-    cardName: "水搖滾保濕面膜",
-    cardSubtitle: "22mL x 10pcs・龍血系列",
-    spec: "22mL x 10pcs",
-    intro: "水搖滾保濕面膜為龍血系列集中保養品項，適合依膚況加強日常保養。",
+    cardName: "水搖滾保濕面膜 (10片裝)",
+    cardSubtitle: "22mL x 10pcs・保濕面膜",
+    spec: "22mL x 10pcs / 盒",
+    intro: "明星保濕面膜 10 片裝，適合日常補水、熬夜後急救與集中保養。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "長效爆水續航力，適合日常基礎保養或急救補水。",
+      "高持水面膜剪裁，快速補足肌膚日常保濕需求。",
+      "敷臉後搭配乳液或乳霜，封存透亮水光感。"
     ],
     suitableFor: [
       "乾燥缺水",
+      "外油內乾",
       "面膜保養",
+      "龍血系列"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後取出面膜並撕下外層襯膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   58: {
-    cardName: "水搖滾保濕面膜",
-    cardSubtitle: "22mL x 35pcs・龍血系列",
-    spec: "22mL x 35pcs",
-    intro: "水搖滾保濕面膜為龍血系列集中保養品項，適合依膚況加強日常保養。",
+    cardName: "水搖滾保濕面膜 (35片桶裝)",
+    cardSubtitle: "22mL x 35pcs・保濕面膜",
+    spec: "22mL x 35pcs / 桶",
+    intro: "明星保濕面膜大容量桶裝，適合長期日常補水、乾燥缺水與面膜集中保養。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "長效爆水續航力，適合日常基礎保養或急救補水。",
+      "35 片大容量，適合固定敷臉與家庭回購。",
+      "敷臉後搭配乳液或乳霜，封存透亮水光感。"
     ],
     suitableFor: [
       "乾燥缺水",
+      "外油內乾",
       "面膜保養",
+      "大容量桶裝"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後取出面膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   59: {
-    cardName: "極光白美白面膜",
-    cardSubtitle: "x 5pcs・龍血系列",
-    spec: "x 5pcs",
-    intro: "極光白美白面膜為龍血系列集中保養品項，適合依膚況加強日常保養。",
+    cardName: "極光白美白面膜 (5片裝)",
+    cardSubtitle: "5pcs・亮白面膜",
+    spec: "5pcs / 盒",
+    intro: "集中亮白面膜，適合膚色不均、熬夜暗沉與蠟黃肌膚加強保養，敷後維持透亮水嫩光澤。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "密集勻亮去暗沉，適合日常亮白特別調理。",
+      "集中注入亮白保養精華，改善疲憊膚色。",
+      "敷後搭配日常保養，維持柔嫩、透亮與妝前服貼感。"
     ],
     suitableFor: [
       "美白淡斑",
-      "面膜保養",
+      "膚色不均",
+      "熬夜暗沉",
+      "面膜保養"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後取出面膜，均勻平整敷於全臉；依標示時間取下後，輕拍幫助吸收，再進行鎖水保養。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   60: {
-    cardName: "極光白美白面膜",
-    cardSubtitle: "x 35pcs・龍血系列",
-    spec: "x 35pcs",
-    intro: "極光白美白面膜為龍血系列集中保養品項，適合依膚況加強日常保養。",
+    cardName: "極光白美白面膜 (35片桶裝)",
+    cardSubtitle: "35pcs・亮白面膜",
+    spec: "35pcs / 桶",
+    intro: "集中亮白面膜大容量桶裝，適合膚色不均、熬夜暗沉與日常亮白集中保養。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "密集勻亮去暗沉，適合日常亮白特別調理。",
+      "35 片大容量，適合長期固定亮白保養。",
+      "敷後搭配日常保養，維持柔嫩、透亮與妝前服貼感。"
     ],
     suitableFor: [
       "美白淡斑",
-      "面膜保養",
+      "膚色不均",
+      "熬夜暗沉",
+      "大容量桶裝"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後取出面膜，均勻平整敷於全臉；依標示時間取下後，輕拍幫助吸收，再進行鎖水保養。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   61: {
     cardName: "水光肌能化妝水",
-    cardSubtitle: "140mL・水光肌能系列",
-    spec: "140mL",
-    intro: "水光肌能化妝水為水光肌能系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "130mL・水光肌能系列",
+    spec: "130mL / 瓶",
+    intro: "水光肌能化妝水是洗臉後的補水前導第一步，幫助溫和浸潤角質層，為後續精華與乳液打開水合通道。",
     features: [
-      "適合清潔後作為保養前導使用。",
-      "可依膚況搭配同系列精華、乳液或乳霜。",
-      "協助建立日常保養基礎步驟。",
+      "復活草保濕複方，幫助肌膚維持長時間水潤。",
+      "洗臉後作為第一道前導補水，提升後續保養延展與吸收感。",
+      "適合換季乾燥、粗糙暗沉或環境壓力造成的不穩膚況。"
     ],
     suitableFor: [
       "乾燥缺水",
+      "換季乾燥",
+      "粗糙暗沉",
+      "水光肌能系列"
     ],
-    usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
+    usage: "早晚清潔後，取適量於掌心或化妝棉，輕拍或擦拭於臉部與頸部至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -2729,17 +2795,20 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   62: {
     cardName: "水光肌能乳液",
     cardSubtitle: "130mL・水光肌能系列",
-    spec: "130mL",
-    intro: "水光肌能乳液為水光肌能系列保養品項，可依日常膚況與保養需求搭配使用。",
+    spec: "130mL / 瓶",
+    intro: "水光肌能乳液主打清爽鎖水與水屏障保養，補充水分同時封存潤澤，讓肌膚維持柔嫩彈潤。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "Double 保濕水屏障，補水並減少乾燥流失。",
+      "質地清爽好推，適合日常油水平衡與保濕修護。",
+      "可搭配同系列化妝水與晚霜，完成水光保養流程。"
     ],
     suitableFor: [
       "乾燥缺水",
+      "外油內乾",
+      "換季修護",
+      "水光肌能系列"
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
+    usage: "化妝水或精華後，取適量均勻塗抹於臉部與頸部，按摩至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -2747,17 +2816,20 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   63: {
     cardName: "水光肌能晚霜",
     cardSubtitle: "50mL・水光肌能系列",
-    spec: "50mL",
-    intro: "水光肌能晚霜為水光肌能系列保養品項，可依日常膚況與保養需求搭配使用。",
+    spec: "50mL / 瓶",
+    intro: "水光肌能晚霜是夜間深度潤澤奇肌霜，適合乾燥、疲憊與粗糙肌在睡前加強鎖水修護。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "夜間鎖水保養，幫助肌膚醒來維持柔嫩光澤。",
+      "復活草保濕概念，支援乾燥細紋與疲憊膚況保養。",
+      "滋潤但不厚重，適合作為晚間保養最後一步。"
     ],
     suitableFor: [
       "乾燥缺水",
+      "夜間鎖水",
+      "乾燥細紋",
+      "水光肌能系列"
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
+    usage: "夜間於化妝水、精華或乳液後，取適量塗抹全臉與頸部並按摩至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -2783,18 +2855,20 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   65: {
     cardName: "冰河淨化潔顏慕絲",
     cardSubtitle: "150mL・冰河淨化系列",
-    spec: "150mL",
-    intro: "冰河淨化潔顏慕絲為冰河淨化系列清潔保養品項，適合日常清潔與保養前使用。",
+    spec: "150mL / 瓶",
+    intro: "冰河淨化系列清潔第一步，豐盈細緻慕絲溫和洗去多餘皮脂與環境髒污，洗後清爽柔嫩。",
     features: [
-      "適合日常清潔、卸妝或保養前的潔膚步驟。",
-      "可依膚況搭配同系列保養品使用。",
-      "洗卸清潔後再進行後續保養，保養流程更完整。",
+      "適合日常清潔、卸妝後或保養前潔膚步驟。",
+      "溫和慕絲質地，深層潔淨毛孔同時不傷肌膚屏障。",
+      "洗卸清潔後再保養，讓肌膚回到清爽潔淨狀態。"
     ],
     suitableFor: [
       "清潔卸妝",
       "油性毛孔",
+      "毛孔清潔",
+      "冰河淨化系列"
     ],
-    usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
+    usage: "取適量慕絲於掌心，在濕潤臉部輕柔按摩，再以清水徹底洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -2802,36 +2876,41 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   66: {
     cardName: "冰河淨化淨膚露",
     cardSubtitle: "120mL・冰河淨化系列",
-    spec: "120mL",
-    intro: "冰河淨化淨膚露為冰河淨化系列保養品項，可依日常膚況與保養需求搭配使用。",
+    spec: "120mL / 瓶",
+    intro: "清透高滲透質地，洗臉後迅速浸潤角質，調理老廢皮脂、平衡出油並收斂毛孔。",
     features: [
-      "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
-      "商品優惠與庫存依客服確認為準。",
+      "清潔後作為保養前導，溫和淨化多餘角質。",
+      "可搭配同系列精華、乳液或霜，建立完整淨化保養。",
+      "維持臉部澄淨不泛油光。"
     ],
     suitableFor: [
       "油性毛孔",
+      "油水平衡",
+      "粗糙肌",
+      "冰河淨化系列"
     ],
-    usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
+    usage: "清潔後取適量於掌心或化妝棉，輕拍或均勻擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   67: {
     cardName: "冰河淨化柔膚面膜",
-    cardSubtitle: "100mL・冰河淨化系列",
-    spec: "100mL",
-    intro: "【新品】冰河淨化柔膚面膜為冰河淨化系列集中保養品項，適合依膚況加強日常保養。",
+    cardSubtitle: "100mL・水洗泥膜",
+    spec: "100mL / 瓶",
+    intro: "水洗式冰河淨化泥膜，富含高礦物質淨化因子，幫助吸附毛孔髒污與多餘油脂，重塑平滑透亮膚質。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "適合特別保養或深層淨化髒污時使用。",
+      "泥膜調理可溫和舒緩，同步補足保濕修護需求。",
+      "水洗後搭配日常保養，維持細緻潤澤感。"
     ],
     suitableFor: [
       "油性毛孔",
+      "毛孔粗大",
       "面膜保養",
+      "深層淨化"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後，避開眼唇均勻塗抹全臉，依標示時間靜置後以清水溫和洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -2839,36 +2918,41 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   68: {
     cardName: "晶淬雪潤白乳",
     cardSubtitle: "100mL・晶淬雪系列",
-    spec: "100mL",
-    intro: "晶淬雪潤白乳為晶淬雪系列保養品項，可依日常膚況與保養需求搭配使用。",
+    spec: "100mL / 瓶",
+    intro: "主打亮白與高保濕的晶淬雪潤白乳，質地絲滑清爽，幫助改善暗沉、膚色不均與乾燥粗糙。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "添加傳明酸與多重亮白複方，支援膚色均勻保養。",
+      "拉絲精華質地清爽好吸收，為乾燥肌建立持水保護膜。",
+      "亮白同時兼顧高保濕，適合日常早晚使用。"
     ],
     suitableFor: [
       "美白淡斑",
+      "膚色不均",
+      "暗沉蠟黃",
+      "乾燥缺水"
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "每日早晚於化妝水與精華後，取適量塗抹於全臉及頸部，輕拍至吸收。",
+    notice: "含天然植物萃取與精油成分，色澤或氣味隨時間變化屬正常現象。若使用後不適請暫停使用，並置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   69: {
     cardName: "鳳梨酵素代謝角質凝露",
     cardSubtitle: "120g・鳳梨酵素系列",
-    spec: "120g",
-    intro: "鳳梨酵素代謝角質凝露為鳳梨酵素系列保養品項，可依日常膚況與保養需求搭配使用。",
+    spec: "120g / 瓶",
+    intro: "溫和代謝老廢角質的鳳梨酵素凝露，改善角質堆積造成的粗糙、暗沉與吸收感不佳。",
     features: [
-      "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
-      "商品優惠與庫存依客服確認為準。",
+      "運用鳳梨酵素溫和分解肌膚表層髒污與粗糙角質。",
+      "定期調理角質，平滑肌膚紋理並提升透亮感。",
+      "清爽凝露質地好推勻，幫助後續精華與面膜更好吸收。"
     ],
     suitableFor: [
       "清潔卸妝",
-      "油性毛孔",
+      "暗沉粗糙",
+      "保養吸收不佳",
+      "鳳梨酵素系列"
     ],
-    usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
+    usage: "卸妝清潔後擦乾臉部，避開眼唇塗抹並輕柔畫圈按摩至出屑，再以清水洗淨；建議每週 1–2 次。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -2876,98 +2960,86 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   70: {
     cardName: "鳳梨酵素活膚面膜",
     cardSubtitle: "22mL x 5pcs・鳳梨酵素系列",
-    spec: "22mL x 5pcs",
-    intro: "鳳梨酵素活膚面膜為鳳梨酵素系列集中保養品項，適合依膚況加強日常保養。",
+    spec: "22mL x 5pcs / 盒",
+    intro: "集中型鳳梨酵素活膚面膜，適合暗沉、疲憊與粗糙肌膚加強保養，快速補水並提升透亮細緻感。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "酵素活膚密集調理，適合亮白、嫩膚與平滑膚觸需求。",
+      "集中注入水嫩精華，補足保濕與修護需求。",
+      "敷臉後搭配乳液或乳霜，延續光滑澎潤感。"
     ],
     suitableFor: [
-      "油性毛孔",
       "面膜保養",
+      "暗沉粗糙",
+      "透亮保養",
+      "鳳梨酵素系列"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "清潔後取出面膜敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收，再進行鎖水保養。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   71: {
-    cardName: "櫻の雪潔顏慕絲",
-    cardSubtitle: "150mL・溫和潔淨・亮白前導",
-    spec: "150mL",
-    intro: "櫻の雪淨白潔顏慕絲為櫻の雪傳明酸美白系列潔顏品，適合作為亮白保養前的清潔步驟。",
+    cardName: "櫻の雪淨白潔顏慕絲",
+    cardSubtitle: "150mL・櫻の雪系列",
+    spec: "150mL / 瓶",
+    intro: "櫻の雪美白保養第一步，細緻綿密慕絲泡泡溫和帶走皮脂髒污與老廢角質，洗後水嫩透亮不乾澀。",
     features: [
-      "細緻慕絲質地，溫和帶走肌膚髒污。",
-      "適合日常清潔與亮白保養前使用。",
-      "洗後膚觸清爽，適合搭配櫻の雪系列保養。",
+      "綿密慕絲泡泡免搓泡，輕柔包覆髒污。",
+      "日常亮白前導潔顏，洗臉同時維持清爽透亮感。",
+      "溫和配方不傷屏障，為後續美白保養鋪路。"
     ],
     suitableFor: [
       "清潔卸妝",
       "美白淡斑",
-      "日常潔顏",
+      "洗後不緊繃",
+      "櫻の雪系列"
     ],
-    usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "實際優惠依 LINE 小幫手確認為準。",
-  },
-  72: {
-    cardName: "櫻の雪美白化妝水",
-    cardSubtitle: "150mL・櫻の雪傳明酸美白系列",
-    spec: "150mL",
-    intro: "櫻の雪傳明酸美白化妝水為櫻の雪傳明酸美白系列保養品項，可依日常膚況與保養需求搭配使用。",
-    features: [
-      "適合清潔後作為保養前導使用。",
-      "可依膚況搭配同系列精華、乳液或乳霜。",
-      "協助建立日常保養基礎步驟。",
-    ],
-    suitableFor: [
-      "美白淡斑",
-    ],
-    usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
+    usage: "取適量慕絲於掌心，在濕潤臉部輕柔按摩，再以清水徹底洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },  141: {
-    cardName: "櫻の雪美白精華液",
-    cardSubtitle: "30mL・櫻の雪傳明酸美白系列",
-    spec: "30mL",
-    intro: "櫻の雪傳明酸美白精華液為亮白保養加強型品項，可搭配同系列化妝水與乳液使用。",
+  },
+  72: {
+    cardName: "櫻の雪傳明酸美白化妝水",
+    cardSubtitle: "150mL・櫻の雪系列",
+    spec: "150mL / 瓶",
+    intro: "洗臉後的亮白前導化妝水，水感輕盈好吸收，補充亮白水分並打開後續美白吸收通道。",
     features: [
-      "適合作為日常亮白保養中的精華步驟。",
-      "可搭配櫻の雪傳明酸美白化妝水與乳液使用。",
-      "亦可搭配精華液 + 乳液贈化妝水組合活動。",
+      "清潔後前導使用，迅速浸潤角質層。",
+      "傳明酸亮白保養概念，調理蠟黃與暗沉。",
+      "可搭配同系列精華與乳液，讓亮白流程更完整。"
     ],
     suitableFor: [
       "美白淡斑",
-      "櫻の雪系列",
-      "組合優惠",
+      "膚色不均",
+      "暗沉蠟黃",
+      "櫻の雪系列"
     ],
-    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
+    usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部與頸部至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "可搭配櫻の雪美白組合；庫存與效期依 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   142: {
-    cardName: "櫻の雪美白乳液",
-    cardSubtitle: "100mL・櫻の雪傳明酸美白系列",
-    spec: "100mL",
-    intro: "櫻の雪傳明酸美白乳液為亮白保養中的保濕乳液步驟，可搭配同系列化妝水與精華液使用。",
+    cardName: "櫻の雪傳明酸美白乳液",
+    cardSubtitle: "100mL・櫻の雪系列",
+    spec: "100mL / 瓶",
+    intro: "櫻の雪美白乳液負責鎖住亮白保養，質地輕盈好推勻，兼顧保濕與亮白，維持水嫩透亮不黏膩。",
     features: [
-      "適合作為日常亮白保養中的乳液步驟。",
-      "可搭配櫻の雪傳明酸美白化妝水與精華液使用。",
-      "亦可搭配精華液 + 乳液贈化妝水組合活動。",
+      "保養程序後段使用，幫助鎖水補水。",
+      "傳明酸與滋潤因子雙效加成，亮白同時滋潤。",
+      "維持油水平衡，打造清爽亮白防護網。"
     ],
     suitableFor: [
       "美白淡斑",
-      "櫻の雪系列",
-      "組合優惠",
+      "乾燥缺水",
+      "膚色不均",
+      "櫻の雪系列"
     ],
-    usage: "精華液後取適量均勻塗抹於臉部與頸部。",
+    usage: "化妝水與精華液後，取適量均勻塗抹於臉部與頸部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "可搭配櫻の雪美白組合；庫存與效期依 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
 
   73: {
@@ -3010,161 +3082,171 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   75: {
     cardName: "櫻の雪亮澤護手霜",
-    cardSubtitle: "JDST 30g・價值 $290",
-    spec: "JDST 30g",
-    intro: "櫻の雪亮澤護手霜為日常手部保養品項，可搭配時光瑞亞淡香水組合活動。",
+    cardSubtitle: "50mL・護手霜",
+    spec: "50mL / 支",
+    intro: "亮澤護手霜，幫助手背暗沉、關節蠟黃與乾燥粗糙問題，質地快速吸收、不黏膩。",
     features: [
-      "30g 護手霜，適合日常手部保養。",
-      "可作為時光瑞亞淡香水組合活動搭配品。",
-      "商品效期與庫存依 LINE 小幫手確認為準。",
+      "亮澤精華注入，支援手部暗沉與斑點感保養。",
+      "密集修護頻繁洗手或做家事造成的乾荒。",
+      "絲滑不黏膩，抹後用手機或電腦也不厚重。"
     ],
     suitableFor: [
+      "手部暗沉",
+      "乾燥粗糙",
       "護手霜",
-      "香氛組合",
-      "組合優惠",
+      "亮澤保養"
     ],
-    usage: "取適量塗抹於手部肌膚，可依乾燥程度重複使用。",
+    usage: "洗手後或覺得雙手乾燥時，取適量塗抹雙手，按摩手背、手指與指緣至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "可搭配時光瑞亞淡香水組合活動；庫存與效期依 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-
   76: {
     cardName: "茶樹防禦護手霜",
-    cardSubtitle: "30mL・護手霜",
-    spec: "30mL",
-    intro: "茶樹防禦護手霜為護手霜日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardSubtitle: "50mL・護手霜",
+    spec: "50mL / 支",
+    intro: "茶樹精油系輕質護手霜，清爽不厚重，適合夏天、易流手汗或害怕護手霜黏膩感的人。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 小幫手確認為準。",
+      "茶樹精油清爽防護，為雙手建立清透保養感。",
+      "保濕補水同時拒絕油光，減少悶厚感。",
+      "適合夏天或容易流手汗者，無負擔持潤。"
     ],
     suitableFor: [
       "護手霜",
+      "茶樹香氣",
+      "易流手汗",
+      "清爽不黏"
     ],
-    usage: "取適量塗抹於手部肌膚，可依乾燥程度重複使用。",
+    usage: "取適量塗抹於清潔後雙手，順著肌理推開，並針對指緣粗糙處加強按摩。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   77: {
     cardName: "薰衣草舒緩護手霜",
-    cardSubtitle: "30mL・護手霜",
-    spec: "30mL",
-    intro: "薰衣草舒緩護手霜為護手霜日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardSubtitle: "50mL・護手霜",
+    spec: "50mL / 支",
+    intro: "薰衣草香氛護手霜，適合日間疲憊或睡前滋養，幫助粗糙乾燥雙手維持柔嫩、潤澤與放鬆感。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 小幫手確認為準。",
+      "薰衣草精華舒緩，安撫頻繁洗手造成的乾燥不適。",
+      "深度鎖水滋養，改善乾燥引起的乾紋感。",
+      "療癒薰衣草香氣，擦拭時同步放鬆思緒。"
     ],
     suitableFor: [
       "護手霜",
+      "乾燥缺水",
+      "夜間舒緩",
+      "薰衣草香氣"
     ],
-    usage: "取適量塗抹於手部肌膚，可依乾燥程度重複使用。",
+    usage: "取適量護手霜於雙手，雙掌搓揉溫熱後按摩手背與指緣至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   78: {
     cardName: "麝香棉花香氛護手霜",
-    cardSubtitle: "30g・護手霜",
-    spec: "30g",
-    intro: "麝香棉花香氛護手霜為護手霜日常用品，適合搭配日常清潔、保養或香氛使用。",
+    cardSubtitle: "50mL・護手霜",
+    spec: "50mL / 支",
+    intro: "白麝香與棉花香調的香氛護手霜，質地絲滑潤澤，幫助乾燥粗糙雙手維持柔嫩水潤。",
     features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 小幫手確認為準。",
+      "奢華絲滑觸感，滋潤但不膩。",
+      "建立日常水屏障，抵禦環境乾燥。",
+      "經典白麝香與棉花香，乾淨溫暖又療癒。"
     ],
     suitableFor: [
       "護手霜",
+      "白麝香",
+      "乾燥粗糙",
+      "香氛保養"
     ],
-    usage: "取適量塗抹於手部肌膚，可依乾燥程度重複使用。",
+    usage: "每日日常或雙手乾燥時，取適量均勻塗抹全手，並以指腹按摩至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   79: {
     cardName: "龍血玫瑰美膚皂",
-    cardSubtitle: "200g±10g・任選4款 $799",
-    spec: "200g±10g / 顆",
-    intro: "龍血玫瑰美膚皂為龍血手工皂品項，可搭配任選4款 $799 活動。",
+    cardSubtitle: "200g±10g・龍血手工皂",
+    spec: "200g±10g / 塊",
+    intro: "融合龍血樹脂修護力與玫瑰精華，泡沫細緻綿密，洗後肌膚水嫩柔滑，散發高雅玫瑰香氣。",
     features: [
-      "龍血手工皂系列，適合日常清潔使用。",
-      "可與其他龍血手工皂搭配任選4款活動。",
-      "任選4款 $799，庫存與效期依 LINE 小幫手確認為準。",
+      "龍血修護概念，潔淨同時維持肌膚屏障與持潤感。",
+      "玫瑰精華柔嫩勻亮，提升全身細緻光澤。",
+      "高親膚配方，洗後保濕持潤不緊繃。"
     ],
     suitableFor: [
-      "日常清潔",
       "肥皂",
-      "組合優惠",
+      "龍血熱賣",
+      "玫瑰香氛",
+      "乾燥缺水"
     ],
-    usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "將手工皂沾水搓揉出泡沫，塗抹全身並輕柔按摩，最後以清水沖洗。",
+    notice: "僅供外用，使用後若有不適請暫停使用。請避免接觸眼睛，並放置於陰涼通風處保持乾燥。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
+    priceNote: "可搭配龍血手工皂任選 4 款活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
-
   80: {
     cardName: "龍血艾草保庇皂",
-    cardSubtitle: "200g±10g・任選4款 $799",
-    spec: "200g±10g / 顆",
-    intro: "龍血艾草保庇皂為龍血手工皂品項，可搭配任選4款 $799 活動。",
+    cardSubtitle: "200g±10g・龍血手工皂",
+    spec: "200g±10g / 塊",
+    intro: "結合艾草萃取與龍血修護因子，洗後清新舒適，適合換季不穩、油脂分泌紊亂或喜歡草本香氣的人。",
     features: [
-      "龍血手工皂系列，適合日常清潔使用。",
-      "可與其他龍血手工皂搭配任選4款活動。",
-      "任選4款 $799，庫存與效期依 LINE 小幫手確認為準。",
+      "艾草萃取溫和調理，安撫換季不穩膚況。",
+      "龍血修護概念，維持洗後油水平衡。",
+      "天然草本氣息，沐浴時清新舒緩。"
     ],
     suitableFor: [
-      "日常清潔",
       "肥皂",
-      "組合優惠",
+      "草本舒緩",
+      "敏感舒緩",
+      "油性毛孔"
     ],
-    usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "將手工皂沾水搓揉出泡沫，塗抹全臉或身體並輕柔按摩，再以清水洗淨。",
+    notice: "僅供外用，使用後若有不適請暫停使用。請避免接觸眼睛，並放置於陰涼通風處保持乾燥。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
+    priceNote: "可搭配龍血手工皂任選 4 款活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
-
   81: {
     cardName: "龍血檸檬馬鞭草皂",
-    cardSubtitle: "200g±10g・任選4款 $799",
-    spec: "200g±10g / 顆",
-    intro: "龍血檸檬馬鞭草皂為龍血手工皂品項，可搭配任選4款 $799 活動。",
+    cardSubtitle: "200g±10g・龍血手工皂",
+    spec: "200g±10g / 塊",
+    intro: "檸檬馬鞭草植萃清爽潔淨多餘油光與毛孔髒污，搭配龍血保濕力，洗後乾淨清爽不乾澀。",
     features: [
-      "龍血手工皂系列，適合日常清潔使用。",
-      "可與其他龍血手工皂搭配任選4款活動。",
-      "任選4款 $799，庫存與效期依 LINE 小幫手確認為準。",
+      "檸檬馬鞭草沁爽控油，調理油光與粗糙。",
+      "極淨毛孔不留黏膩，迅速帶走油光。",
+      "龍血持潤不乾，清爽同時保留水潤感。"
     ],
     suitableFor: [
-      "日常清潔",
       "肥皂",
-      "組合優惠",
+      "清爽控油",
+      "油性毛孔",
+      "柑橘草本"
     ],
-    usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "將手工皂沾水起泡後塗抹全身，可針對易出油部位加強按摩，最後以清水洗淨。",
+    notice: "僅供外用，使用後若有不適請暫停使用。請避免接觸眼睛，並放置於陰涼通風處保持乾燥。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
+    priceNote: "可搭配龍血手工皂任選 4 款活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
-
   82: {
     cardName: "龍血薰衣草舒緩皂",
-    cardSubtitle: "200g±10g・任選4款 $799",
-    spec: "200g±10g / 顆",
-    intro: "龍血薰衣草舒緩皂為龍血手工皂品項，可搭配任選4款 $799 活動。",
+    cardSubtitle: "200g±10g・龍血手工皂",
+    spec: "200g±10g / 塊",
+    intro: "龍血修護力搭配薰衣草植萃，細緻泡沫溫和潔淨肌膚，洗後柔嫩放鬆，適合夜間沐浴與乾燥肌保養。",
     features: [
-      "龍血手工皂系列，適合日常清潔使用。",
-      "可與其他龍血手工皂搭配任選4款活動。",
-      "任選4款 $799，庫存與效期依 LINE 小幫手確認為準。",
+      "薰衣草植萃舒緩，安撫乾燥不適感。",
+      "龍血水合鎖水，洗後平滑不緊繃。",
+      "SPA 級薰衣草香氛，適合夜間放鬆。"
     ],
     suitableFor: [
-      "日常清潔",
       "肥皂",
-      "組合優惠",
+      "薰衣草舒緩",
+      "乾燥缺水",
+      "夜間放鬆"
     ],
-    usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "將手工皂沾水起泡，塗抹全臉或全身，輕柔按摩後以清水洗淨。",
+    notice: "僅供外用，使用後若有不適請暫停使用。請避免接觸眼睛，並放置於陰涼通風處保持乾燥。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
+    priceNote: "可搭配龍血手工皂任選 4 款活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
 
   83: {
@@ -3378,23 +3460,24 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   94: {
     cardName: "龍血檀香靜心皂",
-    cardSubtitle: "200g±10g・任選4款 $799",
-    spec: "200g±10g / 顆",
-    intro: "龍血檀香靜心皂為龍血手工皂品項，可搭配任選4款 $799 活動。",
+    cardSubtitle: "200g±10g・龍血手工皂",
+    spec: "200g±10g / 塊",
+    intro: "結合龍血樹脂與檀香精油，泡沫濃郁細緻，適合中乾性肌、熟齡肌與喜歡沉穩木質香調的人。",
     features: [
-      "龍血手工皂系列，適合日常清潔使用。",
-      "可與其他龍血手工皂搭配任選4款活動。",
-      "任選4款 $799，庫存與效期依 LINE 小幫手確認為準。",
+      "檀香精油深層養潤，適合乾燥粗糙肌。",
+      "龍血修護概念，支援熟齡肌屏障與持潤感。",
+      "沉穩木質香調，沐浴時帶來靜心儀式感。"
     ],
     suitableFor: [
-      "日常清潔",
       "肥皂",
-      "組合優惠",
+      "熟齡肌",
+      "乾燥缺水",
+      "檀香木質"
     ],
-    usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "將手工皂沾水搓揉出泡沫，塗抹全身並輕柔按摩，隨後以清水沖洗。",
+    notice: "僅供外用，使用後若有不適請暫停使用。請避免接觸眼睛，並放置於陰涼通風處保持乾燥。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "龍血手工皂可任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
+    priceNote: "可搭配龍血手工皂任選 4 款活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
 
   95: {
@@ -3629,109 +3712,126 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   106: {
     cardName: "白金密集煥白淡斑筆",
-    cardSubtitle: "白金密集煥白系列・白金密集煥白系列",
-    spec: "白金密集煥白系列",
-    intro: "白金密集煥白淡斑筆為白金密集煥白系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "單支・白金密集煥白系列",
+    spec: "單支 / 盒裝",
+    intro: "針對局部斑點、曬斑與痘疤暗沉設計的精準淡斑筆，筆型設計方便局部加強，幫助暗沉部位集中亮白保養。",
     features: [
-      "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
-      "商品優惠與庫存依客服確認為準。",
+      "局部精準亮白，針對色素沉澱、雀斑或痘疤暗沉加強保養。",
+      "白金級煥白複方，支援局部瑕疵調理。",
+      "攜帶方便好導入，可作為保養程序中的特殊局部加強品項。"
     ],
     suitableFor: [
       "美白淡斑",
+      "局部斑點",
+      "痘疤暗沉",
+      "精準保養"
     ],
-    usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
+    usage: "化妝水與精華液後，取適量精準塗抹於斑點或暗沉部位，再進行後續乳液鎖水。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   107: {
     cardName: "賽洛美潤膚美體油(C+E)",
-    cardSubtitle: "頂級養護品項・頂級養護",
-    spec: "頂級養護品項",
-    intro: "賽洛美潤膚美體油(C+E)為頂級養護保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "單瓶・頂級養護",
+    spec: "單瓶 / 盒裝",
+    intro: "頂級身體養護美體油，結合賽洛美與維他命 C、E 滋養因子，沐浴後使用能幫助乾燥粗糙肌膚維持柔嫩光澤。",
     features: [
-      "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
-      "商品優惠與庫存依客服確認為準。",
+      "賽洛美修護概念，滋養並強化身體肌膚水脂屏障。",
+      "C+E 養膚因子，保濕同時兼顧亮澤與彈嫩感。",
+      "輕盈植物油質地快速吸收，潤而不膩。"
     ],
     suitableFor: [
-      "抗皺緊緻",
+      "乾燥粗糙",
+      "身體保養",
+      "美白淡斑",
+      "頂級養護"
     ],
-    usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
+    usage: "沐浴後擦乾身體，取適量美體油均勻塗抹並按摩於全身；手肘、膝蓋等乾燥處可加強。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   108: {
     cardName: "24小時賦活液",
-    cardSubtitle: "頂級養護品項・頂級養護",
-    spec: "頂級養護品項",
-    intro: "24小時賦活液為頂級養護保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "單瓶・頂級養護",
+    spec: "單瓶 / 盒裝",
+    intro: "頂級養護前導賦活液，適合保養撞牆期與疲憊暗沉肌，水感質地快速吸收，幫助後續精華與乳霜延展吸收。",
     features: [
-      "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
-      "商品優惠與庫存依客服確認為準。",
+      "全天候持續滋養肌底，強化日常環境防禦感。",
+      "迅速安撫環境壓力造成的疲憊暗沉。",
+      "高效前導加乘，打通肌膚保養通道。"
     ],
     suitableFor: [
       "抗皺緊緻",
+      "初老肌",
+      "熟齡肌",
+      "保養撞牆期"
     ],
-    usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
+    usage: "每日早晚清潔後，取適量賦活液於掌心，均勻輕拍並按摩於臉部與頸部至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   109: {
     cardName: "鉑金無痕煥白雙導精華",
-    cardSubtitle: "頂級養護品項・頂級養護",
-    spec: "頂級養護品項",
-    intro: "鉑金無痕煥白雙導精華為頂級養護保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "單瓶・頂級養護",
+    spec: "單瓶 / 盒裝",
+    intro: "雙管設計高階精華，結合緊緻抗老與煥白保養，適合想同時改善暗沉、細紋與鬆弛感的熟齡肌膚。",
     features: [
-      "適合作為日常保養中的加強型品項。",
-      "可依需求搭配化妝水與乳霜使用。",
-      "適合想加強特定保養需求的客人。",
+      "雙管雙導科技，新鮮封存亮白與抗老雙精華。",
+      "鉑金級撫紋抗老概念，支援緊緻與細紋保養。",
+      "密集勻亮去暗沉，改善蠟黃與斑點感。"
     ],
     suitableFor: [
-      "美白淡斑",
       "抗皺緊緻",
+      "美白淡斑",
+      "熟齡肌",
+      "膚色不均"
     ],
-    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
+    usage: "每日早晚於化妝水後，按壓適量雙導精華於掌心混合，塗抹全臉與頸部並往上按摩至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   110: {
     cardName: "黑耀緊緻奢華眼霜",
-    cardSubtitle: "頂級養護品項・頂級養護",
-    spec: "頂級養護品項",
-    intro: "黑耀緊緻奢華眼霜為頂級養護保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "單瓶・頂級養護",
+    spec: "單瓶 / 盒裝",
+    intro: "專為眼周設計的奢華緊緻眼霜，豐潤細緻質地幫助滋養眼周乾紋與細紋，適合高階眼部抗老保養。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "黑耀緊緻能量概念，支援眼周屏障與彈力保養。",
+      "淡化乾燥、熬夜或老化引起的細紋感。",
+      "豐潤但好吸收，適合眼周日常滋養。"
     ],
     suitableFor: [
       "抗皺緊緻",
+      "眼周細紋",
+      "乾燥乾紋",
+      "熟齡肌"
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "每日早晚於保養最後步驟，用無名指取適量眼霜，輕點眼周並由內向外溫和按壓至吸收。",
+    notice: "使用後若有不適，請暫停使用。請避免直接接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   111: {
     cardName: "24小時黃金璀璨賦活液",
-    cardSubtitle: "頂級養護品項・頂級養護",
-    spec: "頂級養護品項",
-    intro: "24小時黃金璀璨賦活液為頂級養護保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "單瓶・頂級養護",
+    spec: "單瓶 / 盒裝",
+    intro: "奢華金箔前導賦活液，結合 24K 金箔與高效保濕修護精華，幫助肌膚維持澎潤、透亮與細緻光澤。",
     features: [
-      "適合依膚況與日常保養需求搭配使用。",
-      "可加入清單後由 LINE 小幫手協助確認適合搭配。",
-      "商品優惠與庫存依客服確認為準。",
+      "24K 金箔導入奢華保養感。",
+      "24 小時持潤，改善乾燥引起的暗沉與乾紋感。",
+      "頂級抗老活化肌底概念，提升細緻度與彈力感。"
     ],
     suitableFor: [
       "抗皺緊緻",
+      "乾燥缺水",
+      "透亮光澤",
+      "頂級養護"
     ],
-    usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
+    usage: "每日早晚清潔後，取適量黃金賦活液塗抹於全臉與頸部，以手掌溫熱按壓幫助吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -3895,18 +3995,21 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   120: {
     cardName: "Exo-雙粹秘泌凍晶組",
-    cardSubtitle: "頂級養護品項・頂級養護",
-    spec: "頂級養護品項",
-    intro: "Exo-雙粹秘泌凍晶組為頂級養護保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "一組・頂級養護",
+    spec: "一組 / 盒裝",
+    intro: "頂級凍晶密集保養組，使用時混合激活，適合膚況不穩、暗沉粗糙與想做高階急救修護保養的人。",
     features: [
-      "適合作為日常保養中的加強型品項。",
-      "可依需求搭配化妝水與乳霜使用。",
-      "適合想加強特定保養需求的客人。",
+      "植物外泌體概念，搭配高效修護能量保養。",
+      "凍晶真空新鮮封存，使用時才混合激活。",
+      "密集改善鬆弛、細紋、粗糙、敏弱與暗沉感。"
     ],
     suitableFor: [
       "抗皺緊緻",
+      "敏感舒緩",
+      "暗沉粗糙",
+      "高階修護"
     ],
-    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
+    usage: "依產品標示說明，將精華液與凍晶粉按比例混合，每天取適量塗抹於全臉與頸部；開封後請依標示時間使用完畢。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -3914,34 +4017,39 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   121: {
     cardName: "奧勒岡小白花美體乳",
     cardSubtitle: "500mL・頂級養護",
-    spec: "500mL",
-    intro: "奧勒岡小白花美體乳為頂級養護保養品項，可依日常膚況與保養需求搭配使用。",
+    spec: "500mL / 瓶",
+    intro: "500mL 大容量身體乳，結合奧勒岡草本與小白花保濕精華，質地水潤好推不黏膩，適合每日沐浴後全身保養。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "小白花高持水柔膚，柔嫩身體粗糙角質。",
+      "草本安撫與屏障修護，適合季節乾燥不適。",
+      "大容量高 CP 值，適合每日全身大量保養。"
     ],
     suitableFor: [
-      "抗皺緊緻",
+      "乾燥粗糙",
+      "身體保養",
+      "香氛保養",
+      "頂級養護"
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
+    usage: "每日沐浴清潔後，取適量美體乳均勻塗抹全身，順著肌肉線條按摩至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   122: {
     cardName: "肌光緊緻速妍面膜",
-    cardSubtitle: "肌光緊緻速妍系列面膜・面膜",
-    spec: "肌光緊緻速妍系列面膜",
-    intro: "肌光緊緻速妍面膜為面膜集中保養品項，適合依膚況加強日常保養。",
+    cardSubtitle: "單片 / 盒裝・面膜專區",
+    spec: "單片 / 盒裝",
+    intro: "集中型緊緻修護面膜，適合約會前、熬夜後或需要快速加強保養時使用。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "特殊場合與急救保養時的集中修護。",
+      "敷後幫助肌膚維持水亮、潤澤與彈力感。",
+      "可搭配同系列日常保養維持緊緻光澤。"
     ],
     suitableFor: [
       "抗皺緊緻",
       "面膜保養",
+      "約會前",
+      "熬夜後"
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
@@ -3950,16 +4058,19 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   123: {
     cardName: "INSK乳酸平衡水嫩膜",
-    cardSubtitle: "23mL x 6片 / 盒・面膜",
+    cardSubtitle: "23mL x 6片 / 盒・面膜專區",
     spec: "23mL x 6片 / 盒",
-    intro: "INSK乳酸平衡水嫩膜為面膜集中保養品項，適合依膚況加強日常保養。",
+    intro: "集中型乳酸平衡水嫩膜，適合乾燥缺水與膚況不穩時加強保養，快速補水並回復透亮。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "日常保養或急救保養時搭配使用。",
+      "幫助補充水分、舒緩與平衡不穩定膚況。",
+      "敷臉後再搭配日常保養程序，維持潤澤感。"
     ],
     suitableFor: [
       "面膜保養",
+      "乾燥缺水",
+      "不穩定膚況",
+      "INSK乳酸平衡系列"
     ],
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
@@ -3967,134 +4078,148 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   124: {
-    cardName: "水搖滾保濕面膜",
-    cardSubtitle: "22mL x 5pcs・面膜",
-    spec: "22mL x 5pcs",
-    intro: "水搖滾保濕面膜為面膜集中保養品項，適合依膚況加強日常保養。",
+    cardName: "水搖滾保濕面膜 (5片裝)",
+    cardSubtitle: "22mL x 5pcs / 盒・面膜專區",
+    spec: "22mL x 5pcs / 盒",
+    intro: "明星保濕面膜，滿載澎湃保濕精華，快速浸潤乾燥缺水肌，適合日常補水、熬夜後急救與集中保養。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "長效爆水續航力，適合日常基礎保養或急救補水。",
+      "高持水面膜剪裁，快速補足肌膚日常保濕需求。",
+      "敷臉後搭配乳液或乳霜，封存透亮水光感。"
     ],
     suitableFor: [
       "乾燥缺水",
+      "外油內乾",
       "面膜保養",
+      "龍血系列"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後取出面膜並撕下外層襯膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   125: {
-    cardName: "水搖滾保濕面膜",
-    cardSubtitle: "22mL x 10pcs・面膜",
-    spec: "22mL x 10pcs",
-    intro: "水搖滾保濕面膜為面膜集中保養品項，適合依膚況加強日常保養。",
+    cardName: "水搖滾保濕面膜 (10片裝)",
+    cardSubtitle: "22mL x 10pcs / 盒・面膜專區",
+    spec: "22mL x 10pcs / 盒",
+    intro: "明星保濕面膜 10 片裝，適合日常補水、熬夜後急救與集中保養。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "長效爆水續航力，適合日常基礎保養或急救補水。",
+      "高持水面膜剪裁，快速補足肌膚日常保濕需求。",
+      "敷臉後搭配乳液或乳霜，封存透亮水光感。"
     ],
     suitableFor: [
       "乾燥缺水",
+      "外油內乾",
       "面膜保養",
+      "龍血系列"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後取出面膜並撕下外層襯膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   126: {
-    cardName: "水搖滾保濕面膜",
-    cardSubtitle: "22mL x 35pcs・面膜",
-    spec: "22mL x 35pcs",
-    intro: "水搖滾保濕面膜為面膜集中保養品項，適合依膚況加強日常保養。",
+    cardName: "水搖滾保濕面膜 (35片大容量桶裝)",
+    cardSubtitle: "22mL x 35pcs / 桶・面膜專區",
+    spec: "22mL x 35pcs / 桶",
+    intro: "明星保濕面膜大容量桶裝，適合長期日常補水、乾燥缺水與面膜集中保養。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "長效爆水續航力，適合日常基礎保養或急救補水。",
+      "35 片大容量，適合固定敷臉與家庭回購。",
+      "敷臉後搭配乳液或乳霜，封存透亮水光感。"
     ],
     suitableFor: [
       "乾燥缺水",
+      "外油內乾",
       "面膜保養",
+      "大容量桶裝"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後取出面膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   127: {
-    cardName: "極光白美白面膜",
-    cardSubtitle: "x 5pcs・面膜",
-    spec: "x 5pcs",
-    intro: "極光白美白面膜為面膜集中保養品項，適合依膚況加強日常保養。",
+    cardName: "極光白美白面膜 (5片裝)",
+    cardSubtitle: "5pcs / 盒・面膜專區",
+    spec: "5pcs / 盒",
+    intro: "集中亮白面膜，適合膚色不均、熬夜暗沉與蠟黃肌膚加強保養，敷後維持透亮水嫩光澤。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "密集勻亮去暗沉，適合日常亮白特別調理。",
+      "集中注入亮白保養精華，改善疲憊膚色。",
+      "敷後搭配日常保養，維持柔嫩、透亮與妝前服貼感。"
     ],
     suitableFor: [
       "美白淡斑",
-      "面膜保養",
+      "膚色不均",
+      "熬夜暗沉",
+      "面膜保養"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後取出面膜，均勻平整敷於全臉；依標示時間取下後，輕拍幫助吸收，再進行鎖水保養。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   128: {
-    cardName: "極光白美白面膜",
-    cardSubtitle: "x 35pcs・面膜",
-    spec: "x 35pcs",
-    intro: "極光白美白面膜為面膜集中保養品項，適合依膚況加強日常保養。",
+    cardName: "極光白美白面膜 (35片大容量桶裝)",
+    cardSubtitle: "35pcs / 桶・面膜專區",
+    spec: "35pcs / 桶",
+    intro: "集中亮白面膜大容量桶裝，適合膚色不均、熬夜暗沉與日常亮白集中保養。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "密集勻亮去暗沉，適合日常亮白特別調理。",
+      "35 片大容量，適合長期固定亮白保養。",
+      "敷後搭配日常保養，維持柔嫩、透亮與妝前服貼感。"
     ],
     suitableFor: [
       "美白淡斑",
-      "面膜保養",
+      "膚色不均",
+      "熬夜暗沉",
+      "大容量桶裝"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後取出面膜，均勻平整敷於全臉；依標示時間取下後，輕拍幫助吸收，再進行鎖水保養。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   129: {
     cardName: "冰河淨化柔膚面膜",
-    cardSubtitle: "100mL・面膜",
-    spec: "100mL",
-    intro: "冰河淨化柔膚面膜為面膜集中保養品項，適合依膚況加強日常保養。",
+    cardSubtitle: "100mL / 瓶・面膜專區",
+    spec: "100mL / 瓶",
+    intro: "水洗式冰河淨化泥膜，富含高礦物質淨化因子，幫助吸附毛孔髒污與多餘油脂，重塑平滑透亮膚質。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "適合特別保養或深層淨化髒污時使用。",
+      "泥膜調理可溫和舒緩，同步補足保濕修護需求。",
+      "水洗後搭配日常保養，維持細緻潤澤感。"
     ],
     suitableFor: [
       "油性毛孔",
+      "毛孔粗大",
       "面膜保養",
+      "深層淨化"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "臉部清潔後，避開眼唇均勻塗抹全臉，依標示時間靜置後以清水溫和洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   130: {
     cardName: "鳳梨酵素活膚面膜",
-    cardSubtitle: "22mL x 5pcs・面膜",
-    spec: "22mL x 5pcs",
-    intro: "鳳梨酵素活膚面膜為面膜集中保養品項，適合依膚況加強日常保養。",
+    cardSubtitle: "22mL x 5pcs / 盒・面膜專區",
+    spec: "22mL x 5pcs / 盒",
+    intro: "集中型鳳梨酵素活膚面膜，適合暗沉、疲憊與粗糙肌膚加強保養，快速補水並提升透亮細緻感。",
     features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
+      "酵素活膚密集調理，適合亮白、嫩膚與平滑膚觸需求。",
+      "集中注入水嫩精華，補足保濕與修護需求。",
+      "敷臉後搭配乳液或乳霜，延續光滑澎潤感。"
     ],
     suitableFor: [
-      "油性毛孔",
       "面膜保養",
+      "暗沉粗糙",
+      "透亮保養",
+      "鳳梨酵素系列"
     ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
+    usage: "清潔後取出面膜敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收，再進行鎖水保養。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -4318,6 +4443,28 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "梅托洛買一送二 $3,600；庫存與效期依 LINE 小幫手確認為準。",
   },
 
+
+  141: {
+    cardName: "櫻の雪傳明酸美白精華液",
+    cardSubtitle: "30mL・櫻の雪系列",
+    spec: "30mL / 瓶",
+    intro: "櫻の雪系列密集亮白核心精華，針對斑點、曬後暗沉與蠟黃膚色加強調理，幫助肌膚找回透亮感。",
+    features: [
+      "日常保養中的加強型亮白精華。",
+      "傳明酸核心精華，支援膚色均勻與暗沉保養。",
+      "高滲透質地清爽不黏膩，適合局部亮白需求。"
+    ],
+    suitableFor: [
+      "美白淡斑",
+      "斑點暗沉",
+      "痘疤暗沉",
+      "櫻の雪系列"
+    ],
+    usage: "化妝水後取適量均勻塗抹於臉部與頸部，再搭配同系列美白乳液。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
+  },
 };
 
 const skinFilters = [
@@ -4968,6 +5115,7 @@ export default function Home() {
     if (promoText.includes("買一送一")) tags.push("買一送一");
     if (promoText.includes("買一送二")) tags.push("買一送二");
     if (promoText.includes("第二件五折")) tags.push("第二件五折");
+    if (promoText.includes("任選3瓶") || promoText.includes("任選 3 瓶") || promoText.includes("3瓶1100") || promoText.includes("任選3條") || promoText.includes("任選4款")) tags.push("任選優惠");
 
     for (const tag of getProductTags(product)) {
       if (!tags.includes(tag)) tags.push(tag);
@@ -5775,7 +5923,7 @@ export default function Home() {
 
         <div className="brand-block">
           <p className="top-eyebrow">Jourdeness Castle</p>
-          <h1>佐登商城</h1>
+          <h1>佐登城堡回購商城</h1>
           <p>城堡回購群｜產地價訂購站</p>
         </div>
 
@@ -13879,6 +14027,66 @@ export default function Home() {
            - 已整理龍血求麗化妝水 / 精華 / 修護乳 / 修護霜
            - 商品卡加入買一送一、第二件五折等促銷標籤
         */
+
+
+        /* Commerce V2.5.3.2：商品名稱放大 + 店名改為佐登城堡回購商城 */
+        .brand-block h1,
+        .top-header h1 {
+          display: block !important;
+          margin: 1px 0 1px !important;
+          color: var(--accent) !important;
+          font-size: clamp(17px, 4.5vw, 22px) !important;
+          font-weight: 1000 !important;
+          line-height: 1.08 !important;
+          letter-spacing: -0.065em !important;
+          white-space: nowrap !important;
+        }
+
+        .brand-block h1::before,
+        .brand-block h1::after {
+          content: none !important;
+          display: none !important;
+        }
+
+        .product-info h3,
+        .commerce-product-card .product-info h3,
+        .featured-card.commerce-product-card .product-info h3 {
+          min-height: 46px !important;
+          font-size: 18px !important;
+          font-weight: 1000 !important;
+          line-height: 1.25 !important;
+          letter-spacing: -0.045em !important;
+        }
+
+        @media (max-width: 420px) {
+          .brand-block h1,
+          .top-header h1 {
+            font-size: 18px !important;
+            letter-spacing: -0.075em !important;
+          }
+
+          .product-info h3,
+          .commerce-product-card .product-info h3,
+          .featured-card.commerce-product-card .product-info h3 {
+            min-height: 44px !important;
+            font-size: 17px !important;
+          }
+        }
+
+        @media (max-width: 370px) {
+          .brand-block h1,
+          .top-header h1 {
+            font-size: 16.5px !important;
+            letter-spacing: -0.08em !important;
+          }
+
+          .product-info h3,
+          .commerce-product-card .product-info h3,
+          .featured-card.commerce-product-card .product-info h3 {
+            min-height: 42px !important;
+            font-size: 16.2px !important;
+          }
+        }
 
 
       `}</style>
