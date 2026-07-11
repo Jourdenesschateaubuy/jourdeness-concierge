@@ -92,7 +92,7 @@ type CustomerForm = {
   note: string;
 };
 
-// V2.5.3.3：修正商品卡圖片備援、放大卡片字體、商品卡改用吸引人的短文案，並補上已知活動價格。
+// V2.5.3.4：新增貼布、益生菌、晶眸葉黃素與膠原飲品完整商品內容，保留既有已知活動價格。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -105,7 +105,7 @@ const products: Product[] = [
     originalPrice: "原價 $ 800",
     price: "產地價 3盒 $ 1,100",
     image: "/products/probiotic-bc-ca.jpg",
-    description: "3g x 30包 / 盒。BC-198芽孢桿菌，維持消化道機能。",
+    description: "3g x 30包 / 盒。複合益生菌 × 高鈣活力配方，日常保健與補鈣一起補給。",
   },
   {
     id: 2,
@@ -115,7 +115,7 @@ const products: Product[] = [
     originalPrice: "原價 $ 960",
     price: "產地價 3盒 $ 1,600",
     image: "/products/probiotic-cranberry.jpg",
-    description: "3g x 30包 / 盒。蔓越莓益生菌配方。",
+    description: "3g x 30包 / 盒。蔓越莓 × 益生菌複合配方，適合女性日常保健補給。",
   },
   {
     id: 3,
@@ -125,7 +125,7 @@ const products: Product[] = [
     originalPrice: "原價 $ ???",
     price: "產地價 2盒 $ 2,000",
     image: "/products/BC-HA.jpg",
-    description: "3g x 60包 / 盒。複合益生菌保健品項。",
+    description: "3g x 60包 / 盒。60包大容量益生菌，搭配玻尿酸與菊糖益生質日常補給。",
   },
   {
     id: 4,
@@ -135,7 +135,7 @@ const products: Product[] = [
     originalPrice: "原價 $ ???",
     price: "產地價待補",
     image: "/products/Lutein.jpg",
-    description: "精華凍 + 精華飲綜合組。",
+    description: "精華凍 + 精華飲綜合組。適合 3C 族、學生與上班族日常晶亮營養補給。",
   },
   {
     id: 5,
@@ -145,7 +145,7 @@ const products: Product[] = [
     originalPrice: "原價 $ ???",
     price: "產地價待補",
     image: "/products/FISH-Collagen.jpg",
-    description: "美妍保健飲品。",
+    description: "15mL x 10瓶 / 盒。魚膠原蛋白美妍飲，日常美容保健與水潤光澤補給。",
   },
 
   {
@@ -574,8 +574,8 @@ const products: Product[] = [
     series: "貼布",
     originalPrice: "原價 $ 800",
     price: "產地價 $ 500",
-    image: "/products/blue 100.jpg",
-    description: "商品敘述。",
+    image: "/products/patch 1.png",
+    description: "10片 / 盒。清爽涼感款，適合運動後、久坐肩頸與炎熱天氣的局部放鬆保養。",
   },
   {
     id: 48,
@@ -584,8 +584,8 @@ const products: Product[] = [
     series: "貼布",
     originalPrice: "原價 $ 800",
     price: "產地價 $ 500",
-    image: "/products/red 100.jpg",
-    description: "商品敘述。",
+    image: "/products/patch 5.png",
+    description: "10片 / 盒。溫感款，適合冷氣房、家事勞動後與肩頸腰背局部放鬆保養。",
   },
 
   {
@@ -1567,97 +1567,106 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   // 價格仍以 products 商品資料中的 price / originalPrice 為主。
   1: {
     cardName: "BC-CA複合益生菌高鈣活力配方",
-    cardSubtitle: "3g x 30包 / 盒・益生菌系列",
+    cardSubtitle: "3g x 30包 / 盒・高鈣活力益生菌",
     spec: "3g x 30包 / 盒",
-    intro: "BC-CA複合益生菌高鈣活力配方為益生菌系列品項，適合作為日常保健與營養補給參考。",
+    intro: "BC-CA複合益生菌高鈣活力配方為益生菌系列品項，結合複合益生菌與高鈣營養補給，適合作為全家日常保健參考。",
     features: [
-      "適合作為日常保健與營養補給參考。",
-      "可加入清單後由 LINE 小幫手協助確認優惠與庫存。",
-      "實際食用方式請依商品標示或客服說明為準。",
+      "採用 BC-198 芽孢桿菌，作為日常消化道機能與營養補給參考。",
+      "內含 14 種複合益生菌，適合 2 歲以上依產品標示補充。",
+      "選用德國檸檬酸鈣，適合重視補鈣與日常活力補給的人。",
     ],
     suitableFor: [
       "日常保健",
+      "補鈣需求",
       "益生菌補給",
+      "全家營養補充",
     ],
-    usage: "每日建議依產品標示或客服說明食用。",
+    usage: "每日 1～3 包，餐前餐後均可食用；2 歲以上可依產品標示或客服說明補充。",
     notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
+    priceNote: "目前保留既有回購群優惠：3 盒 $1,100；庫存、效期與最終金額依 LINE 小幫手確認為準。",
   },
   2: {
-    cardName: "蔓越莓益生菌",
-    cardSubtitle: "3g x 30包 / 盒・益生菌系列",
+    cardName: "蔓越莓益生菌速酵力配方",
+    cardSubtitle: "3g x 30包 / 盒・女性日常保健",
     spec: "3g x 30包 / 盒",
-    intro: "蔓越莓益生菌速酵力配方為益生菌系列品項，適合作為日常保健與營養補給參考。",
+    intro: "蔓越莓益生菌速酵力配方為女性日常保健與益生菌補給品項，結合蔓越莓與複合益生菌，適合重視私密環境日常維持的客人。",
     features: [
-      "適合作為日常保健與營養補給參考。",
-      "可加入清單後由 LINE 小幫手協助確認優惠與庫存。",
-      "實際食用方式請依商品標示或客服說明為準。",
+      "蔓越莓益生菌酵素複合配方，適合作為女性日常營養補給參考。",
+      "含 A 型原花青素與蔓越莓濃縮配方，幫助維持日常健康狀態。",
+      "適合想補充益生菌、蔓越莓與女性保健營養的人。",
     ],
     suitableFor: [
       "日常保健",
+      "私密修護保養",
+      "女性保健",
       "益生菌補給",
     ],
-    usage: "每日建議依產品標示或客服說明食用。",
+    usage: "每日建議依產品標示食用，可依客服說明於早上或睡前補充。",
     notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
+    priceNote: "目前保留既有回購群優惠：3 盒 $1,600；庫存、效期與最終金額依 LINE 小幫手確認為準。",
   },
   3: {
     cardName: "BC-HA 複合益生菌",
-    cardSubtitle: "60包大容量・日常消化道保養",
+    cardSubtitle: "3g x 60包 / 盒・大容量順暢美妍補給",
     spec: "3g x 60包 / 盒",
-    intro: "BC-HA 複合益生菌為日常保健補給品項，適合作為日常營養補充。",
+    intro: "BC-HA 複合益生菌為大容量日常保健補給品項，結合益生菌、小分子玻尿酸與菊糖益生質，適合久坐族與想維持順暢養顏的人。",
     features: [
-      "大容量 60 包設計，適合作為日常保健補給。",
-      "複合益生菌配方，協助維持消化道機能。",
-      "可加入清單後由 LINE 小幫手協助確認優惠組合與庫存。",
+      "60 包大容量設計，適合作為日常益生菌補給。",
+      "採用 BC-198 穩定菌株概念，常溫保存也方便日常攜帶與補充。",
+      "添加小分子玻尿酸與益生質菊糖，兼顧順暢與美妍營養補給。",
     ],
     suitableFor: [
       "日常保健",
-      "益生菌補給",
-      "消化道機能",
+      "排便卡卡",
+      "久坐上班族",
+      "順暢養顏補給",
     ],
     usage: "每日建議依產品標示或客服說明食用。",
     notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
+    priceNote: "目前保留既有回購群優惠：2 盒 $2,000；庫存、效期與最終金額依 LINE 小幫手確認為準。",
   },
   4: {
     cardName: "EC晶眸葉黃素",
-    cardSubtitle: "精華凍 + 精華飲綜合組・晶眸保健系列",
-    spec: "精華凍 + 精華飲綜合組",
-    intro: "EC晶眸葉黃素為晶眸保健系列品項，適合作為日常保健與營養補給參考。",
+    cardSubtitle: "精華凍 + 精華飲綜合組・3C族晶亮補給",
+    spec: "精華凍 + 精華飲綜合組（20g x 10入 + 20mL x 10入）/ 盒",
+    intro: "EC晶眸葉黃素為晶眸保健系列明星品項，結合精華凍與精華飲雙劑型，適合重度 3C 使用者、學生與上班族作為日常晶亮營養補給。",
     features: [
-      "適合作為日常保健與營養補給參考。",
-      "可加入清單後由 LINE 小幫手協助確認優惠與庫存。",
-      "實際食用方式請依商品標示或客服說明為準。",
+      "精華凍 + 精華飲雙劑型設計，攜帶與補充都方便。",
+      "含葉黃素、玉米黃素與花青素相關營養成分，適合作為日常晶眸保健參考。",
+      "一盒兼具 Q 彈果凍與水感飲品，適合全家依產品標示補充。",
     ],
     suitableFor: [
-      "日常保健",
-      "晶眸保健",
+      "重度3C學生",
+      "久看螢幕上班族",
+      "中老年日常保健",
+      "晶眸營養補給需求者",
     ],
-    usage: "每日建議依產品標示或客服說明食用。",
-    notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
+    usage: "每日建議依產品標示或客服說明食用；兒童每日 1 包、成人每日 1～2 包，餐後補充更適合日常安排。",
+    notice: "請依產品標示食用。內含維生素 A 有助於維持在暗處的視覺；若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   5: {
     cardName: "亮妍魚膠原蛋白飲",
-    cardSubtitle: "美妍保健飲品・美妍飲品系列",
-    spec: "美妍保健飲品",
-    intro: "亮妍魚膠原蛋白飲為美妍飲品系列品項，適合作為日常保健與營養補給參考。",
+    cardSubtitle: "15mL x 10瓶 / 盒・美妍飲品系列",
+    spec: "美妍保健飲品（15mL x 10瓶）/ 盒",
+    intro: "亮妍魚膠原蛋白飲為美妍飲品系列，結合魚膠原蛋白、鮭魚蛋白聚醣與植萃亮妍成分，適合作為日常美容保健與水潤光澤補給。",
     features: [
-      "適合作為日常保健與營養補給參考。",
-      "可加入清單後由 LINE 小幫手協助確認優惠與庫存。",
-      "實際食用方式請依商品標示或客服說明為準。",
+      "採用小分子魚膠原蛋白肽，適合日常美妍營養補給。",
+      "搭配鮭魚蛋白聚醣與保濕概念營養成分，支持水潤光澤保養。",
+      "融入燕窩、玫瑰與櫻花植萃概念，作為日常亮妍保健參考。",
     ],
     suitableFor: [
-      "日常保健",
-      "美容補給",
+      "日常美容保健",
+      "膠原蛋白補給",
+      "水潤光澤需求",
+      "熬夜疲憊保養族",
     ],
-    usage: "每日建議依產品標示或客服說明食用。",
-    notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
+    usage: "每日建議依產品標示食用，一瓶即飲；可依客服說明安排早上或睡前補充。",
+    notice: "請依產品標示食用。本產品含有大豆、魚類及其製品，為動物性來源、非素食；不適合對其過敏體質者食用。若有特殊體質或孕哺乳，請先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
@@ -2485,40 +2494,48 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   47: {
-    cardName: "石墨烯電氣石精油貼布(涼感)",
-    cardSubtitle: "商品敘述・貼布",
-    spec: "商品敘述",
-    intro: "石墨烯電氣石精油貼布(涼感)為貼布精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
+    cardName: "石墨烯電氣石精油貼布｜涼感",
+    cardSubtitle: "10片 / 盒・清爽沁涼款",
+    spec: "10片 / 盒",
+    intro: "石墨烯電氣石精油貼布涼感款結合石墨烯、電氣石與草本薄荷精油概念，帶來清爽沁涼的局部放鬆感，適合運動後、久坐肩頸與炎熱天氣日常保健使用。",
     features: [
-      "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
-      "適合搭配回購群日常選品一起確認。",
+      "石墨烯科技概念，幫助涼感精油氣息與清爽感更均勻延展。",
+      "電氣石能量概念，適合肩頸、腰背與四肢局部舒緩放鬆。",
+      "草本薄荷精油配方，帶來溫和沁涼感，適合喜歡清爽貼布的人。",
     ],
     suitableFor: [
-      "貼布",
+      "運動後放鬆",
+      "久坐肩頸緊繃",
+      "喜歡涼感清爽",
+      "日常局部保健",
     ],
-    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
-    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    usage: "清潔並擦乾需要貼敷的部位，撕去背膠紙後將貼布平整貼於肌膚。建議每片貼敷時間不超過 4～6 小時。",
+    notice: "本產品僅供外用，請勿直接貼敷於傷口、濕疹、潰爛或黏膜受損部位。使用後若出現發紅、搔癢或刺痛等不適，請立即撕除並以清水洗淨。請存放於避免陽光直射、高溫或潮濕的陰涼密閉場所，並放置於孩童不易取得處。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
+    priceNote: "單盒價格保留既有設定；另有任選 4 盒、10 盒優惠組合，庫存與最終金額依 LINE 小幫手確認為準。",
+    gallery: ["/products/patch 1.png", "/products/blue 100.jpg"],
   },
   48: {
-    cardName: "石墨烯電氣石精油貼布(溫感)",
-    cardSubtitle: "商品敘述・貼布",
-    spec: "商品敘述",
-    intro: "石墨烯電氣石精油貼布(溫感)為貼布精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
+    cardName: "石墨烯電氣石精油貼布｜溫感",
+    cardSubtitle: "10片 / 盒・溫熱舒緩款",
+    spec: "10片 / 盒",
+    intro: "石墨烯電氣石精油貼布溫感款主打溫和持續的溫熱感，像為肩頸、腰背與四肢局部敷上一層舒適熱毛巾，適合冷氣房、家事勞動後與日常放鬆保養。",
     features: [
-      "精選生活品項，可依需求加入清單詢問。",
-      "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
-      "適合搭配回購群日常選品一起確認。",
+      "石墨烯科技概念，幫助溫感精油氣息與溫熱感更均勻延展。",
+      "電氣石能量概念，適合久坐、勞動後的局部放鬆保養。",
+      "溫感草本精油帶來持續暖感，避免過度辛辣刺激的貼布感受。",
     ],
     suitableFor: [
-      "貼布",
+      "冷氣房族群",
+      "家事勞動後",
+      "肩頸腰背緊繃",
+      "喜歡溫熱放鬆",
     ],
-    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
-    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    usage: "清潔肌膚表面並擦乾後，取一片貼布撕下襯紙，平整貼於肩頸、腰背或四肢關節等需要溫熱調理之處。",
+    notice: "本產品僅供外用，請勿直接貼敷於傷口、紅腫潰爛或皮膚異常部位。孕婦、哺乳期婦女及 2 歲以下兒童使用前，請先諮詢專業醫師。撕除時請勿用力猛撕，建議溫和地順著毛髮生長方向撕下。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
+    priceNote: "單盒價格保留既有設定；另有任選 4 盒、10 盒優惠組合，庫存與最終金額依 LINE 小幫手確認為準。",
+    gallery: ["/products/patch 5.png", "/products/red 100.jpg"],
   },
   49: {
     cardName: "茶樹K痘精華",
@@ -4497,6 +4514,8 @@ const expiringProductIds = new Set<number>([10, 11]);
 
 
 const productImageFallbacks: Record<number, string[]> = {
+  47: ["/products/patch 1.png", "/products/blue 100.jpg"],
+  48: ["/products/patch 5.png", "/products/red 100.jpg"],
   35: [
     "/products/lav-washtoothpaste.jpg",
     "/products/toothpaste lav.png",
@@ -5510,6 +5529,15 @@ export default function Home() {
     return text.replace(/\s+/g, " ").replace(/。$/, "").trim();
   }
 
+  function shortCardText(text: string, maxLength = 32) {
+    const cleaned = compactCardText(text);
+    const firstSentence = cleaned.split(/[。！!；;]/)[0]?.trim() || cleaned;
+    const source = firstSentence.length >= 10 ? firstSentence : cleaned;
+
+    if (source.length <= maxLength) return source;
+    return `${source.slice(0, maxLength)}…`;
+  }
+
   function isSpecOnlySubtitle(text: string) {
     const cleaned = text.trim();
     return (
@@ -5525,14 +5553,14 @@ export default function Home() {
     const intro = content.intro ?? product.intro;
 
     if (customSubtitle && !isSpecOnlySubtitle(customSubtitle)) {
-      return customSubtitle;
+      return shortCardText(customSubtitle);
     }
 
     if (intro) {
-      return compactCardText(intro).slice(0, 72);
+      return shortCardText(intro);
     }
 
-    return customSubtitle ?? product.description;
+    return shortCardText(customSubtitle ?? product.description);
   }
 
   function getDetailName(product: Product) {
@@ -5813,7 +5841,7 @@ export default function Home() {
               }}
               disabled={soldOut}
             >
-              {soldOut ? "缺貨中" : inquiry ? "加入詢問" : "加入清單"}
+              {soldOut ? "缺貨中" : "加入清單"}
             </button>
 
             <button
@@ -5999,6 +6027,16 @@ export default function Home() {
         >
           ☰
         </button>
+
+        <div className="brand-logo-wrap" aria-hidden="true">
+          <img
+            src="/products/logo.png"
+            alt=""
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+          />
+        </div>
 
         <div className="brand-block">
           <p className="top-eyebrow">Jourdeness Castle</p>
@@ -7182,11 +7220,7 @@ export default function Home() {
                   disabled={isSoldOut(selectedDetailProduct)}
                   onClick={() => addToCart(selectedDetailProduct)}
                 >
-                  {isSoldOut(selectedDetailProduct)
-                    ? "缺貨中"
-                    : hasInquiryPrice(selectedDetailProduct)
-                    ? "加入詢問清單"
-                    : "加入清單"}
+                  {isSoldOut(selectedDetailProduct) ? "缺貨中" : "加入清單"}
                 </button>
               </section>
 
@@ -7297,6 +7331,54 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <footer className="company-footer-v2535" aria-label="公司資訊與購物說明">
+        <div className="company-footer-brand-v2535">
+          <img
+            src="/products/logo.png"
+            alt="Château de Jourdeness logo"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+          />
+          <div>
+            <p>Jourdeness Castle</p>
+            <h2>佐登城堡回購商城</h2>
+            <span>城堡回購群｜產地價訂購站</span>
+          </div>
+        </div>
+
+        <div className="company-info-grid-v2535">
+          <div>
+            <span>客服方式</span>
+            <strong>LINE 小幫手 @chateau-buy</strong>
+          </div>
+          <div>
+            <span>配送方式</span>
+            <strong>滿 NT$3000 免運｜目前僅提供宅配</strong>
+          </div>
+          <div>
+            <span>訂購流程</span>
+            <strong>加入清單送出後，由 LINE 小幫手確認庫存、效期、金額與付款資訊。</strong>
+          </div>
+          <div>
+            <span>客服時間</span>
+            <strong>週一至週五 09:00–18:00</strong>
+          </div>
+          <div>
+            <span>公司名稱</span>
+            <strong>待補</strong>
+          </div>
+          <div>
+            <span>統一編號 / 地址</span>
+            <strong>待補</strong>
+          </div>
+        </div>
+
+        <p className="company-footer-note-v2535">
+          本站商品價格、組合活動、庫存與效期，皆以 LINE 小幫手最終確認內容為準。
+        </p>
+      </footer>
 
       <style jsx global>{`
 
@@ -14185,6 +14267,177 @@ export default function Home() {
           line-height: 1.45 !important;
           -webkit-line-clamp: 3 !important;
           min-height: 59px !important;
+        }
+
+
+
+        /* Commerce V2.5.3.5：Header Logo、公司資訊 Footer、商品卡文案精簡、加入清單文案統一 */
+        .brand-logo-wrap {
+          flex-shrink: 0;
+          width: 50px;
+          height: 50px;
+          border-radius: 16px;
+          background: rgba(255, 255, 255, 0.86);
+          border: 1px solid rgba(234, 219, 208, 0.9);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          box-shadow: 0 8px 18px rgba(77, 55, 38, 0.08);
+        }
+
+        .brand-logo-wrap img {
+          width: 42px;
+          height: 42px;
+          object-fit: contain;
+          display: block;
+        }
+
+        .product-info .description,
+        .commerce-product-card .product-info .description,
+        .featured-info .description {
+          font-size: 14.2px !important;
+          line-height: 1.46 !important;
+          font-weight: 800 !important;
+          color: #7b6a60 !important;
+          display: -webkit-box !important;
+          -webkit-line-clamp: 2 !important;
+          -webkit-box-orient: vertical !important;
+          overflow: hidden !important;
+          min-height: 42px !important;
+          max-height: 42px !important;
+        }
+
+        .product-info h3,
+        .commerce-product-card .product-info h3,
+        .featured-card.commerce-product-card .product-info h3 {
+          font-size: 19px !important;
+          line-height: 1.24 !important;
+          min-height: 48px !important;
+          letter-spacing: -0.05em !important;
+        }
+
+        .company-footer-v2535 {
+          margin: 26px 0 0;
+          padding: 22px 18px 26px;
+          border: 1px solid rgba(234, 219, 208, 0.95);
+          border-radius: 28px 28px 0 0;
+          background:
+            radial-gradient(circle at top left, rgba(183, 138, 72, 0.13), transparent 36%),
+            rgba(255, 250, 246, 0.96);
+          box-shadow: 0 -12px 34px rgba(77, 55, 38, 0.08);
+        }
+
+        .company-footer-brand-v2535 {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid rgba(234, 219, 208, 0.95);
+        }
+
+        .company-footer-brand-v2535 img {
+          width: 58px;
+          height: 58px;
+          flex-shrink: 0;
+          border-radius: 18px;
+          object-fit: contain;
+          background: #fff;
+          border: 1px solid rgba(234, 219, 208, 0.95);
+          padding: 6px;
+        }
+
+        .company-footer-brand-v2535 p {
+          margin: 0 0 3px;
+          color: var(--gold);
+          font-size: 11px;
+          font-weight: 950;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+
+        .company-footer-brand-v2535 h2 {
+          margin: 0;
+          color: var(--accent);
+          font-size: 22px;
+          line-height: 1.1;
+          font-weight: 1000;
+          letter-spacing: -0.06em;
+        }
+
+        .company-footer-brand-v2535 span {
+          display: block;
+          margin-top: 4px;
+          color: var(--muted);
+          font-size: 13px;
+          font-weight: 800;
+        }
+
+        .company-info-grid-v2535 {
+          display: grid;
+          gap: 10px;
+          margin-top: 16px;
+        }
+
+        .company-info-grid-v2535 div {
+          padding: 12px 13px;
+          border-radius: 18px;
+          background: #ffffff;
+          border: 1px solid rgba(234, 219, 208, 0.9);
+        }
+
+        .company-info-grid-v2535 span {
+          display: block;
+          margin-bottom: 3px;
+          color: var(--gold);
+          font-size: 12px;
+          font-weight: 950;
+        }
+
+        .company-info-grid-v2535 strong {
+          display: block;
+          color: #5f4f46;
+          font-size: 13.5px;
+          line-height: 1.55;
+          font-weight: 850;
+        }
+
+        .company-footer-note-v2535 {
+          margin: 14px 2px 0;
+          color: #9a897d;
+          font-size: 12.5px;
+          line-height: 1.65;
+          font-weight: 750;
+        }
+
+        @media (max-width: 420px) {
+          .brand-logo-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+          }
+
+          .brand-logo-wrap img {
+            width: 37px;
+            height: 37px;
+          }
+
+          .top-header {
+            gap: 8px !important;
+          }
+
+          .product-info h3,
+          .commerce-product-card .product-info h3,
+          .featured-card.commerce-product-card .product-info h3 {
+            font-size: 18px !important;
+            min-height: 46px !important;
+          }
+        }
+
+        @media (max-width: 370px) {
+          .brand-logo-wrap {
+            display: none;
+          }
         }
 
       `}
