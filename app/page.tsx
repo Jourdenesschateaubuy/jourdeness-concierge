@@ -1098,9 +1098,9 @@ const products: Product[] = [
     category: "外部廠商",
     series: "生福科技",
     originalPrice: "原價待補",
-    price: "產地價待補",
+    price: "單盒 $ 1,500｜3盒 $ 3,980",
     image: "/products/toolong.png",
-    description: "生福科技品項。",
+    description: "生福科技品項，單盒與 3 盒優惠可加入清單確認。",
   },
   {
     id: 98,
@@ -1129,7 +1129,7 @@ const products: Product[] = [
     series: "生福科技",
     originalPrice: "原價待補",
     price: "產地價待補",
-    image: "/products/placeholder.jpg",
+    image: "/products/thlugi.png",
     description: "生福科技品項。",
   },
   {
@@ -3537,22 +3537,22 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   97: {
     cardName: "鴕鳥龜鹿土龍精",
-    cardSubtitle: "生福科技品項・生福科技",
-    spec: "生福科技品項",
-    intro: "鴕鳥龜鹿土龍精為生福科技精選品項，商品細節與適合搭配可由 LINE 小幫手協助確認。",
+    cardSubtitle: "單盒 $1,500｜3盒 $3,980",
+    spec: "規格依商品標示",
+    intro: "鴕鳥龜鹿土龍精為生福科技精選保健品項，適合有日常營養補給需求的客人加入清單確認。",
     features: [
-      "精選生活品項，可依需求加入清單詢問。",
+      "單盒 $1,500，3盒優惠 $3,980。",
       "商品規格、優惠與庫存依 LINE 小幫手確認為準。",
-      "適合搭配回購群日常選品一起確認。",
+      "可與生福科技其他保健品項一起加入清單確認。",
     ],
     suitableFor: [
       "外部廠商",
       "生福科技",
     ],
-    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
-    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    usage: "請依商品標示或 LINE 小幫手說明食用。",
+    notice: "若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
+    priceNote: "單盒 $1,500；3盒 $3,980。庫存與效期依 LINE 小幫手確認為準。",
   },
   98: {
     cardName: "EX+ Q18 魚膠原蛋白粉",
@@ -4535,6 +4535,20 @@ const productImageFallbacks: Record<number, string[]> = {
   81: ["/products/soap lemo.png", "/products/bdsoap.png"],
   82: ["/products/soap lav.png", "/products/bdsoap.png"],
   94: ["/products/soap sandalwood.png", "/products/bdsoap.png"],
+  144: [
+    "/products/視綠佳.jpg",
+    "/products/視綠佳.png",
+    "/products/視綠佳.jpeg",
+    "/products/視綠佳.webp",
+    "/products/shilujia.jpg",
+    "/products/shilujia.png",
+    "/products/shi-lu-jia.jpg",
+    "/products/shi-lu-jia.png",
+    "/products/SGJ.jpg",
+    "/products/SGJ.png",
+    "/products/green eye.jpg",
+    "/products/green eye.png",
+  ],
 };
 
 
@@ -4614,23 +4628,23 @@ export default function Home() {
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([143, 140, 139, 138, 136, 137, 100, 83, 84, 101, 92, 88, 135, 91, 89]);
+  const homeComboProducts = getProductsByIds([53, 83, 84, 100, 86, 135, 89, 101]);
   const homeClearanceProducts = getProductsByIds([10, 11]);
-  const homeDragonBloodProducts = getProductsByIds([17, 19, 20, 18, 54, 55]);
+  const homeDragonBloodProducts = getProductsByIds([53, 101, 89, 135]);
   const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
   const homeTeaControlProducts = getProductsByIds([49, 50, 51, 64, 69, 70]);
-  const homeBrighteningProducts = getProductsByIds([68, 71, 72, 141, 142, 106, 127, 128]);
+  const homeBrighteningProducts = getProductsByIds([136, 141, 142, 127, 128]);
   const homeFirmingProducts = getProductsByIds([27, 28, 21, 22, 23, 120]);
-  const homeMaskProducts = getProductsByIds([126, 128, 123, 129, 131, 132]);
-  const homeHealthProducts = getProductsByIds([1, 2, 3, 4, 5, 74, 99, 144, 138, 143]);
-  const homeDailyLifeProducts = getProductsByIds([29, 30, 93, 31, 32, 140, 117, 75, 133, 134, 47, 48, 79, 80, 81, 82, 94, 35, 36, 37]);
+  const homeMaskProducts = getProductsByIds([91, 126, 128]);
+  const homeHealthProducts = getProductsByIds([83, 84, 85, 100, 1, 2, 3]);
+  const homeDailyLifeProducts = getProductsByIds([86, 135, 89, 90]);
 
-  const campaignHeroProducts = getProductsByIds([53, 19, 20, 139]);
-  const campaignSpotlightProducts = getProductsByIds([136, 137, 17, 55]);
+  const campaignHeroProducts = getProductsByIds([53, 83, 86, 135]);
+  const campaignSpotlightProducts = getProductsByIds([84, 100, 89, 101]);
 
   const heroTopProduct = products.find((product) => product.id === 53);
-  const heroSecondaryProducts = getProductsByIds([19, 20]);
-  const heroComboProducts = getProductsByIds([139, 101, 136, 137]);
+  const heroSecondaryProducts = getProductsByIds([83, 86, 135]);
+  const heroComboProducts = getProductsByIds([84, 100, 89, 101]);
   const heroSeriesEntries: {
     title: string;
     text: string;
@@ -4639,45 +4653,32 @@ export default function Home() {
     product?: Product;
   }[] = [
     {
-      title: "龍血系列",
-      text: "修護、保濕、洗卸清潔人氣系列",
+      title: "龍血主打",
+      text: "玻尿酸精華、洗卸、洗沐熱賣",
       category: "保養品",
       series: "龍血系列",
-      product: products.find((product) => product.id === 19),
+      product: products.find((product) => product.id === 53),
     },
     {
-      title: "櫻の雪系列",
-      text: "美白透亮、亮澤保養與潔顏組合",
-      category: "保養品",
-      series: "櫻の雪傳明酸美白系列",
-      product: products.find((product) => product.id === 72),
-    },
-    {
-      title: "玫瑰系列",
-      text: "水潤、柔嫩與日常修護保養",
-      category: "保養品",
-      series: "玫瑰超微晶萃系列",
-      product: products.find((product) => product.id === 13),
-    },
-    {
-      title: "水光肌能",
-      text: "乾燥缺水、保濕補水推薦",
-      category: "保養品",
-      series: "水光肌能系列",
-      product: products.find((product) => product.id === 62),
-    },
-    {
-      title: "洗沐系列",
-      text: "龍血洗髮、沐浴與髮根養護",
-      category: "洗沐",
-      series: "洗沐系列",
-      product: products.find((product) => product.id === 29),
-    },
-    {
-      title: "保健食品",
-      text: "益生菌、葉黃素、膠原飲品",
+      title: "益生菌熱賣",
+      text: "高鈣、蔓越莓、BC-HA 組合",
       category: "保健食品",
-      product: products.find((product) => product.id === 5),
+      series: "益生菌系列",
+      product: products.find((product) => product.id === 83),
+    },
+    {
+      title: "溫涼貼布",
+      text: "涼感 / 溫感，居家常備",
+      category: "貼布",
+      series: "貼布",
+      product: products.find((product) => product.id === 86),
+    },
+    {
+      title: "龍血手工皂",
+      text: "5款香氣，任選4款優惠",
+      category: "肥皂",
+      series: "肥皂",
+      product: products.find((product) => product.id === 135),
     },
   ];
 
@@ -5066,13 +5067,38 @@ export default function Home() {
     return product.price.includes("缺貨");
   }
 
+  function getNameBasedImageCandidates(product: Product) {
+    const content = productContent(product);
+    const rawNames = [
+      product.name,
+      product.cardName ?? "",
+      content.cardName ?? "",
+      product.name.replace(/\s+/g, ""),
+      product.name.replace(/[\/\|｜＋+()（）:：]/g, " ").replace(/\s+/g, " ").trim(),
+      product.name.replace(/[\/\|｜＋+()（）:：\s]/g, ""),
+    ];
+
+    const baseNames = Array.from(new Set(rawNames.map((name) => name.trim()).filter(Boolean)));
+    const extensions = ["jpg", "png", "jpeg", "webp"];
+    const candidates: string[] = [];
+
+    for (const baseName of baseNames) {
+      for (const extension of extensions) {
+        candidates.push(`/products/${baseName}.${extension}`);
+      }
+    }
+
+    return candidates;
+  }
+
   function getImageCandidates(product: Product) {
     const override = productContent(product);
     const candidates = [
       product.image,
+      ...(productImageFallbacks[product.id] ?? []),
       ...(override.gallery ?? []),
       ...(product.gallery ?? []),
-      ...(productImageFallbacks[product.id] ?? []),
+      ...getNameBasedImageCandidates(product),
     ].filter((image): image is string => Boolean(image && !image.includes("placeholder")));
 
     return Array.from(new Set(candidates));
@@ -6532,13 +6558,13 @@ export default function Home() {
           <div className="best-hero-copy-v242">
             <p className="best-hero-eyebrow-v242">本月熱賣 TOP 1</p>
             <h2>{getCardName(heroTopProduct)}</h2>
-            <strong>龍血系列人氣保濕修護單品</strong>
-            <span>回購群常見詢問款，適合想加強水潤、保濕與修護感的日常保養需求。</span>
+            <strong>龍血系列主打爆品</strong>
+            <span>買一送一熱賣款，乾燥缺水肌的水潤修護精華。</span>
 
             <div className="best-tag-row-v242">
-              <span>保濕修護</span>
-              <span>龍血系列</span>
-              <span>回購熱賣</span>
+              <span>買一送一</span>
+              <span>龍血主打</span>
+              <span>保濕精華</span>
             </div>
 
             <div className="best-hero-actions-v242">
@@ -6572,7 +6598,7 @@ export default function Home() {
         </section>
       )}
 
-      <section className="secondary-best-grid-v242" aria-label="龍血次主打商品">
+      <section className="secondary-best-grid-v242" aria-label="首頁熱門精選">
         {heroSecondaryProducts.map((product) => (
           <article className="secondary-best-card-v242" key={`secondary-best-${product.id}`}>
             <button type="button" className="secondary-best-image-v242" onClick={() => openProductDetail(product)}>
@@ -6604,8 +6630,8 @@ export default function Home() {
       <section className="combo-showcase-v242" aria-label="人氣組合價">
         <div className="combo-showcase-head-v242">
           <p>Combo Deals</p>
-          <h2>人氣組合價</h2>
-          <span>回購群常詢問的優惠組合，先加入清單再由 LINE 小幫手確認庫存與效期。</span>
+          <h2>四大熱門回購</h2>
+          <span>益生菌、貼布、肥皂與龍血組合，先看最容易成交的精選。</span>
         </div>
 
         <div className="combo-showcase-list-v242">
@@ -6638,8 +6664,8 @@ export default function Home() {
       <section className="series-entry-section-v242" aria-label="熱門系列入口">
         <div className="series-entry-head-v242">
           <p>Shop by Series</p>
-          <h2>熱門系列入口</h2>
-          <span>想從系列開始逛，可以先從自家保養、洗沐與保健補給進入。</span>
+          <h2>簡單逛這 4 區</h2>
+          <span>不塞滿所有系列，先看最熱門、最容易回購的入口。</span>
         </div>
 
         <div className="series-entry-grid-v242">
@@ -6671,9 +6697,9 @@ export default function Home() {
 
       <HomeProductSection
         id="home-combo-products"
-        eyebrow="More Deals"
-        title="更多回購優惠"
-        subtitle="自家保養、洗沐與組合價往下逛，外部廠商優惠也會在後段整理"
+        eyebrow="Hot Picks"
+        title="回購熱門精選"
+        subtitle="首頁只放最主打的幾款，其他商品可用分類或搜尋找"
         products={homeComboProducts}
       />
 
@@ -6708,165 +6734,18 @@ export default function Home() {
         </div>
       </section>
 
-      <HomeProductSection
-        id="home-clearance-products"
-        eyebrow="Clearance"
-        title="即期良品出清"
-        subtitle="冷杉型男保養單瓶 $199，數量有限，實際效期請以 LINE 小幫手確認"
-        products={homeClearanceProducts}
-      />
-
-      <HomeBanner
-        id="dragon-blood-home"
-        eyebrow="Dragon Blood"
-        title="龍血系列"
-        subtitle="修護・保濕・洗卸清潔"
-        note="從日常保養到卸妝潔顏，一次看完整系列"
-        image="/banners/banner-dragon-blood.png"
-        tone="deal"
-      
-      />
-
-      <HomeProductSection
-        id="home-dragon-blood-products"
-        eyebrow="Repair Care"
-        title="龍血系列"
-        subtitle="修護、保濕、卸妝與潔顏品項"
-        products={homeDragonBloodProducts}
-      />
-
-      <HomeBanner
-        id="water-glow-home"
-        eyebrow="Hydration"
-        title="保濕亮白人氣推薦"
-        subtitle="水潤、亮白、集中保養一次看"
-        note="水光肌能｜面膜｜晶淬雪｜櫻の雪｜玫瑰系列"
-        image="/banners/banner-water-glow.png"
-        tone="cream"
-      
-      />
-
-      <HomeProductSection
-        id="home-water-glow-products"
-        eyebrow="Hydrating Picks"
-        title="水光肌能系列"
-        subtitle="乾燥缺水、保濕補水與溫和清潔"
-        products={homeWaterGlowProducts}
-      />
-
-      <HomeBanner
-        id="tea-control-home"
-        eyebrow="Balance Care"
-        title="茶樹控油系列"
-        subtitle="油性毛孔・清爽調理"
-        note="控油、毛孔、角質代謝與清爽保養"
-        image="/banners/banner-tea-control.png"
-        tone="green"
-      
-      />
-
-      <HomeProductSection
-        id="home-tea-control-products"
-        eyebrow="Oil Control"
-        title="茶樹控油系列"
-        subtitle="油性毛孔、角質代謝與清爽調理"
-        products={homeTeaControlProducts}
-      />
-
-      <HomeBanner
-        id="brightening-home"
-        eyebrow="Brightening"
-        title="亮白保養系列"
-        subtitle="暗沉・膚色不均・美白淡斑"
-        note="晶淬雪｜櫻の雪｜白金密集煥白｜極光白面膜"
-        image="/banners/banner-brightening-care.png"
-        tone="pink"
-      
-      />
-
-      <HomeProductSection
-        id="home-brightening-products"
-        eyebrow="Glow Picks"
-        title="亮白保養系列"
-        subtitle="提亮、淡斑、亮澤與膚色不均保養"
-        products={homeBrighteningProducts}
-      />
-
-      <HomeBanner
-        id="firming-home"
-        eyebrow="Firming Care"
-        title="抗皺緊緻系列"
-        subtitle="熟齡保養・細紋・緊緻"
-        note="BA-5｜肌光緊緻｜頂級養護"
-        image="/banners/banner-firming-care.png"
-        tone="wood"
-      
-      />
-
-      <HomeProductSection
-        id="home-firming-products"
-        eyebrow="Premium Care"
-        title="抗皺緊緻系列"
-        subtitle="熟齡、細紋、緊緻與高階養護商品"
-        products={homeFirmingProducts}
-      />
-
-      <HomeBanner
-        id="mask-care-home"
-        eyebrow="Mask Care"
-        title="面膜集中保養"
-        subtitle="保濕・亮白・舒緩・修護"
-        note="日常保養與集中保養都能找到適合選擇"
-        image="/banners/banner-mask-care.png"
-        tone="pink"
-      
-      />
-
-      <HomeProductSection
-        id="home-mask-products"
-        eyebrow="Mask Picks"
-        title="面膜集中保養"
-        subtitle="從日常保濕到亮白修護，依需求挑選"
-        products={homeMaskProducts}
-      />
-
-      <HomeBanner
-        id="health-care-home"
-        eyebrow="Wellness"
-        title="日常保健補給"
-        subtitle="益生菌・葉黃素・膠原蛋白飲・魚油"
-        note="日常補給與營養保養"
-        image="/banners/banner-health-care.png"
-        tone="green"
-      
-      />
-
-      <HomeProductSection
-        id="home-health-products"
-        eyebrow="Daily Care"
-        title="保健食品專區"
-        subtitle="從腸道、晶眸到美容補給，日常保養一起補上"
-        products={homeHealthProducts}
-      />
-
-      <HomeBanner
-        id="daily-life-home"
-        eyebrow="Daily Life"
-        title="洗沐與生活選品"
-        subtitle="日常清潔・香氛・外部廠商精選"
-        note="洗沐｜牙膏肥皂｜貼布｜倍力工房｜生活選品"
-        image="/banners/banner-daily-life.png"
-        tone="wood"
-      
-      />
-
-      <HomeProductSection
-        id="home-daily-life-products"
-        eyebrow="Daily Picks"
-        title="洗沐與生活選品"
-        subtitle="日常清潔、貼布、牙膏肥皂與倍力工房選品"
-        products={homeDailyLifeProducts}
-      />
+      <section className="simple-more-gateway-v25382" aria-label="更多商品入口">
+        <div>
+          <p>Find More</p>
+          <h2>其他商品用分類或搜尋找</h2>
+          <span>首頁不堆滿全部系列，想找水光、茶樹、櫻の雪、面膜或外部廠商，可以點分類或直接搜尋。</span>
+        </div>
+        <div className="simple-more-actions-v25382">
+          <button type="button" onClick={() => openCommerceFilter("deals-all", "本月優惠 / 全部優惠")}>看本月優惠</button>
+          <button type="button" onClick={() => openCommerceFilter("skincare-all", "自家保養 / 全部保養")}>看保養品</button>
+          <button type="button" onClick={() => setIsSearchOpen(true)}>搜尋商品</button>
+        </div>
+      </section>
 
 
       {cartTotalQuantity > 0 && (
@@ -14542,8 +14421,85 @@ export default function Home() {
         }
 
 
-      `}
-</style>
+
+        /* Commerce V2.5.3.8.2.1：修正精選首頁樣式區塊位置 */
+        .simple-more-gateway-v25382 {
+          margin: 18px 16px 30px;
+          padding: 22px 18px;
+          border-radius: 28px;
+          background: linear-gradient(135deg, rgba(255, 250, 246, 0.96), rgba(255, 236, 222, 0.9));
+          border: 1px solid rgba(190, 115, 73, 0.16);
+          box-shadow: 0 18px 46px rgba(116, 70, 45, 0.1);
+          text-align: center;
+        }
+
+        .simple-more-gateway-v25382 p {
+          margin: 0 0 6px;
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #b96f45;
+        }
+
+        .simple-more-gateway-v25382 h2 {
+          margin: 0;
+          font-size: 24px;
+          color: #45261d;
+          letter-spacing: -0.04em;
+        }
+
+        .simple-more-gateway-v25382 span {
+          display: block;
+          margin-top: 8px;
+          font-size: 14px;
+          line-height: 1.7;
+          color: #8b7567;
+          font-weight: 700;
+        }
+
+        .simple-more-actions-v25382 {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+          margin-top: 16px;
+        }
+
+        .simple-more-actions-v25382 button {
+          border: 0;
+          border-radius: 999px;
+          padding: 12px 10px;
+          background: #fff;
+          color: #8a3f2f;
+          font-size: 13px;
+          font-weight: 900;
+          box-shadow: inset 0 0 0 1px rgba(178, 99, 68, 0.18);
+        }
+
+        .secondary-best-grid-v242 {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .combo-showcase-list-v242 {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .series-entry-grid-v242 {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        @media (max-width: 720px) {
+          .secondary-best-grid-v242,
+          .combo-showcase-list-v242,
+          .series-entry-grid-v242 {
+            grid-template-columns: 1fr;
+          }
+
+          .simple-more-actions-v25382 {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
     </main>
   );
 }
