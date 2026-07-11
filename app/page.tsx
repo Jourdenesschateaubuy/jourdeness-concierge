@@ -4693,7 +4693,40 @@ export default function Home() {
   ];
 
   const collectionSeriesChips = seriesList.filter((series) => series !== "全部").slice(0, 14);
-  const collectionFeaturedProducts = filteredProducts.slice(0, 3);
+
+  const hotCollectionProductIds = [
+    84, 85, 83, 100, 138, 4, 5, 1, 2, 3,
+    89, 139, 29, 30, 93,
+    90, 35, 36, 88,
+    91, 126, 128, 124, 127,
+    135, 79, 82, 81, 80,
+    101, 53, 54, 55, 17, 18, 19, 20, 136, 141, 142, 68, 71, 72, 61, 62, 63, 49, 50, 51,
+    140, 117, 75,
+    47, 48, 134,
+    92, 143, 99, 74, 144, 133,
+  ];
+
+  const maxCollectionProducts = 8;
+  const collectionProducts = normalizedSearchQuery
+    ? filteredProducts
+    : (() => {
+        if (filteredProducts.length <= maxCollectionProducts) return filteredProducts;
+
+        const selected = new Set<number>();
+        const prioritized = hotCollectionProductIds
+          .map((id) => filteredProducts.find((product) => product.id === id))
+          .filter((product): product is Product => {
+            if (!product || selected.has(product.id)) return false;
+            selected.add(product.id);
+            return true;
+          });
+
+        const fillers = filteredProducts.filter((product) => !selected.has(product.id));
+
+        return [...prioritized, ...fillers].slice(0, maxCollectionProducts);
+      })();
+
+  const collectionFeaturedProducts = collectionProducts.slice(0, 3);
   const cartUpsellProducts = getCartUpsellProducts();
 
   const skinGuideCards: { title: SkinFilter; text: string }[] = [
@@ -5529,7 +5562,7 @@ export default function Home() {
     return text.replace(/\s+/g, " ").replace(/。$/, "").trim();
   }
 
-  function shortCardText(text: string, maxLength = 22) {
+  function shortCardText(text: string, maxLength = 18) {
     const cleaned = compactCardText(text);
     const firstSentence = cleaned.split(/[。！!；;]/)[0]?.trim() || cleaned;
     const source = firstSentence.length >= 10 ? firstSentence : cleaned;
@@ -6195,7 +6228,7 @@ export default function Home() {
             <div>
               <p>Catalog</p>
               <h2>{getCollectionHeroLabel()}</h2>
-              <span>共 {filteredProducts.length} 項商品｜可加入清單或查看商品資訊</span>
+              <span>精選 {collectionProducts.length} 項熱門商品｜可加入清單或查看商品資訊</span>
             </div>
           </div>
 
@@ -6208,8 +6241,8 @@ export default function Home() {
 
             <div className="collection-stat-grid-v22">
               <div>
-                <strong>{filteredProducts.length}</strong>
-                <span>商品數</span>
+                <strong>{collectionProducts.length}</strong>
+                <span>熱門精選</span>
               </div>
               <div>
                 <strong>{selectedSeries === "全部" ? "全部" : selectedSeries}</strong>
@@ -6299,9 +6332,9 @@ export default function Home() {
             </section>
           )}
 
-          {filteredProducts.length > 0 ? (
+          {collectionProducts.length > 0 ? (
             <div className="home-product-grid collection-product-grid collection-grid-v22">
-              {filteredProducts.map((product) => (
+              {collectionProducts.map((product) => (
                 <ProductCard product={product} key={`collection-${product.id}`} />
               ))}
             </div>
@@ -14476,6 +14509,38 @@ export default function Home() {
           margin-left: auto !important;
           margin-right: auto !important;
         }
+
+        /* Commerce V2.5.3.7：品項名稱置中 + 分類頁只顯示熱門精選 */
+        .product-info h3,
+        .commerce-product-card .product-info h3,
+        .featured-card.commerce-product-card .product-info h3 {
+          text-align: center !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
+          width: 100% !important;
+        }
+
+        .product-info .description,
+        .commerce-product-card .product-info .description,
+        .featured-info .description {
+          text-align: center !important;
+          -webkit-line-clamp: 1 !important;
+          min-height: 22px !important;
+          max-height: 22px !important;
+          font-size: 13.2px !important;
+          line-height: 1.35 !important;
+        }
+
+        .product-meta-row,
+        .tag-row {
+          justify-content: center !important;
+          text-align: center !important;
+        }
+
+        .collection-product-grid.collection-grid-v22 {
+          padding-bottom: 16px !important;
+        }
+
 
       `}
 </style>
