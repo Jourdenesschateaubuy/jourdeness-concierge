@@ -14,6 +14,7 @@ const categoryConfig = {
     "保養套組",
     "肥皂組合",
     "香氛組合",
+    "護唇膏組合",
     "面膜組合",
   ],
   全部: ["全部"],
@@ -46,6 +47,7 @@ const categoryConfig = {
   牙膏: ["全部", "牙膏"],
   肥皂: ["全部", "肥皂"],
   護手霜: ["全部", "護手霜"],
+  護唇膏: ["全部", "護唇膏"],
   面膜: ["全部", "保濕面膜", "亮白面膜", "修護面膜", "面膜組合"],
   香水: ["全部", "香水"],
   貼布: ["全部", "貼布"],
@@ -92,7 +94,7 @@ type CustomerForm = {
   note: string;
 };
 
-// V2.5.3.4：新增貼布、益生菌、晶眸葉黃素與膠原飲品完整商品內容，保留既有已知活動價格。
+// V2.5.3.11：新增精油滾珠、香氛皂與護唇膏任選優惠。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -1487,13 +1489,13 @@ const products: Product[] = [
   },
   {
     id: 135,
-    name: "龍血手工皂任選4款",
+    name: "手工皂 / 香氛皂任選4款",
     category: "組合價",
     series: "肥皂組合",
     originalPrice: "原價待補",
     price: "任選4款 $ 799",
     image: "/products/bdsoap.png",
-    description: "龍血檀香靜心皂 / 龍血艾草保庇皂 / 龍血玫瑰美膚皂 / 龍血檸檬馬鞭草皂 / 龍血薰衣草舒緩皂可任選，共4款。",
+    description: "龍血手工皂與繡球花漾香氛皂可任選搭配，共4款。",
   },
   {
     id: 136,
@@ -1555,6 +1557,67 @@ const products: Product[] = [
     image: "/products/matolo1+2.png",
     description: "梅托洛買1送2，共3入組合，規格依商品標示。",
   },
+  {
+    id: 145,
+    name: "龍血求麗甦醒精油滾珠",
+    category: "精油",
+    series: "精油",
+    originalPrice: "牌價 $ 390",
+    price: "$ 390",
+    image: "/products/dragon roller.png",
+    description: "9mL。龍血系列隨身精油滾珠，適合日常香氛與放鬆舒緩保養。",
+  },
+  {
+    id: 146,
+    name: "薰衣草萬用精油滾珠",
+    category: "精油",
+    series: "精油",
+    originalPrice: "牌價 $ 390",
+    price: "$ 390",
+    image: "/products/lavender roller.png",
+    description: "9mL。薰衣草香氛精油滾珠，適合睡前放鬆與日常隨身舒緩。",
+  },
+  {
+    id: 147,
+    name: "繡球花漾香氛皂",
+    category: "肥皂",
+    series: "肥皂",
+    originalPrice: "原價待補",
+    price: "單入 $ 290",
+    image: "/products/soap Hydrangea.png",
+    description: "200g±10g / 塊。法式花香系香氛皂，洗後保留潤澤不緊繃的清新膚觸。",
+  },
+  {
+    id: 148,
+    name: "絕美溫感變色護唇膏",
+    category: "護唇膏",
+    series: "護唇膏",
+    originalPrice: "原價待補",
+    price: "單支 $ 290",
+    image: "/products/lip tint.jpg",
+    description: "3.5g / 支。溫感變色護唇膏，依唇溫呈現自然氣色。",
+  },
+  {
+    id: 149,
+    name: "絕美保濕護唇膏",
+    category: "護唇膏",
+    series: "護唇膏",
+    originalPrice: "原價待補",
+    price: "單支 $ 290",
+    image: "/products/lip balm.jpg",
+    description: "3.5g / 支。日常保濕護唇膏，滋潤乾燥雙唇。",
+  },
+  {
+    id: 150,
+    name: "絕美護唇膏任選2條",
+    category: "組合價",
+    series: "護唇膏組合",
+    originalPrice: "原價 $ 580",
+    price: "任選2條 $ 500",
+    image: "/products/lip combo.jpg",
+    description: "絕美溫感變色護唇膏 / 絕美保濕護唇膏可任選，共2條。",
+  },
+
 
 
 ];
@@ -3280,7 +3343,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "益生菌補給",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
+    usage: "每日 1–3 包，餐前餐後均可食用；可直接食用或加入溫涼飲品中。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
@@ -3299,7 +3362,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "益生菌補給",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
+    usage: "依高鈣益生菌與蔓越莓益生菌各自商品標示食用；可依日常需求分時補充。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
@@ -3318,7 +3381,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "益生菌補給",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
+    usage: "蔓越莓益生菌請依商品標示固定補充；高鈣益生菌可於餐後搭配食用。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
@@ -3336,7 +3399,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     suitableFor: [
       "組合優惠",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
+    usage: "清潔並擦乾欲貼敷部位，撕下背膠後平整貼上；建議每片貼敷時間不超過 4–6 小時。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
@@ -3354,7 +3417,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     suitableFor: [
       "組合優惠",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
+    usage: "依照組合內各品項使用方式使用；保健食品依商品標示食用，保養與生活用品依品項標示操作。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
@@ -3374,7 +3437,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "口腔清潔",
       "生福科技",
     ],
-    usage: "潔口液與牙膏請依商品標示方式使用。",
+    usage: "刷牙後取適量潔口液漱口約 30 秒至 1 分鐘後吐出；牙膏依日常刷牙方式使用並徹底漱口。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "3罐潔口液贈薰衣草牙膏1條，組合價 $1,500；庫存與效期依 LINE 小幫手確認為準。",
@@ -3394,7 +3457,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "龍血系列",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
+    usage: "洗髮精取適量於濕髮與頭皮按摩起泡後沖淨；沐浴乳取適量於濕潤肌膚搓揉起泡後洗淨。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
@@ -3412,7 +3475,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     suitableFor: [
       "組合優惠",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
+    usage: "每天至少刷牙兩次，每次 2–3 分鐘；取適量牙膏刷洗牙齒各面後徹底漱口吐出。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
@@ -3431,7 +3494,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "面膜保養",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
+    usage: "清潔後取出面膜平整敷於臉部，依標示時間使用後取下，輕拍殘留精華至吸收。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
@@ -3627,7 +3690,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "組合優惠",
       "益生菌補給",
     ],
-    usage: "組合品項請加入清單，送出後由 LINE 小幫手協助確認組合內容、數量與優惠。",
+    usage: "每日 1–2 包，早晚或餐後依商品標示食用；持續補充作為日常營養保健。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
@@ -3647,7 +3710,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "龍血系列",
       "清潔卸妝",
     ],
-    usage: "先以龍血求麗卸妝油清潔彩妝與髒污，再搭配龍血求麗潔顏慕絲完成日常潔顏。",
+    usage: "手臉乾燥時先以卸妝油按摩全臉並加水乳化沖淨，再使用潔顏慕絲清潔後以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "潔顏慕絲 1 瓶 + 卸妝油 1 瓶，1+1 兩瓶 $1,080；庫存與效期依 LINE 小幫手確認為準。",
@@ -4320,24 +4383,25 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
   135: {
-    cardName: "龍血手工皂任選4款",
-    cardSubtitle: "5款可選・任選4款 $799",
-    spec: "龍血檀香靜心皂 / 龍血艾草保庇皂 / 龍血玫瑰美膚皂 / 龍血檸檬馬鞭草皂 / 龍血薰衣草舒緩皂可任選，共4款",
-    intro: "龍血手工皂任選4款為回購群肥皂組合優惠，5款香氣可依需求搭配。",
+    cardName: "手工皂 / 香氛皂任選4款",
+    cardSubtitle: "6款可選・任選4款 $799",
+    spec: "龍血檀香靜心皂 / 龍血艾草保庇皂 / 龍血玫瑰美膚皂 / 龍血檸檬馬鞭草皂 / 龍血薰衣草舒緩皂 / 繡球花漾香氛皂可任選，共4款",
+    intro: "香氛手工皂任選4款優惠，龍血草本香調與繡球花漾香氛可自由搭配。",
     features: [
-      "龍血檀香靜心皂、龍血艾草保庇皂、龍血玫瑰美膚皂、龍血檸檬馬鞭草皂、龍血薰衣草舒緩皂可任選。",
-      "任選4款 $799，適合日常清潔用品補貨。",
-      "組合內容、效期與庫存依 LINE 小幫手確認為準。",
+      "6款香氛皂可任選，適合全家日常清潔補貨。",
+      "每款皆為200g±10g大容量，洗後柔嫩不緊繃。",
+      "任選4款 $799，組合內容與庫存依 LINE 小幫手確認為準。",
     ],
     suitableFor: [
-      "組合優惠",
+      "任選優惠",
       "肥皂",
+      "香氛皂",
       "日常清潔",
     ],
-    usage: "加水搓揉起泡後清潔肌膚，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "將手工皂沾水搓揉起泡，塗抹於臉部或身體並輕柔按摩，最後以清水沖洗乾淨。",
+    notice: "僅供外用。使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼通風處保持乾燥。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "龍血手工皂任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
+    priceNote: "手工皂 / 香氛皂任選4款 $799；庫存與效期依 LINE 小幫手確認為準。",
   },
   136: {
     cardName: "櫻の雪美白精華乳液組",
@@ -4354,7 +4418,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "美白淡斑",
       "櫻の雪系列",
     ],
-    usage: "清潔後依化妝水、精華液、乳液順序使用；實際使用方式依商品標示為準。",
+    usage: "臉部清潔後依序使用化妝水、精華液與乳液，均勻塗抹並輕拍按摩至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "購買精華液30mL + 乳液100mL，贈化妝水150mL，組合價 $1,780；庫存與效期依 LINE 小幫手確認為準。",
@@ -4414,7 +4478,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "洗沐系列",
       "頭皮養護",
     ],
-    usage: "先以龍血求麗頭皮修護洗髮精清潔頭皮與髮絲，洗後可依商品標示搭配阿甘甦醒髮根養護液使用。",
+    usage: "先以洗髮精清潔頭皮與髮絲；洗後將頭皮擦至半乾或全乾，再使用阿甘養髮液按摩頭皮，免沖洗。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請以清水沖洗。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "龍血求麗頭皮修護洗髮精 + 阿甘甦醒髮根養護液 1+1 組合價 $1,500；庫存與效期依 LINE 小幫手確認為準。",
@@ -4454,7 +4518,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "生福科技",
       "外部廠商",
     ],
-    usage: "使用方式依商品標示或 LINE 小幫手說明為準。",
+    usage: "每日依產品包裝標示或客服說明食用；特殊體質者請先詢問專業人員。",
     notice: "商品規格、使用方式與注意事項請依商品標示或小幫手說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "梅托洛買一送二 $3,600；庫存與效期依 LINE 小幫手確認為準。",
@@ -4482,6 +4546,133 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
+  145: {
+    cardName: "龍血求麗甦醒精油滾珠",
+    cardSubtitle: "9mL・精油滾珠",
+    spec: "9mL / 支",
+    intro: "龍血系列隨身精油滾珠，適合日常香氛、肩頸放鬆感與隨身舒緩保養。",
+    features: [
+      "滾珠設計方便隨身使用。",
+      "龍血系列香氣，適合日常放鬆與香氛保養。",
+      "小容量好攜帶，可放包包或辦公桌備用。",
+    ],
+    suitableFor: [
+      "精油滾珠",
+      "龍血系列",
+      "隨身香氛",
+      "生活選品",
+    ],
+    usage: "取適量滾珠輕抹於手腕、耳後、肩頸等部位，避開眼周與傷口。",
+    notice: "僅供外用。使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "牌價 $390；庫存與效期依 LINE 小幫手確認為準。",
+  },
+  146: {
+    cardName: "薰衣草萬用精油滾珠",
+    cardSubtitle: "9mL・精油滾珠",
+    spec: "9mL / 支",
+    intro: "薰衣草香氛精油滾珠，適合睡前放鬆、隨身舒緩與日常香氣保養。",
+    features: [
+      "薰衣草香氣，適合夜間與日常放鬆使用。",
+      "滾珠設計方便局部塗抹，不易沾手。",
+      "小容量好攜帶，適合隨身香氛保養。",
+    ],
+    suitableFor: [
+      "薰衣草精油",
+      "隨身滾珠",
+      "睡前放鬆",
+      "生活選品",
+    ],
+    usage: "取適量滾珠輕抹於手腕、耳後、肩頸等部位，避開眼周與傷口。",
+    notice: "僅供外用。使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "牌價 $390；庫存與效期依 LINE 小幫手確認為準。",
+  },
+  147: {
+    cardName: "繡球花漾香氛皂",
+    cardSubtitle: "200g±10g・香氛皂",
+    spec: "200g±10g / 塊",
+    intro: "法式花香系香氛皂，泡沫細緻柔和，洗後保留潤澤不緊繃的清新膚觸。",
+    features: [
+      "繡球花漾香氛，沐浴後留下柔和花香。",
+      "泡沫細緻綿密，溫和帶走肌膚髒污。",
+      "200g大容量，適合日常全身潔膚使用。",
+    ],
+    suitableFor: [
+      "香氛皂",
+      "肥皂",
+      "法式花香",
+      "日常潔膚",
+    ],
+    usage: "將手工皂沾水搓揉出豐富泡沫，均勻塗抹於全身肌膚並輕柔按摩，最後以清水徹底沖洗乾淨。",
+    notice: "僅供外用，使用後若有不適請暫停使用。本產品含有天然植物成分，請放置於陰涼通風處保持乾燥。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "單入 $290；可加入手工皂 / 香氛皂任選4款 $799。",
+  },
+  148: {
+    cardName: "絕美溫感變色護唇膏",
+    cardSubtitle: "3.5g・護唇膏",
+    spec: "3.5g / 支",
+    intro: "溫感變色護唇膏，依唇溫呈現自然氣色，素顏也有柔嫩紅潤感。",
+    features: [
+      "依唇溫呈現自然顯色效果。",
+      "兼具護唇滋潤與氣色修飾感。",
+      "質地輕盈好塗抹，適合日常補擦。",
+    ],
+    suitableFor: [
+      "護唇膏",
+      "變色護唇",
+      "保濕潤澤",
+      "生活選品",
+    ],
+    usage: "日常感到雙唇乾燥或想提升氣色時，轉出適量護唇膏均勻塗抹於雙唇；可單獨使用或作為唇膏前打底。",
+    notice: "請避免轉出過長以免折斷。使用後若有不適，請暫停使用。請放置於陰涼處，避免陽光直射與高溫。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "單支 $290；護唇膏任選2條 $500。",
+  },
+  149: {
+    cardName: "絕美保濕護唇膏",
+    cardSubtitle: "3.5g・護唇膏",
+    spec: "3.5g / 支",
+    intro: "日常保濕護唇膏，滋潤乾燥雙唇，適合白天補擦或夜間厚敷保養。",
+    features: [
+      "滋潤乾燥、緊繃的雙唇。",
+      "可日常補擦，也可睡前厚敷加強保養。",
+      "溫和植萃保養感，維持柔嫩不緊繃。",
+    ],
+    suitableFor: [
+      "護唇膏",
+      "保濕護唇",
+      "乾燥唇",
+      "夜間厚敷",
+    ],
+    usage: "每日日常或感覺嘴唇乾燥時，適量塗抹於雙唇；夜間睡前可加量厚敷，作為夜間密集護唇保養。",
+    notice: "請避免轉出過長以免折斷。使用後若有紅腫或不適，請暫停使用並視情況諮詢專業人員。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "單支 $290；護唇膏任選2條 $500。",
+  },
+  150: {
+    cardName: "絕美護唇膏任選2條",
+    cardSubtitle: "2款可選・任選2條 $500",
+    spec: "絕美溫感變色護唇膏 / 絕美保濕護唇膏可任選，共2條",
+    intro: "絕美護唇膏任選2條優惠，變色氣色款與日常保濕款可自由搭配。",
+    features: [
+      "溫感變色護唇膏與保濕護唇膏可任選。",
+      "任選2條 $500，適合日常護唇補貨。",
+      "可依白天氣色、夜間保濕需求搭配使用。",
+    ],
+    suitableFor: [
+      "任選優惠",
+      "護唇膏",
+      "保濕潤澤",
+      "生活選品",
+    ],
+    usage: "依照所選護唇膏使用方式使用；日常乾燥時補擦，夜間可加強厚敷保養。",
+    notice: "請避免轉出過長以免折斷。使用後若有不適，請暫停使用並放置於陰涼處保存。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "護唇膏任選2條 $500；庫存與效期依 LINE 小幫手確認為準。",
+  },
+
 };
 
 const skinFilters = [
@@ -4507,7 +4698,7 @@ const comboProductIds = new Set<number>([
   54, 55,
   56, 57, 58, 59, 60,
   71,
-  79, 80, 81, 82, 93, 94,
+  79, 80, 81, 82, 93, 94, 147, 148, 149, 150,
 ]);
 
 const expiringProductIds = new Set<number>([10, 11]);
@@ -4535,7 +4726,14 @@ const productImageFallbacks: Record<number, string[]> = {
   81: ["/products/soap lemo.png", "/products/bdsoap.png"],
   82: ["/products/soap lav.png", "/products/bdsoap.png"],
   94: ["/products/soap sandalwood.png", "/products/bdsoap.png"],
+  145: ["/products/dragon roller.png", "/products/龍血求麗甦醒精油滾珠.jpg", "/products/龍血求麗甦醒精油滾珠.png"],
+  146: ["/products/lavender roller.png", "/products/薰衣草萬用精油滾珠.jpg", "/products/薰衣草萬用精油滾珠.png"],
+  147: ["/products/soap Hydrangea.png", "/products/soap hydrangea.png", "/products/bdsoap.png"],
+  148: ["/products/lip tint.jpg", "/products/lip tint.png", "/products/lip combo.jpg"],
+  149: ["/products/lip balm.jpg", "/products/lip balm.png", "/products/lip combo.jpg"],
+  150: ["/products/lip combo.jpg", "/products/lip tint.jpg", "/products/lip balm.jpg"],
   144: [
+    "/products/thlugi.png",
     "/products/視綠佳.jpg",
     "/products/視綠佳.png",
     "/products/視綠佳.jpeg",
@@ -4648,8 +4846,10 @@ export default function Home() {
   const heroSeriesEntries: {
     title: string;
     text: string;
-    category: MainCategory;
+    category?: MainCategory;
     series?: string;
+    filter?: string;
+    label?: string;
     product?: Product;
   }[] = [
     {
@@ -4680,6 +4880,13 @@ export default function Home() {
       series: "肥皂",
       product: products.find((product) => product.id === 135),
     },
+    {
+      title: "即期良品",
+      text: "短效期優惠，數量有限",
+      filter: "clearance-all",
+      label: "即期良品",
+      product: products.find((product) => product.id === 10) ?? products.find((product) => product.id === 11),
+    },
   ];
 
   const quickSearchTerms = [
@@ -4691,6 +4898,7 @@ export default function Home() {
     "櫻の雪",
     "生福科技",
     "面膜",
+    "即期良品",
   ];
 
   const collectionSeriesChips = seriesList.filter((series) => series !== "全部").slice(0, 14);
@@ -4830,9 +5038,9 @@ export default function Home() {
         externalVendors.some((vendor) => product.series.includes(vendor) || fullText.includes(vendor)));
 
     const isLife =
-      ["牙膏", "肥皂", "護手霜", "香水", "精油", "貼布"].includes(product.category) ||
+      ["牙膏", "肥皂", "護手霜", "護唇膏", "香水", "精油", "貼布"].includes(product.category) ||
       (product.category === "組合價" &&
-        ["牙膏組合", "貼布組合", "肥皂組合", "香氛組合"].some((series) => product.series.includes(series)));
+        ["牙膏組合", "貼布組合", "肥皂組合", "香氛組合", "護唇膏組合"].some((series) => product.series.includes(series)));
 
     const isHealth =
       product.category === "保健食品" ||
@@ -4858,6 +5066,18 @@ export default function Home() {
         return fullText.includes("買一送一") || fullText.includes("買一送二") || fullText.includes("1+1");
       case "deals-pick":
         return fullText.includes("任選");
+
+
+      case "need-hot":
+        return [53, 83, 84, 85, 100, 86, 135, 89, 91, 101].includes(product.id);
+      case "need-dragon":
+        return fullText.includes("龍血") || product.series.includes("龍血");
+      case "need-cleansing":
+        return fullText.includes("潔顏") || fullText.includes("卸妝") || fullText.includes("洗卸") || fullText.includes("去角質") || fullText.includes("角質凝露");
+      case "need-health":
+        return isHealth || ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "土龍", "梅托洛", "視綠佳", "牛樟芝"].some((keyword) => fullText.includes(keyword));
+      case "need-life":
+        return isLife || ["貼布", "牙膏", "肥皂", "護手霜", "護唇膏", "潔口液", "香水", "美體"].some((keyword) => fullText.includes(keyword));
 
       case "skincare-all":
         return product.category === "保養品";
@@ -4919,6 +5139,8 @@ export default function Home() {
         return product.category === "肥皂" || product.series.includes("肥皂");
       case "life-handcream":
         return product.category === "護手霜" || fullText.includes("護手霜");
+      case "life-lip":
+        return product.category === "護唇膏" || fullText.includes("護唇") || product.series.includes("護唇膏");
       case "life-perfume":
         return product.category === "香水" || fullText.includes("香水");
       case "life-essential":
@@ -4963,6 +5185,7 @@ export default function Home() {
       category === "牙膏" ||
       category === "肥皂" ||
       category === "護手霜" ||
+      category === "護唇膏" ||
       category === "香水" ||
       category === "貼布" ||
       category === "外部廠商"
@@ -5522,7 +5745,7 @@ export default function Home() {
     id?: string;
     eyebrow: string;
     title: string;
-    subtitle: string;
+    subtitle?: string;
     products: Product[];
     actionLabel?: string;
     onAction?: () => void;
@@ -5532,7 +5755,7 @@ export default function Home() {
         <div className="section-heading compact">
           <p>{eyebrow}</p>
           <h2>{title}</h2>
-          <span>{subtitle}</span>
+          {subtitle && <span>{subtitle}</span>}
         </div>
 
         <div className="home-product-grid">
@@ -5765,7 +5988,7 @@ export default function Home() {
     }
 
     if (bullets.length === 0) {
-      bullets.push("可先加入清單，送出後由 LINE 小幫手協助確認庫存、價格與適合搭配品項。");
+      bullets.push("加入清單後由 LINE 小幫手確認庫存、價格與適合搭配品項。");
     }
 
     return bullets.slice(0, 4);
@@ -6135,7 +6358,6 @@ export default function Home() {
             <div>
               <p>Jourdeness Castle</p>
               <h2>搜尋商品</h2>
-              <span>輸入部分字詞，直接在搜尋頁查看結果</span>
             </div>
           </div>
 
@@ -6144,19 +6366,16 @@ export default function Home() {
             <input
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="模糊搜尋：龍血、面膜、益生菌、冷杉、即期"
+              placeholder="模糊搜尋：龍血、益生菌、貼布、面膜、即期"
               autoFocus
             />
             {searchQuery.trim() && (
               <button type="button" onClick={clearSearch}>清除</button>
             )}
           </div>
-          <p>可輸入部分字詞或簡寫，例如「龍血慕絲」、「bcha」、「冷杉即期」。搜尋結果會顯示在這個搜尋頁，不會顯示在首頁下方。</p>
-
           <div className="search-hot-panel-v22">
             <div>
               <strong>熱門搜尋</strong>
-              <span>不知道要找什麼時，可以先點這些關鍵字逛。</span>
             </div>
 
             <div className="search-hot-chip-row-v22">
@@ -6336,7 +6555,7 @@ export default function Home() {
             <section className="collection-featured-strip-v22">
               <div>
                 <p>Featured</p>
-                <h3>這個分類可以先看</h3>
+                <h3>精選商品</h3>
               </div>
 
               <div className="collection-featured-list-v22">
@@ -6394,15 +6613,9 @@ export default function Home() {
             </div>
 
             <nav className="drawer-nav drawer-accordion-v25" aria-label="商城分類選單">
-              <div className="drawer-category-intro-v25">
-                <strong>商城分類</strong>
-                <span>先點大分類，再選細分類看商品。</span>
-              </div>
-
               <div className="drawer-accordion-item-v25">
                 <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("本月優惠")}>
                   <span>本月優惠</span>
-                  <em>{expandedDrawerGroup === "本月優惠" ? "收合" : "展開"}</em>
                 </button>
 
                 {expandedDrawerGroup === "本月優惠" && (
@@ -6418,7 +6631,6 @@ export default function Home() {
               <div className="drawer-accordion-item-v25">
                 <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("自家保養")}>
                   <span>自家保養</span>
-                  <em>{expandedDrawerGroup === "自家保養" ? "收合" : "展開"}</em>
                 </button>
 
                 {expandedDrawerGroup === "自家保養" && (
@@ -6438,7 +6650,6 @@ export default function Home() {
               <div className="drawer-accordion-item-v25">
                 <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("洗沐髮品")}>
                   <span>洗沐髮品</span>
-                  <em>{expandedDrawerGroup === "洗沐髮品" ? "收合" : "展開"}</em>
                 </button>
 
                 {expandedDrawerGroup === "洗沐髮品" && (
@@ -6455,7 +6666,6 @@ export default function Home() {
               <div className="drawer-accordion-item-v25">
                 <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("保健食品")}>
                   <span>保健食品</span>
-                  <em>{expandedDrawerGroup === "保健食品" ? "收合" : "展開"}</em>
                 </button>
 
                 {expandedDrawerGroup === "保健食品" && (
@@ -6472,7 +6682,6 @@ export default function Home() {
               <div className="drawer-accordion-item-v25">
                 <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("面膜專區")}>
                   <span>面膜專區</span>
-                  <em>{expandedDrawerGroup === "面膜專區" ? "收合" : "展開"}</em>
                 </button>
 
                 {expandedDrawerGroup === "面膜專區" && (
@@ -6489,7 +6698,6 @@ export default function Home() {
               <div className="drawer-accordion-item-v25">
                 <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("生活選品")}>
                   <span>生活選品</span>
-                  <em>{expandedDrawerGroup === "生活選品" ? "收合" : "展開"}</em>
                 </button>
 
                 {expandedDrawerGroup === "生活選品" && (
@@ -6499,6 +6707,7 @@ export default function Home() {
                     <button type="button" onClick={() => openCommerceFilter("life-patch", "生活選品 / 貼布")}>貼布</button>
                     <button type="button" onClick={() => openCommerceFilter("life-soap", "生活選品 / 肥皂")}>肥皂</button>
                     <button type="button" onClick={() => openCommerceFilter("life-handcream", "生活選品 / 護手霜")}>護手霜</button>
+                    <button type="button" onClick={() => openCommerceFilter("life-lip", "生活選品 / 護唇膏")}>護唇膏</button>
                     <button type="button" onClick={() => openCommerceFilter("life-perfume", "生活選品 / 香水")}>香水</button>
                     <button type="button" onClick={() => openCommerceFilter("life-essential", "生活選品 / 精油")}>精油</button>
                   </div>
@@ -6508,7 +6717,6 @@ export default function Home() {
               <div className="drawer-accordion-item-v25">
                 <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("外部廠商")}>
                   <span>外部廠商</span>
-                  <em>{expandedDrawerGroup === "外部廠商" ? "收合" : "展開"}</em>
                 </button>
 
                 {expandedDrawerGroup === "外部廠商" && (
@@ -6526,18 +6734,9 @@ export default function Home() {
               </div>
 
               <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("即期良品")}>
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => openCommerceFilter("clearance-all", "即期良品")}>
                   <span>即期良品</span>
-                  <em>{expandedDrawerGroup === "即期良品" ? "收合" : "展開"}</em>
                 </button>
-
-                {expandedDrawerGroup === "即期良品" && (
-                  <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => openCommerceFilter("clearance-all", "即期良品 / 全部即期良品")}>全部即期良品</button>
-                    <button type="button" onClick={() => openCommerceFilter("clearance-fir", "即期良品 / 冷杉出清")}>冷杉出清</button>
-                    <button type="button" onClick={() => openCommerceFilter("clearance-limited", "即期良品 / 限量效期優惠")}>限量效期優惠</button>
-                  </div>
-                )}
               </div>
             </nav>
 
@@ -6631,7 +6830,7 @@ export default function Home() {
         <div className="combo-showcase-head-v242">
           <p>Combo Deals</p>
           <h2>四大熱門回購</h2>
-          <span>益生菌、貼布、肥皂與龍血組合，先看最容易成交的精選。</span>
+          
         </div>
 
         <div className="combo-showcase-list-v242">
@@ -6663,9 +6862,8 @@ export default function Home() {
 
       <section className="series-entry-section-v242" aria-label="熱門系列入口">
         <div className="series-entry-head-v242">
-          <p>Shop by Series</p>
-          <h2>簡單逛這 4 區</h2>
-          <span>不塞滿所有系列，先看最熱門、最容易回購的入口。</span>
+          <p>Need Picks</p>
+          <h2>依需求選購</h2>
         </div>
 
         <div className="series-entry-grid-v242">
@@ -6673,7 +6871,11 @@ export default function Home() {
             <button
               type="button"
               key={`series-entry-${entry.title}`}
-              onClick={() => handleDrawerCategory(entry.category, entry.series ?? "全部")}
+              onClick={() =>
+                entry.filter
+                  ? openCommerceFilter(entry.filter, entry.label ?? entry.title)
+                  : handleDrawerCategory(entry.category!, entry.series ?? "全部")
+              }
             >
               <div>
                 {entry.product && hasRealImage(entry.product) ? (
@@ -6689,7 +6891,7 @@ export default function Home() {
               </div>
               <strong>{entry.title}</strong>
               <p>{entry.text}</p>
-              <em>進入系列</em>
+              <em>查看商品</em>
             </button>
           ))}
         </div>
@@ -6699,51 +6901,36 @@ export default function Home() {
         id="home-combo-products"
         eyebrow="Hot Picks"
         title="回購熱門精選"
-        subtitle="首頁只放最主打的幾款，其他商品可用分類或搜尋找"
         products={homeComboProducts}
       />
 
       <section className="commerce-trust-flow-v23 trust-flow-after-deals-v24" aria-label="購買流程">
         <div className="trust-flow-title-v23">
           <p>How to Order</p>
-          <h2>第一次訂購嗎？</h2>
-          <span>這裡不是直接付款的購物車，送出後會先由 LINE 小幫手確認。</span>
+          <h2>購物流程</h2>
         </div>
 
         <div className="trust-flow-steps-v23">
           <div>
             <strong>01</strong>
             <span>加入清單</span>
-            <p>先把想詢問或訂購的商品加入清單。</p>
+
           </div>
           <div>
             <strong>02</strong>
             <span>送出資料</span>
-            <p>填寫宅配資訊，送出訂購清單。</p>
+
           </div>
           <div>
             <strong>03</strong>
             <span>LINE 確認</span>
-            <p>小幫手確認庫存、效期、金額與優惠。</p>
+
           </div>
           <div>
             <strong>04</strong>
             <span>匯款成立</span>
             <p>確認無誤後提供匯款資訊，完成後成立。</p>
           </div>
-        </div>
-      </section>
-
-      <section className="simple-more-gateway-v25382" aria-label="更多商品入口">
-        <div>
-          <p>Find More</p>
-          <h2>其他商品用分類或搜尋找</h2>
-          <span>首頁不堆滿全部系列，想找水光、茶樹、櫻の雪、面膜或外部廠商，可以點分類或直接搜尋。</span>
-        </div>
-        <div className="simple-more-actions-v25382">
-          <button type="button" onClick={() => openCommerceFilter("deals-all", "本月優惠 / 全部優惠")}>看本月優惠</button>
-          <button type="button" onClick={() => openCommerceFilter("skincare-all", "自家保養 / 全部保養")}>看保養品</button>
-          <button type="button" onClick={() => setIsSearchOpen(true)}>搜尋商品</button>
         </div>
       </section>
 
@@ -6761,7 +6948,7 @@ export default function Home() {
               <div>
                 <p className="cart-eyebrow">Checkout</p>
                 <h2>確認訂購清單</h2>
-                <span>先確認商品明細與宅配資料；送出後由 LINE 小幫手確認庫存、效期、金額與付款方式。</span>
+                <span>確認商品明細與宅配資料；送出後由 LINE 小幫手確認庫存、效期、金額與付款方式。</span>
               </div>
               <button className="cart-close" onClick={() => setIsCartOpen(false)}>
                 ×
@@ -6860,7 +7047,7 @@ export default function Home() {
                     <div className="checkout-card-title">
                       <p>Add-on Ideas</p>
                       <h3>可加購湊免運</h3>
-                      <span>先加入清單也沒關係，實際金額仍由 LINE 小幫手確認。</span>
+                      <span>實際金額由 LINE 小幫手確認。</span>
                     </div>
 
                     <div className="checkout-upsell-list-v22">
@@ -6901,8 +7088,8 @@ export default function Home() {
                       <span>送出後只是建立清單。</span>
                     </div>
                     <div>
-                      <strong>先確認再成立</strong>
-                      <span>庫存、效期、金額先對齊。</span>
+                      <strong>確認後成立</strong>
+                      <span>庫存、效期、金額確認後成立。</span>
                     </div>
                     <div>
                       <strong>滿額免運</strong>
@@ -6985,7 +7172,7 @@ export default function Home() {
             ) : (
               <div className="empty-cart checkout-empty-v21">
                 <h3>清單目前是空的</h3>
-                <p>可以先回商品列表加入想詢問或訂購的品項。</p>
+                <p>回商品列表加入想詢問或訂購的品項。</p>
               </div>
             )}
           </div>
@@ -7088,7 +7275,7 @@ export default function Home() {
                 </div>
                 <div>
                   <strong>LINE 確認</strong>
-                  <span>庫存效期先確認</span>
+                  <span>庫存效期確認</span>
                 </div>
               </section>
 
