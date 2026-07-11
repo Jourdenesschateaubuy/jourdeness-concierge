@@ -264,40 +264,40 @@ const products: Product[] = [
     name: "龍血求麗化妝水",
     category: "保養品",
     series: "龍血系列",
-    originalPrice: "原價待補",
-    price: "產地價 $890",
+    originalPrice: "原價 $ 1,190",
+    price: "產地價 $ 890",
     image: "/products/db-1.jpg",
-    description: "龍血系列保養品。",
+    description: "120mL / 瓶。前導補水、油水平衡，龍血系列肌膚乖乖水。",
   },
   {
     id: 18,
-    name: "龍血精華液",
+    name: "龍血求麗精華",
     category: "保養品",
     series: "龍血系列",
-    originalPrice: "原價待補",
-    price: "缺貨中",
+    originalPrice: "原價 $ 1,290",
+    price: "產地價 $ 695",
     image: "/products/db-2.jpg",
-    description: "龍血系列保養品。",
+    description: "30mL / 瓶。龍血小橘瓶，熬夜、初老與疲憊肌修護精華。",
   },
   {
     id: 19,
     name: "龍血求麗修護乳",
     category: "保養品",
     series: "龍血系列",
-    originalPrice: "原價待補",
-    price: "產地價 買一送一 $ 1,290",
+    originalPrice: "原價 $ 1,290",
+    price: "產地價 $ 1,290",
     image: "/products/db-3.jpg",
-    description: "龍血系列保養品。",
+    description: "80mL / 瓶。買一送一，清爽水凝質地修護乳。",
   },
   {
     id: 20,
     name: "龍血求麗修護霜",
     category: "保養品",
     series: "龍血系列",
-    originalPrice: "原價待補",
+    originalPrice: "原價 $ 1,490",
     price: "產地價 $ 1,190",
     image: "/products/db-4.jpg",
-    description: "龍血系列保養品。",
+    description: "35mL / 瓶。第二件五折，夜間深層鎖水修護霜。",
   },
 
   {
@@ -631,10 +631,10 @@ const products: Product[] = [
     name: "龍血玻尿酸保濕精華液",
     category: "保養品",
     series: "龍血系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 3,000",
+    price: "產地價 $ 1,980",
     image: "/products/DBME.jpg",
-    description: "龍血系列保養品。",
+    description: "300mL / 瓶。買一送一，城堡必敗國民保濕精華。",
   },
   {
     id: 54,
@@ -1868,76 +1868,97 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "實際優惠依 LINE 小幫手確認為準。",
   },
   17: {
-    cardName: "龍血化妝水",
-    cardSubtitle: "龍血系列保養品・龍血系列",
-    spec: "龍血系列保養品",
-    intro: "龍血求麗化妝水為龍血系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardName: "龍血求麗化妝水",
+    cardSubtitle: "120mL・肌膚乖乖水・前導補水",
+    spec: "120mL / 瓶",
+    intro: "網美與美妝部落客口碑盛讚的「肌膚乖乖水」，專為日間醒膚與夜間調理打造。洗臉後第一步快速補水、穩定膚況，幫助調控皮脂與油水平衡，讓後續精華與乳液更好吸收。",
     features: [
-      "適合清潔後作為保養前導使用。",
-      "可依膚況搭配同系列精華、乳液或乳霜。",
-      "協助建立日常保養基礎步驟。",
+      "秘魯龍血前導修護：嚴選歐盟 ECOCERT 有機認證秘魯龍血素，幫助安撫不穩定膚況，強化肌膚防禦力。",
+      "玻尿酸鈉高效補水：快速補充肌膚水分，提升長效保濕續航力，讓肌膚維持水潤光澤。",
+      "調理油水平衡：溫和調理肌膚紋理，改善因乾燥引起的出油問題，妝前使用也能讓妝感更服貼。",
+      "4 大安心零負擔：無酒精、無香精、無色素、無 PARABEN 防腐劑，搭配檸檬、尤加利等天然精油植萃香調。",
     ],
     suitableFor: [
-      "龍血系列",
+      "乾燥缺水",
+      "油水不平衡",
+      "熬夜暗沉肌",
+      "3C 壓力疲憊肌",
+      "保養吸收感不佳",
     ],
-    usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "每日早晚於臉部清潔後，取適量化妝水於掌心或化妝棉上，均勻輕拍、擦拭於臉部與頸部肌膚直到吸收。也可針對局部乾燥部位短時間濕敷。",
+    notice: "本產品含天然植物萃取成分，可能因產地、氣候或季節不同，使色澤或氣味略有差異，屬正常現象。使用後若有不適請立即停止使用並諮詢皮膚科醫師。對精油成分過敏者，建議先於手臂內側測試。請存放於避免陽光直射、高溫或潮濕處，並放置於孩童不易取得處。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   18: {
-    cardName: "龍血精華液",
-    cardSubtitle: "龍血系列保養品・龍血系列",
-    spec: "龍血系列保養品",
-    intro: "龍血精華液為龍血系列保養品項，可依日常膚況與保養需求搭配使用。",
+    name: "龍血求麗精華",
+    cardName: "龍血求麗精華",
+    cardSubtitle: "30mL・龍血小橘瓶・熬夜修護",
+    spec: "30mL / 瓶",
+    intro: "風靡美妝圈、被譽為熬夜族神級救星的「龍血小橘瓶」。專為初老肌、嬌弱肌與經常面對 3C 螢幕的疲憊肌打造，清透水感質地快速吸收，幫助穩定膚況、修護疲憊暗沉肌。",
     features: [
-      "適合作為日常保養中的加強型品項。",
-      "可依需求搭配化妝水與乳霜使用。",
-      "適合想加強特定保養需求的客人。",
+      "秘魯龍血樹脂修護力：嚴選通過歐盟 ECOCERT 有機認證與公平交易的秘魯龍血素，幫助修護肌膚、穩定膚況並強化屏障。",
+      "日本富士雨生紅球藻：添加藻紅素成分，幫助對抗初老、維持肌膚彈潤度與細緻光澤感。",
+      "IRB 人體實測有感：舒緩度有感提升，並同步幫助保濕、亮白與緊緻。",
+      "4 大安心無添加：無酒精、香精、色素與 PARABEN 防腐劑，搭配檸檬、尤加利、快樂鼠尾草等天然植萃精油香調。",
     ],
     suitableFor: [
-      "龍血系列",
+      "敏感舒緩",
+      "抗皺緊緻",
+      "熬夜暗沉肌",
+      "初老肌",
+      "3C 壓力疲憊肌",
     ],
-    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "每日早晚於化妝水後，使用玻璃滴管取適量精華液，均勻塗抹於臉部與頸部肌膚，順著肌膚紋理輕柔拍勻並按摩至吸收。妝前使用也可提升肌膚保濕度，使底妝更服貼。",
+    notice: "本產品含天然植物萃取成分，可能因產地、氣候或季節不同，使色澤或氣味略有差異，屬正常現象。使用後若有不適請立即停止使用並諮詢皮膚科醫師。配方含天然植物精油，對精油成分過敏者建議先於手臂內側測試。請存放於避免陽光直射、高溫或潮濕處，並放置於孩童不易取得處。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
   19: {
-    cardName: "龍血修護乳",
-    cardSubtitle: "龍血系列保養品・龍血系列",
-    spec: "龍血系列保養品",
-    intro: "龍血求麗修護乳為龍血系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardName: "龍血求麗修護乳",
+    cardSubtitle: "80mL・修護水乳液・買一送一",
+    spec: "80mL / 瓶",
+    intro: "網美口碑盛讚、被譽為地表最強的「修護水乳液」。專為亞洲氣候與膚質研發，水凝科技打造清爽如厚精華般的質地，幫助穩定換季不乖肌，補水、修護、鎖水一次完成。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "輕盈水凝科技質地：擁有乳液與乳霜的滋養力，卻能甩掉黏膩感，一年四季皆適用。",
+      "秘魯龍血樹脂 × 五、六胜肽：結合 ECOCERT 有機認證龍血素與高效撫紋胜肽，幫助修護屏障、找回彈潤膚感。",
+      "三大黃金鎖水因子：添加玫瑰花水、玻尿酸鈉與卵磷脂，建立保濕防護網，提升肌膚持水力。",
+      "植萃精油香調紓壓：無酒精、無色素、無香精與 PARABEN 防腐劑，搭配檸檬、尤加利、快樂鼠尾草等天然植物精油。",
     ],
     suitableFor: [
-      "龍血系列",
+      "乾燥缺水",
+      "敏感舒緩",
+      "初老暗沉肌",
+      "怕乳液厚重黏膩",
+      "冷氣房與換季乾燥",
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "每日早晚於化妝水與精華液後使用。建議全臉約 1.5 次按壓量，點塗於臉部與頸部肌膚，順著肌膚紋理輕柔拍勻、按壓至完全吸收。妝前使用也能讓後續底妝更服貼。",
+    notice: "本產品含天然植物萃取成分，可能因產地、氣候或季節不同，使色澤或氣味略有差異，屬正常現象。使用後若有不適請立即停止使用並諮詢皮膚科醫師。配方含天然植物精油，對精油成分過敏者建議先於手臂內側測試。請存放於避免陽光直射、高溫或潮濕處，並放置於孩童不易取得處。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
+    priceNote: "買一送一，實際活動、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   20: {
-    cardName: "龍血修護霜",
-    cardSubtitle: "龍血系列保養品・龍血系列",
-    spec: "龍血系列保養品",
-    intro: "龍血求麗修護霜為龍血系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardName: "龍血求麗修護霜",
+    cardSubtitle: "35mL・夜間鎖水・第二件五折",
+    spec: "35mL / 瓶",
+    intro: "美妝社群與網美口碑盛讚、被譽為初老肌對抗細紋的「神奇撫紋小熨燙」。作為保養最後一步，幫助夜間深層封存滋養，讓肌膚重回彈嫩、緊實與細緻透亮感。",
     features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
+      "秘魯龍血樹脂 × 五、六胜肽：深層修護並強健肌膚屏障，幫助撫平乾燥細紋，改善初老疲憊肌。",
+      "摩洛哥堅果油 × 乳木果油：富含維生素 E 與植物油脂，帶來柔潤滋養，幫助緊實並平滑肌膚。",
+      "24 小時長效鎖水防護膜：玻尿酸鈉幫助封存水分，即使長時間待在冷氣房，也能維持水嫩飽滿。",
+      "4 大安心零負擔：無酒精、無香精、無色素、無 PARABEN 防腐劑，敏弱肌與換季不穩定肌也能安心使用。",
     ],
     suitableFor: [
-      "龍血系列",
+      "乾燥缺水",
+      "抗皺緊緻",
+      "敏感舒緩",
+      "初老細紋",
+      "夜間鎖水修護",
     ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "每日早晚於化妝水、精華液或修護乳後使用。利用挖勺取適量修護霜塗抹於臉部與頸部肌膚，順著肌膚紋理以指腹輕柔畫圈按摩，透過指腹溫熱幫助霜體吸收並封存滋養。",
+    notice: "本產品含天然植物萃取成分，可能因產地、氣候或季節不同，使色澤或氣味略有差異，屬正常現象。使用後若有不適請立即停止使用並諮詢皮膚科醫師。配方含天然植物精油，對精油成分過敏者建議先於手臂內側測試。請存放於避免陽光直射、高溫或潮濕處，並放置於孩童不易取得處。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
+    priceNote: "第二件五折，實際活動、庫存與最終金額依 LINE 小幫手確認為準。",
   },
   21: {
     cardName: "肌光緊緻速妍雪膚液",
@@ -2533,21 +2554,26 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   53: {
     cardName: "龍血玻尿酸保濕精華液",
-    cardSubtitle: "龍血系列保養品・龍血系列",
-    spec: "龍血系列保養品",
-    intro: "龍血玻尿酸保濕精華液為龍血系列保養品項，可依日常膚況與保養需求搭配使用。",
+    cardSubtitle: "300mL・國民保濕精華・買一送一",
+    spec: "300mL / 瓶",
+    intro: "被譽為佐登妮絲城堡必敗的「國民保濕精華」，專為現代人因作息不正常、生活壓力大而導致的缺水、暗沉與脫屑問題設計。清爽好吸收，臉部、頸部到身體肌膚皆可使用。",
     features: [
-      "適合作為日常保養中的加強型品項。",
-      "可依需求搭配化妝水與乳霜使用。",
-      "適合想加強特定保養需求的客人。",
+      "雙倍保濕 × 長效補水：嚴選日本小分子玻尿酸，幫助補充肌膚水分，維持長時間水潤感。",
+      "秘魯龍血樹脂修護力：蘊含穩膚與修護力，幫助強健肌膚屏障，改善缺水疲憊感。",
+      "解鎖四大危肌：針對壓力、疲憊、乾燥、脫屑等肌膚狀態，提供日常快充修護。",
+      "300mL 大容量高 CP 值：臉部、頸部到身體肌膚皆可使用，適合日常大量保濕。",
     ],
     suitableFor: [
       "乾燥缺水",
+      "敏感舒緩",
+      "熬夜暗沉肌",
+      "外油內乾肌",
+      "全身保濕",
     ],
-    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    usage: "每日早晚於化妝水後，取適量精華液，均勻塗抹於臉部與頸部肌膚，以指腹輕柔拍勻並按摩至吸收。也可作為身體保濕精華，塗抹於手臂、腿部或容易乾燥的部位。",
+    notice: "僅供外用，請勿使用於傷口或肌膚不適部位。使用後若出現敏感或不適，請立即停止使用並諮詢皮膚科醫師。本產品含天然植物萃取成分，可能因產地、氣候或季節不同，使色澤與氣味略有差異，屬正常現象。請存放於避免陽光直射、高溫或潮濕處，並放置於孩童不易取得處。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
+    priceNote: "買一送一，依通路活動為準。實際活動、庫存與最終金額依 LINE 小幫手確認。",
   },
   54: {
     cardName: "龍血卸妝油",
@@ -4646,6 +4672,8 @@ export default function Home() {
         return product.category === "保健食品" && (product.series.includes("晶眸") || fullText.includes("葉黃素"));
       case "health-collagen":
         return product.category === "保健食品" && (product.series.includes("美妍") || fullText.includes("膠原"));
+      case "health-fish":
+        return product.category === "保健食品" && (fullText.includes("魚油") || product.series.includes("魚油") || product.name.includes("魚油"));
 
       case "mask-all":
         return isMask;
@@ -4799,7 +4827,7 @@ export default function Home() {
     return !(
       product.originalPrice.includes("待補") ||
       product.originalPrice.includes("???") ||
-      product.originalPrice.includes("000")
+      /原價\s*\$?\s*0+\b/.test(product.originalPrice)
     );
   }
 
@@ -4832,6 +4860,15 @@ export default function Home() {
     const tags = new Set<string>();
     const name = product.name;
     const series = product.series;
+    const configuredTags = productContent(product).suitableFor ?? product.suitableFor ?? [];
+
+    for (const item of configuredTags) {
+      if (item.includes("缺水") || item.includes("保濕") || item.includes("乾燥")) tags.add("乾燥缺水");
+      if (item.includes("油水") || item.includes("出油") || item.includes("控油") || item.includes("毛孔")) tags.add("油性毛孔");
+      if (item.includes("敏弱") || item.includes("嬌弱") || item.includes("舒緩") || item.includes("不穩定") || item.includes("不乖")) tags.add("敏感舒緩");
+      if (item.includes("亮白") || item.includes("美白") || item.includes("暗沉") || item.includes("淡斑")) tags.add("美白淡斑");
+      if (item.includes("初老") || item.includes("細紋") || item.includes("抗老") || item.includes("緊緻")) tags.add("抗皺緊緻");
+    }
 
     if (
       series.includes("水光") ||
@@ -4922,10 +4959,15 @@ export default function Home() {
 
   function displayTags(product: Product) {
     const tags: string[] = [];
+    const promoText = `${product.price} ${product.originalPrice ?? ""} ${productContent(product).priceNote ?? ""}`;
 
     if (isExpiringDeal(product)) {
       tags.push("即期優惠");
     }
+
+    if (promoText.includes("買一送一")) tags.push("買一送一");
+    if (promoText.includes("買一送二")) tags.push("買一送二");
+    if (promoText.includes("第二件五折")) tags.push("第二件五折");
 
     for (const tag of getProductTags(product)) {
       if (!tags.includes(tag)) tags.push(tag);
@@ -5037,7 +5079,7 @@ export default function Home() {
     }
 
     if (selectedCategory === "組合價") {
-      return "回購群專屬優惠、買一送一、買一送二與任選優惠都集中在這裡。";
+      return "回購群專屬優惠、組合優惠與任選優惠都集中在這裡。";
     }
 
     if (selectedCategory === "保養品") {
@@ -6044,7 +6086,6 @@ export default function Home() {
                     <button type="button" onClick={() => openCommerceFilter("deals-all", "本月優惠 / 全部優惠")}>全部優惠</button>
                     <button type="button" onClick={() => openCommerceFilter("deals-monthly", "本月優惠 / 本月主打")}>本月主打</button>
                     <button type="button" onClick={() => openCommerceFilter("deals-combo", "本月優惠 / 組合價")}>組合價</button>
-                    <button type="button" onClick={() => openCommerceFilter("deals-bogo", "本月優惠 / 買一送一・買一送二")}>買一送一 / 買一送二</button>
                     <button type="button" onClick={() => openCommerceFilter("deals-pick", "本月優惠 / 任選優惠")}>任選優惠</button>
                   </div>
                 )}
@@ -6099,6 +6140,7 @@ export default function Home() {
                     <button type="button" onClick={() => openCommerceFilter("health-probiotic", "保健食品 / 益生菌")}>益生菌</button>
                     <button type="button" onClick={() => openCommerceFilter("health-eye", "保健食品 / 葉黃素・晶眸")}>葉黃素 / 晶眸</button>
                     <button type="button" onClick={() => openCommerceFilter("health-collagen", "保健食品 / 膠原飲品")}>膠原飲品</button>
+                    <button type="button" onClick={() => openCommerceFilter("health-fish", "保健食品 / 魚油")}>魚油</button>
                   </div>
                 )}
               </div>
@@ -13823,6 +13865,20 @@ export default function Home() {
             grid-template-columns: 1fr;
           }
         }
+
+
+        /* Commerce V2.5.1：分類小修定稿
+           - 本月優惠移除買一送一 / 買一送二獨立分類
+           - 保健食品補上魚油
+           - 生福科技維持在外部廠商
+        */
+
+
+        /* Commerce V2.5.2：龍血商品資訊整理版
+           - 已整理龍血玻尿酸保濕精華液
+           - 已整理龍血求麗化妝水 / 精華 / 修護乳 / 修護霜
+           - 商品卡加入買一送一、第二件五折等促銷標籤
+        */
 
 
       `}</style>
