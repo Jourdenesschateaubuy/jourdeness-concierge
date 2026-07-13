@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
   組合價: [
@@ -38,11 +38,12 @@ const categoryConfig = {
     "防曬",
     "綠茶多酚保濕平衡系列",
     "白金密集煥白系列",
+    "特殊護理系列",
     "頂級養護",
     "面膜",
   ],
   保健食品: ["全部", "益生菌系列", "晶眸保健系列", "美妍飲品系列"],
-  洗沐: ["全部", "洗沐系列"],
+  洗沐: ["全部", "洗沐系列", "阿甘綠柔護髮系列"],
   精油: ["全部", "10mL 精油系列", "50mL 精萃油系列", "擴香設備"],
   牙膏: ["全部", "牙膏"],
   肥皂: ["全部", "肥皂"],
@@ -51,7 +52,7 @@ const categoryConfig = {
   面膜: ["全部", "保濕面膜", "亮白面膜", "修護面膜", "面膜組合"],
   香水: ["全部", "香水"],
   貼布: ["全部", "貼布"],
-  外部廠商: ["全部", "歐思佛", "上山採藥", "生福科技", "倍力工房", "良冠", "木匠兄妹", "F.SEASONS 富雨洋傘"],
+  外部廠商: ["全部", "歐思佛", "上山採藥", "生福科技", "倍力工房", "百匡 UNA", "木匠兄妹", "F.SEASONS 富雨洋傘"],
 } as const;
 
 type MainCategory = keyof typeof categoryConfig;
@@ -94,9 +95,42 @@ type CustomerForm = {
   note: string;
 };
 
-// V2.5.3.11.6.1：修正 TOP1 膠囊手機版換行，維持同字級與原本質感。
+type LineProfile = {
+  userId: string;
+  displayName: string;
+  pictureUrl?: string;
+  statusMessage?: string;
+};
+
+type LiffProfile = {
+  userId: string;
+  displayName: string;
+  pictureUrl?: string;
+  statusMessage?: string;
+};
+
+type LiffApi = {
+  init: (config: { liffId: string }) => Promise<void>;
+  isLoggedIn: () => boolean;
+  login: () => void;
+  getProfile: () => Promise<LiffProfile>;
+};
+
+declare global {
+  interface Window {
+    liff?: LiffApi;
+  }
+}
+
+// V2.5.3.18：補齊最新原價、組合原價價值與新增洗沐品項，保留清單保存與 LIFF 預備。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
+
+const CART_STORAGE_KEY = "jourdeness_saved_cart_v1";
+const CUSTOMER_DRAFT_STORAGE_KEY = "jourdeness_customer_draft_v1";
+const LINE_PROFILE_STORAGE_KEY = "jourdeness_line_profile_v1";
+const LINE_LIFF_ID = process.env.NEXT_PUBLIC_LINE_LIFF_ID || "";
+const LIFF_SDK_SRC = "https://static.line-scdn.net/liff/edge/2/sdk.js";
 
 const products: Product[] = [
   {
@@ -124,7 +158,7 @@ const products: Product[] = [
     name: "BC-HA複合益生菌",
     category: "保健食品",
     series: "益生菌系列",
-    originalPrice: "原價 $ ???",
+    originalPrice: "原價 $ 1,300",
     price: "產地價 2盒 $ 2,000",
     image: "/products/BC-HA.jpg",
     description: "3g x 60包 / 盒。60包大容量益生菌，搭配玻尿酸與菊糖益生質日常補給。",
@@ -134,8 +168,8 @@ const products: Product[] = [
     name: "EC晶眸葉黃素",
     category: "保健食品",
     series: "晶眸保健系列",
-    originalPrice: "原價 $ ???",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,500",
+    price: "產地價洽詢",
     image: "/products/Lutein.jpg",
     description: "精華凍 + 精華飲綜合組。適合 3C 族、學生與上班族日常晶亮營養補給。",
   },
@@ -144,8 +178,8 @@ const products: Product[] = [
     name: "亮妍魚膠原蛋白飲",
     category: "保健食品",
     series: "美妍飲品系列",
-    originalPrice: "原價 $ ???",
-    price: "產地價待補",
+    originalPrice: "原價 $ 2,200",
+    price: "產地價洽詢",
     image: "/products/FISH-Collagen.jpg",
     description: "15mL x 10瓶 / 盒。魚膠原蛋白美妍飲，日常美容保健與水潤光澤補給。",
   },
@@ -227,10 +261,10 @@ const products: Product[] = [
     name: "玫瑰超微晶萃潔顏慕絲",
     category: "保養品",
     series: "玫瑰超微晶萃系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
     image: "/products/rose0.jpg",
-    description: "150mL。玫瑰超微晶萃系列。",
+    description: "150mL / 瓶。玫瑰超微晶萃潔顏慕絲，溫和清潔並維持洗後柔嫩感。",
   },
   {
     id: 14,
@@ -238,9 +272,9 @@ const products: Product[] = [
     category: "保養品",
     series: "玫瑰超微晶萃系列",
     originalPrice: "原價 $ 2,080",
-    price: "產地價待補",
+    price: "產地價洽詢",
     image: "/products/rose1.jpg",
-    description: "130mL。玫瑰超微晶萃系列。",
+    description: "130mL / 瓶。玫瑰超微晶萃活膚液，洗臉後調理肌膚並維持柔嫩光澤。",
   },
   {
     id: 15,
@@ -248,9 +282,9 @@ const products: Product[] = [
     category: "保養品",
     series: "玫瑰超微晶萃系列",
     originalPrice: "原價 $ 2,280",
-    price: "產地價待補",
+    price: "產地價洽詢",
     image: "/products/rose3.jpg",
-    description: "130mL。玫瑰超微晶萃系列。",
+    description: "130mL / 瓶。玫瑰超微晶萃瞬效乳，清爽補水並加強柔嫩彈潤感。",
   },
   {
     id: 16,
@@ -258,9 +292,9 @@ const products: Product[] = [
     category: "保養品",
     series: "玫瑰超微晶萃系列",
     originalPrice: "原價 $ 2,880",
-    price: "產地價待補",
+    price: "產地價洽詢",
     image: "/products/rose4.jpg",
-    description: "50g。玫瑰超微晶萃系列。",
+    description: "50mL / 瓶。玫瑰超微晶萃瞬效霜，保養最後一步加強鎖水與潤澤。",
   },
 
   {
@@ -309,8 +343,8 @@ const products: Product[] = [
     name: "肌光緊緻速妍雪膚液",
     category: "保養品",
     series: "肌光緊緻速妍系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 3,280",
+    price: "產地價洽詢",
     image: "/products/Radiance and Lifting1.jpg",
     description: "130mL / 瓶。緊緻前導雪膚液，洗臉後調理肌膚紋理與彈力光澤。",
   },
@@ -319,18 +353,18 @@ const products: Product[] = [
     name: "肌光緊緻速妍精華露",
     category: "保養品",
     series: "肌光緊緻速妍系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 3,880",
+    price: "產地價洽詢",
     image: "/products/Radiance and Lifting2.jpg",
-    description: "30mL / 瓶。高濃縮緊緻精華，適合細紋、鬆弛與熬夜疲憊肌加強修護。",
+    description: "35mL / 瓶。高濃縮緊緻精華，適合細紋、鬆弛感與熬夜疲憊肌加強保養。",
   },
   {
     id: 23,
     name: "肌光緊緻速妍霜",
     category: "保養品",
     series: "肌光緊緻速妍系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 4,680",
+    price: "產地價洽詢",
     image: "/products/Radiance and Lifting4.jpg",
     description: "50mL / 瓶。緊緻修護霜，保養最後一步鎖住水分與滋養。",
   },
@@ -339,10 +373,10 @@ const products: Product[] = [
     name: "肌光緊緻速妍面膜",
     category: "保養品",
     series: "肌光緊緻速妍系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 3,680",
+    price: "產地價洽詢",
     image: "/products/Radiance and Lifting5.jpg",
-    description: "單片 / 盒裝。集中型緊緻修護面膜，適合約會前、熬夜後與急救保養。",
+    description: "23mL x 10入 / 盒。集中型緊緻修護面膜，適合重要場合前與熬夜後加強保養。",
   },
 
   {
@@ -368,23 +402,23 @@ const products: Product[] = [
 
   {
     id: 27,
-    name: "BA-5肌密抗皺精華",
+    name: "BA-5 肌密抗皺精華露",
     category: "保養品",
     series: "BA-5肌密抗皺系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 4,880",
+    price: "產地價洽詢",
     image: "/products/BA-5 2.jpg",
-    description: "30mL / 瓶。高階密集抗皺精華，針對細紋、乾紋與熟齡肌加強修護。",
+    description: "30mL / 瓶。BA-5 肌密抗皺精華露，適合熟齡肌、乾紋與細紋感加強保養。",
   },
   {
     id: 28,
-    name: "BA-5肌密抗皺霜",
+    name: "BA-5肌密抗皺活妍霜",
     category: "保養品",
     series: "BA-5肌密抗皺系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 9,280",
+    price: "產地價洽詢",
     image: "/products/BA-5 4.png",
-    description: "50mL / 瓶。奢華豐潤抗皺霜，保養最後一步封存滋養與鎖水。",
+    description: "60mL / 瓶。BA-5 肌密抗皺活妍霜，豐潤質地，保養最後一步加強滋養與緊緻感。",
   },
 
   {
@@ -429,30 +463,30 @@ const products: Product[] = [
   },
   {
     id: 33,
-    name: "INSK乳酸淨痘修護膠",
+    name: "INSK 乳酸淨痘修護膠",
     category: "保養品",
     series: "INSK乳酸平衡系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,080",
+    price: "產地價洽詢",
     image: "/products/INSK6.jpg",
-    description: "15mL / 支。局部淨痘修護膠，針對粉刺、痘痘與易出油部位調理。",
+    description: "15mL / 支。乳酸淨痘修護膠，適合局部粉刺、痘痘與易出油部位調理。",
   },
   {
     id: 34,
-    name: "INSK乳酸平衡水嫩膜",
+    name: "INSK 乳酸平衡水嫩膜",
     category: "保養品",
     series: "INSK乳酸平衡系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
     image: "/products/INSK5.jpg",
-    description: "23mL x 6片 / 盒。乳酸平衡集中保養面膜，快速補水並穩定膚況。",
+    description: "23mL x 6入 / 盒。乳酸平衡水嫩膜，集中補水並維持穩定膚況。",
   },
   {
     id: 35,
     name: "薰衣草齒齦保健牙膏",
     category: "牙膏",
     series: "牙膏",
-    originalPrice: "原價待補",
+    originalPrice: "原價 $ 250",
     price: "任選3條 $ 500",
     image: "/products/lav-washtoothpaste.jpg",
     description: "120g / 支。薰衣草草本香氣，溫和潔牙並維持口氣清新。",
@@ -462,7 +496,7 @@ const products: Product[] = [
     name: "龍血齒齦保健牙膏",
     category: "牙膏",
     series: "牙膏",
-    originalPrice: "原價待補",
+    originalPrice: "原價 $ 250",
     price: "任選3條 $ 500",
     image: "/products/bd-washtoothpaste.jpg",
     description: "120g / 支。龍血齒齦保健牙膏，溫和清潔牙齒與齒齦邊緣。",
@@ -625,10 +659,10 @@ const products: Product[] = [
     name: "肌可佳膠原蛋白彈潤原液",
     category: "保養品",
     series: "膠原蛋白系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,290",
+    price: "產地價 $ 960",
     image: "/products/collagen 1.jpg",
-    description: "30mL。膠原蛋白系列。",
+    description: "30mL / 瓶。膠原蛋白彈潤原液，適合加強澎潤、保濕與肌膚彈性感。",
   },
   {
     id: 53,
@@ -645,8 +679,8 @@ const products: Product[] = [
     name: "龍血求麗卸妝油",
     category: "保養品",
     series: "龍血系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 890",
+    price: "產地價洽詢",
     image: "/products/BD001.jpg",
     description: "150mL / 瓶。輕盈卸妝油，快速溶解彩妝、防曬與毛孔髒污。",
   },
@@ -655,8 +689,8 @@ const products: Product[] = [
     name: "龍血求麗潔顏慕絲",
     category: "保養品",
     series: "龍血系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 790",
+    price: "產地價洽詢",
     image: "/products/BD0.jpg",
     description: "150mL / 瓶。細緻綿密潔顏慕絲，洗後不緊繃、不乾澀。",
   },
@@ -715,48 +749,48 @@ const products: Product[] = [
     name: "水光肌能化妝水",
     category: "保養品",
     series: "水光肌能系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,580",
+    price: "產地價洽詢",
     image: "/products/glassskin 1.jpg",
-    description: "130mL / 瓶。水光肌能前導化妝水，補水並打開後續保養通道。",
+    description: "130mL / 瓶。水光肌能化妝水，洗臉後補水打底，幫助後續保養更服貼。",
   },
   {
     id: 62,
     name: "水光肌能乳液",
     category: "保養品",
     series: "水光肌能系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 2,180",
+    price: "產地價洽詢",
     image: "/products/glassskin 3.jpg",
-    description: "130mL / 瓶。清爽鎖水乳液，維持水屏障與柔嫩彈潤感。",
+    description: "130mL / 瓶。水光肌能乳液，清爽鎖水並維持柔嫩彈潤感。",
   },
   {
     id: 63,
     name: "水光肌能晚霜",
     category: "保養品",
     series: "水光肌能系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 2,380",
+    price: "產地價洽詢",
     image: "/products/glassskin 4.jpg",
-    description: "50mL / 瓶。夜間深度潤澤晚霜，適合乾燥缺水與細紋感加強保養。",
+    description: "50mL / 瓶。水光肌能晚霜，夜間加強潤澤與保濕，維持柔嫩澎潤感。",
   },
   {
     id: 64,
     name: "苦杏仁酸溫和煥顏露",
     category: "保養品",
     series: "杏仁酸系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 880",
+    price: "產地價 $ 630",
     image: "/products/mandelic acid.jpg",
-    description: "30mL。溫和煥顏保養品項。",
+    description: "30mL / 瓶。溫和煥顏保養品項，適合日常代謝老廢角質與維持細緻光澤。",
   },
   {
     id: 65,
     name: "冰河淨化潔顏慕絲",
     category: "保養品",
     series: "冰河淨化系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
     image: "/products/Glacial 0.jpg",
     description: "150mL / 瓶。冰河淨化潔顏慕絲，溫和洗去多餘皮脂與環境髒污。",
   },
@@ -775,18 +809,18 @@ const products: Product[] = [
     name: "冰河淨化柔膚面膜",
     category: "保養品",
     series: "冰河淨化系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
     image: "/products/Glacial 5.jpg",
-    description: "100mL / 瓶。水洗式冰河淨化泥膜，深層淨化毛孔髒污。",
+    description: "100mL / 瓶。冰河淨化柔膚面膜，水洗式淨化保養，維持肌膚潔淨柔嫩。",
   },
   {
     id: 68,
     name: "晶淬雪潤白乳",
     category: "保養品",
     series: "晶淬雪系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 2,080",
+    price: "產地價洽詢",
     image: "/products/Crystal Radiance Brightening Emulsion.jpg",
     description: "100mL / 瓶。亮白與高保濕乳液，改善暗沉、膚色不均與乾燥粗糙。",
   },
@@ -795,8 +829,8 @@ const products: Product[] = [
     name: "鳳梨酵素代謝角質凝露",
     category: "保養品",
     series: "鳳梨酵素系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 590",
+    price: "產地價洽詢",
     image: "/products/pineapple 0.jpg",
     description: "120g / 瓶。溫和代謝老廢角質，改善粗糙暗沉與吸收感不佳。",
   },
@@ -805,8 +839,8 @@ const products: Product[] = [
     name: "鳳梨酵素活膚面膜",
     category: "保養品",
     series: "鳳梨酵素系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 390",
+    price: "產地價洽詢",
     image: "/products/pineapple 5.jpg",
     description: "22mL x 5pcs / 盒。鳳梨酵素活膚面膜，補水並提升透亮細緻感。",
   },
@@ -815,8 +849,8 @@ const products: Product[] = [
     name: "櫻の雪淨白潔顏慕絲",
     category: "保養品",
     series: "櫻の雪傳明酸美白系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 590",
+    price: "產地價洽詢",
     image: "/products/sukola0.jpg",
     description: "150mL / 瓶。櫻の雪淨白潔顏慕絲，美白保養第一步，洗後水嫩不緊繃。",
   },
@@ -825,8 +859,8 @@ const products: Product[] = [
     name: "櫻の雪傳明酸美白化妝水",
     category: "保養品",
     series: "櫻の雪傳明酸美白系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 790",
+    price: "產地價洽詢",
     image: "/products/sukola1.jpg",
     description: "150mL / 瓶。亮白前導化妝水，補充亮白水分並打開吸收通道。",
   },
@@ -836,8 +870,8 @@ const products: Product[] = [
     name: "櫻の雪傳明酸美白精華液",
     category: "保養品",
     series: "櫻の雪傳明酸美白系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 890",
+    price: "產地價洽詢",
     image: "/products/su2.jpg",
     description: "30mL / 瓶。密集亮白核心精華，針對斑點、暗沉與膚色不均加強調理。",
   },
@@ -846,8 +880,8 @@ const products: Product[] = [
     name: "櫻の雪傳明酸美白乳液",
     category: "保養品",
     series: "櫻の雪傳明酸美白系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 790",
+    price: "產地價洽詢",
     image: "/products/su3.jpg",
     description: "100mL / 瓶。美白乳液，鎖住亮白保養並維持水嫩不黏膩。",
   },
@@ -877,8 +911,8 @@ const products: Product[] = [
     name: "櫻の雪亮澤護手霜",
     category: "護手霜",
     series: "護手霜",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 290",
+    price: "產地價洽詢",
     image: "/products/hand cream cherry.png",
     description: "50mL / 支。亮澤護手霜，改善手背暗沉、乾燥粗糙與關節黯沉感。",
   },
@@ -887,8 +921,8 @@ const products: Product[] = [
     name: "茶樹防禦護手霜",
     category: "護手霜",
     series: "護手霜",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 290",
+    price: "產地價洽詢",
     image: "/products/hand cream tea.png",
     description: "50mL / 支。茶樹清爽護手霜，適合怕黏膩、易流手汗與夏天使用。",
   },
@@ -897,8 +931,8 @@ const products: Product[] = [
     name: "薰衣草舒緩護手霜",
     category: "護手霜",
     series: "護手霜",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 290",
+    price: "產地價洽詢",
     image: "/products/hand cream lav.png",
     description: "50mL / 支。薰衣草舒緩護手霜，適合睡前滋養與乾燥粗糙手部。",
   },
@@ -907,8 +941,8 @@ const products: Product[] = [
     name: "麝香棉花香氛護手霜",
     category: "護手霜",
     series: "護手霜",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 290",
+    price: "產地價洽詢",
     image: "/products/hand cream musk.png",
     description: "50mL / 支。白麝香棉花香氛護手霜，滋潤柔膚、香氣乾淨溫柔。",
   },
@@ -1058,11 +1092,11 @@ const products: Product[] = [
     id: 93,
     name: "阿甘甦醒髮根養護液",
     category: "洗沐",
-    series: "洗沐系列",
+    series: "阿甘綠柔護髮系列",
     originalPrice: "原價 $ 1,680",
-    price: "產地價待補",
+    price: "產地價洽詢",
     image: "/products/Argan Oil3.jpg",
-    description: "80mL。髮根養護品項。",
+    description: "80mL / 瓶。阿甘甦醒髮根養護液，適合日常頭皮與髮根養護。",
   },
   {
     id: 94,
@@ -1139,7 +1173,7 @@ const products: Product[] = [
     name: "BC-HA 複合益生菌 2盒組",
     category: "組合價",
     series: "保健食品組合",
-    originalPrice: "原價待補",
+    originalPrice: "原價價值 $ 2,600",
     price: "產地價 2盒 $ 2,000",
     image: "/products/BCHA2000.png",
     description: "BC-HA 複合益生菌 3g x 60包 / 盒，共2盒。",
@@ -1149,7 +1183,7 @@ const products: Product[] = [
     name: "龍血求麗潔顏慕絲 + 龍血求麗卸妝油 1+1組",
     category: "組合價",
     series: "保養套組",
-    originalPrice: "原價待補",
+    originalPrice: "原價價值 $ 1,680",
     price: "1+1 兩瓶 $ 1,080",
     image: "/products/wash11.png",
     description: "龍血求麗潔顏慕絲150mL + 龍血求麗卸妝油150mL，各1瓶，共2瓶。",
@@ -1170,8 +1204,8 @@ const products: Product[] = [
     name: "柔焦濾鏡CC霜",
     category: "保養品",
     series: "防曬",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 790",
+    price: "產地價洽詢",
     image: "/products/cc 0.jpg",
     description: "30mL。防曬 / 潤色品項。",
   },
@@ -1180,8 +1214,8 @@ const products: Product[] = [
     name: "綠茶多酚保濕平衡精華液",
     category: "保養品",
     series: "綠茶多酚保濕平衡系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 890",
+    price: "產地價洽詢",
     image: "/products/tee 2.jpg",
     description: "30mL。綠茶多酚保濕平衡系列。",
   },
@@ -1190,8 +1224,8 @@ const products: Product[] = [
     name: "綠茶多酚保濕平衡面膜",
     category: "保養品",
     series: "綠茶多酚保濕平衡系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 390",
+    price: "產地價洽詢",
     image: "/products/tee 5.jpg",
     description: "20mL x 5片 / 盒。綠茶多酚保濕平衡系列。",
   },
@@ -1200,60 +1234,60 @@ const products: Product[] = [
     name: "白金密集煥白淡斑筆",
     category: "保養品",
     series: "白金密集煥白系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 2,880",
+    price: "產地價洽詢",
     image: "/products/Dark Spot Eraser.jpg",
-    description: "單支 / 盒裝。精準淡斑筆，針對局部斑點、曬斑與痘疤暗沉加強保養。",
+    description: "4.5mL x 2 / 組。白金密集煥白淡斑筆，適合局部暗沉、斑點與膚色不均加強保養。",
   },
   {
     id: 107,
     name: "賽洛美潤膚美體油(C+E)",
     category: "保養品",
-    series: "頂級養護",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    series: "特殊護理系列",
+    originalPrice: "原價 $ 2,280",
+    price: "產地價洽詢",
     image: "/products/Ceramide Body Oil (C+E).jpg",
-    description: "單瓶 / 盒裝。賽洛美 C+E 美體油，沐浴後滋潤乾燥粗糙肌膚。",
+    description: "200mL / 瓶。賽洛美潤膚美體油(C+E)，沐浴後滋潤乾燥粗糙肌膚。",
   },
   {
     id: 108,
     name: "24小時賦活液",
     category: "保養品",
-    series: "頂級養護",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    series: "特殊護理系列",
+    originalPrice: "原價 $ 2,980",
+    price: "產地價洽詢",
     image: "/products/24H Revitalizing Essence.jpg",
-    description: "單瓶 / 盒裝。頂級抗老前導賦活液，適合疲憊暗沉與保養撞牆期。",
+    description: "100mL / 瓶。24小時賦活液，適合疲憊暗沉與保養撞牆期加強打底。",
   },
   {
     id: 109,
     name: "鉑金無痕煥白雙導精華",
     category: "保養品",
-    series: "頂級養護",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    series: "特殊護理系列",
+    originalPrice: "原價 $ 8,800",
+    price: "產地價洽詢",
     image: "/products/Platinum.jpg",
-    description: "單瓶 / 盒裝。雙管雙導精華，結合緊緻抗老與煥白保養。",
+    description: "50mL / 瓶。鉑金無痕煥白雙導精華，適合亮白、緊緻與膚色不均加強保養。",
   },
   {
     id: 110,
     name: "黑耀緊緻奢華眼霜",
     category: "保養品",
-    series: "頂級養護",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    series: "特殊護理系列",
+    originalPrice: "原價 $ 2,880",
+    price: "產地價洽詢",
     image: "/products/Obsidian Firming Luxury Eye Cream.jpg",
-    description: "單瓶 / 盒裝。奢華緊緻眼霜，滋養眼周乾紋、細紋與鬆弛感。",
+    description: "20mL / 瓶。黑耀緊緻奢華眼霜，滋養眼周乾紋、細紋與鬆弛感。",
   },
   {
     id: 111,
     name: "24小時黃金璀璨賦活液",
     category: "保養品",
-    series: "頂級養護",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    series: "特殊護理系列",
+    originalPrice: "原價 $ 2,280",
+    price: "產地價洽詢",
     image: "/products/24K Gold.jpg",
-    description: "單瓶 / 盒裝。24K 金箔前導賦活液，維持澎潤、透亮與細緻光澤。",
+    description: "40mL / 瓶。24小時黃金璀璨賦活液，維持澎潤、透亮與細緻光澤。",
   },
   {
     id: 112,
@@ -1301,10 +1335,10 @@ const products: Product[] = [
     name: "水光苦杏仁酸慕絲",
     category: "保養品",
     series: "水光肌能系列",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
     image: "/products/glassskin 0.jpg",
-    description: "水光肌能系列品項。",
+    description: "150mL / 瓶。水光苦杏仁酸慕絲，溫和清潔並維持肌膚細緻透亮感。",
   },
   {
     id: 117,
@@ -1320,29 +1354,29 @@ const products: Product[] = [
     id: 118,
     name: "超導水網瞬效面膜",
     category: "保養品",
-    series: "頂級養護",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    series: "特殊護理系列",
+    originalPrice: "原價 $ 1,680",
+    price: "產地價洽詢",
     image: "/products/super water.png",
-    description: "頂級養護面膜品項。",
+    description: "26mL x 6入 / 盒。超導水網瞬效面膜，集中補水並加強柔嫩光澤。",
   },
   {
     id: 119,
     name: "冰河淨化柔膚面膜",
     category: "保養品",
     series: "頂級養護",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
     image: "/products/Glacial 5.jpg",
-    description: "100mL。頂級養護 / 冰河淨化面膜品項。",
+    description: "100mL / 瓶。冰河淨化柔膚面膜，水洗式淨化保養，維持肌膚潔淨柔嫩。",
   },
   {
     id: 120,
     name: "Exo-雙粹秘泌凍晶組",
     category: "保養品",
     series: "頂級養護",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,580",
+    price: "產地價洽詢",
     image: "/products/Plant Exosome.jpg",
     description: "一組 / 盒裝。頂級凍晶密集保養組，使用時混合激活，適合急救修護。",
   },
@@ -1351,8 +1385,8 @@ const products: Product[] = [
     name: "奧勒岡小白花美體乳",
     category: "保養品",
     series: "頂級養護",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
     image: "/products/smell white.jpg",
     description: "500mL / 瓶。小白花美體乳，水潤好推不黏膩，適合每日全身保養。",
   },
@@ -1361,20 +1395,20 @@ const products: Product[] = [
     name: "肌光緊緻速妍面膜",
     category: "面膜",
     series: "面膜",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 3,680",
+    price: "產地價洽詢",
     image: "/products/Radiance and Lifting5.jpg",
-    description: "單片 / 盒裝。集中型緊緻修護面膜，適合約會前、熬夜後與急救保養。",
+    description: "23mL x 10入 / 盒。集中型緊緻修護面膜，適合重要場合前與熬夜後加強保養。",
   },
   {
     id: 123,
-    name: "INSK乳酸平衡水嫩膜",
+    name: "INSK 乳酸平衡水嫩膜",
     category: "面膜",
     series: "面膜",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
     image: "/products/INSK5.jpg",
-    description: "23mL x 6片 / 盒。乳酸平衡集中保養面膜，快速補水並穩定膚況。",
+    description: "23mL x 6入 / 盒。乳酸平衡水嫩膜，集中補水並維持穩定膚況。",
   },
   {
     id: 124,
@@ -1431,18 +1465,18 @@ const products: Product[] = [
     name: "冰河淨化柔膚面膜",
     category: "面膜",
     series: "面膜",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
     image: "/products/Glacial 5.jpg",
-    description: "100mL / 瓶。水洗式冰河淨化泥膜，深層淨化毛孔髒污。",
+    description: "100mL / 瓶。冰河淨化柔膚面膜，水洗式淨化保養，維持肌膚潔淨柔嫩。",
   },
   {
     id: 130,
     name: "鳳梨酵素活膚面膜",
     category: "面膜",
     series: "面膜",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 390",
+    price: "產地價洽詢",
     image: "/products/pineapple 5.jpg",
     description: "22mL x 5pcs / 盒。鳳梨酵素活膚面膜，補水並提升透亮細緻感。",
   },
@@ -1451,8 +1485,8 @@ const products: Product[] = [
     name: "綠茶多酚保濕平衡面膜",
     category: "保養品",
     series: "面膜",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    originalPrice: "原價 $ 390",
+    price: "產地價洽詢",
     image: "/products/tee 5.jpg",
     description: "20mL x 5片 / 盒。綠茶多酚保濕平衡系列面膜。",
   },
@@ -1460,11 +1494,11 @@ const products: Product[] = [
     id: 132,
     name: "超導水網瞬效面膜",
     category: "保養品",
-    series: "面膜",
-    originalPrice: "原價待補",
-    price: "產地價待補",
+    series: "特殊護理系列",
+    originalPrice: "原價 $ 1,680",
+    price: "產地價洽詢",
     image: "/products/super water.png",
-    description: "頂級養護面膜品項。",
+    description: "26mL x 6入 / 盒。超導水網瞬效面膜，集中補水並加強柔嫩光澤。",
   },
 
   {
@@ -1492,7 +1526,7 @@ const products: Product[] = [
     name: "手工皂 / 香氛皂任選4款",
     category: "組合價",
     series: "肥皂組合",
-    originalPrice: "原價待補",
+    originalPrice: "原價價值 $ 1,160",
     price: "任選4款 $ 799",
     image: "/products/bdsoap.png",
     description: "龍血手工皂與繡球花漾香氛皂可任選搭配，共4款。",
@@ -1502,7 +1536,7 @@ const products: Product[] = [
     name: "櫻の雪傳明酸美白精華液 + 美白乳液贈化妝水",
     category: "組合價",
     series: "保養套組",
-    originalPrice: "原價待補",
+    originalPrice: "原價價值 $ 2,470",
     price: "組合價 $ 1,780",
     image: "/products/su2+1.png",
     description: "購買櫻の雪傳明酸美白精華液30mL + 櫻の雪傳明酸美白乳液100mL，贈送櫻の雪傳明酸美白化妝水150mL。",
@@ -1512,7 +1546,7 @@ const products: Product[] = [
     name: "龍血潔顏慕絲 / 櫻の雪潔顏慕絲任選2瓶",
     category: "組合價",
     series: "保養套組",
-    originalPrice: "原價待補",
+    originalPrice: "原價價值最高 $ 1,580",
     price: "任選2瓶 $ 980",
     image: "/products/db+su1+1.png",
     description: "龍血求麗潔顏慕絲150mL / 櫻の雪淨白潔顏慕絲150mL 可任選搭配，共2瓶。",
@@ -1522,7 +1556,7 @@ const products: Product[] = [
     name: "亮妍魚膠原蛋白飲兩盒贈 EC 晶眸葉黃素",
     category: "組合價",
     series: "保健食品組合",
-    originalPrice: "原價待補",
+    originalPrice: "原價價值 $ 5,900",
     price: "組合價 $ 4,400",
     image: "/products/bb2+1.png",
     description: "亮妍魚膠原蛋白飲-玫瑰風味 50mL/10入 共兩盒，贈 EC 晶眸葉黃素精華凍+精華飲綜合組。",
@@ -1532,7 +1566,7 @@ const products: Product[] = [
     name: "龍血洗髮精 + 阿甘養髮液 1+1組",
     category: "組合價",
     series: "洗沐組合",
-    originalPrice: "原價待補",
+    originalPrice: "原價價值 $ 2,470",
     price: "1+1 $ 1,500",
     image: "/products/hair1+1.png",
     description: "龍血求麗頭皮修護洗髮精 600mL + 阿甘甦醒髮根養護液 80mL，各1瓶，共2瓶。",
@@ -1592,7 +1626,7 @@ const products: Product[] = [
     name: "絕美溫感變色護唇膏",
     category: "護唇膏",
     series: "護唇膏",
-    originalPrice: "原價待補",
+    originalPrice: "原價 $ 290",
     price: "單支 $ 290",
     image: "/products/lip tint.jpg",
     description: "3.5g / 支。溫感變色護唇膏，依唇溫呈現自然氣色。",
@@ -1602,7 +1636,7 @@ const products: Product[] = [
     name: "絕美保濕護唇膏",
     category: "護唇膏",
     series: "護唇膏",
-    originalPrice: "原價待補",
+    originalPrice: "原價 $ 290",
     price: "單支 $ 290",
     image: "/products/lip balm.jpg",
     description: "3.5g / 支。日常保濕護唇膏，滋潤乾燥雙唇。",
@@ -1617,8 +1651,350 @@ const products: Product[] = [
     image: "/products/lip combo.jpg",
     description: "絕美溫感變色護唇膏 / 絕美保濕護唇膏可任選，共2條。",
   },
+  {
+    id: 151,
+    name: "活肽定敏炭立潔黑牙膏 胜肽護齦款",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 190",
+    image: "/products/placeholder.jpg",
+    description: "50mL / 支。百匡 UNA 品項，售價 $190。",
+  },
+  {
+    id: 152,
+    name: "沙棘柔潤私密沐浴露",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "未標示",
+    image: "/products/placeholder.jpg",
+    description: "250mL / 瓶。百匡 UNA 品項，售價未標示。",
+  },
+  {
+    id: 153,
+    name: "紓壓迷幻好睡枕頭噴霧",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 299",
+    image: "/products/placeholder.jpg",
+    description: "100mL / 瓶。百匡 UNA 品項，售價 $299。",
+  },
+  {
+    id: 154,
+    name: "清汗零味體香噴霧 清新淡花香",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 190",
+    image: "/products/placeholder.jpg",
+    description: "55mL / 瓶。百匡 UNA 品項，售價 $190。",
+  },
+  {
+    id: 155,
+    name: "茶樹無所味拒噴霧",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 220",
+    image: "/products/placeholder.jpg",
+    description: "100mL / 瓶。百匡 UNA 品項，售價 $220。",
+  },
+  {
+    id: 156,
+    name: "沙棘燕胜肽緊實眼霜",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 390",
+    image: "/products/placeholder.jpg",
+    description: "19g / 瓶。百匡 UNA 品項，售價 $390。",
+  },
+  {
+    id: 157,
+    name: "沙棘維穩保濕乳",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 390",
+    image: "/products/placeholder.jpg",
+    description: "105mL / 瓶。百匡 UNA 品項，售價 $390。",
+  },
+  {
+    id: 158,
+    name: "4%鎂 消水洗卸露",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 280",
+    image: "/products/placeholder.jpg",
+    description: "250mL / 瓶。百匡 UNA 品項，售價 $280。",
+  },
+  {
+    id: 159,
+    name: "活肽定敏炭立潔黑牙膏",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 180",
+    image: "/products/placeholder.jpg",
+    description: "100mL / 支。百匡 UNA 品項，售價 $180。",
+  },
 
+  {
+    id: 160,
+    name: "潤膚防曬隔離霜 SPF50★★★ 亮白膚",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 299",
+    image: "/products/placeholder.jpg",
+    description: "30mL / 支。百匡 UNA 防曬隔離品項，售價 $299。",
+  },
+  {
+    id: 161,
+    name: "潤膚防曬隔離霜 SPF50★★★ 自然膚",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 299",
+    image: "/products/placeholder.jpg",
+    description: "40mL / 支。百匡 UNA 防曬隔離品項，售價 $299。",
+  },
+  {
+    id: 162,
+    name: "陽光對策 植萃防曬噴霧",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 299",
+    image: "/products/placeholder.jpg",
+    description: "90mL / 瓶。百匡 UNA 防曬噴霧品項，售價 $299。",
+  },
 
+  {
+    id: 163,
+    name: "8週持色 啵亮精油草本護髮染髮霜 - 光澤黑",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 290",
+    image: "/products/placeholder.jpg",
+    description: "百匡 UNA 染髮霜品項，光澤黑款，售價 $290。",
+  },
+  {
+    id: 164,
+    name: "8週持色 啵亮無氨護髮染髮霜 - 深栗棕",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 290",
+    image: "/products/placeholder.jpg",
+    description: "百匡 UNA 染髮霜品項，深栗棕款，售價 $290。",
+  },
+  {
+    id: 165,
+    name: "咩咩不啾 乳酸修護私密凝膠",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 290",
+    image: "/products/placeholder.jpg",
+    description: "120mL / 瓶。百匡 UNA 私密凝膠品項，售價 $290。",
+  },
+  {
+    id: 166,
+    name: "玫瑰香水洗髮精 長效抗臭配方",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 250",
+    image: "/products/placeholder.jpg",
+    description: "500mL / 瓶。百匡 UNA 洗髮精品項，售價 $250。",
+  },
+  {
+    id: 167,
+    name: "玫瑰沁養護髮素 滑嫩髮感 順到發亮",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 290",
+    image: "/products/placeholder.jpg",
+    description: "100mL / 瓶。百匡 UNA 護髮素品項，售價 $290。",
+  },
+  {
+    id: 168,
+    name: "柳蘭潤澤洗髮餅",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 150",
+    image: "/products/placeholder.jpg",
+    description: "50g / 塊。百匡 UNA 洗髮餅品項，售價 $150。",
+  },
+  {
+    id: 169,
+    name: "咖啡因洗髮餅",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 150",
+    image: "/products/placeholder.jpg",
+    description: "50g / 塊。百匡 UNA 洗髮餅品項，售價 $150。",
+  },
+  {
+    id: 170,
+    name: "執行長親研抗屑洗髮餅",
+    category: "外部廠商",
+    series: "百匡 UNA",
+    price: "$ 150",
+    image: "/products/placeholder.jpg",
+    description: "50g / 塊。百匡 UNA 洗髮餅品項，售價 $150。",
+  },
+
+  {
+    id: 171,
+    name: "超防禦清透隔離乳",
+    category: "保養品",
+    series: "防曬",
+    originalPrice: "原價 $ 1,380",
+    price: "產地價 $ 1,035",
+    image: "/products/placeholder.jpg",
+    description: "30mL / 瓶。清透防護隔離乳，日常妝前打底與防曬隔離使用。",
+  },
+  {
+    id: 172,
+    name: "晶淬雪柔膚液",
+    category: "保養品",
+    series: "晶淬雪系列",
+    originalPrice: "原價 $ 2,080",
+    price: "產地價 $ 1,560",
+    image: "/products/placeholder.jpg",
+    description: "130mL / 瓶。晶淬雪柔膚液，洗臉後調理肌膚，維持透亮柔嫩感。",
+  },
+  {
+    id: 173,
+    name: "玫瑰超微晶萃精華油",
+    category: "保養品",
+    series: "玫瑰超微晶萃系列",
+    originalPrice: "原價 $ 3,680",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "30mL / 瓶。玫瑰超微晶萃精華油，適合乾燥肌加強潤澤與柔嫩光澤。",
+  },
+  {
+    id: 174,
+    name: "BA-5 抗痕淨斑原液99%",
+    category: "保養品",
+    series: "BA-5肌密抗皺系列",
+    originalPrice: "原價 $ 6,200",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "30mL / 瓶。BA-5 抗痕淨斑原液99%，適合局部暗沉、斑點與膚色不均加強保養。",
+  },
+  {
+    id: 175,
+    name: "BA-5肌密全效噴霧奇蹟水",
+    category: "保養品",
+    series: "BA-5肌密抗皺系列",
+    originalPrice: "原價 $ 1,380",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "70mL / 瓶。BA-5 肌密全效噴霧奇蹟水，日常補水與妝前妝後保養使用。",
+  },
+  {
+    id: 176,
+    name: "白金密集煥白霜",
+    category: "保養品",
+    series: "白金密集煥白系列",
+    originalPrice: "原價 $ 4,280",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "55g / 瓶。白金密集煥白霜，適合暗沉、乾燥與膚色不均加強保養。",
+  },
+  {
+    id: 177,
+    name: "INSK 乳酸平衡前導液",
+    category: "保養品",
+    series: "INSK乳酸平衡系列",
+    originalPrice: "原價 $ 1,480",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "30mL / 瓶。INSK 乳酸平衡前導液，洗臉後打底，幫助維持穩定膚況。",
+  },
+  {
+    id: 178,
+    name: "INSK 乳酸平衡雪露",
+    category: "保養品",
+    series: "INSK乳酸平衡系列",
+    originalPrice: "原價 $ 1,680",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "130mL / 瓶。INSK 乳酸平衡雪露，保濕調理並維持清爽水嫩感。",
+  },
+  {
+    id: 179,
+    name: "阿甘綠柔潤髮乳",
+    category: "洗沐",
+    series: "阿甘綠柔護髮系列",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "800mL / 瓶。阿甘綠柔潤髮乳，洗後護理髮絲，維持柔順光澤。",
+  },
+  {
+    id: 180,
+    name: "阿甘綠柔洗髮精",
+    category: "洗沐",
+    series: "阿甘綠柔護髮系列",
+    originalPrice: "原價 $ 1,280",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "800mL / 瓶。阿甘綠柔洗髮精，日常清潔頭皮與髮絲，維持柔順清爽感。",
+  },
+
+  {
+    id: 181,
+    name: "薰衣草舒緩洗髮精",
+    category: "洗沐",
+    series: "洗沐系列",
+    originalPrice: "原價 $ 550",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "500mL / 瓶。薰衣草舒緩洗髮精，日常洗髮清潔使用，產地價可加入清單確認。",
+  },
+  {
+    id: 182,
+    name: "薰衣草舒緩沐浴乳",
+    category: "洗沐",
+    series: "洗沐系列",
+    originalPrice: "原價 $ 550",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "500mL / 瓶。薰衣草舒緩沐浴乳，日常沐浴清潔使用，產地價可加入清單確認。",
+  },
+  {
+    id: 183,
+    name: "北歐冷杉平衡洗髮精",
+    category: "洗沐",
+    series: "洗沐系列",
+    originalPrice: "原價 $ 550",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "500mL / 瓶。北歐冷杉平衡洗髮精，日常洗髮清潔使用，產地價可加入清單確認。",
+  },
+  {
+    id: 184,
+    name: "北歐冷杉平衡沐浴乳",
+    category: "洗沐",
+    series: "洗沐系列",
+    originalPrice: "原價 $ 550",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "500mL / 瓶。北歐冷杉平衡沐浴乳，日常沐浴清潔使用，產地價可加入清單確認。",
+  },
+  {
+    id: 185,
+    name: "茶樹控油去屑洗髮精",
+    category: "洗沐",
+    series: "洗沐系列",
+    originalPrice: "原價 $ 550",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "500mL / 瓶。茶樹控油去屑洗髮精，日常頭皮清潔使用，產地價可加入清單確認。",
+  },
+  {
+    id: 186,
+    name: "茶樹淨化平衡沐浴乳",
+    category: "洗沐",
+    series: "洗沐系列",
+    originalPrice: "原價 $ 550",
+    price: "產地價洽詢",
+    image: "/products/placeholder.jpg",
+    description: "500mL / 瓶。茶樹淨化平衡沐浴乳，日常沐浴清潔使用，產地價可加入清單確認。",
+  },
 
 ];
 
@@ -1628,6 +2004,227 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   // 商品資訊頁正式文案放這裡。
   // 每一個商品 ID 都有自己的可編輯區塊；要改商品介紹、特色、使用方式、注意事項、效期，直接搜尋商品名稱或商品 ID。
   // 價格仍以 products 商品資料中的 price / originalPrice 為主。
+  151: {
+    cardName: "活肽定敏炭立潔黑牙膏 胜肽護齦款",
+    cardSubtitle: "百匡 UNA・50mL",
+    spec: "50mL / 支",
+    intro: "百匡 UNA 口腔清潔品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $190。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "牙膏"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $190，庫存依 LINE 小幫手確認為準。",
+  },
+  152: {
+    cardName: "沙棘柔潤私密沐浴露",
+    cardSubtitle: "百匡 UNA・250mL",
+    spec: "250mL / 瓶",
+    intro: "百匡 UNA 私密清潔品項，售價目前未標示，可加入清單確認。",
+    features: ["百匡 UNA 外部廠商品項。", "售價目前未標示。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "清潔"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價目前未標示，請由 LINE 小幫手確認。",
+  },
+  153: {
+    cardName: "紓壓迷幻好睡枕頭噴霧",
+    cardSubtitle: "百匡 UNA・100mL",
+    spec: "100mL / 瓶",
+    intro: "百匡 UNA 枕頭噴霧品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $299。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "香氛"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $299，庫存依 LINE 小幫手確認為準。",
+  },
+  154: {
+    cardName: "清汗零味體香噴霧 清新淡花香",
+    cardSubtitle: "百匡 UNA・55mL",
+    spec: "55mL / 瓶",
+    intro: "百匡 UNA 體香噴霧品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $190。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "體香噴霧"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $190，庫存依 LINE 小幫手確認為準。",
+  },
+  155: {
+    cardName: "茶樹無所味拒噴霧",
+    cardSubtitle: "百匡 UNA・100mL",
+    spec: "100mL / 瓶",
+    intro: "百匡 UNA 茶樹噴霧品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $220。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "噴霧"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $220，庫存依 LINE 小幫手確認為準。",
+  },
+  156: {
+    cardName: "沙棘燕胜肽緊實眼霜",
+    cardSubtitle: "百匡 UNA・19g",
+    spec: "19g / 瓶",
+    intro: "百匡 UNA 眼霜品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $390。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "眼霜"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $390，庫存依 LINE 小幫手確認為準。",
+  },
+  157: {
+    cardName: "沙棘維穩保濕乳",
+    cardSubtitle: "百匡 UNA・105mL",
+    spec: "105mL / 瓶",
+    intro: "百匡 UNA 保濕乳品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $390。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "保濕乳"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $390，庫存依 LINE 小幫手確認為準。",
+  },
+  158: {
+    cardName: "4%鎂 消水洗卸露",
+    cardSubtitle: "百匡 UNA・250mL",
+    spec: "250mL / 瓶",
+    intro: "百匡 UNA 洗卸品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $280。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "洗卸"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $280，庫存依 LINE 小幫手確認為準。",
+  },
+  159: {
+    cardName: "活肽定敏炭立潔黑牙膏",
+    cardSubtitle: "百匡 UNA・100mL",
+    spec: "100mL / 支",
+    intro: "百匡 UNA 口腔清潔品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $180。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "牙膏"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $180，庫存依 LINE 小幫手確認為準。",
+  },
+
+  160: {
+    cardName: "潤膚防曬隔離霜 SPF50★★★ 亮白膚",
+    cardSubtitle: "百匡 UNA・30mL",
+    spec: "30mL / 支",
+    intro: "百匡 UNA 防曬隔離品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $299。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "防曬隔離"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $299，庫存依 LINE 小幫手確認為準。",
+  },
+  161: {
+    cardName: "潤膚防曬隔離霜 SPF50★★★ 自然膚",
+    cardSubtitle: "百匡 UNA・40mL",
+    spec: "40mL / 支",
+    intro: "百匡 UNA 防曬隔離品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $299。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "防曬隔離"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $299，庫存依 LINE 小幫手確認為準。",
+  },
+  162: {
+    cardName: "陽光對策 植萃防曬噴霧",
+    cardSubtitle: "百匡 UNA・90mL",
+    spec: "90mL / 瓶",
+    intro: "百匡 UNA 防曬噴霧品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $299。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "防曬噴霧"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $299，庫存依 LINE 小幫手確認為準。",
+  },
+  163: {
+    cardName: "8週持色 啵亮精油草本護髮染髮霜 - 光澤黑",
+    cardSubtitle: "百匡 UNA・光澤黑",
+    spec: "光澤黑款",
+    intro: "百匡 UNA 染髮霜品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $290。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "染髮霜"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $290，庫存依 LINE 小幫手確認為準。",
+  },
+  164: {
+    cardName: "8週持色 啵亮無氨護髮染髮霜 - 深栗棕",
+    cardSubtitle: "百匡 UNA・深栗棕",
+    spec: "深栗棕款",
+    intro: "百匡 UNA 染髮霜品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $290。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "染髮霜"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $290，庫存依 LINE 小幫手確認為準。",
+  },
+  165: {
+    cardName: "咩咩不啾 乳酸修護私密凝膠",
+    cardSubtitle: "百匡 UNA・120mL",
+    spec: "120mL / 瓶",
+    intro: "百匡 UNA 私密凝膠品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $290。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "私密保養"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $290，庫存依 LINE 小幫手確認為準。",
+  },
+  166: {
+    cardName: "玫瑰香水洗髮精 長效抗臭配方",
+    cardSubtitle: "百匡 UNA・500mL",
+    spec: "500mL / 瓶",
+    intro: "百匡 UNA 洗髮精品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $250。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "洗髮精"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $250，庫存依 LINE 小幫手確認為準。",
+  },
+  167: {
+    cardName: "玫瑰沁養護髮素 滑嫩髮感 順到發亮",
+    cardSubtitle: "百匡 UNA・100mL",
+    spec: "100mL / 瓶",
+    intro: "百匡 UNA 護髮素品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $290。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "護髮素"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $290，庫存依 LINE 小幫手確認為準。",
+  },
+  168: {
+    cardName: "柳蘭潤澤洗髮餅",
+    cardSubtitle: "百匡 UNA・50g",
+    spec: "50g / 塊",
+    intro: "百匡 UNA 洗髮餅品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $150。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "洗髮餅"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $150，庫存依 LINE 小幫手確認為準。",
+  },
+  169: {
+    cardName: "咖啡因洗髮餅",
+    cardSubtitle: "百匡 UNA・50g",
+    spec: "50g / 塊",
+    intro: "百匡 UNA 洗髮餅品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $150。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "洗髮餅"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $150，庫存依 LINE 小幫手確認為準。",
+  },
+  170: {
+    cardName: "執行長親研抗屑洗髮餅",
+    cardSubtitle: "百匡 UNA・50g",
+    spec: "50g / 塊",
+    intro: "百匡 UNA 洗髮餅品項，售價已標示，可加入清單確認庫存。",
+    features: ["百匡 UNA 外部廠商品項。", "商品售價 $150。", "可與其他品項一起加入清單。"],
+    suitableFor: ["百匡 UNA", "外部廠商", "洗髮餅"],
+    usage: "請依商品標示方式使用。",
+    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
+    priceNote: "售價 $150，庫存依 LINE 小幫手確認為準。",
+  },
   1: {
     cardName: "BC-CA複合益生菌高鈣活力配方",
     cardSubtitle: "3g x 30包 / 盒・高鈣活力益生菌",
@@ -4779,6 +5376,11 @@ export default function Home() {
     address: "",
     note: "",
   });
+  const [lineProfile, setLineProfile] = useState<LineProfile | null>(null);
+  const [lineBindingStatus, setLineBindingStatus] =
+    useState<"idle" | "loading" | "ready" | "unavailable" | "error">("idle");
+  const [lineBindingMessage, setLineBindingMessage] = useState("");
+  const [hasRestoredSavedDraft, setHasRestoredSavedDraft] = useState(false);
 
   const mainCategories = Object.keys(categoryConfig) as MainCategory[];
   const seriesList = categoryConfig[selectedCategory];
@@ -4962,7 +5564,7 @@ export default function Home() {
     { title: "生福科技", text: "保健、生活機能與日常選品" },
     { title: "木匠兄妹", text: "木作生活小物與親子 DIY" },
     { title: "F.SEASONS 富雨洋傘", text: "洋傘與生活配件" },
-    { title: "良冠", text: "精選外部廠商品牌" },
+    { title: "百匡 UNA", text: "UNA 清潔、香氛與保養選品" },
   ];
 
   const cartTotalQuantity = cartItems.reduce(
@@ -5025,7 +5627,7 @@ export default function Home() {
     const externalVendors = [
       "生福科技",
       "倍力工房",
-      "良冠",
+      "百匡 UNA",
       "木匠兄妹",
       "F.SEASONS 富雨洋傘",
       "歐思佛",
@@ -5153,7 +5755,7 @@ export default function Home() {
       case "vendor-beili":
         return isExternal && (product.series.includes("倍力工房") || fullText.includes("倍力"));
       case "vendor-liangguan":
-        return isExternal && (product.series.includes("良冠") || fullText.includes("良冠"));
+        return isExternal && (product.series.includes("百匡 UNA") || fullText.includes("百匡 UNA"));
       case "vendor-wooderful":
         return isExternal && (product.series.includes("木匠兄妹") || fullText.includes("木匠兄妹"));
       case "vendor-fseasons":
@@ -6191,6 +6793,249 @@ export default function Home() {
     setSubmitMessage("");
   }
 
+  const saveLineProfile = useCallback((profile: LineProfile) => {
+    setLineProfile(profile);
+    setLineBindingStatus("ready");
+    setLineBindingMessage("");
+
+    try {
+      window.localStorage.setItem(LINE_PROFILE_STORAGE_KEY, JSON.stringify(profile));
+    } catch (error) {
+      // localStorage 失敗時不影響訂購流程。
+    }
+  }, []);
+
+  const fetchAndSaveLineProfile = useCallback(async () => {
+    if (!window.liff) return;
+
+    const profile = await window.liff.getProfile();
+
+    saveLineProfile({
+      userId: profile.userId,
+      displayName: profile.displayName,
+      pictureUrl: profile.pictureUrl,
+      statusMessage: profile.statusMessage,
+    });
+  }, [saveLineProfile]);
+
+  const loadLiffSdk = useCallback(() => {
+    return new Promise<void>((resolve, reject) => {
+      if (window.liff) {
+        resolve();
+        return;
+      }
+
+      const existingScript = document.querySelector<HTMLScriptElement>(
+        `script[src="${LIFF_SDK_SRC}"]`
+      );
+
+      if (existingScript) {
+        existingScript.addEventListener("load", () => resolve(), { once: true });
+        existingScript.addEventListener(
+          "error",
+          () => reject(new Error("LIFF SDK 載入失敗")),
+          { once: true }
+        );
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = LIFF_SDK_SRC;
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("LIFF SDK 載入失敗"));
+      document.body.appendChild(script);
+    });
+  }, []);
+
+  const startLineBinding = useCallback(async () => {
+    if (!LINE_LIFF_ID) {
+      setLineBindingStatus("unavailable");
+      setLineBindingMessage("LINE 綁定尚未啟用");
+      return;
+    }
+
+    try {
+      setLineBindingStatus("loading");
+      setLineBindingMessage("");
+      await loadLiffSdk();
+      await window.liff?.init({ liffId: LINE_LIFF_ID });
+
+      if (!window.liff?.isLoggedIn()) {
+        window.liff?.login();
+        return;
+      }
+
+      await fetchAndSaveLineProfile();
+    } catch (error) {
+      setLineBindingStatus("error");
+      setLineBindingMessage("LINE 綁定暫時無法使用");
+    }
+  }, [fetchAndSaveLineProfile, loadLiffSdk]);
+
+  useEffect(() => {
+    try {
+      const savedCart = window.localStorage.getItem(CART_STORAGE_KEY);
+
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+
+        if (Array.isArray(parsedCart)) {
+          const restoredCart = parsedCart
+            .map((savedItem) => {
+              const productId = Number(savedItem?.id);
+              const quantity = Number(savedItem?.quantity);
+              const product = products.find((item) => item.id === productId);
+
+              if (!product || !Number.isFinite(quantity) || quantity <= 0) {
+                return null;
+              }
+
+              return {
+                product,
+                quantity: Math.min(Math.max(Math.floor(quantity), 1), 99),
+              };
+            })
+            .filter((item): item is CartItem => item !== null);
+
+          if (restoredCart.length > 0) {
+            setCartItems(restoredCart);
+          }
+        }
+      }
+
+      const savedCustomerDraft = window.localStorage.getItem(CUSTOMER_DRAFT_STORAGE_KEY);
+
+      if (savedCustomerDraft) {
+        const parsedCustomer = JSON.parse(savedCustomerDraft) as Partial<CustomerForm>;
+
+        setCustomer((current) => ({
+          ...current,
+          customerName:
+            typeof parsedCustomer.customerName === "string"
+              ? parsedCustomer.customerName
+              : current.customerName,
+          lineId:
+            typeof parsedCustomer.lineId === "string"
+              ? parsedCustomer.lineId
+              : current.lineId,
+          phone:
+            typeof parsedCustomer.phone === "string" ? parsedCustomer.phone : current.phone,
+          deliveryMethod:
+            typeof parsedCustomer.deliveryMethod === "string"
+              ? parsedCustomer.deliveryMethod
+              : current.deliveryMethod,
+          address:
+            typeof parsedCustomer.address === "string" ? parsedCustomer.address : current.address,
+          note:
+            typeof parsedCustomer.note === "string" ? parsedCustomer.note : current.note,
+        }));
+      }
+
+      const savedLineProfile = window.localStorage.getItem(LINE_PROFILE_STORAGE_KEY);
+
+      if (savedLineProfile) {
+        const parsedLineProfile = JSON.parse(savedLineProfile) as Partial<LineProfile>;
+
+        if (
+          typeof parsedLineProfile.userId === "string" &&
+          typeof parsedLineProfile.displayName === "string"
+        ) {
+          setLineProfile({
+            userId: parsedLineProfile.userId,
+            displayName: parsedLineProfile.displayName,
+            pictureUrl:
+              typeof parsedLineProfile.pictureUrl === "string"
+                ? parsedLineProfile.pictureUrl
+                : undefined,
+            statusMessage:
+              typeof parsedLineProfile.statusMessage === "string"
+                ? parsedLineProfile.statusMessage
+                : undefined,
+          });
+        }
+      }
+    } catch (error) {
+      window.localStorage.removeItem(CART_STORAGE_KEY);
+      window.localStorage.removeItem(CUSTOMER_DRAFT_STORAGE_KEY);
+    } finally {
+      setHasRestoredSavedDraft(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!LINE_LIFF_ID) {
+      setLineBindingStatus("unavailable");
+      return;
+    }
+
+    let cancelled = false;
+
+    async function initLineBinding() {
+      try {
+        setLineBindingStatus("loading");
+        await loadLiffSdk();
+        await window.liff?.init({ liffId: LINE_LIFF_ID });
+
+        if (cancelled) return;
+
+        if (window.liff?.isLoggedIn()) {
+          await fetchAndSaveLineProfile();
+        } else {
+          setLineBindingStatus("ready");
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setLineBindingStatus("error");
+          setLineBindingMessage("LINE 綁定暫時無法使用");
+        }
+      }
+    }
+
+    initLineBinding();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchAndSaveLineProfile, loadLiffSdk]);
+
+  useEffect(() => {
+    if (!hasRestoredSavedDraft) return;
+
+    if (cartItems.length === 0) {
+      window.localStorage.removeItem(CART_STORAGE_KEY);
+      return;
+    }
+
+    window.localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify(
+        cartItems.map((item) => ({
+          id: item.product.id,
+          quantity: item.quantity,
+        }))
+      )
+    );
+  }, [cartItems, hasRestoredSavedDraft]);
+
+  useEffect(() => {
+    if (!hasRestoredSavedDraft) return;
+
+    const hasCustomerDraft =
+      customer.customerName.trim() ||
+      customer.lineId.trim() ||
+      customer.phone.trim() ||
+      customer.address.trim() ||
+      customer.note.trim();
+
+    if (!hasCustomerDraft) {
+      window.localStorage.removeItem(CUSTOMER_DRAFT_STORAGE_KEY);
+      return;
+    }
+
+    window.localStorage.setItem(CUSTOMER_DRAFT_STORAGE_KEY, JSON.stringify(customer));
+  }, [customer, hasRestoredSavedDraft]);
+
   useEffect(() => {
     function handlePopState() {
       setSelectedDetailProduct(null);
@@ -6253,9 +7098,9 @@ export default function Home() {
       return;
     }
 
-    if (!customer.lineId.trim() && !customer.phone.trim()) {
+    if (!lineProfile && !customer.lineId.trim() && !customer.phone.trim()) {
       setSubmitStatus("error");
-      setSubmitMessage("請至少填寫 LINE ID 或電話其中一項，方便我們聯絡你。");
+      setSubmitMessage("請填寫 LINE ID 或電話，或先綁定 LINE 帳號。");
       return;
     }
 
@@ -6276,6 +7121,12 @@ export default function Home() {
     const noteWithAddress = [
       `宅配地址：${customer.address.trim()}`,
       customerNote ? `備註：${customerNote}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const lineContactText = [
+      lineProfile ? `${lineProfile.displayName}｜${lineProfile.userId}` : "",
+      customer.lineId.trim() ? `手填：${customer.lineId.trim()}` : "",
     ]
       .filter(Boolean)
       .join("\n");
@@ -6300,7 +7151,7 @@ export default function Home() {
       訂單時間: orderTime,
       訂單編號: orderNumber,
       姓名: customer.customerName.trim(),
-      "LINE ID": customer.lineId.trim(),
+      "LINE ID": lineContactText,
       電話: customer.phone.trim(),
       取貨方式: "宅配",
       商品內容: itemsText,
@@ -6316,6 +7167,10 @@ export default function Home() {
       sheetRow,
       customerName: customer.customerName.trim(),
       lineId: customer.lineId.trim(),
+      lineDisplayName: lineProfile?.displayName || "",
+      lineUserId: lineProfile?.userId || "",
+      linePictureUrl: lineProfile?.pictureUrl || "",
+      lineContactText,
       phone: customer.phone.trim(),
       deliveryMethod: "宅配",
       address: customer.address.trim(),
@@ -6347,6 +7202,8 @@ export default function Home() {
         body: JSON.stringify(payload),
       });
 
+      window.localStorage.removeItem(CART_STORAGE_KEY);
+      window.localStorage.removeItem(CUSTOMER_DRAFT_STORAGE_KEY);
       setSubmitStatus("success");
       setSubmitMessage("");
       setCartItems([]);
@@ -6797,7 +7654,7 @@ export default function Home() {
                     <button type="button" onClick={() => openCommerceFilter("vendor-all", "外部廠商 / 全部外部廠商")}>全部外部廠商</button>
                     <button type="button" onClick={() => openCommerceFilter("vendor-sunfu", "外部廠商 / 生福科技")}>生福科技</button>
                     <button type="button" onClick={() => openCommerceFilter("vendor-beili", "外部廠商 / 倍力工房")}>倍力工房</button>
-                    <button type="button" onClick={() => openCommerceFilter("vendor-liangguan", "外部廠商 / 良冠")}>良冠</button>
+                    <button type="button" onClick={() => openCommerceFilter("vendor-liangguan", "外部廠商 / 百匡 UNA")}>百匡 UNA</button>
                     <button type="button" onClick={() => openCommerceFilter("vendor-wooderful", "外部廠商 / 木匠兄妹")}>木匠兄妹</button>
                     <button type="button" onClick={() => openCommerceFilter("vendor-fseasons", "外部廠商 / F.SEASONS 富雨洋傘")}>F.SEASONS 富雨洋傘</button>
                     <button type="button" onClick={() => openCommerceFilter("vendor-osifu", "外部廠商 / 歐思佛")}>歐思佛</button>
@@ -7170,6 +8027,29 @@ export default function Home() {
                     </div>
                   </div>
 
+                  <div className="line-bind-card-v25313">
+                    <div>
+                      <span>LINE 帳號</span>
+                      {lineProfile ? (
+                        <strong>已綁定：{lineProfile.displayName}</strong>
+                      ) : (
+                        <strong>清單可綁定 LINE 保存</strong>
+                      )}
+                      {lineBindingMessage ? <em>{lineBindingMessage}</em> : null}
+                    </div>
+                    {lineProfile ? (
+                      <small>送出時會帶入 LINE 身分</small>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={startLineBinding}
+                        disabled={lineBindingStatus === "loading" || !LINE_LIFF_ID}
+                      >
+                        {lineBindingStatus === "loading" ? "綁定中" : "綁定 LINE"}
+                      </button>
+                    )}
+                  </div>
+
                   <div className="checkout-field-grid">
                     <label>
                       姓名 <span>*</span>
@@ -7183,13 +8063,13 @@ export default function Home() {
                     </label>
 
                     <label>
-                      LINE ID
+                      LINE ID（備用）
                       <input
                         value={customer.lineId}
                         onChange={(event) =>
                           setCustomer({ ...customer, lineId: event.target.value })
                         }
-                        placeholder="例如：@chateau-buy"
+                        placeholder="未綁定時可填寫"
                       />
                     </label>
 
@@ -14619,6 +15499,77 @@ export default function Home() {
           font-weight: 750;
         }
 
+        /* Commerce V2.5.3.13：LINE 綁定提示卡 */
+        .line-bind-card-v25313 {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin: 14px 0 16px;
+          padding: 14px 15px;
+          border-radius: 22px;
+          background: linear-gradient(135deg, rgba(255, 250, 246, 0.96), rgba(255, 244, 236, 0.9));
+          border: 1px solid rgba(234, 219, 208, 0.95);
+          box-shadow: 0 10px 24px rgba(77, 55, 38, 0.06);
+        }
+
+        .line-bind-card-v25313 div {
+          min-width: 0;
+        }
+
+        .line-bind-card-v25313 span {
+          display: block;
+          margin-bottom: 3px;
+          color: var(--gold);
+          font-size: 12px;
+          font-weight: 950;
+          letter-spacing: 0.08em;
+        }
+
+        .line-bind-card-v25313 strong {
+          display: block;
+          color: #4c332b;
+          font-size: 15px;
+          line-height: 1.35;
+          font-weight: 950;
+        }
+
+        .line-bind-card-v25313 em {
+          display: block;
+          margin-top: 4px;
+          color: #9a897d;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 800;
+        }
+
+        .line-bind-card-v25313 small {
+          flex-shrink: 0;
+          color: #9a897d;
+          font-size: 12px;
+          font-weight: 850;
+          white-space: nowrap;
+        }
+
+        .line-bind-card-v25313 button {
+          flex-shrink: 0;
+          border: 0;
+          border-radius: 999px;
+          padding: 10px 14px;
+          background: #06c755;
+          color: #fff;
+          font-size: 13px;
+          font-weight: 950;
+          box-shadow: 0 8px 18px rgba(6, 199, 85, 0.2);
+        }
+
+        .line-bind-card-v25313 button:disabled {
+          background: #d8ccc3;
+          color: #fff;
+          box-shadow: none;
+        }
+
+
         @media (max-width: 420px) {
           .brand-logo-wrap {
             width: 44px;
@@ -14633,6 +15584,17 @@ export default function Home() {
 
           .top-header {
             gap: 8px !important;
+          }
+
+          .line-bind-card-v25313 {
+            align-items: flex-start;
+            flex-direction: column;
+          }
+
+          .line-bind-card-v25313 button,
+          .line-bind-card-v25313 small {
+            width: 100%;
+            text-align: center;
           }
 
           .product-info h3,
