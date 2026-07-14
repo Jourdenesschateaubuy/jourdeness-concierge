@@ -13,7 +13,6 @@ const categoryConfig = {
     "牙膏組合",
     "保養套組",
     "肥皂組合",
-    "香氛組合",
     "護唇膏組合",
     "面膜組合",
   ],
@@ -27,7 +26,6 @@ const categoryConfig = {
     "水光肌能系列",
     "晶淬雪系列",
     "玫瑰超微晶萃系列",
-    "BA-5肌密抗皺系列",
     "肌光緊緻速妍系列",
     "冰河淨化系列",
     "櫻の雪傳明酸美白系列",
@@ -37,7 +35,6 @@ const categoryConfig = {
     "鳳梨酵素系列",
     "防曬",
     "綠茶多酚保濕平衡系列",
-    "白金密集煥白系列",
     "特殊護理系列",
     "頂級養護",
     "面膜",
@@ -47,10 +44,8 @@ const categoryConfig = {
   精油: ["全部", "單方精油", "複方精油", "精油配件", "擴香設備", "10mL 精油系列", "50mL 精萃油系列"],
   牙膏: ["全部", "牙膏"],
   肥皂: ["全部", "肥皂"],
-  護手霜: ["全部", "護手霜"],
   護唇膏: ["全部", "護唇膏"],
   面膜: ["全部", "保濕面膜", "亮白面膜", "修護面膜", "面膜組合"],
-  香水: ["全部", "香水"],
   貼布: ["全部", "貼布"],
   外部廠商: ["全部", "京採", "太極石", "歐思佛", "上山採藥", "生福科技", "倍力工房", "百匡 UNA", "木匠兄妹", "F.SEASONS 富雨洋傘"],
 } as const;
@@ -122,7 +117,7 @@ declare global {
   }
 }
 
-// V2.8.0：精選生活賣場完成版，整合品牌館、活動牆、商品貨架、精油新增與清單式回購流程。
+// V2.9.3：商品整理與價格規則版，整合移除品項、產地價補正、售價顯示規則與擴香設備新增。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -169,7 +164,7 @@ const products: Product[] = [
     category: "保健食品",
     series: "晶眸保健系列",
     originalPrice: "原價 $ 1,500",
-    price: "產地價洽詢",
+    price: "產地價 $ 1,125",
     image: "/products/Lutein.jpg",
     description: "精華凍 + 精華飲綜合組。適合 3C 族、學生與上班族日常晶亮營養補給。",
   },
@@ -188,8 +183,8 @@ const products: Product[] = [
     name: "薰衣草肌安舒緩化妝水",
     category: "保養品",
     series: "薰衣草系列",
-    originalPrice: "原價 $ 620",
-    price: "產地價待補",
+    originalPrice: "原價 $ 790",
+    price: "產地價 $ 590",
     image: "/products/Lavender1.jpg",
     description: "150mL。薰衣草肌安舒緩系列。",
   },
@@ -199,7 +194,7 @@ const products: Product[] = [
     category: "保養品",
     series: "薰衣草系列",
     originalPrice: "原價 $ 890",
-    price: "產地價待補",
+    price: "產地價 $ 660",
     image: "/products/Lavender2.jpg",
     description: "30mL。薰衣草肌安舒緩系列。",
   },
@@ -209,19 +204,9 @@ const products: Product[] = [
     category: "保養品",
     series: "薰衣草系列",
     originalPrice: "原價 $ 890",
-    price: "產地價待補",
+    price: "產地價 $ 660",
     image: "/products/Lavender3.jpg",
     description: "100mL。薰衣草肌安舒緩系列。",
-  },
-{
-    id: 9,
-    name: "冷杉型男淨化潔顏乳",
-    category: "保養品",
-    series: "冷杉系列",
-    originalPrice: "原價 $ 390",
-    price: "缺貨中",
-    image: "/products/Men's Abies0.jpg",
-    description: "120mL。冷杉系列保養品。",
   },
 {
     id: 10,
@@ -244,26 +229,6 @@ const products: Product[] = [
     description: "100mL。冷杉系列保養品。",
   },
 {
-    id: 12,
-    name: "冷杉酷涼活絡精油滾珠",
-    category: "保養品",
-    series: "冷杉系列",
-    originalPrice: "原價 $ 390",
-    price: "產地價待補",
-    image: "/products/Siberian Fir Essential Oil Roller.jpg",
-    description: "9mL。冷杉酷涼活絡精油滾珠。",
-  },
-{
-    id: 13,
-    name: "玫瑰超微晶萃潔顏慕絲",
-    category: "保養品",
-    series: "玫瑰超微晶萃系列",
-    originalPrice: "原價 $ 1,280",
-    price: "產地價洽詢",
-    image: "/products/rose0.jpg",
-    description: "150mL / 瓶。玫瑰超微晶萃潔顏慕絲，溫和清潔並維持洗後柔嫩感。",
-  },
-{
     id: 14,
     name: "玫瑰超微晶萃活膚液",
     category: "保養品",
@@ -272,16 +237,6 @@ const products: Product[] = [
     price: "產地價 $ 1,560",
     image: "/products/rose1.jpg",
     description: "130mL / 瓶。玫瑰超微晶萃活膚液，洗臉後調理肌膚並維持柔嫩光澤。",
-  },
-{
-    id: 15,
-    name: "玫瑰超微晶萃瞬效乳",
-    category: "保養品",
-    series: "玫瑰超微晶萃系列",
-    originalPrice: "原價 $ 2,280",
-    price: "產地價洽詢",
-    image: "/products/rose3.jpg",
-    description: "130mL / 瓶。玫瑰超微晶萃瞬效乳，清爽補水並加強柔嫩彈潤感。",
   },
 {
     id: 16,
@@ -374,46 +329,6 @@ const products: Product[] = [
     description: "23mL x 10入 / 盒。集中型緊緻修護面膜，適合重要場合前與熬夜後加強保養。",
   },
 {
-    id: 25,
-    name: "INSK乳酸平衡機能水",
-    category: "保養品",
-    series: "INSK乳酸平衡系列",
-    originalPrice: "原價 $ 1,380",
-    price: "產地價待補",
-    image: "/products/INSK 001.jpg",
-    description: "150mL / 瓶。洗臉後的乳酸平衡前導水，維持油水平衡與健康膚況。",
-  },
-{
-    id: 26,
-    name: "INSK乳酸平衡修護乳",
-    category: "保養品",
-    series: "INSK乳酸平衡系列",
-    originalPrice: "原價 $ 1,580",
-    price: "產地價待補",
-    image: "/products/INSK1.jpg",
-    description: "100mL / 瓶。輕盈修護乳，滋潤並修護肌膚水脂膜，改善粗糙與油水失衡。",
-  },
-{
-    id: 27,
-    name: "BA-5 肌密抗皺精華露",
-    category: "保養品",
-    series: "BA-5肌密抗皺系列",
-    originalPrice: "原價 $ 4,880",
-    price: "產地價洽詢",
-    image: "/products/BA-5 2.jpg",
-    description: "30mL / 瓶。BA-5 肌密抗皺精華露，適合熟齡肌、乾紋與細紋感加強保養。",
-  },
-{
-    id: 28,
-    name: "BA-5肌密抗皺活妍霜",
-    category: "保養品",
-    series: "BA-5肌密抗皺系列",
-    originalPrice: "原價 $ 9,280",
-    price: "產地價洽詢",
-    image: "/products/BA-5 4.png",
-    description: "60mL / 瓶。BA-5 肌密抗皺活妍霜，豐潤質地，保養最後一步加強滋養與緊緻感。",
-  },
-{
     id: 29,
     name: "龍血求麗頭皮修護洗髮精",
     category: "洗沐",
@@ -442,26 +357,6 @@ const products: Product[] = [
     price: "產地價 $ 585",
     image: "/products/Refined Hair Shampoo.jpg",
     description: "洗髮品項。",
-  },
-{
-    id: 33,
-    name: "INSK 乳酸淨痘修護膠",
-    category: "保養品",
-    series: "INSK乳酸平衡系列",
-    originalPrice: "原價 $ 1,080",
-    price: "產地價洽詢",
-    image: "/products/INSK6.jpg",
-    description: "15mL / 支。乳酸淨痘修護膠，適合局部粉刺、痘痘與易出油部位調理。",
-  },
-{
-    id: 34,
-    name: "INSK 乳酸平衡水嫩膜",
-    category: "保養品",
-    series: "INSK乳酸平衡系列",
-    originalPrice: "原價 $ 1,280",
-    price: "產地價洽詢",
-    image: "/products/INSK5.jpg",
-    description: "23mL x 6入 / 盒。乳酸平衡水嫩膜，集中補水並維持穩定膚況。",
   },
 {
     id: 35,
@@ -658,7 +553,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價 $ 890",
-    price: "產地價洽詢",
+    price: "產地價 $ 590",
     image: "/products/BD001.jpg",
     description: "150mL / 瓶。輕盈卸妝油，快速溶解彩妝、防曬與毛孔髒污。",
   },
@@ -668,7 +563,7 @@ const products: Product[] = [
     category: "保養品",
     series: "龍血系列",
     originalPrice: "原價 $ 790",
-    price: "產地價洽詢",
+    price: "產地價 $ 590",
     image: "/products/BD0.jpg",
     description: "150mL / 瓶。細緻綿密潔顏慕絲，洗後不緊繃、不乾澀。",
   },
@@ -778,7 +673,7 @@ const products: Product[] = [
     category: "保養品",
     series: "鳳梨酵素系列",
     originalPrice: "原價 $ 590",
-    price: "產地價洽詢",
+    price: "產地價 $ 460",
     image: "/products/pineapple 0.jpg",
     description: "120g / 瓶。溫和代謝老廢角質，改善粗糙暗沉與吸收感不佳。",
   },
@@ -851,46 +746,6 @@ const products: Product[] = [
     price: "產地價待補",
     image: "/products/fish oil.jpg",
     description: "生福科技品項。",
-  },
-{
-    id: 75,
-    name: "櫻の雪亮澤護手霜",
-    category: "護手霜",
-    series: "護手霜",
-    originalPrice: "原價 $ 290",
-    price: "產地價洽詢",
-    image: "/products/hand cream cherry.png",
-    description: "50mL / 支。亮澤護手霜，改善手背暗沉、乾燥粗糙與關節黯沉感。",
-  },
-{
-    id: 76,
-    name: "茶樹防禦護手霜",
-    category: "護手霜",
-    series: "護手霜",
-    originalPrice: "原價 $ 290",
-    price: "產地價洽詢",
-    image: "/products/hand cream tea.png",
-    description: "50mL / 支。茶樹清爽護手霜，適合怕黏膩、易流手汗與夏天使用。",
-  },
-{
-    id: 77,
-    name: "薰衣草舒緩護手霜",
-    category: "護手霜",
-    series: "護手霜",
-    originalPrice: "原價 $ 290",
-    price: "產地價洽詢",
-    image: "/products/hand cream lav.png",
-    description: "50mL / 支。薰衣草舒緩護手霜，適合睡前滋養與乾燥粗糙手部。",
-  },
-{
-    id: 78,
-    name: "麝香棉花香氛護手霜",
-    category: "護手霜",
-    series: "護手霜",
-    originalPrice: "原價 $ 290",
-    price: "產地價洽詢",
-    image: "/products/hand cream musk.png",
-    description: "50mL / 支。白麝香棉花香氛護手霜，滋潤柔膚、香氣乾淨溫柔。",
   },
 {
     id: 79,
@@ -1038,7 +893,7 @@ const products: Product[] = [
     category: "洗沐",
     series: "阿甘綠柔護髮系列",
     originalPrice: "原價 $ 1,680",
-    price: "產地價洽詢",
+    price: "產地價 $ 1,260",
     image: "/products/Argan Oil3.jpg",
     description: "80mL / 瓶。阿甘甦醒髮根養護液，適合日常頭皮與髮根養護。",
   },
@@ -1168,7 +1023,7 @@ const products: Product[] = [
     category: "保養品",
     series: "特殊護理系列",
     originalPrice: "原價 $ 2,280",
-    price: "產地價洽詢",
+    price: "產地價 $ 1,710",
     image: "/products/Ceramide Body Oil (C+E).jpg",
     description: "200mL / 瓶。賽洛美潤膚美體油(C+E)，沐浴後滋潤乾燥粗糙肌膚。",
   },
@@ -1183,22 +1038,12 @@ const products: Product[] = [
     description: "100mL / 瓶。24小時賦活液，適合疲憊暗沉與保養撞牆期加強打底。",
   },
 {
-    id: 109,
-    name: "鉑金無痕煥白雙導精華",
-    category: "保養品",
-    series: "特殊護理系列",
-    originalPrice: "原價 $ 8,800",
-    price: "產地價洽詢",
-    image: "/products/Platinum.jpg",
-    description: "50mL / 瓶。鉑金無痕煥白雙導精華，適合亮白、緊緻與膚色不均加強保養。",
-  },
-{
     id: 111,
     name: "24小時黃金璀璨賦活液",
     category: "保養品",
     series: "特殊護理系列",
     originalPrice: "原價 $ 2,280",
-    price: "產地價洽詢",
+    price: "產地價 $ 1,710",
     image: "/products/24K Gold.jpg",
     description: "40mL / 瓶。24小時黃金璀璨賦活液，維持澎潤、透亮與細緻光澤。",
   },
@@ -1253,22 +1098,12 @@ const products: Product[] = [
     description: "150mL / 瓶。水光苦杏仁酸慕絲，溫和清潔並維持肌膚細緻透亮感。",
   },
 {
-    id: 117,
-    name: "時光瑞亞淡香水",
-    category: "香水",
-    series: "香水",
-    originalPrice: "牌價 $ 790",
-    price: "產地價待補",
-    image: "/products/perpul smell.jpg",
-    description: "30mL。香水品項，效期至 2027/03/05。",
-  },
-{
     id: 118,
     name: "超導水網瞬效面膜",
     category: "保養品",
     series: "特殊護理系列",
     originalPrice: "原價 $ 1,680",
-    price: "產地價洽詢",
+    price: "產地價 $ 1,260",
     image: "/products/super water.png",
     description: "26mL x 6入 / 盒。超導水網瞬效面膜，集中補水並加強柔嫩光澤。",
   },
@@ -1298,7 +1133,7 @@ const products: Product[] = [
     category: "保養品",
     series: "頂級養護",
     originalPrice: "原價 $ 1,280",
-    price: "產地價洽詢",
+    price: "產地價 $ 960",
     image: "/products/smell white.jpg",
     description: "500mL / 瓶。小白花美體乳，水潤好推不黏膩，適合每日全身保養。",
   },
@@ -1311,16 +1146,6 @@ const products: Product[] = [
     price: "產地價 $ 2,760",
     image: "/products/Radiance and Lifting5.jpg",
     description: "23mL x 10入 / 盒。集中型緊緻修護面膜，適合重要場合前與熬夜後加強保養。",
-  },
-{
-    id: 123,
-    name: "INSK 乳酸平衡水嫩膜",
-    category: "面膜",
-    series: "面膜",
-    originalPrice: "原價 $ 1,280",
-    price: "產地價洽詢",
-    image: "/products/INSK5.jpg",
-    description: "23mL x 6入 / 盒。乳酸平衡水嫩膜，集中補水並維持穩定膚況。",
   },
 {
     id: 124,
@@ -1408,7 +1233,7 @@ const products: Product[] = [
     category: "保養品",
     series: "特殊護理系列",
     originalPrice: "原價 $ 1,680",
-    price: "產地價洽詢",
+    price: "產地價 $ 1,260",
     image: "/products/super water.png",
     description: "26mL x 6入 / 盒。超導水網瞬效面膜，集中補水並加強柔嫩光澤。",
   },
@@ -1481,16 +1306,6 @@ const products: Product[] = [
     price: "1+1 $ 1,500",
     image: "/products/hair1+1.png",
     description: "龍血求麗頭皮修護洗髮精 600mL + 阿甘甦醒髮根養護液 80mL，各1瓶，共2瓶。",
-  },
-{
-    id: 140,
-    name: "時光瑞亞淡香水贈櫻の雪亮澤護手霜",
-    category: "組合價",
-    series: "香氛組合",
-    originalPrice: "牌價 $ 790",
-    price: "組合價 $ 780",
-    image: "/products/perfumehandcream.png",
-    description: "時光瑞亞淡香水30mL，效期至2027/03/05，贈價值290元櫻の雪亮澤護手霜JDST 30g。",
   },
 {
     id: 143,
@@ -1773,36 +1588,6 @@ const products: Product[] = [
     description: "30mL / 瓶。玫瑰超微晶萃精華油，適合乾燥肌加強潤澤與柔嫩光澤。",
   },
 {
-    id: 174,
-    name: "BA-5 抗痕淨斑原液99%",
-    category: "保養品",
-    series: "BA-5肌密抗皺系列",
-    originalPrice: "原價 $ 6,200",
-    price: "產地價洽詢",
-    image: "/products/placeholder.jpg",
-    description: "30mL / 瓶。BA-5 抗痕淨斑原液99%，適合局部暗沉、斑點與膚色不均加強保養。",
-  },
-{
-    id: 175,
-    name: "BA-5肌密全效噴霧奇蹟水",
-    category: "保養品",
-    series: "BA-5肌密抗皺系列",
-    originalPrice: "原價 $ 1,380",
-    price: "產地價洽詢",
-    image: "/products/placeholder.jpg",
-    description: "70mL / 瓶。BA-5 肌密全效噴霧奇蹟水，日常補水與妝前妝後保養使用。",
-  },
-{
-    id: 177,
-    name: "INSK 乳酸平衡前導液",
-    category: "保養品",
-    series: "INSK乳酸平衡系列",
-    originalPrice: "原價 $ 1,480",
-    price: "產地價洽詢",
-    image: "/products/placeholder.jpg",
-    description: "30mL / 瓶。INSK 乳酸平衡前導液，洗臉後打底，幫助維持穩定膚況。",
-  },
-{
     id: 178,
     name: "INSK 乳酸平衡雪露",
     category: "保養品",
@@ -1810,9 +1595,9 @@ const products: Product[] = [
     originalPrice: "原價 $ 1,680",
     price: "產地價 $ 1,260",
     image: "/products/placeholder.jpg",
-    description: "130mL / 瓶。INSK 乳酸平衡雪露，保濕調理並維持清爽水嫩感。",
+    description: "145mL / 瓶。INSK 乳酸平衡雪露，保濕調理並維持清爽水嫩感。",
   },
-  {
+{
     id: 179,
     name: "甜橙單方精油",
     category: "精油",
@@ -1822,7 +1607,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "30mL。甜橙單方精油，適合日常擴香營造清新愉悅的香氣氛圍。",
   },
-  {
+{
     id: 180,
     name: "尤加利精油",
     category: "精油",
@@ -1832,7 +1617,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "30mL。尤加利精油，適合居家擴香與清新空間香氣使用。",
   },
-  {
+{
     id: 181,
     name: "45格精油木盒",
     category: "精油",
@@ -1842,7 +1627,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "精油收納木盒，適合整理單方、複方精油與居家香氛收藏。",
   },
-  {
+{
     id: 182,
     name: "擴香木球5入禮盒",
     category: "精油",
@@ -1852,7 +1637,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "5入禮盒。可搭配精油滴入使用，適合桌面、衣櫃或小空間擴香。",
   },
-  {
+{
     id: 183,
     name: "薰衣草單方精油",
     category: "精油",
@@ -1862,7 +1647,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "30mL。薰衣草單方精油，適合睡前、放鬆與居家香氛擴香。",
   },
-  {
+{
     id: 184,
     name: "佐登妮絲5號複方精油",
     category: "精油",
@@ -1872,7 +1657,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。佐登妮絲5號複方精油，適合搭配擴香設備或擴香配件使用。",
   },
-  {
+{
     id: 185,
     name: "呼暢護隨精油（30mL）",
     category: "精油",
@@ -1882,7 +1667,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "30mL。呼暢護隨精油，適合日常擴香，營造清爽舒適的空間感。",
   },
-  {
+{
     id: 186,
     name: "佐登妮絲OMA律動精油",
     category: "精油",
@@ -1892,7 +1677,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。OMA律動精油，適合日常香氛儀式與擴香搭配。",
   },
-  {
+{
     id: 187,
     name: "快樂鼠尾草精油",
     category: "精油",
@@ -1902,7 +1687,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。快樂鼠尾草精油，適合營造柔和、放鬆的香氛氛圍。",
   },
-  {
+{
     id: 188,
     name: "魔力輕盈精油（30mL）",
     category: "精油",
@@ -1912,7 +1697,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "30mL。魔力輕盈精油，適合日常擴香與空間香氛使用。",
   },
-  {
+{
     id: 189,
     name: "柚見快樂精油",
     category: "精油",
@@ -1922,7 +1707,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "15mL。柚見快樂精油，適合營造明亮、清新的香氣氛圍。",
   },
-  {
+{
     id: 190,
     name: "佐登4號複方精油",
     category: "精油",
@@ -1931,7 +1716,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "功效：清新醒腦。適合日常擴香，讓空間維持清新感。",
   },
-  {
+{
     id: 191,
     name: "佐登妮絲1號複方精油",
     category: "精油",
@@ -1941,7 +1726,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。佐登妮絲1號複方精油，適合居家擴香與日常香氛使用。",
   },
-  {
+{
     id: 192,
     name: "智慧之冠精油",
     category: "精油",
@@ -1951,7 +1736,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。智慧之冠精油，適合工作、閱讀與日常空間香氛搭配。",
   },
-  {
+{
     id: 193,
     name: "魔力輕盈精油（10mL）",
     category: "精油",
@@ -1961,7 +1746,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。魔力輕盈精油小容量規格，適合初次體驗或外出攜帶。",
   },
-  {
+{
     id: 194,
     name: "能量之源精油",
     category: "精油",
@@ -1971,7 +1756,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。能量之源精油，適合日常擴香與空間活力氛圍。",
   },
-  {
+{
     id: 195,
     name: "順暢平衡精油",
     category: "精油",
@@ -1981,7 +1766,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。順暢平衡精油，適合日常香氛與放鬆儀式使用。",
   },
-  {
+{
     id: 196,
     name: "亮采橙真精油",
     category: "精油",
@@ -1991,7 +1776,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。亮采橙真精油，適合喜歡明亮果香調的日常擴香。",
   },
-  {
+{
     id: 197,
     name: "心之綻放精油",
     category: "精油",
@@ -2001,7 +1786,7 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。心之綻放精油，適合營造柔和、溫暖的居家香氣。",
   },
-  {
+{
     id: 198,
     name: "呼暢護隨精油（10mL）",
     category: "精油",
@@ -2011,8 +1796,24 @@ const products: Product[] = [
     image: "/products/placeholder.jpg",
     description: "10mL。呼暢護隨精油小容量規格，適合日常擴香與初次體驗。",
   },
-
-
+{
+    id: 199,
+    name: "無印風簡約水氧機（粉）",
+    category: "精油",
+    series: "擴香設備",
+    price: "售價 $ 899",
+    image: "/products/placeholder.jpg",
+    description: "精油香氛擴香設備，簡約粉色外型，適合居家與辦公空間使用。",
+  },
+{
+    id: 200,
+    name: "木紋USB夜光霧化機",
+    category: "精油",
+    series: "擴香設備",
+    price: "售價 $ 899",
+    image: "/products/placeholder.jpg",
+    description: "USB 霧化擴香設備，木紋外型搭配夜光氛圍，適合居家香氛使用。",
+  }
 ];
 
 
@@ -4614,8 +4415,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     suitableFor: [
       "香水",
-      "香氛組合",
-      "組合優惠",
+        "組合優惠",
     ],
     usage: "噴灑於手腕、耳後或衣物適當位置，請避免接觸眼睛。",
     notice: "請避免接觸眼睛與敏感部位，並放置於陰涼處保存。",
@@ -5081,8 +4881,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     suitableFor: [
       "組合優惠",
-      "香氛組合",
-      "護手霜",
+        "護手霜",
     ],
     usage: "淡香水可噴灑於手腕、耳後或衣物適當位置；護手霜取適量塗抹於手部肌膚。",
     notice: "香水與護手霜請避免接觸眼睛與敏感部位，並放置於陰涼處保存。",
@@ -5273,7 +5072,7 @@ type SkinFilter = (typeof skinFilters)[number];
 
 const comboProductIds = new Set<number>([
   1, 2, 3,
-  75, 99, 117, 141, 142,
+  99, 141, 142,
   29, 30,
   35, 36,
   47, 48,
@@ -5332,7 +5131,7 @@ const productImageFallbacks: Record<number, string[]> = {
 };
 
 
-export default function Home() {
+function Home() {
   const [selectedCategory, setSelectedCategory] =
     useState<MainCategory>("組合價");
   const [selectedSeries, setSelectedSeries] = useState("全部");
@@ -5408,7 +5207,7 @@ export default function Home() {
     ? Math.max(filteredProducts.length - searchPreviewProducts.length, 0)
     : 0;
 
-  const featuredProductIds = [143, 140, 139, 138, 136, 137, 83, 100, 101, 89, 91, 88, 135];
+  const featuredProductIds = [143, 139, 138, 136, 137, 83, 100, 101, 89, 91, 88, 135];
   const featuredProducts = featuredProductIds
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
@@ -5419,7 +5218,7 @@ export default function Home() {
   const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
   const homeTeaControlProducts = getProductsByIds([49, 50, 51, 64, 69, 70]);
   const homeBrighteningProducts = getProductsByIds([136, 141, 142, 127, 128]);
-  const homeFirmingProducts = getProductsByIds([27, 28, 21, 22, 23, 120]);
+  const homeFirmingProducts = getProductsByIds([21, 22, 23, 24, 108, 120]);
   const homeMaskProducts = getProductsByIds([91, 126, 128]);
   const homeHealthProducts = getProductsByIds([83, 84, 85, 100, 1, 2, 3]);
   const homeDailyLifeProducts = getProductsByIds([86, 135, 89, 90]);
@@ -5485,7 +5284,7 @@ export default function Home() {
     },
     {
       title: "保養美肌館",
-      text: "龍血・水光・BA-5・玫瑰",
+      text: "龍血・水光・玫瑰・櫻の雪",
       badge: "SKIN",
       onClick: () => handleDrawerCategory("保養品", "全部"),
     },
@@ -5531,7 +5330,7 @@ export default function Home() {
   const mallHotProducts = getProductsByIds([53, 83, 84, 100, 86, 135, 89, 101]);
   const mallSkincareShelfProducts = getProductsByIds([53, 101, 54, 55, 61, 62]);
   const mallHealthShelfProducts = getProductsByIds([84, 83, 85, 4, 5, 138]);
-  const mallAromaShelfProducts = getProductsByIds([43, 44, 145, 146, 117, 140]);
+  const mallAromaShelfProducts = getProductsByIds([43, 44, 145, 146, 179, 184]);
   const mallVendorShelfProducts = getProductsByIds([160, 161, 162, 165, 166, 167]);
 
   const mallBrandEntries = [
@@ -5594,7 +5393,7 @@ export default function Home() {
     91, 126, 128, 124, 127,
     135, 79, 82, 81, 80,
     101, 53, 54, 55, 17, 18, 19, 20, 136, 141, 142, 68, 71, 72, 61, 62, 63, 49, 50, 51,
-    140, 117, 75,
+    145, 146, 179, 184,
     47, 48, 134,
     92, 143, 99, 74, 144, 133,
   ];
@@ -5638,7 +5437,6 @@ export default function Home() {
     { title: "水光肌能系列", text: "乾燥缺水、保濕補水" },
     { title: "茶樹控油系列", text: "油性毛孔、控油調理" },
     { title: "櫻の雪傳明酸美白系列", text: "美白淡斑、亮澤保養" },
-    { title: "BA-5肌密抗皺系列", text: "抗皺緊緻、熟齡保養" },
     { title: "頂級養護", text: "高階修護與精華保養" },
   ];
 
@@ -5724,7 +5522,7 @@ export default function Home() {
         externalVendors.some((vendor) => product.series.includes(vendor) || fullText.includes(vendor)));
 
     const isLife =
-      ["牙膏", "肥皂", "護手霜", "護唇膏", "香水", "精油", "貼布"].includes(product.category) ||
+      ["牙膏", "肥皂", "護唇膏", "精油", "貼布"].includes(product.category) ||
       (product.category === "組合價" &&
         ["牙膏組合", "貼布組合", "肥皂組合", "香氛組合", "護唇膏組合"].some((series) => product.series.includes(series)));
 
@@ -5824,7 +5622,7 @@ export default function Home() {
       case "life-soap":
         return product.category === "肥皂" || product.series.includes("肥皂");
       case "life-handcream":
-        return product.category === "護手霜" || fullText.includes("護手霜");
+        return fullText.includes("護手霜");
       case "life-lip":
         return product.category === "護唇膏" || fullText.includes("護唇") || product.series.includes("護唇膏");
       case "life-perfume":
@@ -6670,7 +6468,7 @@ export default function Home() {
       return "依商品標示搭配擴香設備或擴香配件使用，請避免直接接觸眼周與黏膜。";
     }
 
-    if (product.category === "洗沐" || product.category === "牙膏" || product.category === "護手霜" || product.category === "護唇膏") {
+    if (product.category === "洗沐" || product.category === "牙膏" || product.category === "護唇膏") {
       return "依商品標示方式日常使用，使用後如有不適請暫停使用並洽詢客服。";
     }
 
@@ -6714,6 +6512,7 @@ export default function Home() {
     if (product.category === "外部廠商") return "售價";
     if (product.category === "組合價") return "活動價";
     if (hasInquiryPrice(product)) return "產地價洽詢";
+    if (product.price.includes("售價") || product.price.trim().startsWith("$")) return "售價";
     return "產地價";
   }
 
@@ -6732,7 +6531,6 @@ export default function Home() {
       54: [101, 55, 17, 19],
       55: [101, 54, 71, 137],
       71: [137, 136, 72, 141, 142],
-      117: [140, 75, 78, 77],
       75: [140, 117, 76, 77],
       74: [92, 99, 144, 88],
       4: [138, 5, 74, 92],
@@ -17067,7 +16865,7 @@ export default function Home() {
         }
 
 
-        /* V2.8.0 完成版：精選生活賣場總整理 */
+        /* V2.9.3 完成版：精選生活賣場總整理 */
         .app-shell {
           background:
             radial-gradient(circle at 12% 0%, rgba(255, 231, 196, 0.62), transparent 30%),
@@ -18138,4 +17936,8 @@ export default function Home() {
 </style>
     </main>
   );
+}
+
+export default function Page() {
+  return <Home />;
 }
