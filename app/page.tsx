@@ -7385,8 +7385,8 @@ export default function Home() {
 
         <div className="brand-block">
           <p className="top-eyebrow">Jourdeness Castle</p>
-          <h1>佐登妮絲城堡回購選品館</h1>
-          <p>產地價保養・保健食品・精油香氛・外部精選</p>
+          <h1>佐登妮絲城堡</h1>
+          <p>回購選品館</p>
         </div>
 
         <div className="header-actions">
@@ -17837,7 +17837,305 @@ export default function Home() {
           }
         }
 
-      `}</style>
+
+        /* V2.9.2.1 手機首屏與 Header 安全版：先處理爆版、重疊與過度大字 */
+        .top-header {
+          display: grid !important;
+          grid-template-columns: auto auto minmax(0, 1fr) auto !important;
+          align-items: center !important;
+          column-gap: 10px !important;
+        }
+
+        .brand-block {
+          min-width: 0 !important;
+          overflow: hidden !important;
+        }
+
+        .brand-block h1,
+        .top-header h1 {
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+          max-width: 100% !important;
+          letter-spacing: -0.04em !important;
+        }
+
+        .header-actions {
+          min-width: max-content !important;
+          flex-shrink: 0 !important;
+        }
+
+        .mall-hero-v27 .mall-hero-copy-v26 h2,
+        .mall-hero-copy-v26 h2 {
+          max-width: 100% !important;
+          font-size: clamp(31px, 8.8vw, 42px) !important;
+          line-height: 1.12 !important;
+          letter-spacing: -0.055em !important;
+          text-wrap: balance;
+        }
+
+        .mall-hero-copy-v26 > span {
+          max-width: 100% !important;
+        }
+
+        .mall-search-trigger-v26 {
+          width: 100% !important;
+          box-sizing: border-box !important;
+          display: grid !important;
+          grid-template-columns: auto minmax(0, 1fr) !important;
+          align-items: center !important;
+          column-gap: 10px !important;
+        }
+
+        .mall-search-trigger-v26 strong,
+        .mall-search-trigger-v26 em {
+          min-width: 0 !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+          white-space: nowrap !important;
+        }
+
+        .mall-deal-grid-v26 {
+          grid-template-columns: 1fr !important;
+        }
+
+        .mall-deal-card-v26,
+        .mall-deal-card-v26.feature {
+          width: 100% !important;
+          box-sizing: border-box !important;
+          grid-template-columns: 132px minmax(0, 1fr) !important;
+          align-items: center !important;
+        }
+
+        .mall-deal-card-v26 span,
+        .mall-deal-card-v26 h3,
+        .mall-deal-card-v26 p,
+        .mall-deal-card-v26 strong {
+          writing-mode: horizontal-tb !important;
+          text-orientation: mixed !important;
+          word-break: normal !important;
+          overflow-wrap: break-word !important;
+        }
+
+        @media (max-width: 560px) {
+          .announcement-bar {
+            min-height: 38px !important;
+            padding: 9px 12px !important;
+            font-size: 12px !important;
+            line-height: 1.35 !important;
+            text-align: center !important;
+          }
+
+          .top-header {
+            grid-template-columns: 44px 48px minmax(0, 1fr) auto !important;
+            gap: 7px !important;
+            padding: 11px 10px !important;
+          }
+
+          .menu-button,
+          .icon-button {
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
+            border-radius: 999px !important;
+          }
+
+          .brand-logo-wrap {
+            width: 48px !important;
+            height: 48px !important;
+            min-width: 48px !important;
+            border-radius: 16px !important;
+          }
+
+          .brand-block .top-eyebrow {
+            display: none !important;
+          }
+
+          .brand-block h1,
+          .top-header h1 {
+            margin: 0 !important;
+            font-size: clamp(17px, 5vw, 20px) !important;
+            line-height: 1.12 !important;
+          }
+
+          .brand-block > p:not(.top-eyebrow) {
+            display: none !important;
+          }
+
+          .header-actions {
+            gap: 6px !important;
+          }
+
+          .header-actions .icon-button {
+            display: none !important;
+          }
+
+          .header-cart-button,
+          .header-cart-button-v273 {
+            min-width: 92px !important;
+            height: 44px !important;
+            padding: 0 10px !important;
+            border-radius: 999px !important;
+            font-size: 13px !important;
+            white-space: nowrap !important;
+          }
+
+          .header-cart-button span,
+          .header-cart-button-v273 span {
+            min-width: 22px !important;
+            height: 22px !important;
+            font-size: 12px !important;
+          }
+
+          .market-route-strip-v272 {
+            margin: 10px 10px 0 !important;
+            padding-bottom: 6px !important;
+          }
+
+          .market-route-strip-v272 button {
+            min-width: 126px !important;
+            padding: 13px 14px !important;
+          }
+
+          .mall-hero-v26,
+          .mall-hero-v27 {
+            margin: 12px 10px 18px !important;
+            padding: 22px 18px !important;
+            border-radius: 24px !important;
+          }
+
+          .mall-hero-eyebrow-v26 {
+            font-size: 9px !important;
+            letter-spacing: 0.16em !important;
+            margin-bottom: 8px !important;
+          }
+
+          .mall-hero-v27 .mall-hero-copy-v26 h2,
+          .mall-hero-copy-v26 h2 {
+            font-size: clamp(30px, 9.2vw, 36px) !important;
+            line-height: 1.13 !important;
+            letter-spacing: -0.05em !important;
+          }
+
+          .mall-hero-copy-v26 > span {
+            font-size: 13px !important;
+            line-height: 1.65 !important;
+          }
+
+          .mall-search-trigger-v26 {
+            margin-top: 16px !important;
+            padding: 14px 15px !important;
+            border-radius: 18px !important;
+          }
+
+          .mall-search-trigger-v26 span {
+            width: 28px !important;
+            height: 28px !important;
+            font-size: 20px !important;
+          }
+
+          .mall-search-trigger-v26 strong {
+            font-size: 15px !important;
+          }
+
+          .mall-search-trigger-v26 em {
+            font-size: 11px !important;
+          }
+
+          .mall-hero-actions-v26 {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+          }
+
+          .mall-hero-actions-v26 button {
+            min-height: 48px !important;
+            padding: 11px 10px !important;
+            font-size: 14px !important;
+            white-space: nowrap !important;
+          }
+
+          .mall-proof-row-v27 {
+            gap: 8px !important;
+          }
+
+          .mall-proof-row-v27 span {
+            font-size: 11px !important;
+            padding: 7px 10px !important;
+          }
+
+          .mall-deal-card-v26,
+          .mall-deal-card-v26.feature {
+            grid-template-columns: 116px minmax(0, 1fr) !important;
+            gap: 12px !important;
+            padding: 14px !important;
+            min-height: 162px !important;
+          }
+
+          .mall-deal-image-v26 {
+            min-height: 116px !important;
+          }
+
+          .mall-deal-card-v26 h3 {
+            font-size: 17px !important;
+            line-height: 1.34 !important;
+            -webkit-line-clamp: 2 !important;
+          }
+
+          .mall-deal-card-v26 strong {
+            font-size: 18px !important;
+          }
+        }
+
+        @media (max-width: 390px) {
+          .top-header {
+            grid-template-columns: 42px 44px minmax(0, 1fr) auto !important;
+            gap: 6px !important;
+          }
+
+          .menu-button,
+          .icon-button {
+            width: 42px !important;
+            height: 42px !important;
+            min-width: 42px !important;
+          }
+
+          .brand-logo-wrap {
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
+          }
+
+          .brand-block h1,
+          .top-header h1 {
+            font-size: 16px !important;
+          }
+
+          .header-cart-button,
+          .header-cart-button-v273 {
+            min-width: 84px !important;
+            padding: 0 9px !important;
+            font-size: 12px !important;
+          }
+
+          .mall-hero-v27 .mall-hero-copy-v26 h2,
+          .mall-hero-copy-v26 h2 {
+            font-size: 29px !important;
+          }
+
+          .mall-deal-card-v26,
+          .mall-deal-card-v26.feature {
+            grid-template-columns: 1fr !important;
+          }
+
+          .mall-deal-image-v26 {
+            width: min(100%, 220px) !important;
+            margin: 0 auto !important;
+          }
+        }
+
+      `}
+</style>
     </main>
   );
 }
