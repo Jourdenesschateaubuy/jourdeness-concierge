@@ -97,7 +97,7 @@ declare global {
   }
 }
 
-// V3.1.6：修正快速入口、完整搜尋與分類結果、重做 TOP PICKS、調整洗沐組合與商品資訊排版。
+// V3.1.8：TOP PICKS 改為全寬穩定排版、本月活動加入色彩層級、移除頂部分類捷徑與兩項茶樹商品。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -476,26 +476,6 @@ const allProducts: Product[] = [
     price: "產地價 $ 240",
     image: "/products/tt6.jpg",
     description: "8mL / 盒。局部控油淨痘精華，適合粉刺、痘痘與局部油光調理。",
-  },
-{
-    id: 50,
-    name: "茶樹控油化妝水",
-    category: "保養品",
-    series: "茶樹控油系列",
-    originalPrice: "原價 $ 590",
-    price: "產地價待補",
-    image: "/products/tt1.jpg",
-    description: "150mL / 瓶。清潔後的控油第一步，清爽調理毛孔與油光。",
-  },
-{
-    id: 51,
-    name: "茶樹控油保濕乳",
-    category: "保養品",
-    series: "茶樹控油系列",
-    originalPrice: "原價 $ 790",
-    price: "產地價待補",
-    image: "/products/tee3.jpg",
-    description: "100mL / 瓶。清爽不悶厚的控油保濕乳，維持油水平衡。",
   },
 {
     id: 52,
@@ -2702,7 +2682,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "高濃縮茶樹局部精華，針對局部出油、粗大毛孔與不安定油脂肌膚進行重點平衡調理。",
     features: [
       "日常控油保養中的局部加強品項。",
-      "可搭配茶樹化妝水與保濕乳，形成完整控油流程。",
+      "可依膚況搭配日常保濕步驟，作為局部控油加強保養。",
       "適合特定皮脂粗糙、毛孔油光與面皰瑕疵需求。"
     ],
     suitableFor: [
@@ -2712,48 +2692,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
       "茶樹控油系列"
     ],
     usage: "化妝水後取適量點塗於局部出油或面皰瑕疵部位，再依需求搭配乳液。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  50: {
-    cardName: "茶樹控油化妝水",
-    cardSubtitle: "150mL・茶樹控油系列",
-    spec: "150mL / 瓶",
-    intro: "清潔後的控油第一步，質地清爽如水，幫助安撫油性肌膚、清透毛孔並建立控油基礎。",
-    features: [
-      "洗臉清潔後作為皮脂調理前導補水。",
-      "可搭配同系列精華與控油保濕乳，使流程完整。",
-      "建立日常控油基礎步驟，揮別油光滿面。"
-    ],
-    suitableFor: [
-      "油性毛孔",
-      "混合偏油",
-      "熬夜出油",
-      "粉刺粗糙"
-    ],
-    usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  51: {
-    cardName: "茶樹控油保濕乳",
-    cardSubtitle: "100mL・茶樹控油系列",
-    spec: "100mL / 瓶",
-    intro: "清爽不悶厚的控油保濕乳，補水同時維持油水平衡，讓肌膚維持乾淨不黏膩的清爽膚觸。",
-    features: [
-      "保養程序最後階段使用，封存水分並控油潤澤。",
-      "可搭配化妝水或 K 痘精華，強化水脂防禦網。",
-      "適合日常保濕、調理油光與舒緩修護。"
-    ],
-    suitableFor: [
-      "乾燥缺水",
-      "油性毛孔",
-      "外油內乾",
-      "季節皮脂不穩"
-    ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
@@ -4417,7 +4355,6 @@ function Home() {
   const [lineCopyMessage, setLineCopyMessage] = useState("");
   const [hasRestoredSavedDraft, setHasRestoredSavedDraft] = useState(false);
 
-  const mainCategories = ["本月優惠", "臉部保養", "身體洗護", "健康補給", "精油香氛", "新品預告"] as MainCategory[];
   const seriesList = categoryConfig[selectedCategory];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
@@ -4579,7 +4516,7 @@ function Home() {
   const homeClearanceProducts = getProductsByIds([10, 11]);
   const homeDragonBloodProducts = getProductsByIds([53, 101, 89, 135]);
   const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
-  const homeTeaControlProducts = getProductsByIds([49, 50, 51, 64, 69, 70]);
+  const homeTeaControlProducts = getProductsByIds([49, 64, 69, 70]);
   const homeBrighteningProducts = getProductsByIds([136, 141, 142, 127, 128]);
   const homeFirmingProducts = getProductsByIds([21, 22, 23, 24, 108, 120]);
   const homeMaskProducts = getProductsByIds([91, 126, 128]);
@@ -4725,7 +4662,7 @@ function Home() {
     35, 36,
     126, 128, 124, 127,
     135, 79,
-    54, 55, 17, 18, 19, 20, 136, 141, 142, 68, 71, 72, 61, 62, 63, 49, 50, 51,
+    54, 55, 17, 18, 19, 20, 136, 141, 142, 68, 71, 72, 61, 62, 63, 49,
     145, 146, 12, 179, 184, 190,
     47, 48, 134,
   ];
@@ -6678,33 +6615,6 @@ function Home() {
         </div>
       </header>
 
-      <section className="market-route-strip-v272 v3-route-strip v311-category-tabs" aria-label="賣場快速導覽">
-        {mainCategories.map((category) => {
-          const tabMeta: Record<string, { badge: string; label: string }> = {
-            本月優惠: { badge: "SALE", label: "活動方案" },
-            臉部保養: { badge: "SKIN", label: "臉部保養" },
-            身體洗護: { badge: "BODY", label: "牙膏皂品" },
-            健康補給: { badge: "HEALTH", label: "日常補給" },
-            精油香氛: { badge: "AROMA", label: "精油香氛" },
-            新品預告: { badge: "NEW", label: "新品預告" },
-          };
-          const meta = tabMeta[category] ?? { badge: "SHOP", label: "查看商品" };
-
-          return (
-            <button
-              type="button"
-              key={`top-tab-${category}`}
-              className={selectedCategory === category && !commerceFilter ? "active" : ""}
-              onClick={() => openCategoryTab(category, "全部")}
-            >
-              <span>{meta.badge}</span>
-              <strong>{category}</strong>
-              <em>{meta.label}</em>
-            </button>
-          );
-        })}
-      </section>
-
       {isSearchOpen && (
         <section className="search-panel search-page-view" aria-label="商品搜尋頁面">
           <div className="search-page-head">
@@ -7088,7 +6998,7 @@ function Home() {
         <div className="mall-hero-copy-v26">
           <p className="mall-hero-eyebrow-v26">Jourdeness Castle Reorder</p>
           <h2>佐登妮絲城堡回購館</h2>
-          <span>自家產品・產地價・會員回購清單。精選臉部保養、身體洗護、健康補給與精油香氛回購品項；加入清單後由 LINE 小幫手確認庫存、金額與取貨方式。</span>
+          <span>精選城堡人氣回購品，保養、洗護、健康補給與精油香氛一次選購。</span>
 
           <button
             type="button"
@@ -7146,19 +7056,19 @@ function Home() {
         <button type="button" className="mall-editorial-card-v27 primary" onClick={() => openCommerceFilter("deals-all", "本月優惠 / 全部優惠")}>
           <span>Monthly Focus</span>
           <strong>本月優惠</strong>
-          <p>精選本月主打與熟客回購熱賣，不用在太多分類裡迷路。</p>
+          <p>人氣優惠與回購組合，快速找到本月最划算品項。</p>
         </button>
 
         <button type="button" className="mall-editorial-card-v27" onClick={() => openCategoryTab("健康補給", "全部")}>
           <span>Health Care</span>
           <strong>健康補給</strong>
-          <p>益生菌、BC-HA、葉黃素與日常營養補給集中查看。</p>
+          <p>益生菌、葉黃素與美妍補給一次看。</p>
         </button>
 
         <button type="button" className="mall-editorial-card-v27" onClick={() => openCategoryTab("身體洗護", "全部")}>
           <span>Body Care</span>
           <strong>身體洗護</strong>
-          <p>牙膏、手工皂、潔口液與日常洗護集中整理，不再散在其他分類。</p>
+          <p>洗髮沐浴、牙膏與手工皂集中選購。</p>
         </button>
       </section>
 
@@ -7198,8 +7108,7 @@ function Home() {
               key={`mall-deal-${product.id}`}
             >
               <div className="top-pick-rank-v316" aria-label={`TOP ${index + 1}`}>
-                <small>TOP</small>
-                <b>{index + 1}</b>
+                <span>TOP {index + 1}</span>
               </div>
 
               <button type="button" className="mall-deal-image-v26" onClick={() => openProductDetail(product)}>
@@ -7233,8 +7142,13 @@ function Home() {
         </div>
 
         <div className="mall-brand-grid-v26 mall-brand-grid-v271">
-          {mallBrandEntries.map((brand) => (
-            <button type="button" key={`mall-brand-${brand.title}`} onClick={brand.onClick}>
+          {mallBrandEntries.map((brand, index) => (
+            <button
+              type="button"
+              key={`mall-brand-${brand.title}`}
+              className={`monthly-activity-card-v318 monthly-activity-${index + 1}`}
+              onClick={brand.onClick}
+            >
               <em className="mall-brand-badge-v271">{brand.badge}</em>
               <strong>{brand.title}</strong>
               <p>{brand.text}</p>
@@ -7247,7 +7161,7 @@ function Home() {
         id="home-hot-products-v26"
         eyebrow="Monthly Picks"
         title="本月優惠・活動方案"
-        subtitle="活動方案以組合價與任選優惠為主，加入清單後由 LINE 小幫手確認。"
+        subtitle="人氣組合、任選優惠與回購價，一次看齊。"
         products={mallHotProducts}
         actionLabel="看本月優惠"
         onAction={() => openCategoryTab("本月優惠", "全部")}
@@ -7257,7 +7171,7 @@ function Home() {
         id="home-skincare-hall-v271"
         eyebrow="Skin Care Hall"
         title="臉部保養精選"
-        subtitle="龍血、水光、玫瑰與高階保養，維持佐登妮絲主品牌質感。"
+        subtitle="龍血、水光、玫瑰等人氣保養，依需求快速選購。"
         products={mallSkincareShelfProducts}
         actionLabel="進入臉部保養"
         onAction={() => jumpToCategory("臉部保養", "全部")}
@@ -7268,7 +7182,7 @@ function Home() {
         id="home-body-care-hall-v312"
         eyebrow="Body Care"
         title="身體洗護精選"
-        subtitle="牙膏、手工皂、口腔護理與日常洗護集中在同一區，不再散在本月精選裡。"
+        subtitle="洗髮沐浴、牙膏、手工皂與身體保養集中選購。"
         products={mallBodyShelfProducts}
         actionLabel="進入身體洗護"
         onAction={() => jumpToCategory("身體洗護", "全部")}
@@ -7278,7 +7192,7 @@ function Home() {
         id="home-health-hall-v271"
         eyebrow="Health Hall"
         title="健康補給精選"
-        subtitle="益生菌、膠原蛋白飲、葉黃素與熟客回購組合。"
+        subtitle="益生菌、葉黃素、膠原蛋白與日常營養補給。"
         products={mallHealthShelfProducts}
         actionLabel="進入健康補給"
         onAction={() => jumpToCategory("健康補給", "全部")}
@@ -7288,7 +7202,7 @@ function Home() {
         id="home-aroma-hall-v271"
         eyebrow="Aroma Hall"
         title="精油香氛精選"
-        subtitle="精油、香氛與居家儀式感選品，之後可持續擴充。"
+        subtitle="單方、複方精油與擴香選品，打造日常香氛儀式。"
         products={mallAromaShelfProducts}
         actionLabel="進入精油香氛"
         onAction={() => jumpToCategory("精油香氛", "全部")}
@@ -7298,7 +7212,7 @@ function Home() {
         id="home-coming-soon-hall-v31"
         eyebrow="New Preview"
         title="新品預告"
-        subtitle="更多香型與回購品項陸續登場，先看新品預告。"
+        subtitle="新品與新香型陸續登場，搶先查看。"
         products={mallComingSoonProducts}
         actionLabel="查看新品預告"
         onAction={() => jumpToCategory("新品預告", "全部")}
@@ -17925,6 +17839,639 @@ function Home() {
           .commerce-summary-v21 .product-info-row-v316 p,
           .commerce-summary-v21 .product-expiry-row-v316 p strong {
             font-size: 13px !important;
+          }
+        }
+
+
+        /* V3.1.7：全站客用版排版優化
+           - 排除歷代樣式互相覆蓋造成的 TOP 卡片擠壓與文字截斷
+           - 統一標題、內文與按鈕層級
+           - 讓 520～760px 寬度也維持完整、可閱讀的商品資訊 */
+        .site-shell {
+          width: min(100%, 820px) !important;
+          max-width: 820px !important;
+          margin-inline: auto !important;
+          box-sizing: border-box !important;
+          font-kerning: normal !important;
+          text-rendering: optimizeLegibility !important;
+          -webkit-font-smoothing: antialiased !important;
+        }
+
+        .mall-hero-copy-v26 > span {
+          max-width: 34em !important;
+          color: #6e5146 !important;
+          font-size: clamp(15px, 2.45vw, 18px) !important;
+          font-weight: 680 !important;
+          line-height: 1.72 !important;
+          letter-spacing: -0.015em !important;
+        }
+
+        .mall-section-head-v26,
+        .section-heading.compact {
+          margin-bottom: 18px !important;
+        }
+
+        .mall-section-head-v26 p,
+        .section-heading.compact p {
+          margin-bottom: 8px !important;
+          font-size: 12px !important;
+          line-height: 1.2 !important;
+          letter-spacing: 0.15em !important;
+        }
+
+        .mall-section-head-v26 h2,
+        .section-heading.compact h2 {
+          margin: 0 !important;
+          color: var(--castle-ink) !important;
+          font-size: clamp(27px, 5vw, 34px) !important;
+          font-weight: 950 !important;
+          line-height: 1.16 !important;
+          letter-spacing: -0.055em !important;
+          text-wrap: balance !important;
+        }
+
+        .mall-section-head-v26 > span,
+        .section-heading.compact > span {
+          display: block !important;
+          margin-top: 8px !important;
+          color: var(--castle-brown) !important;
+          font-size: clamp(13px, 2.25vw, 15px) !important;
+          font-weight: 650 !important;
+          line-height: 1.65 !important;
+          letter-spacing: -0.012em !important;
+        }
+
+        .mall-editorial-card-v27 p,
+        .mall-hall-grid-v26 p,
+        .mall-brand-grid-v26 p,
+        .mall-brand-grid-v271 p {
+          font-size: 14px !important;
+          font-weight: 650 !important;
+          line-height: 1.55 !important;
+          letter-spacing: -0.012em !important;
+        }
+
+        .mall-editorial-card-v27 strong,
+        .mall-hall-grid-v26 strong,
+        .mall-brand-grid-v26 strong,
+        .mall-brand-grid-v271 strong {
+          line-height: 1.22 !important;
+          letter-spacing: -0.035em !important;
+        }
+
+        /* TOP PICKS：手機採完整單欄，寬螢幕才切成 TOP 2 / TOP 3 雙欄。 */
+        .mall-deal-wall-v26.mall-deal-wall-v27 {
+          padding-top: 26px !important;
+          padding-bottom: 26px !important;
+          overflow: hidden !important;
+        }
+
+        .top-picks-heading-v316 {
+          padding-inline: 18px !important;
+          margin-bottom: 20px !important;
+        }
+
+        .top-picks-heading-v316 h2 {
+          font-size: clamp(28px, 5.4vw, 36px) !important;
+          line-height: 1.12 !important;
+        }
+
+        .mall-deal-grid-v26 {
+          display: grid !important;
+          grid-template-columns: minmax(0, 1fr) !important;
+          gap: 16px !important;
+          width: 100% !important;
+          padding: 0 16px !important;
+        }
+
+        .mall-deal-card-v26.top-pick-card-v316,
+        .mall-deal-card-v26.top-pick-card-v316.feature {
+          position: relative !important;
+          display: grid !important;
+          grid-template-columns: clamp(118px, 28vw, 156px) minmax(0, 1fr) !important;
+          align-items: center !important;
+          gap: clamp(16px, 3vw, 22px) !important;
+          width: 100% !important;
+          min-width: 0 !important;
+          min-height: 188px !important;
+          padding: 22px 20px !important;
+          border-radius: 28px !important;
+          overflow: visible !important;
+        }
+
+        .mall-deal-card-v26.top-pick-card-v316.top-pick-1 {
+          min-height: 222px !important;
+          padding-top: 26px !important;
+          padding-bottom: 24px !important;
+        }
+
+        .top-pick-card-v316 .mall-deal-image-v26,
+        .top-pick-card-v316.top-pick-1 .mall-deal-image-v26 {
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          aspect-ratio: 1 / 1 !important;
+          border-radius: 22px !important;
+          overflow: hidden !important;
+        }
+
+        .top-pick-card-v316 .mall-deal-image-v26 img {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: contain !important;
+          padding: 9px !important;
+        }
+
+        .top-pick-rank-v316 {
+          position: absolute !important;
+          z-index: 4 !important;
+          top: -12px !important;
+          left: 20px !important;
+          display: inline-flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: auto !important;
+          min-width: 90px !important;
+          height: 42px !important;
+          margin: 0 !important;
+          padding: 0 17px !important;
+          border-radius: 999px !important;
+          white-space: nowrap !important;
+        }
+
+        .top-pick-rank-v316 span {
+          display: inline !important;
+          width: auto !important;
+          max-width: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          color: inherit !important;
+          font-size: 15px !important;
+          font-weight: 950 !important;
+          line-height: 1 !important;
+          letter-spacing: 0.055em !important;
+          white-space: nowrap !important;
+        }
+
+        .top-pick-content-v316,
+        .mall-deal-card-v26 .top-pick-content-v316 {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          justify-content: center !important;
+          gap: 12px !important;
+          min-width: 0 !important;
+          width: 100% !important;
+        }
+
+        .top-pick-content-v316 h3,
+        .mall-deal-card-v26 .top-pick-content-v316 h3 {
+          display: block !important;
+          width: 100% !important;
+          max-width: none !important;
+          min-height: 0 !important;
+          margin: 0 !important;
+          overflow: visible !important;
+          text-overflow: clip !important;
+          white-space: normal !important;
+          -webkit-line-clamp: unset !important;
+          -webkit-box-orient: initial !important;
+          color: var(--castle-ink) !important;
+          font-size: clamp(21px, 4.1vw, 28px) !important;
+          font-weight: 950 !important;
+          line-height: 1.28 !important;
+          letter-spacing: -0.055em !important;
+          overflow-wrap: normal !important;
+          word-break: keep-all !important;
+          text-wrap: balance !important;
+        }
+
+        .top-pick-content-v316 > strong,
+        .mall-deal-card-v26 .top-pick-content-v316 > strong {
+          display: block !important;
+          width: auto !important;
+          max-width: 100% !important;
+          margin: 0 !important;
+          color: #972737 !important;
+          font-size: clamp(24px, 4.7vw, 32px) !important;
+          font-weight: 1000 !important;
+          line-height: 1.05 !important;
+          letter-spacing: -0.045em !important;
+          white-space: nowrap !important;
+        }
+
+        .top-pick-content-v316 > button,
+        .mall-deal-card-v26 .top-pick-content-v316 > button {
+          min-width: 104px !important;
+          min-height: 44px !important;
+          margin: 0 !important;
+          padding: 0 20px !important;
+          border-radius: 999px !important;
+          font-size: 14px !important;
+          font-weight: 900 !important;
+          white-space: nowrap !important;
+        }
+
+        @media (min-width: 480px) and (max-width: 759px) {
+          .top-pick-card-v316.top-pick-1 .top-pick-content-v316 h3 {
+            font-size: clamp(24px, 4.55vw, 28px) !important;
+            white-space: nowrap !important;
+            text-wrap: nowrap !important;
+          }
+        }
+
+        @media (min-width: 760px) {
+          .mall-deal-grid-v26 {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 18px !important;
+            padding-inline: 20px !important;
+          }
+
+          .mall-deal-card-v26.top-pick-card-v316.top-pick-1 {
+            grid-column: 1 / -1 !important;
+            grid-template-columns: 188px minmax(0, 1fr) !important;
+            min-height: 236px !important;
+            padding: 24px 28px !important;
+          }
+
+          .top-pick-card-v316.top-pick-1 .top-pick-content-v316 h3 {
+            font-size: 32px !important;
+            white-space: nowrap !important;
+            text-wrap: nowrap !important;
+          }
+
+          .top-pick-card-v316.top-pick-1 .top-pick-content-v316 > strong {
+            font-size: 36px !important;
+          }
+
+          .mall-deal-card-v26.top-pick-card-v316:not(.top-pick-1) {
+            grid-template-columns: 126px minmax(0, 1fr) !important;
+            min-height: 196px !important;
+            padding: 20px 18px !important;
+          }
+
+          .top-pick-card-v316:not(.top-pick-1) .top-pick-content-v316 h3 {
+            font-size: 21px !important;
+          }
+
+          .top-pick-card-v316:not(.top-pick-1) .top-pick-content-v316 > strong {
+            font-size: 25px !important;
+          }
+        }
+
+        @media (max-width: 479px) {
+          .mall-deal-grid-v26 {
+            padding-inline: 12px !important;
+          }
+
+          .mall-deal-card-v26.top-pick-card-v316,
+          .mall-deal-card-v26.top-pick-card-v316.feature,
+          .mall-deal-card-v26.top-pick-card-v316.top-pick-1 {
+            grid-template-columns: 104px minmax(0, 1fr) !important;
+            gap: 14px !important;
+            min-height: 166px !important;
+            padding: 20px 14px !important;
+            border-radius: 24px !important;
+          }
+
+          .top-pick-rank-v316 {
+            left: 14px !important;
+            min-width: 82px !important;
+            height: 38px !important;
+            padding-inline: 13px !important;
+          }
+
+          .top-pick-rank-v316 span {
+            font-size: 13px !important;
+          }
+
+          .top-pick-content-v316,
+          .mall-deal-card-v26 .top-pick-content-v316 {
+            gap: 9px !important;
+          }
+
+          .top-pick-content-v316 h3,
+          .mall-deal-card-v26 .top-pick-content-v316 h3 {
+            font-size: 18px !important;
+            line-height: 1.3 !important;
+          }
+
+          .top-pick-content-v316 > strong,
+          .mall-deal-card-v26 .top-pick-content-v316 > strong {
+            font-size: 21px !important;
+          }
+
+          .top-pick-content-v316 > button,
+          .mall-deal-card-v26 .top-pick-content-v316 > button {
+            min-width: 96px !important;
+            min-height: 40px !important;
+            padding-inline: 16px !important;
+            font-size: 13px !important;
+          }
+        }
+
+        /* 商品貨架：改善兩欄卡片在窄螢幕的文字比例。 */
+        .home-product-section .section-heading.compact {
+          padding-inline: 2px !important;
+        }
+
+        .commerce-product-card .product-info h3,
+        .featured-card.commerce-product-card .product-info h3 {
+          min-height: 0 !important;
+          font-size: clamp(16px, 3.25vw, 19px) !important;
+          line-height: 1.38 !important;
+          letter-spacing: -0.035em !important;
+          word-break: keep-all !important;
+          overflow-wrap: normal !important;
+        }
+
+        .commerce-product-card .product-info .description,
+        .featured-card.commerce-product-card .product-info .description {
+          font-size: clamp(12.5px, 2.5vw, 14px) !important;
+          font-weight: 650 !important;
+          line-height: 1.55 !important;
+        }
+
+        /* Footer 與流程說明不使用過重字級，閱讀更接近正式商城。 */
+        .company-info-grid-v2535 strong,
+        .line-confirm-copy-v244 > span,
+        .trust-flow-steps-v23 p {
+          font-weight: 650 !important;
+          letter-spacing: -0.01em !important;
+        }
+
+        .company-footer-note-v2535 {
+          font-weight: 600 !important;
+        }
+
+
+        /* V3.1.8：TOP PICKS 使用全寬橫向卡，避免 TOP 2 / TOP 3 名稱、價格擠壓溢出。 */
+        .mall-deal-grid-v26 {
+          grid-template-columns: minmax(0, 1fr) !important;
+          gap: 18px !important;
+          padding-inline: clamp(14px, 3vw, 24px) !important;
+        }
+
+        .mall-deal-card-v26.top-pick-card-v316,
+        .mall-deal-card-v26.top-pick-card-v316.feature,
+        .mall-deal-card-v26.top-pick-card-v316.top-pick-1,
+        .mall-deal-card-v26.top-pick-card-v316:not(.top-pick-1) {
+          grid-column: 1 / -1 !important;
+          grid-template-columns: clamp(142px, 21vw, 190px) minmax(0, 1fr) !important;
+          gap: clamp(22px, 4vw, 38px) !important;
+          min-height: 210px !important;
+          padding: 28px clamp(24px, 4vw, 42px) !important;
+          overflow: visible !important;
+        }
+
+        .mall-deal-card-v26.top-pick-card-v316.top-pick-1 {
+          min-height: 236px !important;
+          grid-template-columns: clamp(172px, 23vw, 212px) minmax(0, 1fr) !important;
+          border-color: rgba(204, 151, 54, 0.58) !important;
+          background:
+            radial-gradient(circle at 92% 8%, rgba(225, 176, 75, 0.15), transparent 33%),
+            linear-gradient(135deg, #fffdf8, #fff8ec) !important;
+        }
+
+        .top-pick-card-v316 .mall-deal-image-v26,
+        .top-pick-card-v316.top-pick-1 .mall-deal-image-v26 {
+          max-width: 212px !important;
+          justify-self: center !important;
+        }
+
+        .top-pick-rank-v316 {
+          top: -15px !important;
+          left: clamp(20px, 3vw, 30px) !important;
+          min-width: 108px !important;
+          height: 48px !important;
+          padding-inline: 22px !important;
+          box-shadow: 0 10px 22px rgba(139, 39, 55, 0.2) !important;
+        }
+
+        .top-pick-1 .top-pick-rank-v316 {
+          background: linear-gradient(135deg, #d19a31, #e8b653) !important;
+          color: #4f2b0a !important;
+          box-shadow: 0 10px 22px rgba(181, 125, 24, 0.25) !important;
+        }
+
+        .top-pick-rank-v316 span {
+          font-size: 17px !important;
+          letter-spacing: 0.08em !important;
+        }
+
+        .top-pick-content-v316,
+        .mall-deal-card-v26 .top-pick-content-v316 {
+          gap: 14px !important;
+          padding-right: 4px !important;
+        }
+
+        .top-pick-content-v316 h3,
+        .mall-deal-card-v26 .top-pick-content-v316 h3,
+        .top-pick-card-v316.top-pick-1 .top-pick-content-v316 h3,
+        .top-pick-card-v316:not(.top-pick-1) .top-pick-content-v316 h3 {
+          max-width: 100% !important;
+          font-size: clamp(25px, 3.2vw, 34px) !important;
+          line-height: 1.28 !important;
+          letter-spacing: -0.045em !important;
+          white-space: normal !important;
+          text-wrap: pretty !important;
+          word-break: keep-all !important;
+          overflow-wrap: anywhere !important;
+        }
+
+        .top-pick-card-v316.top-pick-1 .top-pick-content-v316 h3 {
+          font-size: clamp(29px, 3.7vw, 38px) !important;
+        }
+
+        .top-pick-content-v316 > strong,
+        .mall-deal-card-v26 .top-pick-content-v316 > strong,
+        .top-pick-card-v316:not(.top-pick-1) .top-pick-content-v316 > strong {
+          max-width: 100% !important;
+          font-size: clamp(28px, 3.6vw, 36px) !important;
+          line-height: 1.12 !important;
+          white-space: normal !important;
+          text-wrap: balance !important;
+        }
+
+        .top-pick-card-v316.top-pick-1 .top-pick-content-v316 > strong {
+          font-size: clamp(34px, 4.3vw, 44px) !important;
+        }
+
+        /* V3.1.8：本月活動用柔和色彩區分，放大活動名稱並維持商城質感。 */
+        .v313-status-section .mall-brand-grid-v26,
+        .v313-status-section .mall-brand-grid-v271 {
+          gap: 16px !important;
+        }
+
+        .v313-status-section .monthly-activity-card-v318 {
+          position: relative !important;
+          min-height: 158px !important;
+          padding: 24px 22px !important;
+          border-width: 1px !important;
+          border-style: solid !important;
+          box-shadow: 0 14px 28px rgba(78, 50, 35, 0.08) !important;
+          transition: transform 180ms ease, box-shadow 180ms ease !important;
+        }
+
+        .v313-status-section .monthly-activity-card-v318:hover {
+          transform: translateY(-3px) !important;
+          box-shadow: 0 18px 34px rgba(78, 50, 35, 0.12) !important;
+        }
+
+        .v313-status-section .monthly-activity-card-v318::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 22px;
+          right: 22px;
+          height: 5px;
+          border-radius: 0 0 999px 999px;
+          background: currentColor;
+          opacity: 0.72;
+        }
+
+        .v313-status-section .monthly-activity-card-v318 strong {
+          position: relative !important;
+          z-index: 2 !important;
+          display: block !important;
+          margin-top: 2px !important;
+          font-size: clamp(22px, 2.8vw, 28px) !important;
+          font-weight: 950 !important;
+          line-height: 1.18 !important;
+          letter-spacing: -0.04em !important;
+        }
+
+        .v313-status-section .monthly-activity-card-v318 p {
+          position: relative !important;
+          z-index: 2 !important;
+          margin-top: 10px !important;
+          color: #705f55 !important;
+          font-size: clamp(14px, 1.8vw, 16px) !important;
+          font-weight: 650 !important;
+          line-height: 1.55 !important;
+        }
+
+        .v313-status-section .monthly-activity-card-v318 .mall-brand-badge-v271 {
+          position: relative !important;
+          z-index: 2 !important;
+          margin-bottom: 12px !important;
+          padding: 6px 11px !important;
+          font-size: 11px !important;
+        }
+
+        .v313-status-section .monthly-activity-1 {
+          color: #8b5b0a !important;
+          border-color: rgba(205, 155, 61, 0.34) !important;
+          background: linear-gradient(145deg, #fffaf0, #fff3d9) !important;
+        }
+
+        .v313-status-section .monthly-activity-1 .mall-brand-badge-v271 {
+          color: #8b5b0a !important;
+          background: rgba(214, 163, 67, 0.17) !important;
+        }
+
+        .v313-status-section .monthly-activity-2 {
+          color: #9a3046 !important;
+          border-color: rgba(181, 74, 96, 0.28) !important;
+          background: linear-gradient(145deg, #fff8f8, #fdebed) !important;
+        }
+
+        .v313-status-section .monthly-activity-2 .mall-brand-badge-v271 {
+          color: #9a3046 !important;
+          background: rgba(181, 74, 96, 0.12) !important;
+        }
+
+        .v313-status-section .monthly-activity-3 {
+          color: #4f715e !important;
+          border-color: rgba(78, 116, 92, 0.28) !important;
+          background: linear-gradient(145deg, #f9fcf8, #eaf3ed) !important;
+        }
+
+        .v313-status-section .monthly-activity-3 .mall-brand-badge-v271 {
+          color: #4f715e !important;
+          background: rgba(78, 116, 92, 0.12) !important;
+        }
+
+        @media (max-width: 720px) {
+          .mall-deal-card-v26.top-pick-card-v316,
+          .mall-deal-card-v26.top-pick-card-v316.feature,
+          .mall-deal-card-v26.top-pick-card-v316.top-pick-1,
+          .mall-deal-card-v26.top-pick-card-v316:not(.top-pick-1) {
+            grid-template-columns: 118px minmax(0, 1fr) !important;
+            gap: 18px !important;
+            min-height: 184px !important;
+            padding: 25px 18px !important;
+          }
+
+          .top-pick-rank-v316 {
+            top: -12px !important;
+            left: 16px !important;
+            min-width: 94px !important;
+            height: 42px !important;
+            padding-inline: 16px !important;
+          }
+
+          .top-pick-rank-v316 span {
+            font-size: 14px !important;
+          }
+
+          .top-pick-content-v316 h3,
+          .mall-deal-card-v26 .top-pick-content-v316 h3,
+          .top-pick-card-v316.top-pick-1 .top-pick-content-v316 h3,
+          .top-pick-card-v316:not(.top-pick-1) .top-pick-content-v316 h3 {
+            font-size: clamp(20px, 5vw, 26px) !important;
+          }
+
+          .top-pick-content-v316 > strong,
+          .mall-deal-card-v26 .top-pick-content-v316 > strong,
+          .top-pick-card-v316.top-pick-1 .top-pick-content-v316 > strong,
+          .top-pick-card-v316:not(.top-pick-1) .top-pick-content-v316 > strong {
+            font-size: clamp(23px, 5.7vw, 30px) !important;
+          }
+
+          .v313-status-section .mall-brand-grid-v26,
+          .v313-status-section .mall-brand-grid-v271 {
+            grid-template-columns: minmax(0, 1fr) !important;
+          }
+
+          .v313-status-section .monthly-activity-card-v318 {
+            min-height: 138px !important;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .mall-deal-card-v26.top-pick-card-v316,
+          .mall-deal-card-v26.top-pick-card-v316.feature,
+          .mall-deal-card-v26.top-pick-card-v316.top-pick-1,
+          .mall-deal-card-v26.top-pick-card-v316:not(.top-pick-1) {
+            grid-template-columns: 96px minmax(0, 1fr) !important;
+            gap: 14px !important;
+            min-height: 166px !important;
+            padding: 23px 14px 20px !important;
+          }
+
+          .top-pick-content-v316,
+          .mall-deal-card-v26 .top-pick-content-v316 {
+            gap: 9px !important;
+          }
+
+          .top-pick-content-v316 h3,
+          .mall-deal-card-v26 .top-pick-content-v316 h3,
+          .top-pick-card-v316.top-pick-1 .top-pick-content-v316 h3,
+          .top-pick-card-v316:not(.top-pick-1) .top-pick-content-v316 h3 {
+            font-size: 18px !important;
+            line-height: 1.32 !important;
+          }
+
+          .top-pick-content-v316 > strong,
+          .mall-deal-card-v26 .top-pick-content-v316 > strong,
+          .top-pick-card-v316.top-pick-1 .top-pick-content-v316 > strong,
+          .top-pick-card-v316:not(.top-pick-1) .top-pick-content-v316 > strong {
+            font-size: 21px !important;
           }
         }
 
