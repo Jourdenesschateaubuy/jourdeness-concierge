@@ -7013,17 +7013,8 @@ function Home() {
             <em>龍血 / 益生菌 / BC-HA / 精油 / 薰衣草皂</em>
           </button>
 
-          <div className="mall-hero-actions-v26">
-            <button type="button" onClick={() => openCategoryTab("本月優惠", "全部")}>查看本月優惠</button>
-            <button type="button" onClick={() => setIsCartOpen(true)}>我的回購清單</button>
-          </div>
-
-          <div className="mall-proof-row-v27" aria-label="賣場特色">
-            <span>自家產品回購</span>
-            <span>產地價 / 活動價清楚</span>
-            <span>LINE 確認訂單</span>
-            <span>滿額免運</span>
-          </div>
+          
+          
         </div>
 
         {heroTopProduct && (
@@ -7074,7 +7065,6 @@ function Home() {
 
       <section className="mall-hall-section-v26 mall-hall-section-v27 v313-demand-section" aria-label="回購需求入口">
         <div className="mall-section-head-v26">
-          <p>快速入口</p>
           <h2>快速找商品</h2>
           <span>依照回購需求快速瀏覽。</span>
         </div>
