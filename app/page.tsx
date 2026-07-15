@@ -105,7 +105,7 @@ declare global {
   }
 }
 
-// V3.1.0：佐登妮絲自家回購館，移除外部廠商、重整少分類與準備上架品項。
+// V3.1.1：修正分類按鈕互動、LINE 複製提示與益生菌任選 3 盒方案。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -1335,6 +1335,7 @@ const comingSoonRollerProducts: Product[] = [
 
 const keepSelfComboIdsV31 = new Set<number>([88, 92]);
 const removedProductIdsV31 = new Set<number>([
+  2, 83, 84, 85,
   74, 89, 95, 96, 97, 98, 99, 102, 103, 139, 143, 144,
   160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171,
   172, 173, 174, 175, 176, 177, 178,
@@ -1354,6 +1355,21 @@ function isRemovedPublicProductV31(product: Product) {
 }
 
 function normalizeProductForV31(product: Product): Product {
+  if (product.id === 1) {
+    return {
+      ...product,
+      name: "蔓越莓 / 高鈣益生菌任選 3 盒",
+      category: "健康保健",
+      series: "益生菌系列",
+      originalPrice: "單盒參考價見商品資訊",
+      price: "任選 3 盒 $ 1,600",
+      image: "/products/probiotic-bc-ca.jpg",
+      gallery: ["/products/probiotic-bc-ca.jpg", "/products/probiotic-cranberry.jpg"],
+      description: "蔓越莓益生菌與高鈣益生菌可任選搭配，共 3 盒 $1,600。",
+      priceNote: "高鈣益生菌與蔓越莓益生菌可任選搭配，共 3 盒 $1,600；實際庫存由 LINE 小幫手確認。",
+    };
+  }
+
   if (product.id === 145) {
     return {
       ...product,
@@ -1417,25 +1433,25 @@ const products: Product[] = [...allProducts, ...comingSoonRollerProducts]
 
 const productContentOverrides: Record<number, Partial<Product>> = {
   1: {
-    cardName: "BC-CA複合益生菌高鈣活力配方",
-    cardSubtitle: "3g x 30包 / 盒・高鈣活力益生菌",
-    spec: "3g x 30包 / 盒",
-    intro: "BC-CA複合益生菌高鈣活力配方為益生菌系列品項，結合複合益生菌與高鈣營養補給，適合作為全家日常保健參考。",
+    cardName: "蔓越莓 / 高鈣益生菌任選 3 盒",
+    cardSubtitle: "蔓越莓益生菌、高鈣益生菌可任選搭配",
+    spec: "3g x 30包 / 盒，共 3 盒",
+    intro: "蔓越莓益生菌與高鈣益生菌整合成任選 3 盒方案，適合依日常需求自由搭配補給。",
     features: [
-      "採用 BC-198 芽孢桿菌，作為日常消化道機能與營養補給參考。",
-      "內含 14 種複合益生菌，適合 2 歲以上依產品標示補充。",
-      "選用德國檸檬酸鈣，適合重視補鈣與日常活力補給的人。",
+      "蔓越莓益生菌與高鈣益生菌可任選搭配。",
+      "共 3 盒組合價 $1,600，列表只保留主賣方案。",
+      "單品參考資訊放在商品詳情中，避免商品列表過度重複。",
     ],
     suitableFor: [
-      "日常保健",
-      "補鈣需求",
       "益生菌補給",
-      "全家營養補充",
+      "高鈣營養",
+      "女性日常保健",
+      "任選組合",
     ],
-    usage: "每日 1～3 包，餐前餐後均可食用；2 歲以上可依產品標示或客服說明補充。",
-    notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
+    usage: "每日 1～3 包，餐前餐後均可食用；請依各商品標示或客服說明補充。",
+    notice: "可搭配品項與庫存依 LINE 小幫手確認為準。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前保留既有回購群優惠：3 盒 $1,100；庫存、效期與最終金額依 LINE 小幫手確認為準。",
+    priceNote: "蔓越莓益生菌 / 高鈣益生菌任選 3 盒 $1,600；舊的 3,600、4,200、4,800 與蔓越莓 3盒方案已不在前台顯示。",
   },
   2: {
     cardName: "蔓越莓益生菌速酵力配方",
@@ -4004,13 +4020,14 @@ function Home() {
   const [lineBindingStatus, setLineBindingStatus] =
     useState<"idle" | "loading" | "ready" | "unavailable" | "error">("idle");
   const [lineBindingMessage, setLineBindingMessage] = useState("");
+  const [lineCopyMessage, setLineCopyMessage] = useState("");
   const [hasRestoredSavedDraft, setHasRestoredSavedDraft] = useState(false);
 
   const mainCategories = ["本月精選", "保養美肌", "健康保健", "精油香氛", "即將上架"] as MainCategory[];
   const seriesList = categoryConfig[selectedCategory];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
-  const featuredProductIdsV31 = new Set([53, 83, 100, 101, 91, 82, 90, 4, 5, 88, 92]);
+  const featuredProductIdsV31 = new Set([53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92]);
 
   function isFeaturedProductV31(product: Product) {
     return featuredProductIdsV31.has(product.id) || product.series.includes("本月主打");
@@ -4093,7 +4110,7 @@ function Home() {
     ? Math.max(filteredProducts.length - searchPreviewProducts.length, 0)
     : 0;
 
-  const featuredProductIds = [53, 83, 100, 101, 91, 82, 90, 4, 5, 88, 92];
+  const featuredProductIds = [53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92];
   const featuredProducts = featuredProductIds
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
@@ -4133,7 +4150,7 @@ function Home() {
     },
     {
       title: "益生菌熱賣",
-      text: "高鈣、蔓越莓、BC-HA 組合",
+      text: "蔓越莓 / 高鈣任選、BC-HA 組合",
       category: "健康保健",
       series: "益生菌系列",
       product: products.find((product) => product.id === 83),
@@ -4194,10 +4211,10 @@ function Home() {
     },
   ];
 
-  const mallDealProducts = getProductsByIds([53, 83, 100, 101, 91, 82]);
-  const mallHotProducts = getProductsByIds([53, 83, 100, 101, 91, 82]);
+  const mallDealProducts = getProductsByIds([53, 1, 100, 101, 91, 82]);
+  const mallHotProducts = getProductsByIds([53, 1, 100, 101, 91, 82]);
   const mallSkincareShelfProducts = getProductsByIds([53, 101, 54, 55, 61, 62]);
-  const mallHealthShelfProducts = getProductsByIds([83, 100, 84, 4, 5, 138, 88, 92]);
+  const mallHealthShelfProducts = getProductsByIds([1, 100, 4, 5, 138, 88, 92]);
   const mallAromaShelfProducts = getProductsByIds([190, 179, 184, 187, 82, 90]);
   const mallComingSoonProducts = getProductsByIds([145, 146, 12, 59]);
 
@@ -4237,8 +4254,8 @@ function Home() {
   const collectionSeriesChips = seriesList.filter((series) => series !== "全部").slice(0, 14);
 
   const hotCollectionProductIds = [
-    53, 83, 100, 101, 91, 82, 90, 4, 5, 88, 92,
-    84, 85, 138, 1, 2,
+    53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92,
+    138, 1,
     29, 30, 93,
     35, 36,
     126, 128, 124, 127,
@@ -4330,6 +4347,12 @@ function Home() {
     setSearchQuery("");
   }
 
+  function openCategoryTab(category: MainCategory, series = "全部") {
+    jumpToCategory(category, series);
+    setIsSearchOpen(false);
+    openCollectionPage();
+  }
+
   function handleSkinFilterChange(filter: SkinFilter) {
     setCommerceFilter("");
     setCollectionViewLabel("");
@@ -4378,7 +4401,7 @@ function Home() {
       case "deals-all":
         return product.category === "組合價" || hasComboPrice(product);
       case "v3-featured":
-        return [53, 83, 100, 101, 91, 82, 90, 4, 5, 88, 92].includes(product.id);
+        return [53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92].includes(product.id);
       case "deals-monthly":
         return product.category === "組合價" && product.series.includes("本月主打");
       case "deals-combo":
@@ -4390,7 +4413,7 @@ function Home() {
 
 
       case "need-hot":
-        return [53, 83, 100, 101, 91, 82, 90, 4, 5, 88, 92].includes(product.id);
+        return [53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92].includes(product.id);
       case "need-dragon":
         return fullText.includes("龍血") || product.series.includes("龍血");
       case "need-cleansing":
@@ -4560,6 +4583,19 @@ function Home() {
     setSelectedSeries("全部");
     setSelectedSkinFilter("全部");
     openCollectionPage();
+  }
+
+  async function copyLineId() {
+    const lineId = "@chateau-buy";
+
+    try {
+      await navigator.clipboard?.writeText(lineId);
+      setLineCopyMessage("已複製 LINE ID：@chateau-buy，請至 LINE 搜尋加入。");
+    } catch {
+      setLineCopyMessage("請至 LINE 搜尋：@chateau-buy");
+    }
+
+    window.setTimeout(() => setLineCopyMessage(""), 2600);
   }
 
   function toggleDrawerGroup(group: string) {
@@ -6052,27 +6088,30 @@ function Home() {
         </div>
       </header>
 
-      <section className="market-route-strip-v272 v3-route-strip" aria-label="賣場快速導覽">
-        <button type="button" onClick={() => openCommerceFilter("v3-featured", "本月精選")}>
-          <span>PICK</span>
-          <strong>本月精選</strong>
-        </button>
-        <button type="button" onClick={() => handleDrawerCategory("保養品", "全部")}>
-          <span>SKIN</span>
-          <strong>保養美肌</strong>
-        </button>
-        <button type="button" onClick={() => openCommerceFilter("need-health", "健康保健 / 全部選品")}>
-          <span>HEALTH</span>
-          <strong>健康保健</strong>
-        </button>
-        <button type="button" onClick={() => openCommerceFilter("life-essential", "精油香氛 / 全部選品")}>
-          <span>AROMA</span>
-          <strong>精油香氛</strong>
-        </button>
-        <button type="button" onClick={() => openCommerceFilter("need-life", "生活選品 / 全部選品")}>
-          <span>LIFE</span>
-          <strong>生活選品</strong>
-        </button>
+      <section className="market-route-strip-v272 v3-route-strip v311-category-tabs" aria-label="賣場快速導覽">
+        {mainCategories.map((category) => {
+          const tabMeta: Record<string, { badge: string; label: string }> = {
+            本月精選: { badge: "PICK", label: "主打優惠" },
+            保養美肌: { badge: "SKIN", label: "保養品項" },
+            健康保健: { badge: "HEALTH", label: "日常補給" },
+            精油香氛: { badge: "AROMA", label: "精油與皂品" },
+            即將上架: { badge: "SOON", label: "整理中" },
+          };
+          const meta = tabMeta[category] ?? { badge: "SHOP", label: "查看商品" };
+
+          return (
+            <button
+              type="button"
+              key={`top-tab-${category}`}
+              className={selectedCategory === category && !commerceFilter ? "active" : ""}
+              onClick={() => openCategoryTab(category, "全部")}
+            >
+              <span>{meta.badge}</span>
+              <strong>{category}</strong>
+              <em>{meta.label}</em>
+            </button>
+          );
+        })}
       </section>
 
       {isSearchOpen && (
@@ -6283,7 +6322,7 @@ function Home() {
               ))}
             </div>
 
-            {selectedCategory === "保養品" && (
+            {selectedCategory === "保養美肌" && (
               <div className="collection-chip-row-v22 skin">
                 {skinFilters.filter((filter) => filter !== "全部").slice(0, 8).map((filter) => (
                   <button
@@ -6366,7 +6405,7 @@ function Home() {
 
             <nav className="drawer-nav drawer-accordion-v25" aria-label="商城分類選單">
               <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => jumpToCategory("本月精選", "全部")}>
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => handleDrawerCategory("本月精選", "全部")}>
                   <span>本月精選</span>
                 </button>
               </div>
@@ -6377,11 +6416,11 @@ function Home() {
                 </button>
                 {expandedDrawerGroup === "保養美肌" && (
                   <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => jumpToCategory("保養美肌", "全部")}>全部保養</button>
-                    <button type="button" onClick={() => jumpToCategory("保養美肌", "龍血系列")}>龍血系列</button>
-                    <button type="button" onClick={() => jumpToCategory("保養美肌", "薰衣草系列")}>薰衣草系列</button>
-                    <button type="button" onClick={() => jumpToCategory("保養美肌", "水光肌能系列")}>水光肌能</button>
-                    <button type="button" onClick={() => jumpToCategory("保養美肌", "面膜")}>面膜保養</button>
+                    <button type="button" onClick={() => handleDrawerCategory("保養美肌", "全部")}>全部保養</button>
+                    <button type="button" onClick={() => handleDrawerCategory("保養美肌", "龍血系列")}>龍血系列</button>
+                    <button type="button" onClick={() => handleDrawerCategory("保養美肌", "薰衣草系列")}>薰衣草系列</button>
+                    <button type="button" onClick={() => handleDrawerCategory("保養美肌", "水光肌能系列")}>水光肌能</button>
+                    <button type="button" onClick={() => handleDrawerCategory("保養美肌", "面膜")}>面膜保養</button>
                     <button type="button" onClick={() => openCommerceFilter("clearance-all", "即期優惠")}>即期優惠</button>
                   </div>
                 )}
@@ -6393,11 +6432,11 @@ function Home() {
                 </button>
                 {expandedDrawerGroup === "健康保健" && (
                   <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => jumpToCategory("健康保健", "全部")}>全部保健</button>
-                    <button type="button" onClick={() => jumpToCategory("健康保健", "益生菌系列")}>益生菌</button>
-                    <button type="button" onClick={() => jumpToCategory("健康保健", "晶眸保健系列")}>葉黃素 / 晶眸</button>
-                    <button type="button" onClick={() => jumpToCategory("健康保健", "美妍飲品系列")}>膠原飲品</button>
-                    <button type="button" onClick={() => jumpToCategory("健康保健", "魚油組合")}>魚油組合</button>
+                    <button type="button" onClick={() => handleDrawerCategory("健康保健", "全部")}>全部保健</button>
+                    <button type="button" onClick={() => handleDrawerCategory("健康保健", "益生菌系列")}>益生菌</button>
+                    <button type="button" onClick={() => handleDrawerCategory("健康保健", "晶眸保健系列")}>葉黃素 / 晶眸</button>
+                    <button type="button" onClick={() => handleDrawerCategory("健康保健", "美妍飲品系列")}>膠原飲品</button>
+                    <button type="button" onClick={() => handleDrawerCategory("健康保健", "魚油組合")}>魚油組合</button>
                   </div>
                 )}
               </div>
@@ -6408,30 +6447,32 @@ function Home() {
                 </button>
                 {expandedDrawerGroup === "精油香氛" && (
                   <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => jumpToCategory("精油香氛", "全部")}>全部香氛</button>
-                    <button type="button" onClick={() => jumpToCategory("精油香氛", "單方精油")}>單方精油</button>
-                    <button type="button" onClick={() => jumpToCategory("精油香氛", "複方精油")}>複方精油</button>
-                    <button type="button" onClick={() => jumpToCategory("精油香氛", "擴香設備")}>擴香設備</button>
-                    <button type="button" onClick={() => jumpToCategory("精油香氛", "香氛皂")}>香氛皂</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "全部")}>全部香氛</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油")}>單方精油</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油")}>複方精油</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "擴香設備")}>擴香設備</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "香氛皂")}>香氛皂</button>
                   </div>
                 )}
               </div>
 
               <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => jumpToCategory("即將上架", "全部")}>
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => handleDrawerCategory("即將上架", "全部")}>
                   <span>即將上架</span>
                 </button>
               </div>
             </nav>
 
-            <a
+            <button
+              type="button"
               className="drawer-line-button"
-              href="https://line.me/R/ti/p/@chateau-buy"
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={copyLineId}
             >
               加入 LINE：@chateau-buy
-            </a>
+            </button>
+            {lineCopyMessage && (
+              <p className="line-copy-message-v311">{lineCopyMessage}</p>
+            )}
           </aside>
         </section>
       )}
@@ -14959,6 +15000,53 @@ function Home() {
           color: #9e3a35;
           font-size: 12px;
           font-weight: 950;
+        }
+
+
+        .v311-category-tabs button {
+          cursor: pointer !important;
+          transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease !important;
+        }
+
+        .v311-category-tabs button.active {
+          background: linear-gradient(135deg, #8d1f2d, #b54554) !important;
+          color: #fff !important;
+          border-color: transparent !important;
+          box-shadow: 0 14px 30px rgba(141, 31, 45, 0.22) !important;
+        }
+
+        .v311-category-tabs button.active span,
+        .v311-category-tabs button.active strong,
+        .v311-category-tabs button.active em {
+          color: #fff !important;
+        }
+
+        .v311-category-tabs button em {
+          display: block !important;
+          margin-top: 3px !important;
+          font-size: 11px !important;
+          font-style: normal !important;
+          font-weight: 700 !important;
+          opacity: 0.72 !important;
+        }
+
+        .drawer-line-button {
+          border: 0 !important;
+          cursor: pointer !important;
+          width: 100% !important;
+          font-family: inherit !important;
+        }
+
+        .line-copy-message-v311 {
+          margin: 10px 8px 0 !important;
+          padding: 10px 12px !important;
+          border-radius: 14px !important;
+          background: #fffaf1 !important;
+          color: #6b4a38 !important;
+          border: 1px solid rgba(174, 132, 87, 0.2) !important;
+          font-size: 13px !important;
+          font-weight: 800 !important;
+          text-align: center !important;
         }
 
         @media (max-width: 720px) {
