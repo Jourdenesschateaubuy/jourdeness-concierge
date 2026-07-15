@@ -3,25 +3,17 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
-  本月精選: ["全部", "回購主打", "組合優惠", "即期優惠"],
-  保養美肌: [
-    "全部",
-    "龍血系列",
-    "薰衣草系列",
-    "水光肌能系列",
-    "櫻の雪傳明酸美白系列",
-    "玫瑰超微晶萃系列",
-    "肌光緊緻速妍系列",
-    "冰河淨化系列",
-    "杏仁酸系列",
-    "冷杉系列",
-    "面膜",
-  ],
-  健康保健: ["全部", "益生菌系列", "晶眸保健系列", "美妍飲品系列", "口腔保健", "魚油組合"],
-  精油香氛: ["全部", "單方精油", "複方精油", "10mL 精油系列", "50mL 精萃油系列", "滾珠精油", "精油配件", "擴香設備", "香氛皂"],
-  即將上架: ["全部", "準備上架", "滾珠精油", "護手霜組合", "其他香型"],
+  本月優惠: ["全部", "組合優惠", "買一送一", "任選優惠"],
+  臉部保養: ["全部", "龍血系列", "保濕修護", "亮白保養", "舒緩敏感", "面膜", "即期優惠"],
+  身體洗護: ["全部", "口腔護理", "手工皂", "洗髮沐浴", "身體保養"],
+  健康補給: ["全部", "益生菌", "葉黃素", "膠原蛋白", "魚油"],
+  精油香氛: ["全部", "單方精油", "複方精油", "滾珠精油", "精油配件"],
+  即將上架: ["全部", "潔顏", "滾珠", "香氛皂", "護手霜"],
 
   // 以下舊分類保留為資料型別相容與內部搜尋用，不再顯示為前台主分類。
+  本月精選: ["全部", "回購主打", "組合優惠", "即期優惠"],
+  保養美肌: ["全部", "龍血系列", "薰衣草系列", "水光肌能系列", "櫻の雪傳明酸美白系列", "玫瑰超微晶萃系列", "肌光緊緻速妍系列", "冰河淨化系列", "杏仁酸系列", "冷杉系列", "面膜"],
+  健康保健: ["全部", "益生菌系列", "晶眸保健系列", "美妍飲品系列", "口腔保健", "魚油組合"],
   組合價: ["全部", "本月主打", "保健食品組合", "貼布組合", "牙膏組合", "保養套組", "肥皂組合", "護唇膏組合", "面膜組合"],
   全部: ["全部"],
   保養品: ["全部", "冷杉系列", "薰衣草系列", "龍血系列", "INSK乳酸平衡系列", "水光肌能系列", "晶淬雪系列", "玫瑰超微晶萃系列", "肌光緊緻速妍系列", "冰河淨化系列", "櫻の雪傳明酸美白系列", "茶樹控油系列", "杏仁酸系列", "膠原蛋白系列", "鳳梨酵素系列", "防曬", "特殊護理", "頂級養護", "面膜"],
@@ -119,7 +111,7 @@ const allProducts: Product[] = [
 {
     id: 1,
     name: "BC-CA複合益生菌高鈣活力配方",
-    category: "健康保健",
+    category: "健康補給",
     series: "益生菌系列",
     originalPrice: "原價 $ 800",
     price: "產地價 3盒 $ 1,100",
@@ -129,7 +121,7 @@ const allProducts: Product[] = [
 {
     id: 2,
     name: "蔓越莓益生菌速酵力配方",
-    category: "健康保健",
+    category: "健康補給",
     series: "益生菌系列",
     originalPrice: "原價 $ 960",
     price: "產地價 3盒 $ 1,600",
@@ -139,7 +131,7 @@ const allProducts: Product[] = [
 {
     id: 4,
     name: "EC晶眸葉黃素",
-    category: "健康保健",
+    category: "健康補給",
     series: "晶眸保健系列",
     originalPrice: "原價 $ 1,500",
     price: "產地價 $ 1,125",
@@ -149,7 +141,7 @@ const allProducts: Product[] = [
 {
     id: 5,
     name: "亮妍魚膠原蛋白飲",
-    category: "健康保健",
+    category: "健康補給",
     series: "美妍飲品系列",
     originalPrice: "原價 $ 2,200",
     price: "產地價 $ 1,650",
@@ -1359,7 +1351,7 @@ function normalizeProductForV31(product: Product): Product {
     return {
       ...product,
       name: "蔓越莓 / 高鈣益生菌任選 3 盒",
-      category: "健康保健",
+      category: "健康補給",
       series: "益生菌系列",
       originalPrice: "單盒參考價見商品資訊",
       price: "任選 3 盒 $ 1,600",
@@ -1395,7 +1387,7 @@ function normalizeProductForV31(product: Product): Product {
   if (product.id === 88) {
     return {
       ...product,
-      category: "健康保健",
+      category: "健康補給",
       series: "口腔保健",
       originalPrice: "原價 / 單品參考見商品資訊",
       price: "3罐贈1條牙膏 $ 1,500",
@@ -1406,7 +1398,7 @@ function normalizeProductForV31(product: Product): Product {
   if (product.id === 92) {
     return {
       ...product,
-      category: "健康保健",
+      category: "健康補給",
       series: "魚油組合",
       originalPrice: "原價 / 單品參考見商品資訊",
       price: "買一送一 $ 1,580",
@@ -3989,13 +3981,13 @@ const productImageFallbacks: Record<number, string[]> = {
 
 function Home() {
   const [selectedCategory, setSelectedCategory] =
-    useState<MainCategory>("本月精選");
+    useState<MainCategory>("本月優惠");
   const [selectedSeries, setSelectedSeries] = useState("全部");
   const [selectedSkinFilter, setSelectedSkinFilter] =
     useState<SkinFilter>("全部");
   const [commerceFilter, setCommerceFilter] = useState("");
   const [collectionViewLabel, setCollectionViewLabel] = useState("");
-  const [expandedDrawerGroup, setExpandedDrawerGroup] = useState<string | null>("本月精選");
+  const [expandedDrawerGroup, setExpandedDrawerGroup] = useState<string | null>("本月優惠");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -4023,42 +4015,79 @@ function Home() {
   const [lineCopyMessage, setLineCopyMessage] = useState("");
   const [hasRestoredSavedDraft, setHasRestoredSavedDraft] = useState(false);
 
-  const mainCategories = ["本月精選", "保養美肌", "健康保健", "精油香氛", "即將上架"] as MainCategory[];
+  const mainCategories = ["本月優惠", "臉部保養", "身體洗護", "健康補給", "精油香氛", "即將上架"] as MainCategory[];
   const seriesList = categoryConfig[selectedCategory];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
-  const featuredProductIdsV31 = new Set([53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92]);
+  const monthlyOfferIdsV312 = new Set([53, 1, 100, 101, 91, 82, 90]);
 
   function isFeaturedProductV31(product: Product) {
-    return featuredProductIdsV31.has(product.id) || product.series.includes("本月主打");
+    return monthlyOfferIdsV312.has(product.id) || product.series.includes("本月主打");
   }
 
   function matchesMainCategoryV31(product: Product) {
     const fullText = `${product.name} ${product.category} ${product.series} ${product.description} ${product.price}`;
 
-    if (selectedCategory === "本月精選") return isFeaturedProductV31(product);
-    if (selectedCategory === "保養美肌") {
+    if (selectedCategory === "本月優惠") return isFeaturedProductV31(product) && !isComingSoon(product);
+
+    if (selectedCategory === "臉部保養") {
       return (
         ["保養品", "面膜"].includes(product.category) ||
         product.series.includes("面膜") ||
-        ["龍血", "薰衣草", "水光", "櫻", "玫瑰", "肌光", "冰河", "杏仁酸", "茶樹", "冷杉", "潔顏", "卸妝", "美體"].some((keyword) => fullText.includes(keyword))
+        ["龍血", "薰衣草肌安", "水光", "櫻", "玫瑰", "肌光", "冰河", "杏仁酸", "茶樹", "冷杉", "潔顏", "卸妝", "美體", "面膜"].some((keyword) => fullText.includes(keyword))
       ) && !isComingSoon(product);
     }
-    if (selectedCategory === "健康保健") {
+
+    if (selectedCategory === "身體洗護") {
+      return (
+        ["牙膏", "肥皂", "洗沐", "護唇膏"].includes(product.category) ||
+        ["牙膏", "潔口", "口腔", "手工皂", "舒緩皂", "洗髮", "沐浴", "身體乳", "美體油", "護唇"].some((keyword) => fullText.includes(keyword))
+      ) && !isComingSoon(product);
+    }
+
+    if (selectedCategory === "健康補給") {
       return (
         product.category === "保健食品" ||
-        ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "牛樟芝", "營養"].some((keyword) => fullText.includes(keyword))
+        ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "營養", "BC-HA", "BC-CA"].some((keyword) => fullText.includes(keyword))
       ) && !isComingSoon(product);
     }
+
     if (selectedCategory === "精油香氛") {
       return (
         product.category === "精油" ||
-        ["精油", "擴香", "水氧", "霧化", "香氛", "牙膏", "肥皂", "護唇", "薰衣草舒緩皂"].some((keyword) => fullText.includes(keyword))
+        ["精油", "擴香", "水氧", "霧化", "香氛", "芳香"].some((keyword) => fullText.includes(keyword))
       ) && !isComingSoon(product);
     }
+
     if (selectedCategory === "即將上架") return isComingSoon(product);
 
+    // 舊分類相容：避免內部跳轉或搜尋仍使用舊分類名稱時失效。
+    if (selectedCategory === "本月精選") return isFeaturedProductV31(product) && !isComingSoon(product);
+    if (selectedCategory === "保養美肌") return matchesMainCategoryAlias(product, "臉部保養");
+    if (selectedCategory === "健康保健") return matchesMainCategoryAlias(product, "健康補給");
+
     return selectedCategory === "全部" || product.category === selectedCategory;
+  }
+
+  function matchesMainCategoryAlias(product: Product, alias: MainCategory) {
+    const fullText = `${product.name} ${product.category} ${product.series} ${product.description} ${product.price}`;
+
+    if (alias === "臉部保養") {
+      return (
+        ["保養品", "面膜"].includes(product.category) ||
+        product.series.includes("面膜") ||
+        ["龍血", "薰衣草肌安", "水光", "櫻", "玫瑰", "肌光", "冰河", "杏仁酸", "茶樹", "冷杉", "潔顏", "卸妝", "美體", "面膜"].some((keyword) => fullText.includes(keyword))
+      ) && !isComingSoon(product);
+    }
+
+    if (alias === "健康補給") {
+      return (
+        product.category === "保健食品" ||
+        ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "營養", "BC-HA", "BC-CA"].some((keyword) => fullText.includes(keyword))
+      ) && !isComingSoon(product);
+    }
+
+    return false;
   }
 
   function matchesSeriesV31(product: Product) {
@@ -4067,11 +4096,36 @@ function Home() {
     const fullText = `${product.name} ${product.category} ${product.series} ${product.description} ${product.price}`;
     const tags = getProductTags(product);
 
-    if (selectedSeries === "回購主打") return isFeaturedProductV31(product);
     if (selectedSeries === "組合優惠") return product.category === "組合價" || hasComboPrice(product) || tags.includes("組合優惠") || fullText.includes("組合");
+    if (selectedSeries === "買一送一") return fullText.includes("買一送一") || fullText.includes("1+1") || fullText.includes("買一送二");
+    if (selectedSeries === "任選優惠") return fullText.includes("任選");
+
+    if (selectedSeries === "龍血系列") return fullText.includes("龍血");
+    if (selectedSeries === "保濕修護") return tags.includes("乾燥缺水") || tags.includes("敏感舒緩") || ["保濕", "修護", "水光", "玫瑰", "玻尿酸"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "亮白保養") return tags.includes("美白淡斑") || ["亮白", "美白", "櫻", "傳明酸", "極光", "淡斑"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "舒緩敏感") return tags.includes("敏感舒緩") || ["薰衣草", "舒緩", "敏感", "冷杉"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "面膜") return fullText.includes("面膜");
     if (selectedSeries === "即期優惠") return isExpiringDeal(product) || fullText.includes("即期");
+
+    if (selectedSeries === "口腔護理") return ["牙膏", "潔口", "口腔", "齒齦"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "手工皂") return ["皂", "肥皂", "香氛皂"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "洗髮沐浴") return ["洗髮", "沐浴", "頭皮", "髮根"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "身體保養") return ["身體", "美體", "乳", "油", "護唇"].some((keyword) => fullText.includes(keyword)) && !fullText.includes("乳酸") && !fullText.includes("乳液");
+
+    if (selectedSeries === "益生菌") return ["益生菌", "BC-HA", "BC-CA", "蔓越莓", "高鈣"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "葉黃素") return ["葉黃素", "晶眸"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "膠原蛋白") return ["膠原", "亮妍"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "魚油") return fullText.includes("魚油");
+
+    if (selectedSeries === "滾珠精油" || selectedSeries === "滾珠") return fullText.includes("滾珠");
+    if (selectedSeries === "精油配件") return ["木盒", "擴香木球", "配件", "水氧", "霧化", "擴香"].some((keyword) => fullText.includes(keyword));
+
+    if (selectedSeries === "潔顏") return ["潔顏", "慕絲", "卸妝"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "香氛皂") return ["皂", "香氛皂", "肥皂"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "護手霜") return fullText.includes("護手霜");
+
     if (selectedSeries === "準備上架") return isComingSoon(product);
-    if (selectedSeries === "滾珠精油") return fullText.includes("滾珠");
+    if (selectedSeries === "回購主打") return isFeaturedProductV31(product);
     if (selectedSeries === "其他香型") return fullText.includes("其他香型") || fullText.includes("肥皂");
 
     return product.series === selectedSeries || tags.includes(selectedSeries) || fullText.includes(selectedSeries);
@@ -4144,14 +4198,14 @@ function Home() {
     {
       title: "龍血主打",
       text: "玻尿酸精華、洗卸保養熱賣",
-      category: "保養美肌",
+      category: "臉部保養",
       series: "龍血系列",
       product: products.find((product) => product.id === 53),
     },
     {
       title: "益生菌熱賣",
       text: "蔓越莓 / 高鈣任選、BC-HA 組合",
-      category: "健康保健",
+      category: "健康補給",
       series: "益生菌系列",
       product: products.find((product) => product.id === 83),
     },
@@ -4180,26 +4234,32 @@ function Home() {
 
   const mallQuickEntries = [
     {
-      title: "本月精選",
-      text: "主打優惠・回購熱賣",
-      badge: "PICK",
-      onClick: () => jumpToCategory("本月精選", "全部"),
+      title: "本月優惠",
+      text: "活動方案・回購熱賣",
+      badge: "SALE",
+      onClick: () => jumpToCategory("本月優惠", "全部"),
     },
     {
-      title: "保養美肌",
-      text: "龍血・水光・櫻の雪",
+      title: "臉部保養",
+      text: "龍血・水光・亮白保養",
       badge: "SKIN",
-      onClick: () => jumpToCategory("保養美肌", "全部"),
+      onClick: () => jumpToCategory("臉部保養", "全部"),
     },
     {
-      title: "健康保健",
+      title: "身體洗護",
+      text: "牙膏・手工皂・口腔護理",
+      badge: "BODY",
+      onClick: () => jumpToCategory("身體洗護", "全部"),
+    },
+    {
+      title: "健康補給",
       text: "益生菌・葉黃素・膠原飲",
       badge: "HEALTH",
-      onClick: () => jumpToCategory("健康保健", "全部"),
+      onClick: () => jumpToCategory("健康補給", "全部"),
     },
     {
       title: "精油香氛",
-      text: "精油・皂品・擴香設備",
+      text: "單方・複方・精油配件",
       badge: "AROMA",
       onClick: () => jumpToCategory("精油香氛", "全部"),
     },
@@ -4211,11 +4271,12 @@ function Home() {
     },
   ];
 
-  const mallDealProducts = getProductsByIds([53, 1, 100, 101, 91, 82]);
-  const mallHotProducts = getProductsByIds([53, 1, 100, 101, 91, 82]);
+  const mallDealProducts = getProductsByIds([53, 1, 100, 101, 91, 82, 90]);
+  const mallHotProducts = getProductsByIds([53, 1, 100, 101, 91, 82, 90]);
   const mallSkincareShelfProducts = getProductsByIds([53, 101, 54, 55, 61, 62]);
-  const mallHealthShelfProducts = getProductsByIds([1, 100, 4, 5, 138, 88, 92]);
-  const mallAromaShelfProducts = getProductsByIds([190, 179, 184, 187, 82, 90]);
+  const mallBodyShelfProducts = getProductsByIds([90, 82, 88, 29, 30, 135]);
+  const mallHealthShelfProducts = getProductsByIds([1, 100, 4, 5, 138, 92]);
+  const mallAromaShelfProducts = getProductsByIds([190, 179, 184, 187, 180, 181]);
   const mallComingSoonProducts = getProductsByIds([145, 146, 12, 59]);
 
   const mallBrandEntries = [
@@ -4240,7 +4301,7 @@ function Home() {
   ];
 
   const quickSearchTerms = [
-    "本月精選",
+    "本月優惠",
     "買一送一",
     "BC-HA",
     "益生菌",
@@ -4285,7 +4346,7 @@ function Home() {
         return [...prioritized, ...fillers].slice(0, maxCollectionProducts);
       })();
 
-  const collectionFeaturedProducts = collectionProducts.slice(0, 3);
+  const collectionFeaturedProducts: Product[] = [];
   const cartUpsellProducts = getCartUpsellProducts();
 
   const skinGuideCards: { title: SkinFilter; text: string }[] = [
@@ -4359,8 +4420,8 @@ function Home() {
     setSelectedSkinFilter(filter);
     setSearchQuery("");
 
-    if (filter !== "全部" && selectedCategory !== "保養美肌" && selectedCategory !== "全部") {
-      setSelectedCategory("保養美肌");
+    if (filter !== "全部" && selectedCategory !== "臉部保養" && selectedCategory !== "全部") {
+      setSelectedCategory("臉部保養");
       setSelectedSeries("全部");
     }
   }
@@ -4506,10 +4567,11 @@ function Home() {
   }
 
   function getHomeSectionIdByCategory(category: MainCategory, series = "全部") {
-    if (category === "本月精選" || category === "組合價") return "home-combo-products";
-    if (category === "健康保健" || category === "保健食品") return "home-health-products";
+    if (category === "本月優惠" || category === "本月精選" || category === "組合價") return "home-combo-products";
+    if (category === "健康補給" || category === "健康保健" || category === "保健食品") return "home-health-products";
 
     if (
+      category === "身體洗護" ||
       category === "洗沐" ||
       category === "精油" ||
       category === "牙膏" ||
@@ -4523,7 +4585,7 @@ function Home() {
       return "home-daily-life-products";
     }
 
-    if (category === "保養美肌" || category === "保養品") {
+    if (category === "臉部保養" || category === "保養美肌" || category === "保養品") {
       if (series.includes("龍血")) return "home-dragon-blood-products";
       if (series.includes("水光") || series.includes("玫瑰") || series.includes("膠原")) return "home-water-glow-products";
       if (series.includes("茶樹") || series.includes("杏仁酸") || series.includes("冰河")) return "home-tea-control-products";
@@ -4603,7 +4665,7 @@ function Home() {
   }
 
   function goToComboSection() {
-    jumpToCategory("本月精選", "全部");
+    jumpToCategory("本月優惠", "全部");
     openCollectionPage();
   }
 
@@ -4949,23 +5011,27 @@ function Home() {
 
   function getCollectionSubtitle() {
     if (collectionViewLabel) {
-      return "依照前台購物分類整理商品，讓客人可以用需求、優惠與品牌來源快速找到想看的品項。";
+      return "依照回購需求整理商品，讓客人用優惠、保養、洗護、健康補給與香氛快速找到想看的品項。";
     }
 
-    if (selectedCategory === "本月精選") {
-      return "本月主打、組合優惠與熟客回購熱賣集中在這裡。";
+    if (selectedCategory === "本月優惠") {
+      return "本月活動方案集中在這裡，包含買一送一、組合優惠與任選優惠。";
     }
 
-    if (selectedCategory === "保養美肌") {
+    if (selectedCategory === "臉部保養") {
       return "龍血、水光、玫瑰、櫻の雪與面膜等自家保養品項集中查看。";
     }
 
-    if (selectedCategory === "健康保健") {
-      return "益生菌、葉黃素、膠原飲與健康保健回購組合。";
+    if (selectedCategory === "身體洗護") {
+      return "牙膏、潔口液、手工皂、洗髮沐浴與身體保養集中查看。";
+    }
+
+    if (selectedCategory === "健康補給") {
+      return "益生菌、葉黃素、膠原飲與魚油等健康補給回購方案。";
     }
 
     if (selectedCategory === "精油香氛") {
-      return "精油、香氛、皂品與口腔香氣相關品項集中查看。";
+      return "單方、複方、精油配件與香氛設備集中查看。";
     }
 
     if (selectedCategory === "即將上架") {
@@ -6091,10 +6157,11 @@ function Home() {
       <section className="market-route-strip-v272 v3-route-strip v311-category-tabs" aria-label="賣場快速導覽">
         {mainCategories.map((category) => {
           const tabMeta: Record<string, { badge: string; label: string }> = {
-            本月精選: { badge: "PICK", label: "主打優惠" },
-            保養美肌: { badge: "SKIN", label: "保養品項" },
-            健康保健: { badge: "HEALTH", label: "日常補給" },
-            精油香氛: { badge: "AROMA", label: "精油與皂品" },
+            本月優惠: { badge: "SALE", label: "活動方案" },
+            臉部保養: { badge: "SKIN", label: "臉部保養" },
+            身體洗護: { badge: "BODY", label: "牙膏皂品" },
+            健康補給: { badge: "HEALTH", label: "日常補給" },
+            精油香氛: { badge: "AROMA", label: "精油香氛" },
             即將上架: { badge: "SOON", label: "整理中" },
           };
           const meta = tabMeta[category] ?? { badge: "SHOP", label: "查看商品" };
@@ -6274,10 +6341,10 @@ function Home() {
           <section className="collection-guide-v272" aria-label="分類頁快速操作">
             <div>
               <strong>目前在：{getCollectionHeroLabel()}</strong>
-              <span>可以繼續篩選系列，也可以切換館別或直接搜尋商品。</span>
+              <span>側邊選單與快速篩選使用同一套需求分類；也可以直接搜尋商品。</span>
             </div>
             <div>
-              <button type="button" onClick={() => setIsMenuOpen(true)}>切換館別</button>
+              <button type="button" onClick={() => setIsMenuOpen(true)}>切換分類</button>
               <button
                 type="button"
                 onClick={() => {
@@ -6287,7 +6354,7 @@ function Home() {
               >
                 搜尋商品
               </button>
-              <button type="button" onClick={() => openCommerceFilter("v3-featured", "本月精選")}>看優惠</button>
+              <button type="button" onClick={() => openCategoryTab("本月優惠", "全部")}>看優惠</button>
             </div>
           </section>
 
@@ -6322,7 +6389,7 @@ function Home() {
               ))}
             </div>
 
-            {selectedCategory === "保養美肌" && (
+            {selectedCategory === "臉部保養" && (
               <div className="collection-chip-row-v22 skin">
                 {skinFilters.filter((filter) => filter !== "全部").slice(0, 8).map((filter) => (
                   <button
@@ -6393,7 +6460,7 @@ function Home() {
               <div>
                 <p>Jourdeness Castle</p>
                 <h2>佐登妮絲城堡選品館</h2>
-                <span>館別導覽｜熟客回購賣場</span>
+                <span>需求分類｜熟客回購賣場</span>
               </div>
               <button onClick={() => setIsMenuOpen(false)} aria-label="關閉選單">×</button>
             </div>
@@ -6403,40 +6470,56 @@ function Home() {
               <span>📦 僅提供宅配，送出清單後由 LINE 小幫手確認。</span>
             </div>
 
-            <nav className="drawer-nav drawer-accordion-v25" aria-label="商城分類選單">
+            <nav className="drawer-nav drawer-accordion-v25" aria-label="回購需求選單">
               <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => handleDrawerCategory("本月精選", "全部")}>
-                  <span>本月精選</span>
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => handleDrawerCategory("本月優惠", "全部")}>
+                  <span>本月優惠</span>
                 </button>
               </div>
 
               <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("保養美肌")}>
-                  <span>保養美肌</span>
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("臉部保養")}>
+                  <span>臉部保養</span>
                 </button>
-                {expandedDrawerGroup === "保養美肌" && (
+                {expandedDrawerGroup === "臉部保養" && (
                   <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => handleDrawerCategory("保養美肌", "全部")}>全部保養</button>
-                    <button type="button" onClick={() => handleDrawerCategory("保養美肌", "龍血系列")}>龍血系列</button>
-                    <button type="button" onClick={() => handleDrawerCategory("保養美肌", "薰衣草系列")}>薰衣草系列</button>
-                    <button type="button" onClick={() => handleDrawerCategory("保養美肌", "水光肌能系列")}>水光肌能</button>
-                    <button type="button" onClick={() => handleDrawerCategory("保養美肌", "面膜")}>面膜保養</button>
-                    <button type="button" onClick={() => openCommerceFilter("clearance-all", "即期優惠")}>即期優惠</button>
+                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "全部")}>全部</button>
+                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "龍血系列")}>龍血系列</button>
+                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "保濕修護")}>保濕修護</button>
+                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "亮白保養")}>亮白保養</button>
+                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "舒緩敏感")}>舒緩敏感</button>
+                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "面膜")}>面膜</button>
+                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "即期優惠")}>即期優惠</button>
                   </div>
                 )}
               </div>
 
               <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("健康保健")}>
-                  <span>健康保健</span>
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("身體洗護")}>
+                  <span>身體洗護</span>
                 </button>
-                {expandedDrawerGroup === "健康保健" && (
+                {expandedDrawerGroup === "身體洗護" && (
                   <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => handleDrawerCategory("健康保健", "全部")}>全部保健</button>
-                    <button type="button" onClick={() => handleDrawerCategory("健康保健", "益生菌系列")}>益生菌</button>
-                    <button type="button" onClick={() => handleDrawerCategory("健康保健", "晶眸保健系列")}>葉黃素 / 晶眸</button>
-                    <button type="button" onClick={() => handleDrawerCategory("健康保健", "美妍飲品系列")}>膠原飲品</button>
-                    <button type="button" onClick={() => handleDrawerCategory("健康保健", "魚油組合")}>魚油組合</button>
+                    <button type="button" onClick={() => handleDrawerCategory("身體洗護", "全部")}>全部</button>
+                    <button type="button" onClick={() => handleDrawerCategory("身體洗護", "口腔護理")}>口腔護理</button>
+                    <button type="button" onClick={() => handleDrawerCategory("身體洗護", "手工皂")}>手工皂</button>
+                    <button type="button" onClick={() => handleDrawerCategory("身體洗護", "洗髮沐浴")}>洗髮沐浴</button>
+                    <button type="button" onClick={() => handleDrawerCategory("身體洗護", "身體保養")}>身體保養</button>
+                  </div>
+                )}
+              </div>
+
+              <div className="drawer-accordion-item-v25">
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("健康補給")}>
+                  <span>健康補給</span>
+                </button>
+                {expandedDrawerGroup === "健康補給" && (
+                  <div className="drawer-sublist-v25">
+                    <button type="button" onClick={() => handleDrawerCategory("健康補給", "全部")}>全部</button>
+                    <button type="button" onClick={() => handleDrawerCategory("健康補給", "益生菌")}>益生菌</button>
+                    <button type="button" onClick={() => handleDrawerCategory("健康補給", "葉黃素")}>葉黃素</button>
+                    <button type="button" onClick={() => handleDrawerCategory("健康補給", "膠原蛋白")}>膠原蛋白</button>
+                    <button type="button" onClick={() => handleDrawerCategory("健康補給", "魚油")}>魚油</button>
                   </div>
                 )}
               </div>
@@ -6447,11 +6530,11 @@ function Home() {
                 </button>
                 {expandedDrawerGroup === "精油香氛" && (
                   <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "全部")}>全部香氛</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "全部")}>全部</button>
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油")}>單方精油</button>
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油")}>複方精油</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "擴香設備")}>擴香設備</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "香氛皂")}>香氛皂</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "滾珠精油")}>滾珠精油</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "精油配件")}>精油配件</button>
                   </div>
                 )}
               </div>
@@ -6481,7 +6564,7 @@ function Home() {
         <div className="mall-hero-copy-v26">
           <p className="mall-hero-eyebrow-v26">Jourdeness Castle Reorder</p>
           <h2>佐登妮絲城堡回購館</h2>
-          <span>自家產品・產地價・會員回購清單。精選保養美肌、健康保健與精油香氛回購品項；加入清單後由 LINE 小幫手確認庫存、金額與取貨方式。</span>
+          <span>自家產品・產地價・會員回購清單。精選臉部保養、身體洗護、健康補給與精油香氛回購品項；加入清單後由 LINE 小幫手確認庫存、金額與取貨方式。</span>
 
           <button
             type="button"
@@ -6497,7 +6580,7 @@ function Home() {
           </button>
 
           <div className="mall-hero-actions-v26">
-            <button type="button" onClick={() => openCommerceFilter("v3-featured", "本月精選")}>查看本月精選</button>
+            <button type="button" onClick={() => openCategoryTab("本月優惠", "全部")}>查看本月優惠</button>
             <button type="button" onClick={() => setIsCartOpen(true)}>我的回購清單</button>
           </div>
 
@@ -6538,28 +6621,28 @@ function Home() {
       <section className="mall-editorial-banners-v27" aria-label="選品館主題入口">
         <button type="button" className="mall-editorial-card-v27 primary" onClick={() => openCommerceFilter("deals-all", "本月優惠 / 全部優惠")}>
           <span>Monthly Focus</span>
-          <strong>本月精選</strong>
+          <strong>本月優惠</strong>
           <p>精選本月主打與熟客回購熱賣，不用在太多分類裡迷路。</p>
         </button>
 
-        <button type="button" className="mall-editorial-card-v27" onClick={() => handleDrawerCategory("保健食品", "全部")}>
+        <button type="button" className="mall-editorial-card-v27" onClick={() => openCategoryTab("健康補給", "全部")}>
           <span>Health Care</span>
-          <strong>健康保健</strong>
+          <strong>健康補給</strong>
           <p>益生菌、BC-HA、葉黃素與日常營養補給集中查看。</p>
         </button>
 
-        <button type="button" className="mall-editorial-card-v27" onClick={() => openCommerceFilter("need-life", "生活選品 / 全部選品")}>
-          <span>Life Select</span>
-          <strong>生活選品</strong>
-          <p>皂品、牙膏與精油香氛品項集中整理，不再切太碎。</p>
+        <button type="button" className="mall-editorial-card-v27" onClick={() => openCategoryTab("身體洗護", "全部")}>
+          <span>Body Care</span>
+          <strong>身體洗護</strong>
+          <p>牙膏、手工皂、潔口液與日常洗護集中整理，不再散在其他分類。</p>
         </button>
       </section>
 
-      <section className="mall-hall-section-v26 mall-hall-section-v27" aria-label="賣場館別入口">
+      <section className="mall-hall-section-v26 mall-hall-section-v27" aria-label="回購需求入口">
         <div className="mall-section-head-v26">
           <p>Shop by Category</p>
-          <h2>四大主分類</h2>
-          <span>移除外部廠商後，主分類改少而精，讓每一區都有商品可看。</span>
+          <h2>回購需求分類</h2>
+          <span>移除外部廠商後，分類改成回購需求導向，側邊選單與快速篩選使用同一套邏輯。</span>
         </div>
 
         <div className="mall-hall-grid-v26">
@@ -6573,10 +6656,10 @@ function Home() {
         </div>
       </section>
 
-      <section className="mall-deal-wall-v26 mall-deal-wall-v27" aria-label="本月精選">
+      <section className="mall-deal-wall-v26 mall-deal-wall-v27" aria-label="本月優惠">
         <div className="mall-section-head-v26 compact">
           <p>Monthly Picks</p>
-          <h2>本月精選</h2>
+          <h2>本月優惠</h2>
           <span>先放 4～6 個自家回購主打品項，首頁不再塞成大雜貨清單。</span>
         </div>
 
@@ -6630,40 +6713,51 @@ function Home() {
       <HomeProductSection
         id="home-hot-products-v26"
         eyebrow="Monthly Picks"
-        title="本月精選・熟客常買"
+        title="本月優惠・活動方案"
         subtitle="目前先用精選商品撐起首頁質感，避免分類太多但內容太薄。"
         products={mallHotProducts}
-        actionLabel="看本月精選"
-        onAction={() => openCommerceFilter("v3-featured", "本月精選")}
+        actionLabel="看本月優惠"
+        onAction={() => openCategoryTab("本月優惠", "全部")}
       />
 
       <HomeProductSection
         id="home-skincare-hall-v271"
         eyebrow="Skin Care Hall"
-        title="保養美肌館精選"
+        title="臉部保養精選"
         subtitle="龍血、水光、玫瑰與高階保養，維持佐登妮絲主品牌質感。"
         products={mallSkincareShelfProducts}
-        actionLabel="進入保養美肌館"
-        onAction={() => jumpToCategory("保養美肌", "全部")}
+        actionLabel="進入臉部保養"
+        onAction={() => jumpToCategory("臉部保養", "全部")}
+      />
+
+
+      <HomeProductSection
+        id="home-body-care-hall-v312"
+        eyebrow="Body Care"
+        title="身體洗護精選"
+        subtitle="牙膏、手工皂、口腔護理與日常洗護集中在同一區，不再散在本月精選裡。"
+        products={mallBodyShelfProducts}
+        actionLabel="進入身體洗護"
+        onAction={() => jumpToCategory("身體洗護", "全部")}
       />
 
       <HomeProductSection
         id="home-health-hall-v271"
         eyebrow="Health Hall"
-        title="健康保健精選"
+        title="健康補給精選"
         subtitle="益生菌、膠原蛋白飲、葉黃素與熟客回購組合。"
         products={mallHealthShelfProducts}
-        actionLabel="進入健康保健"
-        onAction={() => jumpToCategory("健康保健", "全部")}
+        actionLabel="進入健康補給"
+        onAction={() => jumpToCategory("健康補給", "全部")}
       />
 
       <HomeProductSection
         id="home-aroma-hall-v271"
         eyebrow="Aroma Hall"
-        title="精油香氛館精選"
+        title="精油香氛精選"
         subtitle="精油、香氛與居家儀式感選品，之後可持續擴充。"
         products={mallAromaShelfProducts}
-        actionLabel="進入精油香氛館"
+        actionLabel="進入精油香氛"
         onAction={() => jumpToCategory("精油香氛", "全部")}
       />
 
