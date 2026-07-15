@@ -4,14 +4,14 @@ import { useCallback, useEffect, useState, type FormEvent, type ReactNode, type 
 
 const categoryConfig = {
   本月優惠: ["全部", "組合優惠", "買一送一", "任選優惠"],
-  臉部保養: ["全部", "龍血系列", "保濕修護", "亮白保養", "舒緩敏感", "面膜", "即期優惠"],
-  身體洗護: ["全部", "口腔護理", "手工皂", "洗髮沐浴", "身體保養"],
+  臉部保養: ["全部", "龍血系列", "保濕修護", "亮白保養", "舒緩敏感", "面膜", "限量優惠"],
+  身體洗護: ["全部", "口腔護理", "手工皂", "洗髮沐浴", "身體保養", "身體舒壓"],
   健康補給: ["全部", "益生菌", "葉黃素", "膠原蛋白", "魚油"],
-  精油香氛: ["全部", "單方精油", "複方精油", "滾珠精油", "精油配件"],
-  即將上架: ["全部", "潔顏", "滾珠", "香氛皂", "護手霜"],
+  精油香氛: ["全部", "單方精油", "複方精油", "滾珠精油", "精油配件", "擴香設備"],
+  新品預告: ["全部", "潔顏", "滾珠", "香氛皂", "護手霜", "魚油", "潔口液"],
 
   // 以下舊分類保留為資料型別相容與內部搜尋用，不再顯示為前台主分類。
-  本月精選: ["全部", "回購主打", "組合優惠", "即期優惠"],
+  本月精選: ["全部", "回購主打", "組合優惠", "限量優惠"],
   保養美肌: ["全部", "龍血系列", "薰衣草系列", "水光肌能系列", "櫻の雪傳明酸美白系列", "玫瑰超微晶萃系列", "肌光緊緻速妍系列", "冰河淨化系列", "杏仁酸系列", "冷杉系列", "面膜"],
   健康保健: ["全部", "益生菌系列", "晶眸保健系列", "美妍飲品系列", "口腔保健", "魚油組合"],
   組合價: ["全部", "本月主打", "保健食品組合", "貼布組合", "牙膏組合", "保養套組", "肥皂組合", "護唇膏組合", "面膜組合"],
@@ -97,7 +97,7 @@ declare global {
   }
 }
 
-// V3.1.1：修正分類按鈕互動、LINE 複製提示與益生菌任選 3 盒方案。
+// V3.1.6：修正快速入口、完整搜尋與分類結果、重做 TOP PICKS、調整洗沐組合與商品資訊排版。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -663,9 +663,9 @@ const allProducts: Product[] = [
     category: "保養品",
     series: "櫻の雪傳明酸美白系列",
     originalPrice: "原價 $ 590",
-    price: "準備上架",
+    price: "新品預告",
     image: "/products/sukola0.jpg",
-    description: "150mL / 瓶。櫻の雪淨白潔顏慕絲準備上架中，正式開放後可加入清單確認。",
+    description: "150mL / 瓶。櫻の雪淨白潔顏慕絲新品預告中，正式開放後可加入清單確認。",
   },
 {
     id: 72,
@@ -1304,6 +1304,182 @@ const allProducts: Product[] = [
     image: "/products/placeholder.jpg",
     description: "USB 霧化擴香設備，木紋外型搭配夜光氛圍，適合居家香氛使用。",
   }
+,
+  {
+    id: 206,
+    name: "檸檬精油 10mL",
+    category: "精油",
+    series: "單方精油",
+    originalPrice: "原價 $ 1,080",
+    price: "產地價 $ 810",
+    image: "/products/placeholder.jpg",
+    description: "10mL。清新明亮的檸檬香氣，適合日常擴香與空間清新；可搭配單方精油任選 2 瓶 $1,600。",
+    priceNote: "單瓶產地價 $810；單方精油任選 2 瓶 $1,600。",
+    expiryNote: "效期：2028.11.16。實際效期以商品包裝標示為準。",
+  },
+  {
+    id: 207,
+    name: "茶樹精油 15mL",
+    category: "精油",
+    series: "單方精油",
+    originalPrice: "原價 $ 1,680",
+    price: "產地價 $ 1,260",
+    image: "/products/placeholder.jpg",
+    description: "15mL。茶樹精油清爽草本香氣，適合居家擴香、空間清新與日常香氛搭配。",
+    expiryNote: "效期：2030.04.19。實際效期以商品包裝標示為準。",
+  },
+  {
+    id: 208,
+    name: "天空葵芳香精油 10mL",
+    category: "精油",
+    series: "單方精油",
+    originalPrice: "原價 $ 1,680",
+    price: "產地價 $ 1,260",
+    image: "/products/placeholder.jpg",
+    description: "10mL。天空葵芳香精油，清新花草香氣，適合日常擴香與居家香氛儀式。",
+    expiryNote: "效期：2030.03.30。實際效期以商品包裝標示為準。",
+  },
+  {
+    id: 209,
+    name: "佐登妮絲6號複方精油 10mL",
+    category: "精油",
+    series: "複方精油",
+    originalPrice: "原價 $ 2,080",
+    price: "產地價 $ 1,560",
+    image: "/products/placeholder.jpg",
+    description: "10mL。佐登妮絲6號複方精油，適合日常擴香與空間香氛搭配。",
+    expiryNote: "效期：2028.02.13。實際效期以商品包裝標示為準。",
+  },
+  {
+    id: 210,
+    name: "擴香木片（買一送一）",
+    category: "精油",
+    series: "精油配件",
+    price: "售價 $ 199",
+    image: "/products/placeholder.jpg",
+    description: "買一送一。可搭配精油滴入使用，適合衣櫃、抽屜、桌面或小空間香氛。",
+  },
+  {
+    id: 211,
+    name: "刮痧板 2入",
+    category: "身體洗護",
+    series: "身體舒壓",
+    price: "售價 $ 390",
+    image: "/products/placeholder.jpg",
+    description: "2入組。居家日常舒壓工具，適合搭配身體保養油或日常按摩放鬆。",
+  },
+  {
+    id: 212,
+    name: "溫灸棒－特大",
+    category: "身體洗護",
+    series: "身體舒壓",
+    price: "售價 $ 1,500",
+    image: "/products/placeholder.jpg",
+    description: "特大尺寸溫灸棒，適合居家舒壓保養與日常放鬆儀式。",
+  },
+  {
+    id: 213,
+    name: "溫灸棒－小",
+    category: "身體洗護",
+    series: "身體舒壓",
+    price: "售價 $ 1,100",
+    image: "/products/placeholder.jpg",
+    description: "小尺寸溫灸棒，握感輕巧，適合居家日常舒壓使用。",
+  },
+  {
+    id: 214,
+    name: "艾草條－小",
+    category: "身體洗護",
+    series: "身體舒壓",
+    price: "售價 $ 240",
+    image: "/products/placeholder.jpg",
+    description: "小規格艾草條，適合搭配溫灸棒作為居家舒壓保養使用。",
+  },
+  {
+    id: 215,
+    name: "艾草條－特大",
+    category: "身體洗護",
+    series: "身體舒壓",
+    price: "售價 $ 240",
+    image: "/products/placeholder.jpg",
+    description: "特大規格艾草條，適合搭配溫灸棒作為居家舒壓保養使用。",
+  },
+  {
+    id: 216,
+    name: "如意棒",
+    category: "身體洗護",
+    series: "身體舒壓",
+    price: "售價 $ 2,500",
+    image: "/products/placeholder.jpg",
+    description: "居家舒壓工具，適合日常按摩、放鬆與身體保養搭配使用。",
+  },
+  {
+    id: 217,
+    name: "升級版柔筋棒（小）",
+    category: "身體洗護",
+    series: "身體舒壓",
+    price: "售價 $ 400",
+    image: "/products/placeholder.jpg",
+    description: "小尺寸柔筋棒，適合日常局部放鬆與居家舒壓使用。",
+  },
+  {
+    id: 218,
+    name: "護手霜三款買二送一組",
+    category: "組合價",
+    series: "護手霜組合",
+    originalPrice: "原價價值 $ 870",
+    price: "買二送一 $ 580",
+    image: "/products/placeholder.jpg",
+    description: "薰衣草舒緩、櫻之雪亮澤、茶樹防禦護手霜可搭配，買二送一 $580。",
+    expiryNote: "效期：薰衣草舒緩 2029.01.20；櫻之雪亮澤 2029.01.25；茶樹防禦 2029.01.18。實際效期以商品包裝標示為準。",
+    priceNote: "護手霜三款買二送一 $580，實際可搭配品項依 LINE 小幫手確認。",
+  },
+  {
+    id: 219,
+    name: "EC晶眸葉黃素精華凍 20包",
+    category: "健康補給",
+    series: "葉黃素",
+    originalPrice: "原價 $ 1,500",
+    price: "產地價 $ 1,125",
+    image: "/products/Lutein.jpg",
+    description: "20包。晶眸葉黃素精華凍，適合 3C 族、學生與上班族日常晶亮營養補給。",
+    expiryNote: "效期：2027.04.28。實際效期以商品包裝標示為準。",
+  },
+  {
+    id: 220,
+    name: "超防禦清透隔離乳 30mL",
+    category: "保養品",
+    series: "防曬隔離",
+    originalPrice: "原價 $ 1,380",
+    price: "產地價 $ 1,035",
+    image: "/products/placeholder.jpg",
+    description: "30mL。清透隔離乳，日常外出前打底使用，維持清爽防護感。",
+    expiryNote: "效期：2029.06.14。實際效期以商品包裝標示為準。",
+  },
+  {
+    id: 221,
+    name: "玫瑰超微晶萃精華 30mL",
+    category: "保養品",
+    series: "玫瑰超微晶萃系列",
+    price: "產地價 $ 2,760",
+    image: "/products/rose2.jpg",
+    description: "30mL。玫瑰超微晶萃精華，潤澤修護與日常保養加強，維持柔嫩光澤感。",
+    expiryNote: "效期：2029.06.07。實際效期以商品包裝標示為準。",
+  },
+  {
+    id: 222,
+    name: "龍血洗髮精＋阿甘甦醒髮根養護液組合",
+    category: "組合價",
+    series: "洗沐組合",
+    originalPrice: "原價價值 $ 2,470",
+    price: "組合價 $ 1,500",
+    image: "/products/BDwash2.jpg",
+    gallery: ["/products/BDwash2.jpg", "/products/Argan Oil3.jpg"],
+    description: "龍血求麗頭皮修護洗髮精 500mL × 1 瓶，加阿甘甦醒髮根養護液 80mL × 1 瓶。",
+    priceNote: "龍血求麗頭皮修護洗髮精 1 瓶＋阿甘甦醒髮根養護液 1 瓶，組合價 $1,500。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+  }
+
 
 ];
 
@@ -1311,23 +1487,93 @@ const comingSoonRollerProducts: Product[] = [
   {
     id: 12,
     name: "冷杉酷涼活絡精油滾珠",
-    category: "即將上架",
-    series: "準備上架",
+    category: "新品預告",
+    series: "新品預告",
     originalPrice: "牌價 $ 390",
-    price: "準備上架",
+    price: "新品預告",
     image: "/products/Men's Abies roller.jpg",
-    description: "9mL。冷杉系列滾珠先放回準備上架區，正式開賣前不開放加入清單。",
+    description: "9mL。冷杉系清爽香氣滾珠，清新感受適合日常隨身使用。",
     cardSubtitle: "9mL・冷杉系列滾珠",
-    priceNote: "準備上架，開放後將更新價格與庫存。",
-    features: ["目前先列為準備上架。", "正式開賣前不開放加入清單。"],
+    priceNote: "新品預告・敬請期待。",
+    features: ["冷杉清爽香氣，適合喜歡涼感氛圍的人。", "新品預告，更多回購資訊陸續更新。"],
     usage: "依商品標示使用，避免接觸眼睛與傷口。",
-    notice: "準備上架品項，實際價格、庫存與開放時間以 LINE 小幫手確認為準。",
+    notice: "新品預告，更多香氛滾珠品項陸續登場。",
+  },
+  {
+    id: 201,
+    name: "龍血玫瑰美膚皂",
+    category: "新品預告",
+    series: "香氛皂",
+    price: "新品預告",
+    image: "/products/soap rose.png",
+    description: "200g±10g / 塊。柔和花香，打造日常沐浴儀式感。",
+    cardSubtitle: "柔和花香・新品預告",
+    priceNote: "新品預告・敬請期待。",
+    features: ["柔和玫瑰香氣，讓日常洗沐更有儀式感。", "新品預告，更多資訊陸續登場。"],
+    usage: "依日常洗沐習慣使用。",
+    notice: "新品預告，更多香型陸續登場。",
+  },
+  {
+    id: 202,
+    name: "龍血艾草保庇皂",
+    category: "新品預告",
+    series: "香氛皂",
+    price: "新品預告",
+    image: "/products/soap mugwort.png",
+    description: "200g±10g / 塊。草本香氣，適合喜歡清爽感的日常洗沐。",
+    cardSubtitle: "草本香氣・新品預告",
+    priceNote: "新品預告・敬請期待。",
+    features: ["艾草草本香調，清爽洗沐更有安定感。", "新品預告，更多資訊陸續登場。"],
+    usage: "依日常洗沐習慣使用。",
+    notice: "新品預告，更多香型陸續登場。",
+  },
+  {
+    id: 203,
+    name: "龍血檸檬馬鞭草皂",
+    category: "新品預告",
+    series: "香氛皂",
+    price: "新品預告",
+    image: "/products/soap verbena.png",
+    description: "200g±10g / 塊。清新柑橘調，洗後帶來明亮清爽感。",
+    cardSubtitle: "柑橘清香・新品預告",
+    priceNote: "新品預告・敬請期待。",
+    features: ["檸檬馬鞭草清香，適合喜歡明亮清爽調性的人。", "新品預告，更多資訊陸續登場。"],
+    usage: "依日常洗沐習慣使用。",
+    notice: "新品預告，更多香型陸續登場。",
+  },
+  {
+    id: 204,
+    name: "龍血檀香靜心皂",
+    category: "新品預告",
+    series: "香氛皂",
+    price: "新品預告",
+    image: "/products/soap sandalwood.png",
+    description: "200g±10g / 塊。木質香氣，沉穩放鬆的沐浴選擇。",
+    cardSubtitle: "木質檀香・新品預告",
+    priceNote: "新品預告・敬請期待。",
+    features: ["沉穩檀香木質調，適合晚間放鬆洗沐。", "新品預告，更多資訊陸續登場。"],
+    usage: "依日常洗沐習慣使用。",
+    notice: "新品預告，更多香型陸續登場。",
+  },
+  {
+    id: 205,
+    name: "繡球花漾香氛皂",
+    category: "新品預告",
+    series: "香氛皂",
+    price: "新品預告",
+    image: "/products/soap Hydrangea.png",
+    description: "200g±10g / 塊。花香系香氛皂，讓日常洗沐更有質感。",
+    cardSubtitle: "花香系・新品預告",
+    priceNote: "新品預告・敬請期待。",
+    features: ["繡球花系香氣，溫柔花香讓洗沐更有質感。", "新品預告，更多資訊陸續登場。"],
+    usage: "依日常洗沐習慣使用。",
+    notice: "新品預告，更多香型陸續登場。",
   },
 ];
 
 const keepSelfComboIdsV31 = new Set<number>([88, 92]);
 const removedProductIdsV31 = new Set<number>([
-  2, 83, 84, 85,
+  2, 10, 11, 18, 20, 83, 84, 85,
   74, 89, 95, 96, 97, 98, 99, 102, 103, 139, 143, 144,
   160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171,
   172, 173, 174, 175, 176, 177, 178,
@@ -1337,7 +1583,7 @@ const externalVendorKeywordsV31: string[] = [];
 function isRemovedPublicProductV31(product: Product) {
   if (keepSelfComboIdsV31.has(product.id)) return false;
   if (removedProductIdsV31.has(product.id)) return true;
-  if (product.series.includes("洗沐組合")) return true;
+  if (product.series.includes("洗沐組合") && product.id !== 222) return true;
   if (product.name.includes("龍血洗沐任選")) return true;
   if (product.name.includes("櫻の雪潔顏慕絲任選")) return true;
 
@@ -1362,57 +1608,110 @@ function normalizeProductForV31(product: Product): Product {
     };
   }
 
+  if (product.id === 29 || product.id === 30) {
+    return {
+      ...product,
+      originalPrice: undefined,
+      price: "任選 3 瓶 $ 1,100",
+      description:
+        product.id === 29
+          ? "500mL / 瓶。龍血求麗頭皮修護洗髮精與龍血求麗潤澤修護沐浴乳可任選搭配，共 3 瓶 $1,100。"
+          : "500mL / 瓶。龍血求麗潤澤修護沐浴乳與龍血求麗頭皮修護洗髮精可任選搭配，共 3 瓶 $1,100。",
+      priceNote: "龍血洗髮精／沐浴乳可自由搭配，任選 3 瓶 $1,100；不提供此頁單瓶優惠價。",
+    };
+  }
+
   if (product.id === 145) {
     return {
       ...product,
-      category: "即將上架",
-      series: "準備上架",
-      price: "準備上架",
-      priceNote: "準備上架，開放後將更新價格與庫存。",
-      description: "9mL。龍血求麗甦醒精油滾珠先列為準備上架，正式開賣前不開放加入清單。",
+      category: "新品預告",
+      series: "新品預告",
+      price: "新品預告",
+      priceNote: "新品預告・敬請期待。",
+      description: "9mL。龍血求麗甦醒精油滾珠先列為新品預告，新品預告，更多回購資訊陸續更新。",
     };
   }
 
   if (product.id === 146) {
     return {
       ...product,
-      category: "即將上架",
-      series: "準備上架",
-      price: "準備上架",
-      priceNote: "準備上架，開放後將更新價格與庫存。",
-      description: "9mL。薰衣草萬用精油滾珠先列為準備上架，正式開賣前不開放加入清單。",
+      category: "新品預告",
+      series: "新品預告",
+      price: "新品預告",
+      priceNote: "新品預告・敬請期待。",
+      description: "9mL。薰衣草萬用精油滾珠先列為新品預告，新品預告，更多回購資訊陸續更新。",
     };
   }
 
   if (product.id === 88) {
     return {
       ...product,
-      category: "健康補給",
-      series: "口腔保健",
-      originalPrice: "原價 / 單品參考見商品資訊",
-      price: "3罐贈1條牙膏 $ 1,500",
-      priceNote: "列表只保留組合價；單品參考價放在商品資訊中。",
+      category: "新品預告",
+      series: "潔口液",
+      originalPrice: undefined,
+      price: "新品預告",
+      priceNote: "新品預告・敬請期待。",
+      description: "能量牛樟芝保健潔口液 3罐組列入新品預告，後續開放後更新活動內容。",
     };
   }
 
   if (product.id === 92) {
     return {
       ...product,
-      category: "健康補給",
-      series: "魚油組合",
-      originalPrice: "原價 / 單品參考見商品資訊",
-      price: "買一送一 $ 1,580",
-      priceNote: "列表只保留組合價；單品參考價放在商品資訊中。",
+      category: "新品預告",
+      series: "魚油",
+      originalPrice: undefined,
+      price: "新品預告",
+      priceNote: "新品預告・敬請期待。",
+      description: "魚油組合列入新品預告，後續開放後更新活動內容。",
+    };
+  }
+
+  if (product.id === 179) {
+    return {
+      ...product,
+      originalPrice: "原價 $ 2,200",
+      price: "產地價 $ 899",
+      description: "30mL。甜橙單方精油，清新柑橘香氣，適合日常擴香營造明亮活力；可搭配單方精油任選 2 瓶 $1,600。",
+      priceNote: "單瓶產地價 $899；單方精油任選 2 瓶 $1,600。",
+    };
+  }
+
+  if (product.id === 180) {
+    return {
+      ...product,
+      originalPrice: "原價 $ 2,200",
+      price: "產地價 $ 899",
+      description: "30mL。尤加利精油，清爽草本香氣，適合居家擴香與空間清新；可搭配單方精油任選 2 瓶 $1,600。",
+      priceNote: "單瓶產地價 $899；單方精油任選 2 瓶 $1,600。",
+    };
+  }
+
+  if (product.id === 183) {
+    return {
+      ...product,
+      originalPrice: "原價 $ 2,800",
+      price: "產地價 $ 899",
+      description: "30mL。薰衣草單方精油，適合睡前、放鬆與居家香氛擴香；可搭配單方精油任選 2 瓶 $1,600。",
+      priceNote: "單瓶產地價 $899；單方精油任選 2 瓶 $1,600。",
+    };
+  }
+
+  if (product.id === 190) {
+    return {
+      ...product,
+      name: "佐登4號複方精油 10mL",
+      description: "10mL。佐登4號複方精油，清新醒腦香氣，適合日常擴香，讓空間維持清新感。",
     };
   }
 
   if (product.id === 82) {
     return {
       ...product,
-      category: "精油香氛",
-      series: "香氛皂",
+      category: "身體洗護",
+      series: "手工皂",
       price: "單入 $ 290｜4入優惠 $ 799",
-      description: "200g±10g / 塊。目前上架薰衣草款，單入 $290，4入優惠 $799。其他香型先不顯示。",
+      description: "200g±10g / 塊。薰衣草香氛皂現正上架，單入 $290，4入優惠 $799。",
     };
   }
 
@@ -1431,8 +1730,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     intro: "蔓越莓益生菌與高鈣益生菌整合成任選 3 盒方案，適合依日常需求自由搭配補給。",
     features: [
       "蔓越莓益生菌與高鈣益生菌可任選搭配。",
-      "共 3 盒組合價 $1,600，列表只保留主賣方案。",
-      "單品參考資訊放在商品詳情中，避免商品列表過度重複。",
+      "共 3 盒組合價 $1,600，任選搭配更彈性。",
+      "可依日常需求搭配蔓越莓或高鈣益生菌。",
     ],
     suitableFor: [
       "益生菌補給",
@@ -1443,7 +1742,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "每日 1～3 包，餐前餐後均可食用；請依各商品標示或客服說明補充。",
     notice: "可搭配品項與庫存依 LINE 小幫手確認為準。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "蔓越莓益生菌 / 高鈣益生菌任選 3 盒 $1,600；舊的 3,600、4,200、4,800 與蔓越莓 3盒方案已不在前台顯示。",
+    priceNote: "蔓越莓益生菌 / 高鈣益生菌任選 3 盒 $1,600。",
   },
   2: {
     cardName: "蔓越莓益生菌速酵力配方",
@@ -1610,7 +1909,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "即期出清單瓶 $199，適合想補充清爽保濕品項的客人。",
       "清爽水感質地，適合男士日常保養使用。",
-      "即期優惠品項，實際效期請以 LINE 小幫手確認為準。",
+      "限量優惠品項，實際效期請以 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "即期出清",
@@ -1631,7 +1930,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     features: [
       "即期出清單瓶 $199，適合想補充清爽保濕品項的客人。",
       "乳液質地可作為日常保濕步驟，適合男士簡單保養。",
-      "即期優惠品項，實際效期請以 LINE 小幫手確認為準。",
+      "限量優惠品項，實際效期請以 LINE 小幫手確認為準。",
     ],
     suitableFor: [
       "即期出清",
@@ -2001,8 +2300,8 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   29: {
     cardName: "龍血求麗頭皮修護洗髮精",
     cardSubtitle: "500mL・龍血洗沐髮品",
-    spec: "500mL / 瓶",
-    intro: "沙龍級頭皮能量系洗髮精，採用秘魯龍血樹脂與 0 矽靈配方，深層潔淨並修護頭皮，幫助改善髮根扁塌。",
+    spec: "500mL × 3 瓶（洗髮精／沐浴乳任選搭配）",
+    intro: "沙龍級頭皮能量系洗髮精，採用秘魯龍血樹脂與 0 矽靈配方；本頁以龍血洗髮精／沐浴乳任選 3 瓶組合販售。",
     features: [
       "0 矽靈配方，洗後蓬鬆不厚重。",
       "龍血修護概念，幫助頭皮與髮根維持健康狀態。",
@@ -2017,13 +2316,13 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "取適量洗髮精於濕髮與頭皮，按摩起泡後以清水沖洗；可視需求重複清潔一次。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "單瓶產地價 $590；同系列可搭配任選 3 瓶 $1,100 活動，庫存與優惠依 LINE 小幫手確認為準。",
+    priceNote: "龍血洗髮精／沐浴乳可自由搭配，任選 3 瓶 $1,100；不提供此頁單瓶優惠價。",
   },
   30: {
     cardName: "龍血求麗潤澤修護沐浴乳",
     cardSubtitle: "500mL・龍血洗沐髮品",
-    spec: "500mL / 瓶",
-    intro: "主打肌質養潤的龍血沐浴乳，結合秘魯龍血樹脂與多重植萃，洗後肌膚水潤柔嫩、不緊繃。",
+    spec: "500mL × 3 瓶（洗髮精／沐浴乳任選搭配）",
+    intro: "主打肌質養潤的龍血沐浴乳，結合秘魯龍血樹脂與多重植萃；本頁以龍血洗髮精／沐浴乳任選 3 瓶組合販售。",
     features: [
       "龍血修護概念，洗淨同時維持肌膚柔嫩。",
       "燕麥、洋甘菊等舒緩植萃，適合乾燥粗糙肌日常使用。",
@@ -2038,7 +2337,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "取適量沐浴乳於濕潤肌膚或沐浴球，搓揉起泡後按摩全身，再以清水沖洗。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "單瓶產地價 $590；同系列可搭配任選 3 瓶 $1,100 活動，庫存與優惠依 LINE 小幫手確認為準。",
+    priceNote: "龍血洗髮精／沐浴乳可自由搭配，任選 3 瓶 $1,100；不提供此頁單瓶優惠價。",
   },
   31: {
     cardName: "純淨洗髮精",
@@ -2856,19 +3155,19 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   71: {
     cardName: "櫻の雪淨白潔顏慕絲",
-    cardSubtitle: "150mL・準備上架",
+    cardSubtitle: "150mL・新品預告",
     spec: "150mL / 瓶",
-    intro: "櫻の雪淨白潔顏慕絲目前準備上架中，正式開放後可加入清單確認庫存與優惠。",
+    intro: "櫻の雪淨白潔顏慕絲新品預告，亮白保養系列的清潔第一步。",
     features: [
-      "準備上架品項，先保留商品資訊與圖片。",
-      "正式開放後可加入清單確認庫存與優惠。",
+      "櫻の雪系列清潔保養新品預告。",
+      "亮白保養前的清潔步驟，洗後清爽不厚重。",
       "適合放在櫻の雪亮白保養系列中作為清潔第一步。",
     ],
-    suitableFor: ["準備上架", "清潔卸妝", "櫻の雪系列"],
+    suitableFor: ["新品預告", "清潔卸妝", "櫻の雪系列"],
     usage: "正式上架後請依商品標示方式使用。",
-    notice: "準備上架中，暫不開放加入清單。",
+    notice: "新品預告・敬請期待。",
     expiryNote: "上架後依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "準備上架中，暫不開放加入清單。",
+    priceNote: "新品預告・敬請期待。",
   },
   72: {
     cardName: "櫻の雪傳明酸美白化妝水",
@@ -2998,17 +3297,17 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   82: {
     cardName: "龍血薰衣草舒緩皂",
-    cardSubtitle: "單入 $290｜4入 $799",
+    cardSubtitle: "薰衣草香氛皂・4入優惠",
     spec: "200g±10g / 塊",
-    intro: "目前上架薰衣草款，單入 $290，購買 4 塊同款享 $799 優惠。",
+    intro: "龍血薰衣草舒緩皂主打日常香氛清潔，目前薰衣草款已上架，單入 $290，購買 4 塊同款享 $799 優惠。",
     features: [
-      "目前肥皂區先上架薰衣草款。",
+      "薰衣草香氣，日常洗沐更有儀式感。",
       "單入 $290，4入優惠 $799。",
-      "其他香型陸續整理中，前台暫不顯示任選4款。",
+      "更多香型陸續登場，可先從薰衣草款開始回購。",
     ],
     suitableFor: ["肥皂", "薰衣草舒緩", "日常清潔", "4入優惠"],
     usage: "將手工皂沾水起泡後清潔肌膚，再以清水沖淨。",
-    notice: "目前僅薰衣草款上架，其餘香型陸續整理中。",
+    notice: "薰衣草款現正上架，更多香型陸續登場。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前上架薰衣草款；單入 $290，4入優惠 $799。",
   },
@@ -3072,13 +3371,13 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   86: {
     cardName: "石墨烯電氣石精油貼布任選4盒",
-    cardSubtitle: "涼感 / 溫感可任選搭配，共4盒・貼布組合",
+    cardSubtitle: "涼感 / 溫感爆款貼布任選",
     spec: "涼感 / 溫感可任選搭配，共4盒",
-    intro: "石墨烯電氣石精油貼布任選4盒為回購群優惠組合品項，適合想一次補齊常用商品的客人。",
+    intro: "石墨烯電氣石精油貼布任選4盒是本月 TOP 3 主打，涼感與溫感可依需求搭配，適合肩頸、腰背與日常局部放鬆補貨。",
     features: [
-      "回購群優惠組合，適合一次補齊常用品項。",
-      "組合內容與優惠依當日公告及客服確認為準。",
-      "送出清單後，客服會協助確認最適合的優惠方案。",
+      "TOP 3 回購主打，涼感 / 溫感任選共 4 盒。",
+      "4盒組合價 $1,099，比單盒補貨更划算。",
+      "適合家中常備、運動後或久坐族日常放鬆使用。",
     ],
     suitableFor: [
       "組合優惠",
@@ -3127,9 +3426,9 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   90: {
     cardName: "牙膏任選3條",
-    cardSubtitle: "薰衣草舒緩 / 龍血修護可混搭，共3條・牙膏組合",
+    cardSubtitle: "口腔清新補貨組",
     spec: "薰衣草舒緩 / 龍血修護可混搭，共3條",
-    intro: "齒齦保健牙膏任選3條為回購群優惠組合品項，適合想一次補齊常用商品的客人。",
+    intro: "齒齦保健牙膏任選3條，薰衣草舒緩與龍血修護可混搭，是日常口腔清潔補貨的實用組合。",
     features: [
       "回購群優惠組合，適合一次補齊常用品項。",
       "組合內容與優惠依當日公告及客服確認為準。",
@@ -3145,13 +3444,13 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   },
   91: {
     cardName: "水搖滾 / 極光白美白面膜桶裝任選組",
-    cardSubtitle: "水搖滾保濕面膜22mL x35pcs / 極光白美白面膜 x35pcs 可任選・面膜組合",
+    cardSubtitle: "爆水面膜 / 亮白面膜桶裝任選",
     spec: "水搖滾保濕面膜22mL x35pcs / 極光白美白面膜 x35pcs 可任選",
-    intro: "水搖滾 / 極光白美白面膜桶裝任選組為回購群優惠組合品項，適合想一次補齊常用商品的客人。",
+    intro: "水搖滾主打爆水感保濕，極光白主打透亮保養；桶裝大容量適合日常敷臉回購補貨。",
     features: [
-      "回購群優惠組合，適合一次補齊常用品項。",
-      "組合內容與優惠依當日公告及客服確認為準。",
-      "送出清單後，客服會協助確認最適合的優惠方案。",
+      "水搖滾：爆水感保濕，適合乾燥缺水時加強補水。",
+      "極光白：透亮保養，適合暗沉與膚色不均時日常敷臉。",
+      "桶裝大容量，適合固定敷臉與家庭回購補貨。",
     ],
     suitableFor: [
       "組合優惠",
@@ -3181,6 +3480,23 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
+  },
+
+  222: {
+    cardName: "龍血洗髮精＋阿甘養護液組合",
+    cardSubtitle: "洗髮精 500mL＋髮根養護液 80mL",
+    spec: "龍血求麗頭皮修護洗髮精 500mL × 1 瓶＋阿甘甦醒髮根養護液 80mL × 1 瓶",
+    intro: "洗髮清潔與髮根養護一次補齊，適合想建立完整頭皮與髮根日常保養流程的客人。",
+    features: [
+      "龍血求麗頭皮修護洗髮精 500mL，0 矽靈配方，日常清潔頭皮與髮絲。",
+      "阿甘甦醒髮根養護液 80mL，洗髮後搭配使用，完成髮根日常養護。",
+      "兩件組合價 $1,500，直接一次補齊洗護步驟。",
+    ],
+    suitableFor: ["洗髮清潔", "頭皮養護", "髮根保養", "組合優惠"],
+    usage: "先以洗髮精清潔頭皮與髮絲並沖洗乾淨；擦乾後依商品標示取適量養護液使用於頭皮與髮根。",
+    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
+    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
+    priceNote: "龍血求麗頭皮修護洗髮精 1 瓶＋阿甘甦醒髮根養護液 1 瓶，組合價 $1,500。",
   },
 
   100: {
@@ -3746,7 +4062,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     ],
     suitableFor: ["組合優惠", "肥皂", "薰衣草舒緩", "日常清潔"],
     usage: "依一般手工皂使用方式，沾濕搓揉起泡後清潔肌膚，再以清水沖淨。",
-    notice: "目前僅薰衣草款上架，其餘香型陸續整理中。",
+    notice: "薰衣草款現正上架，更多香型陸續登場。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前薰衣草款 4入優惠 $799。",
   },
@@ -3945,7 +4261,93 @@ const comboProductIds = new Set<number>([
   79, 80, 81, 82, 93, 94, 147, 148, 149, 150,
 ]);
 
-const expiringProductIds = new Set<number>([10, 11]);
+const expiringProductIds = new Set<number>([58, 126, 179]);
+
+const expiryNotesV315: Record<number, string> = {
+  1: "高鈣益生菌效期：2027.10.14；蔓越莓益生菌效期：2028.01.03。實際效期以商品包裝標示為準。",
+  4: "晶眸葉黃素精華凍效期：2027.04.28；晶眸葉黃素綜合莓果口味效期：2027.05.05。實際效期以商品包裝標示為準。",
+  5: "效期：2028.03.08。實際效期以商品包裝標示為準。",
+  6: "效期：2028.03.09。實際效期以商品包裝標示為準。",
+  7: "效期：2028.03.09。實際效期以商品包裝標示為準。",
+  8: "效期：2028.03.24。實際效期以商品包裝標示為準。",
+  14: "效期：2029.06.13。實際效期以商品包裝標示為準。",
+  16: "效期：2029.05.19。實際效期以商品包裝標示為準。",
+  17: "效期：2029.01.26。實際效期以商品包裝標示為準。",
+  19: "效期：2027.03.04。實際效期以商品包裝標示為準。",
+  21: "效期：2028.02.05。實際效期以商品包裝標示為準。",
+  22: "效期：2028.01.12。實際效期以商品包裝標示為準。",
+  23: "效期：2029.01.03。實際效期以商品包裝標示為準。",
+  24: "效期：2028.03.09。實際效期以商品包裝標示為準。",
+  29: "效期：2029.04.21。實際效期以商品包裝標示為準。",
+  30: "效期：2029.03.29。實際效期以商品包裝標示為準。",
+  31: "效期：2027.07.26。實際效期以商品包裝標示為準。",
+  35: "效期：2029.04.22。實際效期以商品包裝標示為準。",
+  36: "效期：2028.07.17。實際效期以商品包裝標示為準。",
+  37: "效期：2029.05.21。實際效期以商品包裝標示為準。",
+  39: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  40: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  41: "效期：2029.05.21。實際效期以商品包裝標示為準。",
+  42: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  43: "效期：2029.02.28。實際效期以商品包裝標示為準。",
+  44: "效期：2029.03.07。實際效期以商品包裝標示為準。",
+  45: "效期：2029.05.25。實際效期以商品包裝標示為準。",
+  47: "效期：2031.04.26。實際效期以商品包裝標示為準。",
+  48: "效期：2031.04.26。實際效期以商品包裝標示為準。",
+  49: "效期：2028.07.07。實際效期以商品包裝標示為準。",
+  52: "效期：2028.03.15。實際效期以商品包裝標示為準。",
+  53: "效期：2029.06.04。實際效期以商品包裝標示為準。",
+  54: "效期：2029.06.08。實際效期以商品包裝標示為準。",
+  55: "效期：2029.06.08。實際效期以商品包裝標示為準。",
+  57: "效期：2027.06.10。實際效期以商品包裝標示為準。",
+  58: "效期：2026.11.02。限量優惠品項，建議確認可於效期內使用後再加入清單。",
+  60: "效期：2027.04.22。實際效期以商品包裝標示為準。",
+  62: "效期：2029.03.15。實際效期以商品包裝標示為準。",
+  63: "效期之後更新，實際效期以商品包裝標示或 LINE 小幫手確認為準。",
+  64: "效期：2029.03.08。實際效期以商品包裝標示為準。",
+  66: "效期：2029.03.17。實際效期以商品包裝標示為準。",
+  67: "效期：2027.11.26。實際效期以商品包裝標示為準。",
+  69: "效期：2028.11.09。實際效期以商品包裝標示為準。",
+  72: "效期：2029.02.03。實際效期以商品包裝標示為準。",
+  82: "效期：2029.05.26。實際效期以商品包裝標示為準。",
+  86: "涼感 / 溫感貼布效期：2031.04.26。實際效期以商品包裝標示為準。",
+  87: "涼感 / 溫感貼布效期：2031.04.26。實際效期以商品包裝標示為準。",
+  90: "龍血牙膏效期：2028.07.17；薰衣草牙膏效期：2029.04.22。實際效期以商品包裝標示為準。",
+  91: "水搖滾桶裝效期：2026.11.02；極光白桶裝效期：2027.04.22。實際效期以商品包裝標示為準。",
+  93: "效期：2028.10.28。實際效期以商品包裝標示為準。",
+  100: "效期：2027.05.26。實際效期以商品包裝標示為準。",
+  101: "潔顏慕絲 / 卸妝油效期：2029.06.08。實際效期以商品包裝標示為準。",
+  107: "效期：2027.07.22。實際效期以商品包裝標示為準。",
+  108: "效期：2028.11.19。實際效期以商品包裝標示為準。",
+  116: "效期：2029.03.09。實際效期以商品包裝標示為準。",
+  118: "效期：2027.10.07。實際效期以商品包裝標示為準。",
+  119: "效期：2027.11.26。實際效期以商品包裝標示為準。",
+  120: "效期：2028.10.15。實際效期以商品包裝標示為準。",
+  121: "效期：2029.06.08。實際效期以商品包裝標示為準。",
+  122: "效期：2028.03.09。實際效期以商品包裝標示為準。",
+  125: "效期：2027.06.10。實際效期以商品包裝標示為準。",
+  126: "效期：2026.11.02。限量優惠品項，建議確認可於效期內使用後再加入清單。",
+  128: "效期：2027.04.22。實際效期以商品包裝標示為準。",
+  129: "效期：2027.11.26。實際效期以商品包裝標示為準。",
+  132: "效期：2027.10.07。實際效期以商品包裝標示為準。",
+  135: "效期：2029.05.26。實際效期以商品包裝標示為準。",
+  138: "亮妍魚膠原蛋白飲效期：2028.03.08；EC 晶眸葉黃素效期依商品包裝標示為準。",
+  141: "效期：2029.06.15。實際效期以商品包裝標示為準。",
+  142: "效期：2029.06.15。實際效期以商品包裝標示為準。",
+  179: "效期：2026.10.17。限量優惠品項，建議確認可於效期內使用後再加入清單。",
+  180: "效期：2028.01.03。實際效期以商品包裝標示為準。",
+  183: "效期：2028.03.03。實際效期以商品包裝標示為準。",
+  184: "效期：2027.09.11。實際效期以商品包裝標示為準。",
+  185: "效期：2031.03.16。實際效期以商品包裝標示為準。",
+  190: "效期：2030.06.18。實際效期以商品包裝標示為準。",
+  191: "效期：2028.11.04。實際效期以商品包裝標示為準。",
+  192: "效期：2029.05.21。實際效期以商品包裝標示為準。",
+  193: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  194: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  195: "效期：2029.05.21。實際效期以商品包裝標示為準。",
+  197: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  198: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+};
+
 
 
 const productImageFallbacks: Record<number, string[]> = {
@@ -4015,14 +4417,14 @@ function Home() {
   const [lineCopyMessage, setLineCopyMessage] = useState("");
   const [hasRestoredSavedDraft, setHasRestoredSavedDraft] = useState(false);
 
-  const mainCategories = ["本月優惠", "臉部保養", "身體洗護", "健康補給", "精油香氛", "即將上架"] as MainCategory[];
+  const mainCategories = ["本月優惠", "臉部保養", "身體洗護", "健康補給", "精油香氛", "新品預告"] as MainCategory[];
   const seriesList = categoryConfig[selectedCategory];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
-  const monthlyOfferIdsV312 = new Set([53, 1, 100, 101, 91, 82, 90]);
+  const monthlyOfferIdsV316 = new Set([53, 1, 86, 100, 101, 91, 82, 90, 222]);
 
   function isFeaturedProductV31(product: Product) {
-    return monthlyOfferIdsV312.has(product.id) || product.series.includes("本月主打");
+    return monthlyOfferIdsV316.has(product.id) || product.series.includes("本月主打");
   }
 
   function matchesMainCategoryV31(product: Product) {
@@ -4041,7 +4443,7 @@ function Home() {
     if (selectedCategory === "身體洗護") {
       return (
         ["牙膏", "肥皂", "洗沐", "護唇膏"].includes(product.category) ||
-        ["牙膏", "潔口", "口腔", "手工皂", "舒緩皂", "洗髮", "沐浴", "身體乳", "美體油", "護唇"].some((keyword) => fullText.includes(keyword))
+        ["牙膏", "潔口", "口腔", "手工皂", "舒緩皂", "洗髮", "沐浴", "身體乳", "美體油", "護手", "護唇", "刮痧", "溫灸", "艾草", "如意棒", "柔筋", "舒壓"].some((keyword) => fullText.includes(keyword))
       ) && !isComingSoon(product);
     }
 
@@ -4055,11 +4457,12 @@ function Home() {
     if (selectedCategory === "精油香氛") {
       return (
         product.category === "精油" ||
-        ["精油", "擴香", "水氧", "霧化", "香氛", "芳香"].some((keyword) => fullText.includes(keyword))
-      ) && !isComingSoon(product);
+        product.series.includes("精油") ||
+        ["精油", "滾珠", "擴香", "水氧", "霧化", "香氛", "芳香"].some((keyword) => fullText.includes(keyword))
+      );
     }
 
-    if (selectedCategory === "即將上架") return isComingSoon(product);
+    if (selectedCategory === "新品預告") return isComingSoon(product);
 
     // 舊分類相容：避免內部跳轉或搜尋仍使用舊分類名稱時失效。
     if (selectedCategory === "本月精選") return isFeaturedProductV31(product) && !isComingSoon(product);
@@ -4105,26 +4508,31 @@ function Home() {
     if (selectedSeries === "亮白保養") return tags.includes("美白淡斑") || ["亮白", "美白", "櫻", "傳明酸", "極光", "淡斑"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "舒緩敏感") return tags.includes("敏感舒緩") || ["薰衣草", "舒緩", "敏感", "冷杉"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "面膜") return fullText.includes("面膜");
-    if (selectedSeries === "即期優惠") return isExpiringDeal(product) || fullText.includes("即期");
+    if (selectedSeries === "限量優惠") return isExpiringDeal(product) || fullText.includes("即期");
 
     if (selectedSeries === "口腔護理") return ["牙膏", "潔口", "口腔", "齒齦"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "手工皂") return ["皂", "肥皂", "香氛皂"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "洗髮沐浴") return ["洗髮", "沐浴", "頭皮", "髮根"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "身體保養") return ["身體", "美體", "乳", "油", "護唇"].some((keyword) => fullText.includes(keyword)) && !fullText.includes("乳酸") && !fullText.includes("乳液");
+    if (selectedSeries === "身體舒壓") return ["刮痧", "溫灸", "艾草", "如意棒", "柔筋", "舒壓"].some((keyword) => fullText.includes(keyword));
 
     if (selectedSeries === "益生菌") return ["益生菌", "BC-HA", "BC-CA", "蔓越莓", "高鈣"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "葉黃素") return ["葉黃素", "晶眸"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "膠原蛋白") return ["膠原", "亮妍"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "魚油") return fullText.includes("魚油");
 
+    if (selectedSeries === "單方精油") return product.series.includes("單方精油") || fullText.includes("單方精油");
+    if (selectedSeries === "複方精油") return product.series.includes("複方精油") || fullText.includes("複方精油");
     if (selectedSeries === "滾珠精油" || selectedSeries === "滾珠") return fullText.includes("滾珠");
-    if (selectedSeries === "精油配件") return ["木盒", "擴香木球", "配件", "水氧", "霧化", "擴香"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "精油配件") return ["木盒", "擴香木球", "木片", "配件"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "擴香設備") return ["水氧", "霧化", "香薰機", "擴香設備"].some((keyword) => fullText.includes(keyword));
 
     if (selectedSeries === "潔顏") return ["潔顏", "慕絲", "卸妝"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "潔口液") return ["潔口", "潔口液", "牛樟芝"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "香氛皂") return ["皂", "香氛皂", "肥皂"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "護手霜") return fullText.includes("護手霜");
 
-    if (selectedSeries === "準備上架") return isComingSoon(product);
+    if (selectedSeries === "新品預告") return isComingSoon(product);
     if (selectedSeries === "回購主打") return isFeaturedProductV31(product);
     if (selectedSeries === "其他香型") return fullText.includes("其他香型") || fullText.includes("肥皂");
 
@@ -4159,12 +4567,10 @@ function Home() {
     })
     .map(({ product }) => product);
 
-  const searchPreviewProducts = normalizedSearchQuery ? filteredProducts.slice(0, 8) : [];
-  const searchRemainingCount = normalizedSearchQuery
-    ? Math.max(filteredProducts.length - searchPreviewProducts.length, 0)
-    : 0;
+  const searchPreviewProducts = normalizedSearchQuery ? filteredProducts : [];
+  const searchRemainingCount = 0;
 
-  const featuredProductIds = [53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92];
+  const featuredProductIds = [53, 1, 86, 100, 101, 91, 82, 90, 4, 5, 88, 92];
   const featuredProducts = featuredProductIds
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
@@ -4224,10 +4630,10 @@ function Home() {
       product: products.find((product) => product.id === 82),
     },
     {
-      title: "即期良品",
-      text: "短效期優惠，數量有限",
+      title: "限量優惠",
+      text: "限量優惠，售完為止",
       filter: "clearance-all",
-      label: "即期良品",
+      label: "限量優惠",
       product: products.find((product) => product.id === 10) ?? products.find((product) => product.id === 11),
     },
   ];
@@ -4235,81 +4641,79 @@ function Home() {
   const mallQuickEntries = [
     {
       title: "本月優惠",
-      text: "活動方案・回購熱賣",
-      badge: "SALE",
-      onClick: () => jumpToCategory("本月優惠", "全部"),
+      text: "活動組合",
+      badge: "優惠",
+      onClick: () => openCategoryTab("本月優惠", "全部"),
     },
     {
       title: "臉部保養",
-      text: "龍血・水光・亮白保養",
-      badge: "SKIN",
-      onClick: () => jumpToCategory("臉部保養", "全部"),
+      text: "精華・乳霜",
+      badge: "保養",
+      onClick: () => openCategoryTab("臉部保養", "全部"),
     },
     {
       title: "身體洗護",
-      text: "牙膏・手工皂・口腔護理",
-      badge: "BODY",
-      onClick: () => jumpToCategory("身體洗護", "全部"),
+      text: "牙膏・手工皂",
+      badge: "洗護",
+      onClick: () => openCategoryTab("身體洗護", "全部"),
     },
     {
       title: "健康補給",
-      text: "益生菌・葉黃素・膠原飲",
-      badge: "HEALTH",
-      onClick: () => jumpToCategory("健康補給", "全部"),
+      text: "益生菌・葉黃素",
+      badge: "補給",
+      onClick: () => openCategoryTab("健康補給", "全部"),
     },
     {
       title: "精油香氛",
-      text: "單方・複方・精油配件",
-      badge: "AROMA",
-      onClick: () => jumpToCategory("精油香氛", "全部"),
+      text: "單方・複方精油",
+      badge: "香氛",
+      onClick: () => openCategoryTab("精油香氛", "全部"),
     },
     {
-      title: "即將上架",
-      text: "滾珠・護手霜・待整理品項",
-      badge: "SOON",
-      onClick: () => jumpToCategory("即將上架", "全部"),
+      title: "新品預告",
+      text: "香氛皂・新品",
+      badge: "新品",
+      onClick: () => openCategoryTab("新品預告", "全部"),
     },
   ];
 
-  const mallDealProducts = getProductsByIds([53, 1, 100, 101, 91, 82, 90]);
-  const mallHotProducts = getProductsByIds([53, 1, 100, 101, 91, 82, 90]);
+  const mallDealProducts = getProductsByIds([53, 1, 86]);
+  const mallHotProducts = getProductsByIds([53, 1, 86, 91, 100, 90, 82, 222]);
   const mallSkincareShelfProducts = getProductsByIds([53, 101, 54, 55, 61, 62]);
-  const mallBodyShelfProducts = getProductsByIds([90, 82, 88, 29, 30, 135]);
+  const mallBodyShelfProducts = getProductsByIds([90, 82, 222, 29, 30, 135]);
   const mallHealthShelfProducts = getProductsByIds([1, 100, 4, 5, 138, 92]);
   const mallAromaShelfProducts = getProductsByIds([190, 179, 184, 187, 180, 181]);
-  const mallComingSoonProducts = getProductsByIds([145, 146, 12, 59]);
+  const mallComingSoonProducts = getProductsByIds([145, 146, 12, 71, 201, 202, 203, 204, 205]);
 
   const mallBrandEntries = [
     {
       title: "組合優惠",
-      badge: "DEAL",
-      text: "買一送一、2盒組、4入優惠與回購組合。",
+      badge: "優惠",
+      text: "人氣回購組合，補貨更划算。",
       onClick: () => openCommerceFilter("deals-combo", "組合優惠"),
     },
     {
-      title: "即期優惠",
-      badge: "LIMIT",
-      text: "短效期或限量出清品項，以 LINE 確認庫存。",
-      onClick: () => openCommerceFilter("clearance-all", "即期優惠"),
+      title: "限量優惠",
+      badge: "限量",
+      text: "精選限量品項，售完為止。",
+      onClick: () => openCommerceFilter("clearance-all", "限量優惠"),
     },
     {
-      title: "即將上架",
-      badge: "SOON",
-      text: "尚在整理中的品項集中展示，不誤導客人下單。",
-      onClick: () => jumpToCategory("即將上架", "全部"),
+      title: "新品預告",
+      badge: "上架",
+      text: "更多香型與回購品項陸續登場。",
+      onClick: () => jumpToCategory("新品預告", "全部"),
     },
   ];
 
   const quickSearchTerms = [
     "本月優惠",
-    "買一送一",
-    "BC-HA",
+    "貼布",
     "益生菌",
     "龍血",
-    "薰衣草皂",
+    "肥皂",
     "精油",
-    "貼布",
-    "準備上架",
+    "組合優惠",
   ];
 
   const collectionSeriesChips = seriesList.filter((series) => series !== "全部").slice(0, 14);
@@ -4317,7 +4721,7 @@ function Home() {
   const hotCollectionProductIds = [
     53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92,
     138, 1,
-    29, 30, 93,
+    222, 29, 30, 93,
     35, 36,
     126, 128, 124, 127,
     135, 79,
@@ -4326,12 +4730,9 @@ function Home() {
     47, 48, 134,
   ];
 
-  const maxCollectionProducts = 8;
   const collectionProducts = normalizedSearchQuery
     ? filteredProducts
     : (() => {
-        if (filteredProducts.length <= maxCollectionProducts) return filteredProducts;
-
         const selected = new Set<number>();
         const prioritized = hotCollectionProductIds
           .map((id) => filteredProducts.find((product) => product.id === id))
@@ -4341,9 +4742,8 @@ function Home() {
             return true;
           });
 
-        const fillers = filteredProducts.filter((product) => !selected.has(product.id));
-
-        return [...prioritized, ...fillers].slice(0, maxCollectionProducts);
+        const remainingProducts = filteredProducts.filter((product) => !selected.has(product.id));
+        return [...prioritized, ...remainingProducts];
       })();
 
   const collectionFeaturedProducts: Product[] = [];
@@ -4462,7 +4862,7 @@ function Home() {
       case "deals-all":
         return product.category === "組合價" || hasComboPrice(product);
       case "v3-featured":
-        return [53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92].includes(product.id);
+        return [53, 1, 86, 100, 101, 91, 82, 90, 4, 5, 88, 92].includes(product.id);
       case "deals-monthly":
         return product.category === "組合價" && product.series.includes("本月主打");
       case "deals-combo":
@@ -4474,7 +4874,7 @@ function Home() {
 
 
       case "need-hot":
-        return [53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92].includes(product.id);
+        return [53, 1, 86, 100, 101, 91, 82, 90, 4, 5, 88, 92].includes(product.id);
       case "need-dragon":
         return fullText.includes("龍血") || product.series.includes("龍血");
       case "need-cleansing":
@@ -4552,7 +4952,7 @@ function Home() {
         return product.category === "精油" || fullText.includes("精油") || fullText.includes("擴香");
 
       case "coming-soon":
-        return isComingSoon(product) || fullText.includes("準備上架");
+        return isComingSoon(product) || fullText.includes("新品預告");
 
       case "clearance-all":
         return isExpiringDeal(product) || fullText.includes("即期") || fullText.includes("效期至");
@@ -4692,7 +5092,7 @@ function Home() {
   }
 
   function isComingSoon(product: Product) {
-    return product.price.includes("準備上架") || productContent(product).priceNote?.includes("準備上架") || false;
+    return product.price.includes("新品預告") || productContent(product).priceNote?.includes("新品預告") || false;
   }
 
   function isSoldOut(product: Product) {
@@ -4887,38 +5287,126 @@ function Home() {
     return Array.from(tags);
   }
 
+  function getTopPickBadge(product: Product) {
+    if (product.id === 53) return "TOP 1";
+    if (product.id === 1) return "TOP 2";
+    if (product.id === 86) return "TOP 3";
+    return "";
+  }
+
+  function getSalesTags(product: Product) {
+    const fullText = `${product.name} ${product.series} ${product.category} ${product.price} ${product.description} ${productContent(product).cardSubtitle ?? ""}`;
+    const tags: string[] = [];
+    const push = (...items: string[]) => {
+      for (const item of items) {
+        if (item && !tags.includes(item)) tags.push(item);
+      }
+    };
+
+    if (product.id === 53) push("爆水保濕", "買一送一");
+    if (product.id === 1) push("任選補給", "日常補給");
+    if (product.id === 86) push("爆款貼布", "任選優惠");
+    if (product.id === 91 || fullText.includes("水搖滾")) push("爆水面膜", "水潤補給");
+    if (product.id === 90) push("口腔補貨", "任選優惠");
+    if (product.id === 82) push("香氛皂", "4入優惠");
+    if (product.id === 100) push("菌相補給", "2盒組");
+    if (product.id === 101) push("洗卸組", "1+1優惠");
+    if (product.id === 88) push("口腔補貨", "贈品組");
+    if (product.id === 92) push("魚油補給", "買一送一");
+    if (product.id === 4) push("晶亮補給", "3C族");
+    if (product.id === 5) push("美妍飲", "膠原補給");
+    if ([179, 180, 183, 206].includes(product.id)) push("單方精油", "任選優惠");
+    if ([207, 208, 209].includes(product.id)) push("香氛儀式", "產地價");
+    if (product.id === 218) push("買二送一", "護手補貨");
+    if ([211, 212, 213, 214, 215, 216, 217].includes(product.id)) push("居家舒壓", "身體保養");
+    if (product.id === 210) push("擴香配件", "買一送一");
+    if (isComingSoon(product)) push("新品預告");
+    if (isExpiringDeal(product)) push("限量優惠");
+
+    if (tags.length === 0) {
+      if (product.category === "健康補給" || fullText.includes("益生菌") || fullText.includes("葉黃素") || fullText.includes("膠原")) push("日常補給");
+      else if (product.category === "精油香氛" || fullText.includes("精油") || fullText.includes("香氛")) push("香氛儀式");
+      else if (product.category === "身體洗護" || fullText.includes("牙膏") || fullText.includes("皂") || fullText.includes("洗髮")) push("日常補貨");
+      else if (product.category === "保養品" || fullText.includes("精華") || fullText.includes("乳") || fullText.includes("霜")) push("保養補貨");
+    }
+
+    return tags;
+  }
+
+  function getSalesCardSubtitle(product: Product) {
+    const fullText = `${product.name} ${product.series} ${product.category} ${product.price} ${product.description}`;
+    if (product.id === 53) return "爆水保濕回購組";
+    if (product.id === 1) return "蔓越莓 / 高鈣任選補給";
+    if (product.id === 86) return "涼感 / 溫感爆款貼布任選";
+    if (product.id === 91) return "爆水面膜・桶裝回購";
+    if (product.id === 90) return "口腔清新補貨組";
+    if (product.id === 82) return "薰衣草香氛皂・洗沐儀式感";
+    if (product.id === 100) return "日常菌相補給 2盒組";
+    if (product.id === 101) return "龍血洗卸 1+1 清潔組";
+    if (product.id === 88) return "潔口液 3罐贈牙膏";
+    if (product.id === 92) return "魚油日常補給買一送一";
+    if (product.id === 4) return "3C族晶亮營養補給";
+    if (product.id === 5) return "美妍膠原飲補貨";
+    if (product.id === 218) return "護手霜買二送一補貨組";
+    if ([211, 212, 213, 214, 215, 216, 217].includes(product.id)) return "居家舒壓工具補貨";
+    if ([179, 180, 183, 206].includes(product.id)) return "單方精油任選更划算";
+    if ([207, 208, 209].includes(product.id)) return "日常香氛儀式感";
+    if (product.id === 210) return "擴香配件買一送一";
+    if (product.id === 58) return "爆水保濕桶，日常敷臉補貨";
+    if (isComingSoon(product)) return "新品預告・敬請期待";
+
+    if (fullText.includes("水搖滾")) return "爆水感保濕補給";
+    if (fullText.includes("面膜")) return "敷臉保養補貨";
+    if (fullText.includes("龍血")) return "龍血系列回購補貨";
+    if (fullText.includes("薰衣草")) return "舒緩保養補貨";
+    if (fullText.includes("水光")) return "水光透亮保養";
+    if (fullText.includes("櫻") || fullText.includes("傳明酸")) return "亮白保養補貨";
+    if (fullText.includes("精油")) return "居家香氛儀式感";
+    if (fullText.includes("牙膏") || fullText.includes("潔口")) return "口腔清新日常補貨";
+    if (fullText.includes("益生菌") || fullText.includes("葉黃素") || fullText.includes("膠原")) return "日常營養補給";
+
+    return "";
+  }
+
   function displayTags(product: Product) {
     const tags: string[] = [];
     const promoText = `${product.price} ${product.originalPrice ?? ""} ${productContent(product).priceNote ?? ""}`;
 
     if (isComingSoon(product)) {
-      tags.push("準備上架");
+      tags.push("新品預告");
     }
 
     if (isExpiringDeal(product)) {
-      tags.push("即期優惠");
+      tags.push("限量優惠");
     }
 
     if (promoText.includes("買一送一")) tags.push("買一送一");
     if (promoText.includes("買一送二")) tags.push("買一送二");
     if (promoText.includes("第二件五折")) tags.push("第二件五折");
-    if (promoText.includes("任選3瓶") || promoText.includes("任選 3 瓶") || promoText.includes("3瓶1100") || promoText.includes("任選3條") || promoText.includes("任選4款") || promoText.includes("4入優惠")) tags.push("組合優惠");
+    if (promoText.includes("任選3瓶") || promoText.includes("任選 3 瓶") || promoText.includes("3瓶1100") || promoText.includes("任選3條") || promoText.includes("任選4款") || promoText.includes("4入優惠") || promoText.includes("任選 3 盒") || promoText.includes("任選4盒")) tags.push("組合優惠");
+
+    for (const tag of getSalesTags(product)) {
+      if (!tags.includes(tag)) tags.push(tag);
+    }
 
     for (const tag of getProductTags(product)) {
       if (!tags.includes(tag)) tags.push(tag);
     }
 
-    return tags.slice(0, 2);
+    return tags.slice(0, 3);
   }
 
 
   function getCommerceBadgeLabel(product: Product) {
+    const topBadge = getTopPickBadge(product);
+    if (topBadge) return topBadge;
+
     const priceText = displayPrice(product);
     const fullText = `${product.name} ${product.description} ${priceText} ${product.series}`;
 
-    if (isComingSoon(product)) return "準備上架";
+    if (isComingSoon(product)) return "新品預告";
     if (isSoldOut(product)) return "缺貨";
-    if (isExpiringDeal(product)) return "即期出清";
+    if (isExpiringDeal(product)) return "限量出清";
     if (fullText.includes("買一送二")) return "買一送二";
     if (fullText.includes("買一送一")) return "買一送一";
     if (fullText.includes("贈")) return "贈品組";
@@ -4956,7 +5444,7 @@ function Home() {
       ...getDetailBullets(product),
       ...getProductTags(product),
       hasComboPrice(product) ? "組合價 有組合價 優惠 任選" : "",
-      isExpiringDeal(product) ? "即期 即期優惠 特價" : "",
+      isExpiringDeal(product) ? "即期 限量優惠 特價" : "",
       hasInquiryPrice(product) ? "LINE詢價 詢價" : "",
     ].join(" ");
   }
@@ -4988,6 +5476,20 @@ function Home() {
 
     const fuzzyScore = fuzzyGapScore(normalizedQuery, fullText);
     return fuzzyScore === null ? null : 20 + fuzzyScore;
+  }
+
+  function handleQuickSearchTerm(term: string) {
+    if (term === "本月優惠") {
+      openCategoryTab("本月優惠", "全部");
+      return;
+    }
+
+    if (term === "組合優惠") {
+      openCategoryTab("本月優惠", "組合優惠");
+      return;
+    }
+
+    openSearchTerm(term);
   }
 
   function openSearchTerm(term: string) {
@@ -5034,8 +5536,8 @@ function Home() {
       return "單方、複方、精油配件與香氛設備集中查看。";
     }
 
-    if (selectedCategory === "即將上架") {
-      return "整理中品項先集中展示，不開放加入清單，避免誤下單。";
+    if (selectedCategory === "新品預告") {
+      return "更多香型與回購品項陸續登場，適合先看看新品方向。";
     }
 
     return "可加入清單或查看商品資訊，送出後由 LINE 小幫手確認庫存、效期與金額。";
@@ -5273,6 +5775,9 @@ function Home() {
   }
 
   function getCardSubtitle(product: Product) {
+    const salesSubtitle = getSalesCardSubtitle(product);
+    if (salesSubtitle) return shortCardText(salesSubtitle, 22);
+
     const content = productContent(product);
     const customSubtitle = content.cardSubtitle ?? product.cardSubtitle;
     const intro = content.intro ?? product.intro;
@@ -5304,7 +5809,7 @@ function Home() {
     }
 
     if (isExpiringDeal(product)) {
-      return "即期優惠品項，效期與庫存請以 LINE 小幫手確認為準。";
+      return "限量優惠品項，效期與庫存請以 LINE 小幫手確認為準。";
     }
 
     if (hasInquiryPrice(product)) {
@@ -5360,15 +5865,33 @@ function Home() {
   function getExpiryNote(product: Product) {
     if (!shouldShowExpiryInfo(product)) return "";
 
+    if (product.expiryNote !== undefined) return product.expiryNote;
+    if (expiryNotesV315[product.id]) return expiryNotesV315[product.id];
     const override = productContent(product);
     if ("expiryNote" in override) return override.expiryNote ?? "";
-    if (product.expiryNote !== undefined) return product.expiryNote;
 
     if (isExpiringDeal(product)) {
-      return "此為即期優惠品項，實際效期請以 LINE 小幫手確認為準。";
+      return "此為限量優惠品項，實際效期請以 LINE 小幫手確認為準。";
     }
 
     return "效期依商品標示或 LINE 小幫手確認為準。";
+  }
+
+  function getExpiryDisplayParts(product: Product) {
+    const raw = getExpiryNote(product).trim();
+    if (!raw) return { primary: "", secondary: "" };
+
+    const disclaimerIndex = raw.search(/實際效期|實際商品效期/);
+    const primaryRaw = disclaimerIndex >= 0 ? raw.slice(0, disclaimerIndex) : raw;
+    const secondaryRaw = disclaimerIndex >= 0 ? raw.slice(disclaimerIndex) : "";
+
+    const clean = (value: string) => value.replace(/^[。；;\s]+|[。；;\s]+$/g, "").trim();
+    const primary = clean(primaryRaw)
+      .replace(/^效期\s*[：:]\s*/, "")
+      .replace(/^效期至\s*/, "至 ");
+    const secondary = clean(secondaryRaw);
+
+    return { primary, secondary };
   }
 
   function getNoticeText(product: Product) {
@@ -5455,6 +5978,7 @@ function Home() {
   }
 
   function getPriceModeLabel(product: Product) {
+    if (isComingSoon(product)) return "新品預告";
     if (product.category === "外部廠商") return "售價";
     if (product.category === "組合價") return "活動價";
     if (hasInquiryPrice(product)) return "產地價洽詢";
@@ -5557,7 +6081,7 @@ function Home() {
           <div className="product-meta-row">
             <p className="series-label">{product.series}</p>
             {inquiry && !unavailable && <span>可詢價</span>}
-            {comingSoon && <span className="sold-out-badge">準備上架</span>}
+            {comingSoon && <span className="sold-out-badge">新品預告</span>}
             {soldOut && <span className="sold-out-badge">缺貨</span>}
           </div>
 
@@ -5605,7 +6129,7 @@ function Home() {
               }}
               disabled={unavailable}
             >
-              {comingSoon ? "準備上架" : soldOut ? "缺貨中" : "加入清單"}
+              {comingSoon ? "新品預告" : soldOut ? "缺貨中" : "加入清單"}
             </button>
 
             <button
@@ -6162,7 +6686,7 @@ function Home() {
             身體洗護: { badge: "BODY", label: "牙膏皂品" },
             健康補給: { badge: "HEALTH", label: "日常補給" },
             精油香氛: { badge: "AROMA", label: "精油香氛" },
-            即將上架: { badge: "SOON", label: "整理中" },
+            新品預告: { badge: "NEW", label: "新品預告" },
           };
           const meta = tabMeta[category] ?? { badge: "SHOP", label: "查看商品" };
 
@@ -6218,7 +6742,7 @@ function Home() {
 
             <div className="search-hot-chip-row-v22">
               {quickSearchTerms.map((term) => (
-                <button type="button" key={`hot-${term}`} onClick={() => openSearchTerm(term)}>
+                <button type="button" key={`hot-${term}`} onClick={() => handleQuickSearchTerm(term)}>
                   {term}
                 </button>
               ))}
@@ -6249,7 +6773,7 @@ function Home() {
                         <h3>{getCardName(product)}</h3>
 
                         <div className="search-result-tags">
-                          {isExpiringDeal(product) && <span>即期優惠</span>}
+                          {isExpiringDeal(product) && <span>限量優惠</span>}
                           {hasComboPrice(product) && <span>有組合價</span>}
                           {displayTags(product)
                             .filter((tag) => tag !== "有組合價")
@@ -6274,7 +6798,7 @@ function Home() {
                             onClick={() => addToCart(product)}
                             disabled={isCartDisabled(product)}
                           >
-                            {isComingSoon(product) ? "準備上架" : isSoldOut(product) ? "缺貨" : hasInquiryPrice(product) ? "詢問" : "加入"}
+                            {isComingSoon(product) ? "新品預告" : isSoldOut(product) ? "缺貨" : hasInquiryPrice(product) ? "詢問" : "加入"}
                           </button>
                         </div>
                       </div>
@@ -6489,7 +7013,7 @@ function Home() {
                     <button type="button" onClick={() => handleDrawerCategory("臉部保養", "亮白保養")}>亮白保養</button>
                     <button type="button" onClick={() => handleDrawerCategory("臉部保養", "舒緩敏感")}>舒緩敏感</button>
                     <button type="button" onClick={() => handleDrawerCategory("臉部保養", "面膜")}>面膜</button>
-                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "即期優惠")}>即期優惠</button>
+                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "限量優惠")}>限量優惠</button>
                   </div>
                 )}
               </div>
@@ -6540,8 +7064,8 @@ function Home() {
               </div>
 
               <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => handleDrawerCategory("即將上架", "全部")}>
-                  <span>即將上架</span>
+                <button type="button" className="drawer-accordion-title-v25" onClick={() => handleDrawerCategory("新品預告", "全部")}>
+                  <span>新品預告</span>
                 </button>
               </div>
             </nav>
@@ -6638,16 +7162,21 @@ function Home() {
         </button>
       </section>
 
-      <section className="mall-hall-section-v26 mall-hall-section-v27" aria-label="回購需求入口">
+      <section className="mall-hall-section-v26 mall-hall-section-v27 v313-demand-section" aria-label="回購需求入口">
         <div className="mall-section-head-v26">
-          <p>Shop by Category</p>
-          <h2>回購需求分類</h2>
-          <span>移除外部廠商後，分類改成回購需求導向，側邊選單與快速篩選使用同一套邏輯。</span>
+          <p>快速入口</p>
+          <h2>快速找商品</h2>
+          <span>依照回購需求快速瀏覽。</span>
         </div>
 
         <div className="mall-hall-grid-v26">
           {mallQuickEntries.map((entry) => (
-            <button type="button" key={`mall-hall-${entry.title}`} onClick={entry.onClick}>
+            <button
+              type="button"
+              key={`mall-hall-${entry.title}`}
+              className={selectedCategory === entry.title && !commerceFilter ? "active" : ""}
+              onClick={entry.onClick}
+            >
               <span>{entry.badge}</span>
               <strong>{entry.title}</strong>
               <p>{entry.text}</p>
@@ -6657,15 +7186,22 @@ function Home() {
       </section>
 
       <section className="mall-deal-wall-v26 mall-deal-wall-v27" aria-label="本月優惠">
-        <div className="mall-section-head-v26 compact">
-          <p>Monthly Picks</p>
-          <h2>本月優惠</h2>
-          <span>先放 4～6 個自家回購主打品項，首頁不再塞成大雜貨清單。</span>
+        <div className="mall-section-head-v26 compact top-picks-heading-v316">
+          <p>TOP PICKS</p>
+          <h2>本月回購主打</h2>
         </div>
 
         <div className="mall-deal-grid-v26">
           {mallDealProducts.map((product, index) => (
-            <article className={index === 0 ? "mall-deal-card-v26 feature" : "mall-deal-card-v26"} key={`mall-deal-${product.id}`}>
+            <article
+              className={`mall-deal-card-v26 top-pick-card-v316 top-pick-${index + 1} ${index === 0 ? "feature" : ""}`}
+              key={`mall-deal-${product.id}`}
+            >
+              <div className="top-pick-rank-v316" aria-label={`TOP ${index + 1}`}>
+                <small>TOP</small>
+                <b>{index + 1}</b>
+              </div>
+
               <button type="button" className="mall-deal-image-v26" onClick={() => openProductDetail(product)}>
                 {hasRealImage(product) ? (
                   <img
@@ -6679,10 +7215,8 @@ function Home() {
                 )}
               </button>
 
-              <div>
-                <span>{getCommerceBadgeLabel(product)}</span>
+              <div className="top-pick-content-v316">
                 <h3>{getCardName(product)}</h3>
-                <p>{getCardSubtitle(product)}</p>
                 <strong>{displayPrice(product)}</strong>
                 <button type="button" onClick={() => openProductDetail(product)}>查看商品</button>
               </div>
@@ -6691,11 +7225,11 @@ function Home() {
         </div>
       </section>
 
-      <section className="mall-brand-section-v26 mall-brand-section-v27 v3-tag-section" aria-label="選品標籤入口">
+      <section className="mall-brand-section-v26 mall-brand-section-v27 v3-tag-section v313-status-section" aria-label="本月活動入口">
         <div className="mall-section-head-v26 compact">
-          <p>Product Tags</p>
-          <h2>選品標籤</h2>
-          <span>即期優惠與即將上架改用標籤 / 專區處理，不再混入主購買流程。</span>
+          <p>本月活動</p>
+          <h2>本月活動</h2>
+          <span>精選回購優惠與新品預告。</span>
         </div>
 
         <div className="mall-brand-grid-v26 mall-brand-grid-v271">
@@ -6704,7 +7238,6 @@ function Home() {
               <em className="mall-brand-badge-v271">{brand.badge}</em>
               <strong>{brand.title}</strong>
               <p>{brand.text}</p>
-              <span>查看商品</span>
             </button>
           ))}
         </div>
@@ -6714,7 +7247,7 @@ function Home() {
         id="home-hot-products-v26"
         eyebrow="Monthly Picks"
         title="本月優惠・活動方案"
-        subtitle="目前先用精選商品撐起首頁質感，避免分類太多但內容太薄。"
+        subtitle="活動方案以組合價與任選優惠為主，加入清單後由 LINE 小幫手確認。"
         products={mallHotProducts}
         actionLabel="看本月優惠"
         onAction={() => openCategoryTab("本月優惠", "全部")}
@@ -6763,12 +7296,12 @@ function Home() {
 
       <HomeProductSection
         id="home-coming-soon-hall-v31"
-        eyebrow="Coming Soon"
-        title="即將上架"
-        subtitle="整理中品項先集中展示，正式開賣前不開放加入清單。"
+        eyebrow="New Preview"
+        title="新品預告"
+        subtitle="更多香型與回購品項陸續登場，先看新品預告。"
         products={mallComingSoonProducts}
-        actionLabel="查看即將上架"
-        onAction={() => jumpToCategory("即將上架", "全部")}
+        actionLabel="查看新品預告"
+        onAction={() => jumpToCategory("新品預告", "全部")}
       />
 
       <section className="commerce-trust-flow-v23 trust-flow-after-deals-v24" aria-label="購買流程">
@@ -7178,7 +7711,7 @@ function Home() {
                     disabled={isCartDisabled(selectedDetailProduct)}
                     onClick={() => addToCart(selectedDetailProduct)}
                   >
-                    {isComingSoon(selectedDetailProduct) ? "準備上架" : isSoldOut(selectedDetailProduct) ? "缺貨中" : "加入清單"}
+                    {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : "加入清單"}
                   </button>
                   <button type="button" onClick={() => setIsCartOpen(true)}>
                     我的清單 {cartTotalQuantity}
@@ -7189,16 +7722,23 @@ function Home() {
               <section className="detail-info-block product-summary-card commerce-summary-v21">
                 <h3>商品資訊</h3>
 
-                <div className="product-info-lines">
-                  <div>
-                    <span>規格 / 組合內容</span>
+                <div className="product-info-lines product-info-lines-v316">
+                  <div className="product-info-row-v316 product-spec-row-v316">
+                    <span className="product-info-label-v316">規格／組合內容</span>
                     <p>{getSpecText(selectedDetailProduct)}</p>
                   </div>
 
                   {getExpiryNote(selectedDetailProduct) && (
-                    <div>
-                      <span>{isExpiringDeal(selectedDetailProduct) ? "即期 / 效期" : "效期"}</span>
-                      <p>{getExpiryNote(selectedDetailProduct)}</p>
+                    <div className="product-info-row-v316 product-expiry-row-v316">
+                      <span className="product-info-label-v316">
+                        {isExpiringDeal(selectedDetailProduct) ? "即期／效期" : "效期"}
+                      </span>
+                      <p>
+                        <strong>{getExpiryDisplayParts(selectedDetailProduct).primary}</strong>
+                        {getExpiryDisplayParts(selectedDetailProduct).secondary && (
+                          <small>{getExpiryDisplayParts(selectedDetailProduct).secondary}</small>
+                        )}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -7263,7 +7803,7 @@ function Home() {
                   disabled={isCartDisabled(selectedDetailProduct)}
                   onClick={() => addToCart(selectedDetailProduct)}
                 >
-                  {isComingSoon(selectedDetailProduct) ? "準備上架" : isSoldOut(selectedDetailProduct) ? "缺貨中" : "加入清單"}
+                  {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : "加入清單"}
                 </button>
               </section>
 
@@ -17026,6 +17566,72 @@ function Home() {
           cursor: not-allowed !important;
         }
 
+        .v313-demand-section .mall-hall-grid-v26 {
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 12px !important;
+        }
+
+        .v313-demand-section .mall-hall-grid-v26 button {
+          min-height: 88px !important;
+          padding: 14px 16px !important;
+          border-radius: 22px !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: center !important;
+          gap: 4px !important;
+        }
+
+        .v313-demand-section .mall-hall-grid-v26 button:first-child {
+          grid-column: auto !important;
+        }
+
+        .v313-demand-section .mall-hall-grid-v26 span {
+          margin-bottom: 2px !important;
+          width: fit-content !important;
+          font-size: 11px !important;
+          letter-spacing: 0.08em !important;
+        }
+
+        .v313-demand-section .mall-hall-grid-v26 strong {
+          font-size: 20px !important;
+          line-height: 1.1 !important;
+          white-space: nowrap !important;
+        }
+
+        .v313-demand-section .mall-hall-grid-v26 p {
+          margin-top: 2px !important;
+          font-size: 13px !important;
+          line-height: 1.35 !important;
+          white-space: nowrap !important;
+        }
+
+        .v313-status-section .mall-brand-grid-v26,
+        .v313-status-section .mall-brand-grid-v271 {
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        }
+
+        .v313-status-section .mall-brand-grid-v26 button,
+        .v313-status-section .mall-brand-grid-v271 button {
+          min-height: 132px !important;
+          padding: 18px !important;
+        }
+
+        .v313-status-section .mall-brand-grid-v26 p,
+        .v313-status-section .mall-brand-grid-v271 p {
+          font-size: 13px !important;
+          line-height: 1.45 !important;
+        }
+
+        .mall-deal-card-v26 span,
+        .commerce-product-card .commerce-card-badge {
+          letter-spacing: 0.04em !important;
+        }
+
+        .mall-deal-card-v26 h3,
+        .commerce-product-card h3 {
+          letter-spacing: -0.04em !important;
+        }
+
         @media (max-width: 720px) {
           .mall-hall-grid-v26 {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -17055,9 +17661,270 @@ function Home() {
             border-radius: 26px !important;
           }
 
+          .v313-demand-section .mall-hall-grid-v26 {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+
+          .v313-demand-section .mall-hall-grid-v26 strong {
+            font-size: 18px !important;
+          }
+
+          .v313-demand-section .mall-hall-grid-v26 p {
+            font-size: 12px !important;
+          }
+
           .v3-tag-section .mall-brand-grid-v26,
-          .v3-tag-section .mall-brand-grid-v271 {
+          .v3-tag-section .mall-brand-grid-v271,
+          .v313-status-section .mall-brand-grid-v26,
+          .v313-status-section .mall-brand-grid-v271 {
             grid-template-columns: 1fr !important;
+          }
+        }
+
+
+        /* V3.1.6：快速入口、TOP PICKS 與商品資訊列 */
+        .v313-demand-section .mall-hall-grid-v26 button {
+          cursor: pointer !important;
+          transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease !important;
+        }
+
+        .v313-demand-section .mall-hall-grid-v26 button:hover,
+        .v313-demand-section .mall-hall-grid-v26 button:focus-visible,
+        .v313-demand-section .mall-hall-grid-v26 button.active {
+          transform: translateY(-2px) !important;
+          border-color: rgba(220, 145, 0, 0.86) !important;
+          box-shadow: 0 15px 34px rgba(105, 67, 39, 0.13), inset 0 0 0 1px rgba(220, 145, 0, 0.18) !important;
+          outline: none !important;
+        }
+
+        .top-picks-heading-v316 {
+          margin-bottom: 14px !important;
+        }
+
+        .top-picks-heading-v316 h2 {
+          margin-bottom: 0 !important;
+        }
+
+        .mall-deal-grid-v26 {
+          gap: 16px !important;
+        }
+
+        .mall-deal-card-v26.top-pick-card-v316,
+        .mall-deal-card-v26.top-pick-card-v316.feature {
+          position: relative !important;
+          grid-template-columns: 132px minmax(0, 1fr) !important;
+          min-height: 168px !important;
+          padding: 18px !important;
+          border-radius: 26px !important;
+          overflow: visible !important;
+        }
+
+        .mall-deal-card-v26.top-pick-card-v316.top-pick-1 {
+          background:
+            radial-gradient(circle at 92% 5%, rgba(213, 164, 69, 0.17), transparent 34%),
+            linear-gradient(145deg, #fff9ed 0%, #fffdf9 58%, #f8ead6 100%) !important;
+          border: 1px solid rgba(184, 128, 45, 0.44) !important;
+          box-shadow: 0 20px 44px rgba(95, 58, 30, 0.13), inset 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .top-pick-rank-v316 {
+          position: absolute !important;
+          z-index: 3 !important;
+          top: -11px !important;
+          left: 16px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 5px !important;
+          min-width: 68px !important;
+          height: 34px !important;
+          padding: 0 12px !important;
+          border-radius: 999px !important;
+          background: linear-gradient(135deg, #8f2632, #b84050) !important;
+          color: #fff !important;
+          border: 2px solid #fffaf0 !important;
+          box-shadow: 0 9px 20px rgba(143, 38, 50, 0.24) !important;
+        }
+
+        .top-pick-1 .top-pick-rank-v316 {
+          background: linear-gradient(135deg, #b77b20, #e2b75d) !important;
+          color: #4c2d12 !important;
+          box-shadow: 0 10px 22px rgba(180, 126, 37, 0.28) !important;
+        }
+
+        .top-pick-rank-v316 small,
+        .top-pick-rank-v316 b {
+          color: inherit !important;
+          font-style: normal !important;
+          font-weight: 950 !important;
+          line-height: 1 !important;
+        }
+
+        .top-pick-rank-v316 small {
+          font-size: 10px !important;
+          letter-spacing: 0.1em !important;
+        }
+
+        .top-pick-rank-v316 b {
+          font-size: 19px !important;
+        }
+
+        .top-pick-card-v316 .mall-deal-image-v26 {
+          width: 132px !important;
+          height: 132px !important;
+          min-height: 132px !important;
+          border-radius: 22px !important;
+          box-shadow: inset 0 0 0 1px rgba(169, 123, 78, 0.08) !important;
+        }
+
+        .top-pick-content-v316 {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          justify-content: center !important;
+          gap: 11px !important;
+        }
+
+        .top-pick-content-v316 h3 {
+          margin: 0 !important;
+          font-size: clamp(19px, 2.5vw, 24px) !important;
+          line-height: 1.3 !important;
+        }
+
+        .top-pick-content-v316 > strong {
+          margin: 0 !important;
+          font-size: clamp(22px, 3vw, 29px) !important;
+          line-height: 1.1 !important;
+        }
+
+        .top-pick-content-v316 > button {
+          min-height: 42px !important;
+          margin-top: 0 !important;
+          padding: 0 18px !important;
+          border-radius: 999px !important;
+        }
+
+        @media (min-width: 760px) {
+          .mall-deal-grid-v26 {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+
+          .mall-deal-card-v26.top-pick-card-v316.top-pick-1 {
+            grid-column: 1 / -1 !important;
+            grid-template-columns: 176px minmax(0, 1fr) !important;
+            min-height: 218px !important;
+            padding: 22px !important;
+          }
+
+          .top-pick-1 .mall-deal-image-v26 {
+            width: 176px !important;
+            height: 176px !important;
+            min-height: 176px !important;
+          }
+
+          .top-pick-1 .top-pick-content-v316 h3 {
+            font-size: 30px !important;
+          }
+
+          .top-pick-1 .top-pick-content-v316 > strong {
+            font-size: 34px !important;
+          }
+        }
+
+        .commerce-summary-v21 .product-info-lines-v316 {
+          display: grid !important;
+          gap: 12px !important;
+        }
+
+        .commerce-summary-v21 .product-info-row-v316 {
+          display: grid !important;
+          grid-template-columns: max-content minmax(0, 1fr) !important;
+          align-items: center !important;
+          column-gap: 18px !important;
+          min-height: 58px !important;
+          padding: 13px 16px !important;
+          border: 1px solid rgba(160, 106, 72, 0.18) !important;
+          border-radius: 18px !important;
+          background: linear-gradient(135deg, rgba(255, 249, 241, 0.95), rgba(255, 253, 249, 0.98)) !important;
+        }
+
+        .commerce-summary-v21 .product-info-label-v316 {
+          display: inline-flex !important;
+          align-items: center !important;
+          min-width: 112px !important;
+          white-space: nowrap !important;
+          color: #782d2d !important;
+          font-size: 14px !important;
+          font-weight: 850 !important;
+          line-height: 1.2 !important;
+          letter-spacing: -0.02em !important;
+        }
+
+        .commerce-summary-v21 .product-info-row-v316 p {
+          min-width: 0 !important;
+          margin: 0 !important;
+          color: #49372e !important;
+          font-size: 14px !important;
+          font-weight: 650 !important;
+          line-height: 1.55 !important;
+          overflow-wrap: anywhere !important;
+        }
+
+        .commerce-summary-v21 .product-expiry-row-v316 p {
+          display: flex !important;
+          flex-wrap: wrap !important;
+          align-items: baseline !important;
+          gap: 4px 8px !important;
+        }
+
+        .commerce-summary-v21 .product-expiry-row-v316 p strong {
+          color: #49372e !important;
+          font-size: 14px !important;
+          font-weight: 780 !important;
+          line-height: 1.45 !important;
+        }
+
+        .commerce-summary-v21 .product-expiry-row-v316 p small {
+          color: #8d796d !important;
+          font-size: 12px !important;
+          font-weight: 550 !important;
+          line-height: 1.45 !important;
+        }
+
+        @media (max-width: 430px) {
+          .mall-deal-card-v26.top-pick-card-v316,
+          .mall-deal-card-v26.top-pick-card-v316.feature {
+            grid-template-columns: 112px minmax(0, 1fr) !important;
+            min-height: 150px !important;
+            padding: 15px !important;
+          }
+
+          .top-pick-card-v316 .mall-deal-image-v26 {
+            width: 112px !important;
+            height: 112px !important;
+            min-height: 112px !important;
+          }
+
+          .top-pick-content-v316 h3 {
+            font-size: 17px !important;
+          }
+
+          .top-pick-content-v316 > strong {
+            font-size: 20px !important;
+          }
+
+          .commerce-summary-v21 .product-info-row-v316 {
+            column-gap: 12px !important;
+            padding: 12px 13px !important;
+          }
+
+          .commerce-summary-v21 .product-info-label-v316 {
+            min-width: 104px !important;
+            font-size: 13px !important;
+          }
+
+          .commerce-summary-v21 .product-info-row-v316 p,
+          .commerce-summary-v21 .product-expiry-row-v316 p strong {
+            font-size: 13px !important;
           }
         }
 
