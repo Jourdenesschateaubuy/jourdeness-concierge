@@ -5814,9 +5814,9 @@ function Home() {
 
       <section className="dragon-hero-v330 dragon-hero-v340" aria-label="佐登妮絲城堡龍血主視覺">
         <picture className="dragon-hero-picture-v330 dragon-hero-picture-v340">
-          <source media="(min-width: 760px)" srcSet="/products/hero-dragon-blood-desktop.jpg" />
+          <source media="(min-width: 760px)" srcSet="/products/no1.png" />
           <img
-            src="/products/hero-dragon-blood-mobile.jpg"
+            src="/products/no1.png"
             alt="佐登妮絲城堡龍血系列主視覺"
             onError={(event) => {
               event.currentTarget.style.opacity = "0";
