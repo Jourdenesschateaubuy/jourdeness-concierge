@@ -4694,22 +4694,19 @@ function Home() {
   function ProductCard({
     product,
     featured = false,
-    forceFullName = false,
   }: {
     product: Product;
     featured?: boolean;
-    forceFullName?: boolean;
   }) {
     const soldOut = isSoldOut(product);
     const comingSoon = isComingSoon(product);
     const unavailable = isCartDisabled(product);
     const inquiry = hasInquiryPrice(product);
-    const tags = displayTags(product);
     const badgeLabel = getCommerceBadgeLabel(product);
 
     return (
       <article
-        className={`${featured ? "featured-card" : "product-card"} commerce-product-card clickable-product-card-v246 shelf-card-v271`}
+        className={`${featured ? "featured-card" : "product-card"} commerce-product-card clickable-product-card-v246 shelf-card-v271 compact-commerce-card-v350`}
         key={featured ? `featured-${product.id}` : product.id}
         role="button"
         tabIndex={0}
@@ -4728,44 +4725,18 @@ function Home() {
         <ProductVisual product={product} variant={featured ? "featured" : "normal"} />
 
         <div className={featured ? "featured-info product-info" : "product-info"}>
-          <div className="shelf-brand-line-v271">
-            <span>{getShelfBrandLabel(product)}</span>
-            <em>{getShelfTypeLabel(product)}</em>
-          </div>
+          {(comingSoon || soldOut || (inquiry && !unavailable)) && (
+            <div className="compact-card-status-v350">
+              {comingSoon && <span>新品預告</span>}
+              {soldOut && <span>缺貨</span>}
+              {inquiry && !unavailable && <span>價格洽詢</span>}
+            </div>
+          )}
 
-          <div className="product-meta-row">
-            <p className="series-label">{product.series}</p>
-            {inquiry && !unavailable && <span>可詢價</span>}
-            {comingSoon && <span className="sold-out-badge">新品預告</span>}
-            {soldOut && <span className="sold-out-badge">缺貨</span>}
-          </div>
+          <h3>{product.name}</h3>
+          <p className="compact-card-subtitle-v350">{getCardSubtitle(product)}</p>
 
-          <h3>{forceFullName ? product.name : getCardName(product)}</h3>
-          <p className="description">{getCardSubtitle(product)}</p>
-
-          <div className="tag-row">
-            {tags.map((tag) => (
-              <span className="need-tag" key={`${product.id}-${tag}`}>
-                {tag}
-              </span>
-            ))}
-
-            {hasComboPrice(product) && (
-              <button
-                type="button"
-                className="combo-badge"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  goToComboSection();
-                }}
-              >
-                有組合價
-              </button>
-            )}
-          </div>
-
-          <div className="price-block commerce-price-block shelf-price-block-v271">
-            <span className="price-mode-v271">{getPriceModeLabel(product)}</span>
+          <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
             {hasKnownOriginalPrice(product) && (
               <p className="original-price">{product.originalPrice}</p>
             )}
@@ -4775,29 +4746,16 @@ function Home() {
             </p>
           </div>
 
-          <div className="commerce-card-actions">
-            <button
-              className="add-cart-button"
-              onClick={(event) => {
-                event.stopPropagation();
-                addToCart(product);
-              }}
-              disabled={unavailable}
-            >
-              {comingSoon ? "新品預告" : soldOut ? "缺貨中" : "加入購物車"}
-            </button>
-
-            <button
-              type="button"
-              className="detail-button"
-              onClick={(event) => {
-                event.stopPropagation();
-                openProductDetail(product);
-              }}
-            >
-              商品詳情
-            </button>
-          </div>
+          <button
+            className="add-cart-button compact-add-cart-v350"
+            onClick={(event) => {
+              event.stopPropagation();
+              addToCart(product);
+            }}
+            disabled={unavailable}
+          >
+            {comingSoon ? "新品預告" : soldOut ? "缺貨中" : "加入購物車"}
+          </button>
         </div>
       </article>
     );
@@ -5940,7 +5898,6 @@ function Home() {
             {summerWhiteningProducts.map((product) => (
               <ProductCard
                 product={product}
-                forceFullName
                 key={`summer-whitening-${product.id}`}
               />
             ))}
@@ -19139,6 +19096,245 @@ function Home() {
           width: 100% !important;
           height: 100% !important;
           aspect-ratio: auto !important;
+        }
+
+
+        /* V3.5.0：主視覺與副主視覺左右滿版 */
+        .dragon-hero-v330.dragon-hero-v340 {
+          position: relative !important;
+          left: 50% !important;
+          width: 100vw !important;
+          max-width: none !important;
+          margin-left: -50vw !important;
+          margin-right: 0 !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          overflow: hidden !important;
+        }
+
+        .dragon-hero-picture-v330,
+        .dragon-hero-picture-v340,
+        .dragon-hero-picture-v330 img,
+        .dragon-hero-picture-v340 img {
+          display: block !important;
+          width: 100% !important;
+          max-width: none !important;
+          border-radius: 0 !important;
+        }
+
+        .seasonal-feature-v340 .seasonal-hero-button-v340 {
+          position: relative !important;
+          left: 50% !important;
+          width: 100vw !important;
+          max-width: none !important;
+          margin-left: -50vw !important;
+          margin-right: 0 !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          overflow: hidden !important;
+        }
+
+        .seasonal-feature-v340 .seasonal-hero-picture-v340,
+        .seasonal-feature-v340 .seasonal-hero-picture-v340 img {
+          display: block !important;
+          width: 100% !important;
+          max-width: none !important;
+          border-radius: 0 !important;
+        }
+
+        /* V3.5.0：精簡商品卡，只保留正式品名、簡短說明、價格與購物車 */
+        .compact-commerce-card-v350 {
+          display: flex !important;
+          flex-direction: column !important;
+          min-height: 0 !important;
+          border-radius: 16px !important;
+          overflow: hidden !important;
+          background: #fffdfb !important;
+          box-shadow: 0 8px 22px rgba(91, 49, 36, 0.07) !important;
+        }
+
+        .compact-commerce-card-v350 .product-image,
+        .compact-commerce-card-v350 .featured-image {
+          flex: 0 0 auto !important;
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          aspect-ratio: 1 / 1 !important;
+          border-radius: 0 !important;
+          border-bottom: 1px solid rgba(117, 75, 57, 0.08) !important;
+          background: #fffaf7 !important;
+          overflow: hidden !important;
+        }
+
+        .compact-commerce-card-v350 .product-image img,
+        .compact-commerce-card-v350 .featured-image img {
+          width: 100% !important;
+          height: 100% !important;
+          padding: 6px !important;
+          object-fit: contain !important;
+        }
+
+        .compact-commerce-card-v350 .product-info {
+          display: flex !important;
+          flex: 1 1 auto !important;
+          flex-direction: column !important;
+          gap: 6px !important;
+          min-height: 0 !important;
+          padding: 10px 9px 10px !important;
+        }
+
+        .compact-commerce-card-v350 .product-info h3 {
+          display: block !important;
+          min-height: 0 !important;
+          margin: 0 !important;
+          color: #4b2e28 !important;
+          font-size: 14px !important;
+          font-weight: 900 !important;
+          line-height: 1.4 !important;
+          letter-spacing: -0.02em !important;
+          overflow: visible !important;
+          word-break: break-word !important;
+          overflow-wrap: anywhere !important;
+          -webkit-line-clamp: unset !important;
+        }
+
+        .compact-card-status-v350 {
+          display: flex !important;
+          flex-wrap: wrap !important;
+          gap: 4px !important;
+          margin: 0 !important;
+        }
+
+        .compact-card-status-v350 span {
+          display: inline-flex !important;
+          align-items: center !important;
+          min-height: 22px !important;
+          padding: 3px 7px !important;
+          border-radius: 999px !important;
+          background: #f8ece9 !important;
+          color: #8e2940 !important;
+          font-size: 10px !important;
+          font-weight: 850 !important;
+          line-height: 1 !important;
+        }
+
+        .compact-card-subtitle-v350 {
+          display: -webkit-box !important;
+          min-height: 0 !important;
+          margin: 0 !important;
+          color: #8a7369 !important;
+          font-size: 11px !important;
+          line-height: 1.45 !important;
+          overflow: hidden !important;
+          -webkit-box-orient: vertical !important;
+          -webkit-line-clamp: 1 !important;
+        }
+
+        .compact-price-block-v350 {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 1px !important;
+          min-height: 0 !important;
+          margin: auto 0 0 !important;
+          padding: 7px 0 0 !important;
+          border-top: 1px solid rgba(117, 75, 57, 0.08) !important;
+          background: transparent !important;
+        }
+
+        .compact-price-block-v350 .original-price {
+          margin: 0 !important;
+          color: #ad9e97 !important;
+          font-size: 11px !important;
+          line-height: 1.25 !important;
+          text-decoration: line-through !important;
+        }
+
+        .compact-price-block-v350 .price {
+          margin: 0 !important;
+          color: var(--castle-wine) !important;
+          font-size: clamp(17px, 4.6vw, 22px) !important;
+          font-weight: 1000 !important;
+          line-height: 1.18 !important;
+          letter-spacing: -0.04em !important;
+        }
+
+        .compact-add-cart-v350 {
+          width: 100% !important;
+          min-height: 40px !important;
+          margin-top: 2px !important;
+          padding: 8px 6px !important;
+          border-radius: 10px !important;
+          font-size: 12px !important;
+          font-weight: 950 !important;
+          box-shadow: none !important;
+        }
+
+        /* 組合優惠改為明確黃色底色 */
+        .activity-stream-v330
+          .monthly-activity-card-v318.monthly-activity-1 {
+          --activity-wash: transparent !important;
+          color: #5a3a13 !important;
+          border-color: #e2b940 !important;
+          background: #f6d56f !important;
+          box-shadow: 0 10px 24px rgba(173, 124, 20, 0.13) !important;
+        }
+
+        .activity-stream-v330
+          .monthly-activity-card-v318.monthly-activity-1::before {
+          background: #b98217 !important;
+        }
+
+        .activity-stream-v330
+          .monthly-activity-card-v318.monthly-activity-1
+          .mall-brand-badge-v271 {
+          color: #6b460e !important;
+          background: rgba(255, 255, 255, 0.52) !important;
+        }
+
+        .activity-stream-v330
+          .monthly-activity-card-v318.monthly-activity-1
+          strong,
+        .activity-stream-v330
+          .monthly-activity-card-v318.monthly-activity-1
+          p {
+          color: #5a3a13 !important;
+        }
+
+        @media (max-width: 759px) {
+          .compact-commerce-card-v350 .product-info {
+            padding: 9px 8px 9px !important;
+          }
+
+          .compact-commerce-card-v350 .product-info h3 {
+            font-size: 13px !important;
+            line-height: 1.42 !important;
+          }
+
+          .compact-card-subtitle-v350 {
+            font-size: 10.5px !important;
+          }
+
+          .compact-price-block-v350 .price {
+            font-size: 18px !important;
+          }
+
+          .compact-add-cart-v350 {
+            min-height: 38px !important;
+            font-size: 11px !important;
+          }
+        }
+
+        @media (min-width: 760px) {
+          .seasonal-feature-v340 {
+            max-width: 1180px !important;
+          }
+
+          .seasonal-feature-v340 .seasonal-hero-button-v340 {
+            border-radius: 0 !important;
+          }
         }
 
 
