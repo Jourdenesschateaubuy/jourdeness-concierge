@@ -97,7 +97,7 @@ declare global {
   }
 }
 
-// V3.2.1：個人資料改為固定彈窗、移除首頁重複搜尋入口，TOP PICKS 改為三張活動圖預留槽。
+// V3.2.2：手機版首頁重構，加入龍血樹主視覺、固定搜尋面板、TOP 圖片入口與橫向分類導覽。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -5850,81 +5850,35 @@ function Home() {
         </section>
       )}
 
-      <section className="mall-hero-v26 mall-hero-v27" aria-label="佐登妮絲城堡回購館首頁">
-        <div className="mall-hero-copy-v26">
-          <p className="mall-hero-eyebrow-v26">Jourdeness Castle Reorder</p>
-          <h2>佐登妮絲城堡回購館</h2>
-          <span>精選城堡人氣回購品，保養、洗護、健康補給與精油香氛一次選購。</span>
+      <section className="dragon-hero-v322" aria-label="佐登妮絲城堡回購館主視覺">
+        <div className="dragon-hero-copy-v322">
+          <p className="dragon-hero-eyebrow-v322">Jourdeness Castle Reorder</p>
+          <h2>佐登妮絲城堡<br />回購館</h2>
+          <strong>城堡人氣保養・洗護・健康補給</strong>
+          <span>以龍血樹的修護意象，串起熟客最常回購的日常選品。</span>
 
-          
-          
+          <div className="dragon-hero-actions-v322">
+            <button type="button" onClick={() => openCategoryTab("本月優惠", "全部")}>瀏覽本月優惠</button>
+            <button type="button" className="ghost" onClick={() => openCategoryTab("臉部保養", "龍血系列")}>查看龍血系列</button>
+          </div>
         </div>
 
-        {heroTopProduct && (
-          <button
-            type="button"
-            className="mall-hero-product-v26"
-            onClick={() => openProductDetail(heroTopProduct)}
-          >
-            <span className="mall-top-pill-v26">本月主打｜買一送一</span>
-            <div className="mall-hero-product-image-v26">
-              {hasRealImage(heroTopProduct) ? (
-                <img
-                  src={getPrimaryImage(heroTopProduct)}
-                  alt={heroTopProduct.name}
-                  data-fallback-index="0"
-                  onError={(event) => handleProductImageError(heroTopProduct, event)}
-                />
-              ) : (
-                <span>圖片更新中</span>
-              )}
-            </div>
-            <strong>{getCardName(heroTopProduct)}</strong>
-            <p>{getCardSubtitle(heroTopProduct)}</p>
-            <em>{displayPrice(heroTopProduct)}</em>
-          </button>
-        )}
-      </section>
-
-      <section className="mall-editorial-banners-v27" aria-label="選品館主題入口">
-        <button type="button" className="mall-editorial-card-v27 primary" onClick={() => openCommerceFilter("deals-all", "本月優惠 / 全部優惠")}>
-          <span>Monthly Focus</span>
-          <strong>本月優惠</strong>
-          <p>人氣優惠與回購組合，快速找到本月最划算品項。</p>
-        </button>
-
-        <button type="button" className="mall-editorial-card-v27" onClick={() => openCategoryTab("健康補給", "全部")}>
-          <span>Health Care</span>
-          <strong>健康補給</strong>
-          <p>益生菌、葉黃素與美妍補給一次看。</p>
-        </button>
-
-        <button type="button" className="mall-editorial-card-v27" onClick={() => openCategoryTab("身體洗護", "全部")}>
-          <span>Body Care</span>
-          <strong>身體洗護</strong>
-          <p>洗髮沐浴、牙膏與手工皂集中選購。</p>
-        </button>
-      </section>
-
-      <section className="mall-hall-section-v26 mall-hall-section-v27 v313-demand-section" aria-label="回購需求入口">
-        <div className="mall-section-head-v26">
-          <h2>快速找商品</h2>
-          <span>依照回購需求快速瀏覽。</span>
-        </div>
-
-        <div className="mall-hall-grid-v26">
-          {mallQuickEntries.map((entry) => (
-            <button
-              type="button"
-              key={`mall-hall-${entry.title}`}
-              className={selectedCategory === entry.title && !commerceFilter ? "active" : ""}
-              onClick={entry.onClick}
-            >
-              <span>{entry.badge}</span>
-              <strong>{entry.title}</strong>
-              <p>{entry.text}</p>
-            </button>
-          ))}
+        <div className="dragon-hero-media-v322">
+          <picture>
+            <source media="(min-width: 760px)" srcSet="/products/hero-dragon-tree-desktop.jpg" />
+            <img
+              src="/products/hero-dragon-tree-mobile.jpg"
+              alt="龍血樹與城堡主視覺"
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+              }}
+            />
+          </picture>
+          <div className="dragon-hero-media-shade-v322" aria-hidden="true" />
+          <div className="dragon-hero-seal-v322" aria-hidden="true">
+            <span>CASTLE</span>
+            <strong>SELECT</strong>
+          </div>
         </div>
       </section>
 
@@ -5936,21 +5890,24 @@ function Home() {
 
         <div className="mall-deal-grid-v26 top-pick-slot-grid-v321">
           {mallDealProducts.map((product, index) => (
-            <article
+            <button
+              type="button"
               className={`mall-deal-card-v26 top-pick-card-v316 top-pick-slot-card-v321 top-pick-${index + 1} ${index === 0 ? "feature" : ""}`}
               key={`mall-deal-slot-${product.id}`}
+              onClick={() => openProductDetail(product)}
+              aria-label={`查看 TOP ${index + 1}：${product.name}`}
             >
-              <div className="top-pick-rank-v316" aria-label={`TOP ${index + 1}`}>
+              <div className="top-pick-rank-v316" aria-hidden="true">
                 <span>TOP {index + 1}</span>
               </div>
 
               <div
                 className="top-pick-image-slot-v321"
                 role="img"
-                aria-label={`TOP ${index + 1} 活動圖預留區`}
+                aria-label={`TOP ${index + 1} 活動圖`}
                 style={{ backgroundImage: `url("/products/top-pick-${index + 1}.jpg")` }}
               />
-            </article>
+            </button>
           ))}
         </div>
       </section>
@@ -5973,6 +5930,26 @@ function Home() {
               <em className="mall-brand-badge-v271">{brand.badge}</em>
               <strong>{brand.title}</strong>
               <p>{brand.text}</p>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="mobile-category-nav-v322" aria-label="商品分類">
+        <div className="mobile-category-head-v322">
+          <p>Shop by category</p>
+          <h2>依分類選購</h2>
+        </div>
+
+        <div className="mobile-category-scroll-v322">
+          {(["本月優惠", "臉部保養", "身體洗護", "健康補給", "精油香氛", "新品預告"] as MainCategory[]).map((category) => (
+            <button
+              type="button"
+              key={`mobile-category-${category}`}
+              className={selectedCategory === category ? "active" : ""}
+              onClick={() => openCategoryTab(category, "全部")}
+            >
+              {category}
             </button>
           ))}
         </div>
@@ -17580,6 +17557,397 @@ function Home() {
           .mall-deal-card-v26.top-pick-slot-card-v321.top-pick-1,
           .mall-deal-card-v26.top-pick-slot-card-v321:not(.top-pick-1) {
             grid-column: auto !important;
+          }
+        }
+
+
+        /* V3.2.2：手機版品牌主視覺與首頁導購 */
+        .top-header {
+          position: sticky !important;
+          top: 0 !important;
+          z-index: 1500 !important;
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          background: rgba(255, 252, 247, 0.94) !important;
+          border-bottom: 1px solid rgba(122, 48, 45, 0.08) !important;
+        }
+
+        .search-panel.search-page-view {
+          position: fixed !important;
+          inset: 0 !important;
+          z-index: 2200 !important;
+          width: 100% !important;
+          max-width: none !important;
+          min-height: 100dvh !important;
+          margin: 0 !important;
+          padding: max(18px, env(safe-area-inset-top)) 18px calc(32px + env(safe-area-inset-bottom)) !important;
+          overflow-y: auto !important;
+          background:
+            radial-gradient(circle at 90% 10%, rgba(181, 124, 56, 0.12), transparent 28%),
+            linear-gradient(180deg, #fffdf9 0%, #f7ede2 100%) !important;
+        }
+
+        .search-page-head {
+          position: sticky;
+          top: 0;
+          z-index: 2;
+          padding: 6px 0 14px;
+          background: linear-gradient(180deg, rgba(255, 253, 249, 0.98) 72%, rgba(255, 253, 249, 0));
+        }
+
+        .dragon-hero-v322 {
+          position: relative;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          margin: 12px 12px 20px;
+          overflow: hidden;
+          border: 1px solid rgba(175, 126, 64, 0.24);
+          border-radius: 30px;
+          background:
+            radial-gradient(circle at 16% 10%, rgba(255, 255, 255, 0.96), transparent 34%),
+            linear-gradient(145deg, #fffaf3 0%, #f5e7d9 100%);
+          box-shadow: 0 20px 48px rgba(74, 44, 31, 0.12);
+        }
+
+        .dragon-hero-copy-v322 {
+          position: relative;
+          z-index: 3;
+          padding: 30px 24px 24px;
+          text-align: left;
+        }
+
+        .dragon-hero-eyebrow-v322 {
+          margin: 0 0 12px;
+          color: #a06a2e;
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.17em;
+          text-transform: uppercase;
+        }
+
+        .dragon-hero-copy-v322 h2 {
+          margin: 0;
+          color: #3c2420;
+          font-size: clamp(36px, 10.5vw, 54px);
+          font-weight: 950;
+          line-height: 1.04;
+          letter-spacing: -0.06em;
+        }
+
+        .dragon-hero-copy-v322 > strong {
+          display: block;
+          margin-top: 17px;
+          color: #7f282e;
+          font-size: 16px;
+          font-weight: 900;
+          line-height: 1.5;
+        }
+
+        .dragon-hero-copy-v322 > span {
+          display: block;
+          max-width: 32em;
+          margin-top: 8px;
+          color: #755d51;
+          font-size: 13px;
+          font-weight: 700;
+          line-height: 1.7;
+        }
+
+        .dragon-hero-actions-v322 {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-top: 22px;
+        }
+
+        .dragon-hero-actions-v322 button {
+          min-height: 44px;
+          padding: 0 18px;
+          border: 1px solid #9c2633;
+          border-radius: 999px;
+          background: #9c2633;
+          color: #fff;
+          font-size: 13px;
+          font-weight: 900;
+          cursor: pointer;
+          box-shadow: 0 10px 24px rgba(156, 38, 51, 0.18);
+        }
+
+        .dragon-hero-actions-v322 button.ghost {
+          background: rgba(255, 255, 255, 0.7);
+          color: #7d2d31;
+          box-shadow: none;
+        }
+
+        .dragon-hero-media-v322 {
+          position: relative;
+          min-height: 390px;
+          overflow: hidden;
+          background:
+            radial-gradient(circle at 70% 20%, rgba(255, 238, 209, 0.72), transparent 40%),
+            linear-gradient(180deg, #f8e7d6, #e7b77e);
+        }
+
+        .dragon-hero-media-v322 picture,
+        .dragon-hero-media-v322 img {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+
+        .dragon-hero-media-v322 picture {
+          position: absolute;
+          inset: 0;
+        }
+
+        .dragon-hero-media-v322 img {
+          object-fit: cover;
+          object-position: center 48%;
+        }
+
+        .dragon-hero-media-shade-v322 {
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(180deg, rgba(255, 250, 243, 0.18) 0%, transparent 24%),
+            linear-gradient(0deg, rgba(62, 28, 24, 0.18), transparent 30%);
+          pointer-events: none;
+        }
+
+        .dragon-hero-seal-v322 {
+          position: absolute;
+          right: 18px;
+          bottom: 18px;
+          z-index: 2;
+          display: grid;
+          width: 76px;
+          height: 76px;
+          place-content: center;
+          border: 1px solid rgba(255, 255, 255, 0.78);
+          border-radius: 50%;
+          background: rgba(86, 31, 28, 0.58);
+          color: #fff8ef;
+          text-align: center;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+
+        .dragon-hero-seal-v322 span {
+          font-size: 8px;
+          font-weight: 800;
+          letter-spacing: 0.18em;
+        }
+
+        .dragon-hero-seal-v322 strong {
+          margin-top: 3px;
+          font-size: 12px;
+          letter-spacing: 0.08em;
+        }
+
+        .top-pick-slot-card-v321 {
+          appearance: none;
+          text-align: left;
+          cursor: pointer;
+        }
+
+        .top-pick-image-slot-v321 {
+          background-size: contain !important;
+          background-color: #fffaf4 !important;
+        }
+
+        .mobile-category-nav-v322 {
+          margin: 20px 0 8px;
+          padding: 0 12px;
+        }
+
+        .mobile-category-head-v322 {
+          padding: 0 4px 12px;
+        }
+
+        .mobile-category-head-v322 p {
+          margin: 0 0 4px;
+          color: #a16b30;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+        }
+
+        .mobile-category-head-v322 h2 {
+          margin: 0;
+          color: #3d2722;
+          font-size: 25px;
+          line-height: 1.15;
+          letter-spacing: -0.04em;
+        }
+
+        .mobile-category-scroll-v322 {
+          display: flex;
+          gap: 9px;
+          overflow-x: auto;
+          padding: 2px 4px 9px;
+          scroll-snap-type: x proximity;
+          scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .mobile-category-scroll-v322::-webkit-scrollbar {
+          display: none;
+        }
+
+        .mobile-category-scroll-v322 button {
+          flex: 0 0 auto;
+          min-height: 42px;
+          padding: 0 17px;
+          scroll-snap-align: start;
+          border: 1px solid rgba(130, 74, 54, 0.14);
+          border-radius: 999px;
+          background: rgba(255, 252, 247, 0.92);
+          color: #674b40;
+          font-size: 13px;
+          font-weight: 900;
+          white-space: nowrap;
+          cursor: pointer;
+          box-shadow: 0 7px 16px rgba(76, 45, 32, 0.06);
+        }
+
+        .mobile-category-scroll-v322 button.active {
+          border-color: #9c2633;
+          background: #9c2633;
+          color: #fff;
+        }
+
+        @media (max-width: 759px) {
+          .announcement-bar {
+            font-size: 10px !important;
+            line-height: 1.4 !important;
+          }
+
+          .top-header {
+            min-height: 66px !important;
+            padding: 8px 10px !important;
+          }
+
+          .brand-logo-wrap {
+            display: none !important;
+          }
+
+          .brand-block {
+            min-width: 0 !important;
+          }
+
+          .brand-block .top-eyebrow,
+          .brand-block > p:last-child {
+            display: none !important;
+          }
+
+          .brand-block h1 {
+            overflow: hidden;
+            font-size: clamp(15px, 4.4vw, 20px) !important;
+            line-height: 1.2 !important;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .header-actions {
+            gap: 3px !important;
+          }
+
+          .header-utility-button {
+            width: 38px !important;
+            height: 38px !important;
+          }
+
+          .dragon-hero-copy-v322 {
+            padding-bottom: 22px;
+          }
+
+          .dragon-hero-actions-v322 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .dragon-hero-actions-v322 button {
+            width: 100%;
+            padding-inline: 10px;
+          }
+
+          .top-pick-slot-grid-v321 {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 10px !important;
+            padding-inline: 12px !important;
+          }
+
+          .mall-deal-card-v26.top-pick-slot-card-v321.top-pick-1 {
+            grid-column: 1 / -1 !important;
+          }
+
+          .mall-deal-card-v26.top-pick-slot-card-v321:not(.top-pick-1) {
+            grid-column: auto !important;
+          }
+
+          .top-pick-slot-card-v321 .top-pick-rank-v316 {
+            top: 8px !important;
+            left: 8px !important;
+            min-width: 65px !important;
+            height: 32px !important;
+            padding-inline: 10px !important;
+          }
+
+          .top-pick-slot-card-v321 .top-pick-rank-v316 span {
+            font-size: 12px !important;
+          }
+
+          .mall-brand-grid-v26.mall-brand-grid-v271 {
+            grid-template-columns: minmax(0, 1fr) !important;
+          }
+
+          .monthly-activity-card-v318 {
+            min-height: 132px !important;
+          }
+
+          .home-product-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 10px !important;
+          }
+        }
+
+        @media (min-width: 760px) {
+          .dragon-hero-v322 {
+            grid-template-columns: minmax(310px, 0.86fr) minmax(0, 1.14fr);
+            min-height: 560px;
+            margin: 22px auto 30px;
+            max-width: min(1180px, calc(100% - 40px));
+          }
+
+          .dragon-hero-copy-v322 {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 52px 48px;
+          }
+
+          .dragon-hero-copy-v322 h2 {
+            font-size: clamp(48px, 5vw, 72px);
+          }
+
+          .dragon-hero-media-v322 {
+            min-height: 560px;
+          }
+
+          .dragon-hero-media-v322 img {
+            object-position: center;
+          }
+
+          .mobile-category-nav-v322 {
+            max-width: 1180px;
+            margin: 28px auto 10px;
+            padding: 0 20px;
+          }
+
+          .mobile-category-scroll-v322 {
+            flex-wrap: wrap;
+            overflow: visible;
           }
         }
 
