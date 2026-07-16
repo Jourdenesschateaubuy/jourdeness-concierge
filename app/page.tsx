@@ -4263,6 +4263,25 @@ function Home() {
     }
   }
 
+  function continueShopping() {
+    setIsCartOpen(false);
+
+    if (selectedDetailProduct) {
+      closeProductDetail(false);
+    }
+
+    if (typeof window !== "undefined") {
+      window.setTimeout(() => {
+        const shopSection = document.getElementById("home-hot-products-v26");
+
+        shopSection?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 0);
+    }
+  }
+
   function currentFilterText() {
     if (searchQuery.trim()) return `模糊搜尋：${searchQuery.trim()}`;
     if (collectionViewLabel) return collectionViewLabel;
@@ -4337,9 +4356,7 @@ function Home() {
 
   function HomeProductSection({
     id,
-    eyebrow,
     title,
-    subtitle,
     products,
     actionLabel,
     onAction,
@@ -4355,9 +4372,7 @@ function Home() {
     return (
       <section className="home-product-section mall-shelf-section-v271" id={id}>
         <div className="section-heading compact">
-          <p>{eyebrow}</p>
           <h2>{title}</h2>
-          {subtitle && <span>{subtitle}</span>}
         </div>
 
         <div className="home-product-grid">
@@ -4734,7 +4749,6 @@ function Home() {
           )}
 
           <h3>{product.name}</h3>
-          <p className="compact-card-subtitle-v350">{getCardSubtitle(product)}</p>
 
           <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
             {hasKnownOriginalPrice(product) && (
@@ -5814,9 +5828,9 @@ function Home() {
 
       <section className="dragon-hero-v330 dragon-hero-v340" aria-label="佐登妮絲城堡龍血主視覺">
         <picture className="dragon-hero-picture-v330 dragon-hero-picture-v340">
-          <source media="(min-width: 760px)" srcSet="/products/no1.png" />
+          <source media="(min-width: 760px)" srcSet="/products/hero-dragon-blood-desktop.jpg" />
           <img
-            src="/products/no1.png"
+            src="/products/hero-dragon-blood-mobile.jpg"
             alt="佐登妮絲城堡龍血系列主視覺"
             onError={(event) => {
               event.currentTarget.style.opacity = "0";
@@ -5830,9 +5844,7 @@ function Home() {
 
       <section className="mall-deal-wall-v26 mall-deal-wall-v27 top-picks-stream-v330" aria-label="本月優惠">
         <div className="mall-section-head-v26 compact top-picks-heading-v316 section-title-v340">
-          <p>MONTHLY FAVORITES</p>
           <h2>本月回購主打</h2>
-          <span>精選人氣回購商品</span>
         </div>
 
         <div className="mall-deal-grid-v26 top-pick-slot-grid-v321">
@@ -5861,9 +5873,7 @@ function Home() {
 
       <section className="seasonal-feature-v340" aria-label="夏日美白主打">
         <div className="section-title-v340 seasonal-feature-heading-v340">
-          <p>SEASONAL FEATURE</p>
           <h2>夏日美白主打</h2>
-          <span>櫻の雪傳明酸美白系列，從化妝水、精華、乳液到組合一次看齊。</span>
         </div>
 
         <button
@@ -5889,9 +5899,7 @@ function Home() {
 
         <div className="seasonal-product-showcase-v342" aria-label="夏日美白精選商品">
           <div className="seasonal-product-head-v342">
-            <p>SUMMER WHITENING PICKS</p>
             <h3>夏日美白精選</h3>
-            <span>櫻の雪傳明酸美白化妝水、櫻の雪傳明酸美白精華液、櫻の雪傳明酸美白乳液、超防禦輕透隔離乳 30mL，直接快速選購。</span>
           </div>
 
           <div className="seasonal-product-grid-v342">
@@ -5907,9 +5915,7 @@ function Home() {
 
       <section className="mall-brand-section-v26 mall-brand-section-v27 v3-tag-section v313-status-section activity-stream-v330" aria-label="本月活動入口">
         <div className="mall-section-head-v26 compact section-title-v340">
-          <p>MONTHLY EVENTS</p>
           <h2>本月活動</h2>
-          <span>組合、限量與新品資訊集中查看</span>
         </div>
 
         <div className="mall-brand-grid-v26 mall-brand-grid-v271">
@@ -5922,28 +5928,6 @@ function Home() {
             >
               <em className="mall-brand-badge-v271">{brand.badge}</em>
               <strong>{brand.title}</strong>
-              <p>{brand.text}</p>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section className="mobile-category-nav-v322 category-strip-v330" aria-label="商品分類">
-        <div className="mobile-category-head-v322 section-title-v340">
-          <p>SHOP BY CATEGORY</p>
-          <h2>依分類選購</h2>
-          <span>左右滑動，快速找到想看的商品</span>
-        </div>
-
-        <div className="mobile-category-scroll-v322">
-          {(["本月優惠", "臉部保養", "身體洗護", "健康補給", "精油香氛", "新品預告"] as MainCategory[]).map((category) => (
-            <button
-              type="button"
-              key={`mobile-category-${category}`}
-              className={selectedCategory === category ? "active" : ""}
-              onClick={() => openCategoryTab(category, "全部")}
-            >
-              {category}
             </button>
           ))}
         </div>
@@ -6051,13 +6035,29 @@ function Home() {
       {isCartOpen && (
         <section className="cart-backdrop" onClick={() => setIsCartOpen(false)}>
           <div className="cart-panel checkout-panel-v21" onClick={(event) => event.stopPropagation()}>
-            <div className="cart-header checkout-header-v21">
-              <div>
+            <div className="cart-header checkout-header-v21 cart-header-v352">
+              <button
+                type="button"
+                className="cart-return-button-v352"
+                onClick={continueShopping}
+                aria-label="返回賣場繼續逛"
+              >
+                <span aria-hidden="true">‹</span>
+                繼續逛賣場
+              </button>
+
+              <div className="cart-title-v352">
                 <p className="cart-eyebrow">Shopping Cart</p>
                 <h2>購物車</h2>
-                <span>這裡先整理想買的品項；送出後由 LINE 小幫手確認庫存、效期、金額與付款方式。</span>
+                <span>可先整理商品，也能隨時返回賣場繼續選購。</span>
               </div>
-              <button className="cart-close" onClick={() => setIsCartOpen(false)}>
+
+              <button
+                type="button"
+                className="cart-close"
+                onClick={continueShopping}
+                aria-label="關閉購物車並返回賣場"
+              >
                 ×
               </button>
             </div>
@@ -6310,11 +6310,28 @@ function Home() {
                     送出資料不代表付款完成。商品價格、庫存、優惠組合、滿額免運與付款方式，仍依 LINE 小幫手確認為準。
                   </p>
                 </form>
+
+                <button
+                  type="button"
+                  className="continue-shopping-button-v352"
+                  onClick={continueShopping}
+                >
+                  <span aria-hidden="true">←</span>
+                  回到賣場繼續逛
+                </button>
               </>
             ) : (
               <div className="empty-cart checkout-empty-v21">
                 <h3>購物車目前是空的</h3>
-                <p>回商品列表加入想詢問或訂購的品項。</p>
+                <p>回到賣場加入想詢問或訂購的品項。</p>
+                <button
+                  type="button"
+                  className="continue-shopping-button-v352 empty-cart-return-v352"
+                  onClick={continueShopping}
+                >
+                  <span aria-hidden="true">←</span>
+                  回到賣場繼續逛
+                </button>
               </div>
             )}
           </div>
@@ -19334,6 +19351,227 @@ function Home() {
 
           .seasonal-feature-v340 .seasonal-hero-button-v340 {
             border-radius: 0 !important;
+          }
+        }
+
+
+        /* V3.5.1：移除標題上下方小字後，重新整理留白與節奏 */
+        .section-title-v340 > p,
+        .section-title-v340 > span,
+        .section-heading.compact > p,
+        .section-heading.compact > span,
+        .seasonal-product-head-v342 > p,
+        .seasonal-product-head-v342 > span,
+        .compact-card-subtitle-v350 {
+          display: none !important;
+        }
+
+        .section-title-v340,
+        .section-heading.compact,
+        .seasonal-product-head-v342 {
+          padding: 0 !important;
+          text-align: left !important;
+        }
+
+        .section-title-v340 h2,
+        .section-heading.compact h2 {
+          margin: 0 !important;
+          color: var(--v340-ink) !important;
+          font-family: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif !important;
+          font-size: clamp(26px, 7vw, 38px) !important;
+          font-weight: 900 !important;
+          line-height: 1.15 !important;
+          letter-spacing: -0.035em !important;
+        }
+
+        .seasonal-product-head-v342 h3 {
+          margin: 0 !important;
+          color: var(--v340-ink) !important;
+          font-family: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif !important;
+          font-size: clamp(22px, 5.8vw, 30px) !important;
+          font-weight: 900 !important;
+          line-height: 1.18 !important;
+          letter-spacing: -0.035em !important;
+        }
+
+        .top-picks-stream-v330 {
+          margin-bottom: 48px !important;
+        }
+
+        .top-picks-stream-v330 .mall-section-head-v26 {
+          margin: 0 0 20px !important;
+          padding: 0 !important;
+        }
+
+        .seasonal-feature-heading-v340 {
+          margin: 0 14px 20px !important;
+          padding-top: 38px !important;
+        }
+
+        .seasonal-product-showcase-v342 {
+          padding-top: 28px !important;
+        }
+
+        .seasonal-product-head-v342 {
+          margin: 0 0 18px !important;
+        }
+
+        .activity-stream-v330 {
+          margin-bottom: 46px !important;
+        }
+
+        .activity-stream-v330 .mall-section-head-v26 {
+          margin: 0 0 18px !important;
+          padding: 0 !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318 {
+          grid-template-areas: "badge title arrow" !important;
+          min-height: 76px !important;
+          padding-top: 14px !important;
+          padding-bottom: 14px !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318 p {
+          display: none !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271 {
+          margin-bottom: 46px !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271 .section-heading.compact {
+          margin: 0 0 18px !important;
+        }
+
+        .compact-commerce-card-v350 .product-info {
+          gap: 8px !important;
+        }
+
+        .compact-commerce-card-v350 .product-info h3 {
+          margin-bottom: 2px !important;
+        }
+
+        @media (max-width: 759px) {
+          .top-picks-stream-v330 {
+            margin-bottom: 42px !important;
+          }
+
+          .seasonal-feature-heading-v340 {
+            margin-inline: 12px !important;
+            margin-bottom: 17px !important;
+            padding-top: 32px !important;
+          }
+
+          .seasonal-product-showcase-v342 {
+            padding-top: 24px !important;
+          }
+
+          .seasonal-product-head-v342 {
+            margin-bottom: 15px !important;
+          }
+
+          .activity-stream-v330 {
+            margin-bottom: 40px !important;
+          }
+
+          .home-product-section.mall-shelf-section-v271 {
+            margin-bottom: 40px !important;
+          }
+
+          .home-product-section.mall-shelf-section-v271 .section-heading.compact {
+            margin-bottom: 15px !important;
+          }
+        }
+
+
+        /* V3.5.2：購物車可隨時返回賣場，不再被迫進入結帳 */
+        .cart-header-v352 {
+          display: grid !important;
+          grid-template-columns: auto minmax(0, 1fr) auto !important;
+          align-items: start !important;
+          gap: 12px !important;
+        }
+
+        .cart-title-v352 {
+          min-width: 0 !important;
+        }
+
+        .cart-return-button-v352 {
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 5px !important;
+          min-height: 38px !important;
+          padding: 8px 11px !important;
+          border: 1px solid rgba(143, 31, 59, 0.2) !important;
+          border-radius: 999px !important;
+          background: #fff !important;
+          color: var(--castle-wine) !important;
+          font-size: 12px !important;
+          font-weight: 950 !important;
+          line-height: 1 !important;
+          white-space: nowrap !important;
+          cursor: pointer !important;
+          box-shadow: 0 6px 16px rgba(83, 42, 32, 0.06) !important;
+        }
+
+        .cart-return-button-v352 > span {
+          display: inline !important;
+          margin: 0 !important;
+          color: inherit !important;
+          font-size: 24px !important;
+          line-height: 0.7 !important;
+        }
+
+        .continue-shopping-button-v352 {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 8px !important;
+          width: 100% !important;
+          min-height: 48px !important;
+          margin: 16px 0 4px !important;
+          padding: 11px 16px !important;
+          border: 1px solid rgba(143, 31, 59, 0.24) !important;
+          border-radius: 14px !important;
+          background: #fff !important;
+          color: var(--castle-wine) !important;
+          font-size: 14px !important;
+          font-weight: 950 !important;
+          cursor: pointer !important;
+          box-shadow: 0 8px 20px rgba(83, 42, 32, 0.06) !important;
+        }
+
+        .continue-shopping-button-v352:hover,
+        .cart-return-button-v352:hover {
+          background: #fff6f2 !important;
+          border-color: rgba(143, 31, 59, 0.42) !important;
+        }
+
+        .empty-cart-return-v352 {
+          max-width: 280px !important;
+          margin: 18px auto 0 !important;
+        }
+
+        @media (max-width: 560px) {
+          .cart-header-v352 {
+            grid-template-columns: 1fr auto !important;
+            align-items: center !important;
+          }
+
+          .cart-return-button-v352 {
+            grid-column: 1 / -1 !important;
+            justify-self: start !important;
+          }
+
+          .cart-title-v352 {
+            grid-column: 1 !important;
+          }
+
+          .cart-close {
+            grid-column: 2 !important;
+            grid-row: 2 !important;
           }
         }
 
