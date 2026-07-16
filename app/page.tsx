@@ -6132,9 +6132,8 @@ function Home() {
         </div>
       </section>
 
-      <section className="seasonal-feature-v340" aria-label="夏日美白主打">
+      <section className="seasonal-feature-v340" aria-label="">
         <div className="section-title-v340 seasonal-feature-heading-v340">
-          <h2>夏日美白主打</h2>
         </div>
 
         <button
@@ -6197,7 +6196,7 @@ function Home() {
       <HomeProductSection
         id="home-hot-products-v26"
         eyebrow="Monthly Picks"
-        title="本月優惠・活動方案"
+        title="優惠活動"
         subtitle="人氣組合、任選優惠與回購價，一次看齊。"
         products={mallHotProducts}
         actionLabel="看本月優惠"
