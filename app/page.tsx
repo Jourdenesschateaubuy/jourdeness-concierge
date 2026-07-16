@@ -803,7 +803,7 @@ const allProducts: Product[] = [
     series: "精油",
     originalPrice: "牌價 $ 390",
     price: "$ 390",
-    image: "/products/dragon roller.png",
+    image: "/products/DB Essential Oil.png",
     description: "9mL。龍血系列隨身精油滾珠，適合日常香氛與放鬆舒緩保養。",
   },
 {
@@ -813,7 +813,7 @@ const allProducts: Product[] = [
     series: "精油",
     originalPrice: "牌價 $ 390",
     price: "$ 390",
-    image: "/products/lavender roller.png",
+    image: "/products/Lavender Essential Oil.png",
     description: "9mL。薰衣草香氛精油滾珠，適合睡前放鬆與日常隨身舒緩。",
   },
 {
@@ -883,7 +883,7 @@ const allProducts: Product[] = [
     series: "單方精油",
     originalPrice: "原價 $ 1,200",
     price: "產地價 $ 899",
-    image: "/products/placeholder.jpg",
+    image: "/products/Lavender Essential Oil.jpg",
     description: "30mL。薰衣草單方精油，適合睡前、放鬆與居家香氛擴香。",
   },
 {
@@ -923,7 +923,7 @@ const allProducts: Product[] = [
     series: "複方精油",
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
-    image: "/products/placeholder.jpg",
+    image: "/products/Clary Sage Essential Oil.jpg",
     description: "10mL。快樂鼠尾草精油，適合營造柔和、放鬆的香氛氛圍。",
   },
 {
@@ -1061,7 +1061,7 @@ const allProducts: Product[] = [
     series: "單方精油",
     originalPrice: "原價 $ 1,080",
     price: "產地價 $ 810",
-    image: "/products/placeholder.jpg",
+    image: "/products/Lemon Essential Oil.jpg",
     description: "10mL。清新明亮的檸檬香氣，適合日常擴香與空間清新；可搭配單方精油任選 2 瓶 $1,600。",
     priceNote: "單瓶產地價 $810；單方精油任選 2 瓶 $1,600。",
     expiryNote: "效期：2028.11.16。實際效期以商品包裝標示為準。",
@@ -1073,7 +1073,7 @@ const allProducts: Product[] = [
     series: "單方精油",
     originalPrice: "原價 $ 1,680",
     price: "產地價 $ 1,260",
-    image: "/products/placeholder.jpg",
+    image: "/products/Tea Tree Oil.jpg",
     description: "15mL。茶樹精油清爽草本香氣，適合居家擴香、空間清新與日常香氛搭配。",
     expiryNote: "效期：2030.04.19。實際效期以商品包裝標示為準。",
   },
@@ -1084,7 +1084,7 @@ const allProducts: Product[] = [
     series: "單方精油",
     originalPrice: "原價 $ 1,680",
     price: "產地價 $ 1,260",
-    image: "/products/placeholder.jpg",
+    image: "/products/Geranium Essential Oil.jpg",
     description: "10mL。天空葵芳香精油，清新花草香氣，適合日常擴香與居家香氛儀式。",
     expiryNote: "效期：2030.03.30。實際效期以商品包裝標示為準。",
   },
@@ -1201,7 +1201,7 @@ const allProducts: Product[] = [
     series: "防曬隔離",
     originalPrice: "原價 $ 1,380",
     price: "產地價 $ 1,035",
-    image: "/products/placeholder.jpg",
+    image: "/products/sunscreen.jpg",
     description: "30mL。輕透隔離乳，日常外出前打底使用，維持清爽防護感。",
     expiryNote: "效期：2029.06.14。實際效期以商品包裝標示為準。",
   },
@@ -1238,7 +1238,7 @@ const comingSoonRollerProducts: Product[] = [
     series: "新品預告",
     originalPrice: "牌價 $ 390",
     price: "新品預告",
-    image: "/products/Men's Abies roller.jpg",
+    image: "/products/Siberian Fir Essential Oil Roller.jpg",
     description: "9mL。冷杉系清爽香氣滾珠，清新感受適合日常隨身使用。",
     cardSubtitle: "9mL・冷杉系列滾珠",
     priceNote: "新品預告・敬請期待。",
@@ -1266,7 +1266,7 @@ const comingSoonRollerProducts: Product[] = [
     category: "新品預告",
     series: "香氛皂",
     price: "新品預告",
-    image: "/products/soap mugwort.png",
+    image: "/products/soap Artemisia.png",
     description: "200g±10g / 塊。草本香氣，適合喜歡清爽感的日常洗沐。",
     cardSubtitle: "草本香氣・新品預告",
     priceNote: "新品預告・敬請期待。",
@@ -1280,7 +1280,7 @@ const comingSoonRollerProducts: Product[] = [
     category: "新品預告",
     series: "香氛皂",
     price: "新品預告",
-    image: "/products/soap verbena.png",
+    image: "/products/soap lemo.png",
     description: "200g±10g / 塊。清新柑橘調，洗後帶來明亮清爽感。",
     cardSubtitle: "柑橘清香・新品預告",
     priceNote: "新品預告・敬請期待。",
@@ -1308,7 +1308,7 @@ const comingSoonRollerProducts: Product[] = [
     category: "新品預告",
     series: "香氛皂",
     price: "新品預告",
-    image: "/products/soap Hydrangea.png",
+    image: "/products/Hydrangea Floral.png",
     description: "200g±10g / 塊。花香系香氛皂，讓日常洗沐更有質感。",
     cardSubtitle: "花香系・新品預告",
     priceNote: "新品預告・敬請期待。",
@@ -5850,9 +5850,9 @@ function Home() {
 
       <section className="dragon-hero-v330 dragon-hero-v340" aria-label="佐登妮絲城堡龍血主視覺">
         <picture className="dragon-hero-picture-v330 dragon-hero-picture-v340">
-          <source media="(min-width: 760px)" srcSet="/products/hero-dragon-blood-desktop.jpg" />
+          <source media="(min-width: 760px)" srcSet="/products/no1.png" />
           <img
-            src="/products/hero-dragon-blood-mobile.jpg"
+            src="/products/no1.png"
             alt="佐登妮絲城堡龍血系列主視覺"
             onError={(event) => {
               event.currentTarget.style.opacity = "0";
