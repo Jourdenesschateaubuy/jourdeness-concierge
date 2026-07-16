@@ -7,8 +7,8 @@ const categoryConfig = {
   臉部保養: ["全部", "龍血系列", "保濕修護", "亮白保養", "舒緩敏感", "面膜", "限量優惠"],
   身體洗護: ["全部", "口腔護理", "手工皂", "洗髮沐浴", "身體保養", "身體舒壓"],
   健康補給: ["全部", "益生菌", "葉黃素", "膠原蛋白", "魚油"],
-  精油香氛: ["全部", "單方精油", "複方精油", "滾珠精油", "精油配件", "擴香設備"],
-  新品預告: ["全部", "潔顏", "滾珠", "香氛皂", "護手霜", "魚油", "潔口液"],
+  精油香氛: ["全部", "單方精油 10mL", "單方精油 15mL", "單方精油 30mL", "複方精油 10mL", "複方精油 15mL", "複方精油 30mL", "精萃油 50mL", "精油配件", "擴香設備"],
+  新品預告: ["全部", "潔顏", "精油滾珠", "香氛皂", "護手霜", "魚油", "潔口液"],
 
   // 以下舊分類保留為資料型別相容與內部搜尋用，不再顯示為前台主分類。
   本月精選: ["全部", "回購主打", "組合優惠", "限量優惠"],
@@ -19,7 +19,7 @@ const categoryConfig = {
   保養品: ["全部", "冷杉系列", "薰衣草系列", "龍血系列", "INSK乳酸平衡系列", "水光肌能系列", "晶淬雪系列", "玫瑰超微晶萃系列", "肌光緊緻速妍系列", "冰河淨化系列", "櫻の雪傳明酸美白系列", "茶樹控油系列", "杏仁酸系列", "膠原蛋白系列", "鳳梨酵素系列", "防曬", "特殊護理", "頂級養護", "面膜"],
   保健食品: ["全部", "益生菌系列", "晶眸保健系列", "美妍飲品系列"],
   洗沐: ["全部", "洗沐系列", "阿甘綠柔護髮系列"],
-  精油: ["全部", "單方精油", "複方精油", "精油配件", "擴香設備", "10mL 精油系列", "50mL 精萃油系列", "滾珠精油"],
+  精油: ["全部", "單方精油 10mL", "單方精油 15mL", "單方精油 30mL", "複方精油 10mL", "複方精油 15mL", "複方精油 30mL", "精萃油 50mL", "精油配件", "擴香設備"],
   牙膏: ["全部", "牙膏"],
   肥皂: ["全部", "肥皂"],
   護唇膏: ["全部", "護唇膏"],
@@ -1095,7 +1095,7 @@ const allProducts: Product[] = [
     series: "複方精油",
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
-    image: "/products/placeholder.jpg",
+    image: "/products/jd6.jpg",
     description: "10mL。佐登妮絲6號複方精油，適合日常擴香與空間香氛搭配。",
     expiryNote: "效期：2028.02.13。實際效期以商品包裝標示為準。",
   },
@@ -1444,8 +1444,66 @@ function normalizeProductForV31(product: Product): Product {
   return product;
 }
 
+const sevenSequenceOilIdsV354 = new Set([87, 88, 89, 90, 91, 92, 93]);
+
+function normalizeProductForV354(product: Product): Product {
+  const updates: Record<number, Partial<Product>> = {
+    26: { name: "青春密碼維 E 精萃油 50mL", series: "精萃油 50mL" },
+    27: { name: "防護盾牌維 C 精萃油 50mL", series: "精萃油 50mL" },
+    28: { name: "晚安無瑕維 A 精萃油 50mL", series: "精萃油 50mL" },
+    58: {
+      name: "玻尿酸益生菌 2盒組",
+      description: "玻尿酸益生菌 3g x 60包 / 盒，共2盒。",
+    },
+    70: { category: "新品預告", series: "精油滾珠" },
+    71: { category: "新品預告", series: "精油滾珠" },
+    74: { name: "甜橙單方精油 30mL", series: "單方精油 30mL" },
+    75: { name: "尤加利單方精油 30mL", series: "單方精油 30mL" },
+    78: {
+      name: "薰衣草單方精油 10mL",
+      series: "單方精油 10mL",
+      description: "10mL。薰衣草單方精油，適合睡前、放鬆與居家香氛擴香。",
+    },
+    79: { name: "佐登妮絲5號精油 10mL", series: "複方精油 10mL" },
+    80: { name: "呼暢護隨精油 30mL", series: "複方精油 30mL" },
+    81: {
+      name: "佐登妮絲十二號複方精油（OMA律動精油）10mL",
+      series: "複方精油 10mL",
+    },
+    82: { name: "快樂鼠尾草精油 10mL", series: "單方精油 10mL" },
+    83: { name: "魔力輕盈精油 30mL", series: "複方精油 30mL" },
+    84: { name: "柚見快樂精油 15mL", series: "複方精油 15mL" },
+    85: { name: "佐登妮絲4號精油 10mL", series: "複方精油 10mL" },
+    86: { name: "佐登妮絲1號精油 10mL", series: "複方精油 10mL" },
+    87: { name: "智慧之冠精油 10mL", series: "複方精油 10mL｜七序精油" },
+    88: { name: "魔力輕盈精油 10mL", series: "複方精油 10mL｜七序精油" },
+    89: { name: "能量之源精油 10mL", series: "複方精油 10mL｜七序精油" },
+    90: { name: "順暢平衡精油 10mL", series: "複方精油 10mL｜七序精油" },
+    91: { name: "亮采橙真精油 10mL", series: "複方精油 10mL｜七序精油" },
+    92: { name: "心之綻放精油 10mL", series: "複方精油 10mL｜七序精油" },
+    93: { name: "呼暢護隨精油 10mL", series: "複方精油 10mL｜七序精油" },
+    96: { name: "檸檬精油 10mL", series: "單方精油 10mL" },
+    97: { name: "茶樹精油 15mL", series: "單方精油 15mL" },
+    98: {
+      name: "天竺葵芳香精油 10mL",
+      series: "單方精油 10mL",
+      description: "10mL。天竺葵芳香精油，清新花草香氣，適合日常擴香與居家香氛儀式。",
+    },
+    99: { name: "佐登妮絲6號複方精油 10mL", series: "複方精油 10mL" },
+    113: { category: "新品預告", series: "精油滾珠" },
+  };
+
+  return updates[product.id] ? { ...product, ...updates[product.id] } : product;
+}
+
+function isSevenSequenceOilV354(product: Product) {
+  return sevenSequenceOilIdsV354.has(product.id);
+}
+
 const products: Product[] = [...allProducts, ...comingSoonRollerProducts]
-  .map(normalizeProductForV31);
+  .map(normalizeProductForV31)
+  .map(normalizeProductForV354)
+  .filter((product) => ![20, 21, 22, 23, 24, 25].includes(product.id));
 
 const productContentOverrides: Record<number, Partial<Product>> = {
   1: {
@@ -2580,10 +2638,10 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "龍血求麗頭皮修護洗髮精 1 瓶＋阿甘甦醒髮根養護液 1 瓶，組合價 $1,500。",
   },
   58: {
-    cardName: "BC-HA 複合益生菌 2盒組",
-    cardSubtitle: "BC-HA 複合益生菌 3g x 60包 / 盒，共2盒・保健食品組合",
-    spec: "BC-HA 複合益生菌 3g x 60包 / 盒，共2盒",
-    intro: "BC-HA 複合益生菌 2盒組為回購群優惠組合品項，適合想一次補齊常用商品的客人。",
+    cardName: "玻尿酸益生菌 2盒組",
+    cardSubtitle: "玻尿酸益生菌 3g x 60包 / 盒，共2盒・保健食品組合",
+    spec: "玻尿酸益生菌 3g x 60包 / 盒，共2盒",
+    intro: "玻尿酸益生菌 2盒組為回購群優惠組合品項，適合想一次補齊常用商品的客人。",
     features: [
       "回購群優惠組合，適合一次補齊常用品項。",
       "組合內容與優惠依當日公告及客服確認為準。",
@@ -3066,6 +3124,7 @@ function Home() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
+  const [collectionReturnScrollY, setCollectionReturnScrollY] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<Product | null>(null);
   const [detailHistoryActive, setDetailHistoryActive] = useState(false);
@@ -3119,16 +3178,12 @@ function Home() {
     if (selectedCategory === "健康補給") {
       return (
         product.category === "保健食品" ||
-        ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "營養", "BC-HA", "BC-CA"].some((keyword) => fullText.includes(keyword))
+        ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "營養", "玻尿酸益生菌", "BC-HA", "BC-CA"].some((keyword) => fullText.includes(keyword))
       ) && !isComingSoon(product);
     }
 
     if (selectedCategory === "精油香氛") {
-      return (
-        product.category === "精油" ||
-        product.series.includes("精油") ||
-        ["精油", "滾珠", "擴香", "水氧", "霧化", "香氛", "芳香"].some((keyword) => fullText.includes(keyword))
-      );
+      return product.category === "精油" && !isComingSoon(product);
     }
 
     if (selectedCategory === "新品預告") return isComingSoon(product);
@@ -3155,7 +3210,7 @@ function Home() {
     if (alias === "健康補給") {
       return (
         product.category === "保健食品" ||
-        ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "營養", "BC-HA", "BC-CA"].some((keyword) => fullText.includes(keyword))
+        ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "營養", "玻尿酸益生菌", "BC-HA", "BC-CA"].some((keyword) => fullText.includes(keyword))
       ) && !isComingSoon(product);
     }
 
@@ -3185,16 +3240,25 @@ function Home() {
     if (selectedSeries === "身體保養") return ["身體", "美體", "乳", "油", "護唇"].some((keyword) => fullText.includes(keyword)) && !fullText.includes("乳酸") && !fullText.includes("乳液");
     if (selectedSeries === "身體舒壓") return ["刮痧", "溫灸", "艾草", "如意棒", "柔筋", "舒壓"].some((keyword) => fullText.includes(keyword));
 
-    if (selectedSeries === "益生菌") return ["益生菌", "BC-HA", "BC-CA", "蔓越莓", "高鈣"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "益生菌") return ["益生菌", "玻尿酸益生菌", "BC-HA", "BC-CA", "蔓越莓", "高鈣"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "葉黃素") return ["葉黃素", "晶眸"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "膠原蛋白") return ["膠原", "亮妍"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "魚油") return fullText.includes("魚油");
 
-    if (selectedSeries === "單方精油") return product.series.includes("單方精油") || fullText.includes("單方精油");
-    if (selectedSeries === "複方精油") return product.series.includes("複方精油") || fullText.includes("複方精油");
-    if (selectedSeries === "滾珠精油" || selectedSeries === "滾珠") return fullText.includes("滾珠");
-    if (selectedSeries === "精油配件") return ["木盒", "擴香木球", "木片", "配件"].some((keyword) => fullText.includes(keyword));
-    if (selectedSeries === "擴香設備") return ["水氧", "霧化", "香薰機", "擴香設備"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "單方精油 10mL") return product.series === "單方精油 10mL";
+    if (selectedSeries === "單方精油 15mL") return product.series === "單方精油 15mL";
+    if (selectedSeries === "單方精油 30mL") return product.series === "單方精油 30mL";
+    if (selectedSeries === "複方精油 10mL") return product.series.includes("複方精油 10mL");
+    if (selectedSeries === "複方精油 15mL") return product.series === "複方精油 15mL";
+    if (selectedSeries === "複方精油 30mL") return product.series === "複方精油 30mL";
+    if (selectedSeries === "精萃油 50mL") return product.series === "精萃油 50mL";
+    if (selectedSeries === "精油滾珠" || selectedSeries === "滾珠") return product.series === "精油滾珠";
+    if (selectedSeries === "精油配件") return product.series === "精油配件";
+    if (selectedSeries === "擴香設備") return product.series === "擴香設備";
+
+    // 舊連結相容：舊的單方／複方分類仍可使用，但前台不再顯示。
+    if (selectedSeries === "單方精油") return product.series.startsWith("單方精油");
+    if (selectedSeries === "複方精油") return product.series.startsWith("複方精油");
 
     if (selectedSeries === "潔顏") return ["潔顏", "慕絲", "卸妝"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "潔口液") return ["潔口", "潔口液", "牛樟芝"].some((keyword) => fullText.includes(keyword));
@@ -3279,7 +3343,7 @@ function Home() {
     },
     {
       title: "益生菌熱賣",
-      text: "蔓越莓 / 高鈣任選、BC-HA 組合",
+      text: "蔓越莓／高鈣任選、玻尿酸益生菌組合",
       category: "健康補給",
       series: "益生菌系列",
       product: products.find((product) => product.id === 1),
@@ -3349,7 +3413,7 @@ function Home() {
   const mallDealProducts = getProductsByIds([34, 1, 51]);
   const summerWhiteningProducts = getProductsByIds([47, 48, 49, 110]);
   const mallHotProducts = getProductsByIds([34, 1, 51, 55, 58, 54, 50, 112]);
-  const mallSkincareShelfProducts = getProductsByIds([34, 59, 35, 36, 40]);
+  const mallSkincareShelfProducts = getProductsByIds([34, 59, 35, 36, 40, 14]);
   const mallBodyShelfProducts = getProductsByIds([54, 50, 112, 15, 16, 67]);
   const mallHealthShelfProducts = getProductsByIds([1, 58, 2, 3, 69, 56]);
   const mallAromaShelfProducts = getProductsByIds([85, 74, 79, 82, 75, 76]);
@@ -3672,16 +3736,26 @@ function Home() {
   }
 
   function openCollectionPage() {
+    if (typeof window !== "undefined" && !isCollectionOpen) {
+      setCollectionReturnScrollY(window.scrollY);
+    }
+
     setIsCollectionOpen(true);
     setIsSearchOpen(false);
 
     window.setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "auto" });
     }, 0);
   }
 
   function closeCollectionPage() {
     setIsCollectionOpen(false);
+
+    if (typeof window !== "undefined") {
+      window.setTimeout(() => {
+        window.scrollTo({ top: collectionReturnScrollY, behavior: "auto" });
+      }, 0);
+    }
   }
 
   function handleDrawerCategory(category: MainCategory, series = "全部") {
@@ -4409,7 +4483,6 @@ function Home() {
           />
         ) : (
           <div className="image-placeholder">
-            <span>Jourdeness Castle</span>
             <strong>圖片更新中</strong>
           </div>
         )}
@@ -4749,6 +4822,10 @@ function Home() {
             </div>
           )}
 
+          {isSevenSequenceOilV354(product) && (
+            <span className="seven-sequence-badge-v354">七序精油</span>
+          )}
+
           <h3>{product.name}</h3>
 
           <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
@@ -4820,6 +4897,11 @@ function Home() {
   }
 
   function clearCart() {
+    if (typeof window !== "undefined") {
+      const confirmed = window.confirm("確定要清空購物車嗎？");
+      if (!confirmed) return;
+    }
+
     setCartItems([]);
     setSubmitStatus("idle");
     setSubmitMessage("");
@@ -5315,9 +5397,7 @@ function Home() {
         </div>
 
         <div className="brand-block">
-          <p className="top-eyebrow">Jourdeness Castle</p>
           <h1>佐登妮絲城堡</h1>
-          <p>回購選品館</p>
         </div>
 
         <div className="header-actions" aria-label="網站功能">
@@ -5417,7 +5497,6 @@ function Home() {
           <div className="search-hot-panel-v22 search-hot-panel-v272">
             <div>
               <strong>熱門搜尋</strong>
-              <span>也可以直接輸入品牌、系列或品項名稱。</span>
             </div>
 
             <div className="search-hot-chip-row-v22">
@@ -5487,7 +5566,7 @@ function Home() {
                 </div>
               ) : (
                 <div className="search-result-empty">
-                  找不到符合的商品，可以換短一點的關鍵字，例如「龍血」、「BC-HA」、「精油」、「薰衣草皂」。
+                  找不到符合的商品，可以換短一點的關鍵字，例如「龍血」、「玻尿酸益生菌」、「精油」、「薰衣草皂」。
                 </div>
               )}
 
@@ -5517,9 +5596,7 @@ function Home() {
           >
             <div className="profile-modal-head-v321">
               <div>
-                <p>My Account</p>
                 <h2 id="profile-modal-title-v321">個人資料</h2>
-                <span>資料會保存在目前裝置，結帳時可直接帶入。</span>
               </div>
               <button
                 type="button"
@@ -5593,63 +5670,18 @@ function Home() {
               className="search-back-button"
               onClick={closeCollectionPage}
             >
-              ← 返回
+              ← 上一頁
             </button>
 
             <div>
-              <p>Catalog</p>
               <h2>{getCollectionHeroLabel()}</h2>
-              <span>精選 {collectionProducts.length} 項熱門商品｜可加入購物車或查看商品資訊</span>
             </div>
           </div>
 
-          <section className="collection-hero-v22">
-            <div>
-              <p>Collection</p>
-              <h2>{getCollectionHeroLabel()}</h2>
-              <span>{getCollectionSubtitle()}</span>
-            </div>
-
-            <div className="collection-stat-grid-v22">
-              <div>
-                <strong>{collectionProducts.length}</strong>
-                <span>熱門精選</span>
-              </div>
-              <div>
-                <strong>{selectedSeries === "全部" ? "全部" : selectedSeries}</strong>
-                <span>目前系列</span>
-              </div>
-              <div>
-                <strong>{cartTotalQuantity}</strong>
-                <span>購物車件數</span>
-              </div>
-            </div>
-          </section>
-
-          <section className="collection-guide-v272" aria-label="分類頁快速操作">
-            <div>
-              <strong>目前在：{getCollectionHeroLabel()}</strong>
-              <span>側邊選單與快速篩選使用同一套需求分類；也可以直接搜尋商品。</span>
-            </div>
-            <div>
-              <button type="button" onClick={() => setIsMenuOpen(true)}>切換分類</button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsCollectionOpen(false);
-                  setIsSearchOpen(true);
-                }}
-              >
-                搜尋商品
-              </button>
-              <button type="button" onClick={() => openCategoryTab("本月優惠", "全部")}>看優惠</button>
-            </div>
-          </section>
 
           <section className="collection-filter-panel-v22">
             <div className="collection-filter-title-v22">
               <strong>快速篩選</strong>
-              <span>點選系列或需求，直接切換目前賣場。</span>
             </div>
 
             <div className="collection-chip-row-v22">
@@ -5700,7 +5732,6 @@ function Home() {
           {collectionFeaturedProducts.length > 0 && (
             <section className="collection-featured-strip-v22">
               <div>
-                <p>Featured</p>
                 <h3>精選商品</h3>
               </div>
 
@@ -5746,9 +5777,7 @@ function Home() {
           <aside className="side-drawer" onClick={(event) => event.stopPropagation()}>
             <div className="drawer-head">
               <div>
-                <p>Jourdeness Castle</p>
                 <h2>佐登妮絲城堡選品館</h2>
-                <span>需求分類｜熟客回購賣場</span>
               </div>
               <button onClick={() => setIsMenuOpen(false)} aria-label="關閉選單">×</button>
             </div>
@@ -5819,10 +5848,15 @@ function Home() {
                 {expandedDrawerGroup === "精油香氛" && (
                   <div className="drawer-sublist-v25">
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "全部")}>全部</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油")}>單方精油</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油")}>複方精油</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "滾珠精油")}>滾珠精油</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油 10mL")}>單方精油 10mL</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油 15mL")}>單方精油 15mL</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油 30mL")}>單方精油 30mL</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油 10mL")}>複方精油 10mL</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油 15mL")}>複方精油 15mL</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油 30mL")}>複方精油 30mL</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "精萃油 50mL")}>精萃油 50mL</button>
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "精油配件")}>精油配件</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "擴香設備")}>擴香設備</button>
                   </div>
                 )}
               </div>
@@ -6018,7 +6052,6 @@ function Home() {
 
       <section className="commerce-trust-flow-v23 trust-flow-after-deals-v24" aria-label="購買流程">
         <div className="trust-flow-title-v23">
-          <p>How to Order</p>
           <h2>購物流程</h2>
         </div>
 
@@ -6041,7 +6074,7 @@ function Home() {
           <div>
             <strong>04</strong>
             <span>匯款成立</span>
-            <p>確認無誤後提供匯款資訊，完成後成立。</p>
+
           </div>
         </div>
       </section>
@@ -6069,9 +6102,7 @@ function Home() {
               </button>
 
               <div className="cart-title-v352">
-                <p className="cart-eyebrow">Shopping Cart</p>
                 <h2>購物車</h2>
-                <span>可先整理商品，也能隨時返回賣場繼續選購。</span>
               </div>
 
               <button
@@ -6115,9 +6146,7 @@ function Home() {
 
                 <section className="checkout-card-v21">
                   <div className="checkout-card-title">
-                    <p>Order Items</p>
                     <h3>商品明細</h3>
-                    <span>共 {cartTotalQuantity} 件商品，實際組合優惠與金額由 LINE 小幫手確認。</span>
                   </div>
 
                   <div className="cart-items checkout-items-v21">
@@ -6176,9 +6205,7 @@ function Home() {
 
                 <section className="checkout-free-shipping-card">
                   <div>
-                    <p>Free Shipping</p>
                     <h3>滿 NT$3,000 享免運</h3>
-                    <span>部分商品為任選、組合價或待確認價格，最終免運金額以 LINE 小幫手確認為準。</span>
                   </div>
                   <strong>宅配限定</strong>
                 </section>
@@ -6186,9 +6213,7 @@ function Home() {
                 {cartUpsellProducts.length > 0 && (
                   <section className="checkout-upsell-card-v22">
                     <div className="checkout-card-title">
-                      <p>Add-on Ideas</p>
                       <h3>可加購湊免運</h3>
-                      <span>實際金額由 LINE 小幫手確認。</span>
                     </div>
 
                     <div className="checkout-upsell-list-v22">
@@ -6213,9 +6238,7 @@ function Home() {
 
                 <form className="order-form checkout-form-v21" onSubmit={submitOrder}>
                   <div className="checkout-card-title">
-                    <p>Delivery Info</p>
                     <h3>宅配資料</h3>
-                    <span>這裡只做訂購資料送出，不會直接付款。</span>
                   </div>
 
                   <div className="delivery-summary checkout-line-flow">
@@ -6629,12 +6652,7 @@ function Home() {
       <section className="line-confirm-section-v244" aria-label="LINE 訂單確認">
         <div className="line-confirm-card-v244">
           <div className="line-confirm-copy-v244">
-            <p>Order Confirm</p>
             <h2>LINE 訂單確認</h2>
-            <span>
-              送出資料後，請加入 LINE 小幫手確認訂單。小幫手會協助確認庫存、效期、金額與宅配資訊，確認完成後才會提供匯款資訊。
-            </span>
-
             <strong>LINE ID：@chateau-buy</strong>
 
             <a
@@ -6670,9 +6688,7 @@ function Home() {
             }}
           />
           <div>
-            <p>Jourdeness Castle</p>
             <h2>佐登妮絲城堡回購館</h2>
-            <span>城堡回購群｜產地價與精選生活賣場</span>
           </div>
         </div>
 
@@ -19893,6 +19909,192 @@ function Home() {
           .search-panel.search-page-view.search-dropdown-v342 {
             inset-block-start: 64px !important;
             max-height: calc(100dvh - 64px) !important;
+          }
+        }
+
+
+        /* V3.5.4：精油容量分類、上一頁、標題節奏與精簡商品卡 */
+        .search-panel.search-page-view.collection-page-v22 {
+          inset: 68px 0 0 !important;
+          z-index: 2900 !important;
+          width: 100% !important;
+          height: calc(100dvh - 68px) !important;
+          min-height: 0 !important;
+          padding: 10px 14px calc(26px + env(safe-area-inset-bottom)) !important;
+        }
+
+        .collection-head-v22 {
+          grid-template-columns: auto minmax(0, 1fr) !important;
+          gap: 10px !important;
+          min-height: 56px !important;
+          margin: -10px -14px 12px !important;
+          padding: 8px 14px !important;
+          top: 0 !important;
+        }
+
+        .collection-head-v22 .search-back-button {
+          width: auto !important;
+          min-width: 92px !important;
+          min-height: 40px !important;
+          padding: 8px 13px !important;
+          white-space: nowrap !important;
+        }
+
+        .collection-head-v22 h2 {
+          margin: 0 !important;
+          font-size: clamp(20px, 5.5vw, 26px) !important;
+          line-height: 1.2 !important;
+        }
+
+        .collection-filter-panel-v22 {
+          margin-top: 0 !important;
+        }
+
+        .collection-filter-title-v22 {
+          margin-bottom: 10px !important;
+        }
+
+        .search-hot-panel-v22 > div:first-child,
+        .collection-filter-title-v22 {
+          min-height: 0 !important;
+        }
+
+        /* 全站主要標題使用一致節奏，不再由多層 margin / padding 疊出大片空白 */
+        .top-picks-stream-v330 {
+          margin: 0 0 24px !important;
+          padding-top: 18px !important;
+        }
+
+        .top-picks-stream-v330 .mall-section-head-v26,
+        .activity-stream-v330 .mall-section-head-v26 {
+          margin: 0 0 12px !important;
+          padding: 0 !important;
+        }
+
+        .seasonal-feature-v340 {
+          margin-top: 24px !important;
+          padding-top: 0 !important;
+        }
+
+        .seasonal-feature-heading-v340 {
+          margin: 0 14px 12px !important;
+          padding-top: 0 !important;
+        }
+
+        .seasonal-product-showcase-v342 {
+          padding-top: 18px !important;
+        }
+
+        .seasonal-product-head-v342 {
+          margin: 0 0 12px !important;
+        }
+
+        .activity-stream-v330 {
+          margin-top: 24px !important;
+          margin-bottom: 0 !important;
+          padding-top: 0 !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271 {
+          margin-top: 24px !important;
+          margin-bottom: 0 !important;
+          padding-top: 0 !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271
+          .section-heading.compact {
+          margin: 0 0 12px !important;
+          padding: 0 !important;
+        }
+
+        .commerce-trust-flow-v23 {
+          margin-top: 24px !important;
+          padding-top: 0 !important;
+        }
+
+        /* 商品卡：名稱置中、最多兩行，縮短名稱與價格之間的空白 */
+        .compact-commerce-card-v350 .product-info {
+          gap: 7px !important;
+          padding: 10px 9px 9px !important;
+          text-align: center !important;
+        }
+
+        .compact-commerce-card-v350 .product-info h3 {
+          display: -webkit-box !important;
+          min-height: 40px !important;
+          max-height: 40px !important;
+          margin: 0 !important;
+          overflow: hidden !important;
+          font-size: 14px !important;
+          line-height: 1.42 !important;
+          text-align: center !important;
+          word-break: break-word !important;
+          -webkit-box-orient: vertical !important;
+          -webkit-line-clamp: 2 !important;
+        }
+
+        .compact-price-block-v350 {
+          align-items: center !important;
+          min-height: 52px !important;
+          margin: 0 !important;
+          padding-top: 7px !important;
+          text-align: center !important;
+        }
+
+        .compact-add-cart-v350,
+        .compact-commerce-card-v350 .add-cart-button {
+          flex: 0 0 42px !important;
+          height: 42px !important;
+          min-height: 42px !important;
+          max-height: 42px !important;
+          margin-top: 0 !important;
+        }
+
+        .seven-sequence-badge-v354 {
+          display: inline-flex !important;
+          align-self: center !important;
+          align-items: center !important;
+          justify-content: center !important;
+          min-height: 22px !important;
+          padding: 3px 9px !important;
+          border: 1px solid rgba(153, 105, 30, 0.2) !important;
+          border-radius: 999px !important;
+          background: #fff3cf !important;
+          color: #79510e !important;
+          font-size: 10px !important;
+          font-weight: 950 !important;
+          line-height: 1 !important;
+        }
+
+        .cart-title-v352,
+        .checkout-card-title,
+        .trust-flow-title-v23,
+        .line-confirm-copy-v244,
+        .company-footer-brand-v2535 > div {
+          gap: 0 !important;
+        }
+
+        @media (max-width: 759px) {
+          .compact-commerce-card-v350 .product-info {
+            padding: 9px 8px 8px !important;
+          }
+
+          .compact-commerce-card-v350 .product-info h3 {
+            min-height: 38px !important;
+            max-height: 38px !important;
+            font-size: 13px !important;
+            line-height: 1.45 !important;
+          }
+
+          .compact-price-block-v350 {
+            min-height: 50px !important;
+          }
+        }
+
+        @media (max-width: 359px) {
+          .search-panel.search-page-view.collection-page-v22 {
+            top: 64px !important;
+            height: calc(100dvh - 64px) !important;
           }
         }
 
