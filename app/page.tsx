@@ -5914,7 +5914,7 @@ function Home() {
             夏日美白副主視覺｜手機版 750 × 600 px
           </span>
           <picture className="seasonal-hero-picture-v340">
-            <source media="(min-width: 760px)" srcSet="/products/hero-summer-whitening-desktop.jpg" />
+            <source media="(min-width: 760px)" srcSet="/products/no2.png" />
             <img
               src="/products/hero-summer-whitening-mobile.jpg"
               alt="櫻の雪傳明酸夏日美白系列主視覺"
