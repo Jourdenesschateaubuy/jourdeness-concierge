@@ -5272,17 +5272,19 @@ function Home() {
     };
 
     try {
-      // 使用 UTF-8 Blob 傳送，避免含中文商品名稱的 JSON
-      // 被瀏覽器、擴充功能或 fetch 攔截層誤當成 ByteString。
-      const payloadText = JSON.stringify(payload);
-      const payloadBlob = new Blob([payloadText], {
-        type: "text/plain;charset=UTF-8",
-      });
+      // 將 JSON 中所有非 ASCII 字元轉成 \uXXXX。
+      // 內容仍是合法 JSON，Google Apps Script JSON.parse 後會自動還原中文，
+      // 同時避免任何瀏覽器、擴充功能或傳輸層把中文誤當成 ByteString。
+      const asciiPayload = JSON.stringify(payload).replace(
+        /[^\x20-\x7E]/g,
+        (character) =>
+          `\\u${character.charCodeAt(0).toString(16).padStart(4, "0")}`
+      );
 
       await fetch(ORDER_WEB_APP_URL, {
         method: "POST",
         mode: "no-cors",
-        body: payloadBlob,
+        body: asciiPayload,
       });
 
       window.localStorage.removeItem(CART_STORAGE_KEY);
@@ -5916,9 +5918,9 @@ function Home() {
             夏日美白副主視覺｜手機版 750 × 600 px
           </span>
           <picture className="seasonal-hero-picture-v340">
-            <source media="(min-width: 760px)" srcSet="/products/no2.png" />
+            <source media="(min-width: 760px)" srcSet="/products/hero-summer-whitening-desktop.jpg" />
             <img
-              src="/products/no2.png"
+              src="/products/hero-summer-whitening-mobile.jpg"
               alt="櫻の雪傳明酸夏日美白系列主視覺"
               onError={(event) => {
                 event.currentTarget.style.opacity = "0";
