@@ -893,7 +893,7 @@ const allProducts: Product[] = [
     series: "複方精油",
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
-    image: "/products/placeholder.jpg",
+    image: "/products/jd5.jpg",
     description: "10mL。佐登妮絲5號複方精油，適合搭配擴香設備或擴香配件使用。",
   },
 {
@@ -903,7 +903,7 @@ const allProducts: Product[] = [
     series: "複方精油",
     originalPrice: "原價 $ 2,280",
     price: "產地價 $ 1,710",
-    image: "/products/placeholder.jpg",
+    image: "/products/Easy Breath Essential Oil.jpg",
     description: "30mL。呼暢護隨精油，適合日常擴香，營造清爽舒適的空間感。",
   },
 {
@@ -913,7 +913,7 @@ const allProducts: Product[] = [
     series: "複方精油",
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
-    image: "/products/placeholder.jpg",
+    image: "/products/jd12.jpg",
     description: "10mL。OMA律動精油，適合日常香氛儀式與擴香搭配。",
   },
 {
@@ -933,7 +933,7 @@ const allProducts: Product[] = [
     series: "複方精油",
     originalPrice: "原價 $ 3,280",
     price: "產地價 $ 2,460",
-    image: "/products/placeholder.jpg",
+    image: "/products/Magic Slim.jpg",
     description: "30mL。魔力輕盈精油，適合日常擴香與空間香氛使用。",
   },
 {
@@ -943,7 +943,7 @@ const allProducts: Product[] = [
     series: "複方精油",
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
-    image: "/products/placeholder.jpg",
+    image: "/products/Joyous.jpg",
     description: "15mL。柚見快樂精油，適合營造明亮、清新的香氣氛圍。",
   },
 {
@@ -953,7 +953,7 @@ const allProducts: Product[] = [
     series: "複方精油",
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,620",
-    image: "/products/placeholder.jpg",
+    image: "/products/jd4.jpg",
     description: "功效：清新醒腦。適合日常擴香，讓空間維持清新感。",
   },
 {
@@ -963,7 +963,7 @@ const allProducts: Product[] = [
     series: "複方精油",
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
-    image: "/products/placeholder.jpg",
+    image: "/products/jd1.jpg",
     description: "10mL。佐登妮絲1號複方精油，適合居家擴香與日常香氛使用。",
   },
 {
@@ -983,7 +983,7 @@ const allProducts: Product[] = [
     series: "複方精油",
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
-    image: "/products/placeholder.jpg",
+    image: "/products/magic.jpg",
     description: "10mL。魔力輕盈精油小容量規格，適合初次體驗或外出攜帶。",
   },
 {
