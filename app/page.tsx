@@ -4694,9 +4694,11 @@ function Home() {
   function ProductCard({
     product,
     featured = false,
+    forceFullName = false,
   }: {
     product: Product;
     featured?: boolean;
+    forceFullName?: boolean;
   }) {
     const soldOut = isSoldOut(product);
     const comingSoon = isComingSoon(product);
@@ -4738,7 +4740,7 @@ function Home() {
             {soldOut && <span className="sold-out-badge">缺貨</span>}
           </div>
 
-          <h3>{getCardName(product)}</h3>
+          <h3>{forceFullName ? product.name : getCardName(product)}</h3>
           <p className="description">{getCardSubtitle(product)}</p>
 
           <div className="tag-row">
@@ -5929,12 +5931,16 @@ function Home() {
           <div className="seasonal-product-head-v342">
             <p>SUMMER WHITENING PICKS</p>
             <h3>夏日美白精選</h3>
-            <span>櫻の雪化妝水、精華液、乳液與超防禦輕透隔離乳，直接快速選購。</span>
+            <span>櫻の雪傳明酸美白化妝水、櫻の雪傳明酸美白精華液、櫻の雪傳明酸美白乳液、超防禦輕透隔離乳 30mL，直接快速選購。</span>
           </div>
 
           <div className="seasonal-product-grid-v342">
             {summerWhiteningProducts.map((product) => (
-              <ProductCard product={product} key={`summer-whitening-${product.id}`} />
+              <ProductCard
+                product={product}
+                forceFullName
+                key={`summer-whitening-${product.id}`}
+              />
             ))}
           </div>
         </div>
@@ -18070,7 +18076,8 @@ function Home() {
         }
 
         .top-picks-stream-v330 .top-pick-slot-card-v321:not(.top-pick-1) .top-pick-image-slot-v321 {
-          aspect-ratio: 760 / 500 !important;
+          /* TOP 2 / TOP 3 改為 4:5 直向比例：寬度不變，向下延伸 */
+          aspect-ratio: 4 / 5 !important;
         }
 
         .top-picks-stream-v330 .top-pick-rank-v316 {
@@ -19053,6 +19060,57 @@ function Home() {
           .search-panel.search-page-view.search-dropdown-v342 {
             inset-block-start: 58px !important;
             max-height: calc(100dvh - 58px) !important;
+          }
+        }
+
+
+        /* V3.4.5：手機版商品卡加寬，夏日美白品名使用正式完整名稱 */
+        @media (max-width: 759px) {
+          .seasonal-product-showcase-v342 {
+            padding: 22px 8px 0 !important;
+          }
+
+          .seasonal-product-grid-v342 {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 8px !important;
+          }
+
+          .home-product-section.mall-shelf-section-v271 {
+            padding-inline: 8px !important;
+          }
+
+          .home-product-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 8px !important;
+          }
+
+          .seasonal-product-grid-v342 > .commerce-product-card,
+          .home-product-grid > .commerce-product-card {
+            width: 100% !important;
+            min-width: 0 !important;
+          }
+
+          .commerce-product-card.shelf-card-v271 .product-info {
+            padding: 11px 9px 12px !important;
+          }
+
+          .commerce-product-card.shelf-card-v271 .product-info h3,
+          .featured-card.commerce-product-card.shelf-card-v271 .product-info h3 {
+            min-height: 4.05em !important;
+            font-size: 14px !important;
+            line-height: 1.35 !important;
+            overflow-wrap: anywhere !important;
+            word-break: break-word !important;
+            -webkit-line-clamp: 3 !important;
+          }
+
+          .seasonal-product-head-v342 {
+            padding-inline: 2px !important;
+          }
+
+          .seasonal-product-head-v342 span {
+            font-size: 12px !important;
+            line-height: 1.6 !important;
           }
         }
 
