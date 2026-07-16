@@ -17529,7 +17529,7 @@ function Home() {
 
         .mall-deal-card-v26.top-pick-slot-card-v321.top-pick-1 {
           grid-column: 1 / -1 !important;
-          aspect-ratio: 1200 / 520 !important;
+          aspect-ratio: 3 / 2 !important;
         }
 
         .mall-deal-card-v26.top-pick-slot-card-v321:not(.top-pick-1) {
@@ -18052,7 +18052,7 @@ function Home() {
         }
 
         .top-picks-stream-v330 .top-pick-1 .top-pick-image-slot-v321 {
-          aspect-ratio: 1200 / 520 !important;
+          aspect-ratio: 3 / 2 !important;
         }
 
         .top-picks-stream-v330 .top-pick-slot-card-v321:not(.top-pick-1) .top-pick-image-slot-v321 {
@@ -18294,7 +18294,7 @@ function Home() {
         }
 
 
-        /* V3.4.0：手機版完整視覺統整——滿版主視覺、季節副主視覺、字體層級與去格子化 */
+        /* V3.4.1：延續手機版完整視覺統整，放大 TOP 1 主打比例 */
         :root {
           --v340-ink: #3e2924;
           --v340-muted: #79645a;
