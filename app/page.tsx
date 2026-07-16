@@ -5303,8 +5303,8 @@ function Home() {
 
   return (
     <main className="site-shell">
-      <div className="announcement-bar">
-        滿 NT$3000 免運｜加入購物車後由 LINE 小幫手確認
+      <div className="announcement-bar announcement-bar-v340">
+        <span>滿 <strong>NT$3,000</strong> 享免運</span>
       </div>
 
       <header className="top-header">
@@ -5756,7 +5756,7 @@ function Home() {
             </div>
 
             <div className="drawer-rule-card">
-              <strong>🚚 滿 NT$3000 免運</strong>
+              <strong>🚚 滿 NT$3,000 享免運</strong>
               <span>📦 僅提供宅配，送出資料後由 LINE 小幫手確認。</span>
             </div>
 
@@ -5850,23 +5850,27 @@ function Home() {
         </section>
       )}
 
-      <section className="dragon-hero-v330" aria-label="佐登妮絲城堡回購館主視覺">
-        <picture className="dragon-hero-picture-v330">
-          <source media="(min-width: 760px)" srcSet="/products/hero-dragon-tree-desktop.jpg" />
+      <section className="dragon-hero-v330 dragon-hero-v340" aria-label="佐登妮絲城堡龍血主視覺">
+        <picture className="dragon-hero-picture-v330 dragon-hero-picture-v340">
+          <source media="(min-width: 760px)" srcSet="/products/hero-dragon-blood-desktop.jpg" />
           <img
-            src="/products/hero-dragon-tree-mobile.jpg"
-            alt="龍血樹與城堡主視覺"
+            src="/products/hero-dragon-blood-mobile.jpg"
+            alt="佐登妮絲城堡龍血系列主視覺"
             onError={(event) => {
-              event.currentTarget.style.visibility = "hidden";
+              event.currentTarget.style.opacity = "0";
             }}
           />
         </picture>
+        <span className="hero-image-placeholder-v340" aria-hidden="true">
+          龍血主視覺｜手機版 750 × 900 px
+        </span>
       </section>
 
       <section className="mall-deal-wall-v26 mall-deal-wall-v27 top-picks-stream-v330" aria-label="本月優惠">
-        <div className="mall-section-head-v26 compact top-picks-heading-v316">
-          <p>TOP PICKS</p>
+        <div className="mall-section-head-v26 compact top-picks-heading-v316 section-title-v340">
+          <p>MONTHLY FAVORITES</p>
           <h2>本月回購主打</h2>
+          <span>精選人氣回購商品</span>
         </div>
 
         <div className="mall-deal-grid-v26 top-pick-slot-grid-v321">
@@ -5893,10 +5897,40 @@ function Home() {
         </div>
       </section>
 
+      <section className="seasonal-feature-v340" aria-label="夏日美白主打">
+        <div className="section-title-v340 seasonal-feature-heading-v340">
+          <p>SEASONAL FEATURE</p>
+          <h2>夏日美白主打</h2>
+          <span>櫻の雪傳明酸美白系列，從化妝水、精華、乳液到組合一次看齊。</span>
+        </div>
+
+        <button
+          type="button"
+          className="seasonal-hero-button-v340"
+          onClick={() => openCategoryTab("臉部保養", "亮白保養")}
+          aria-label="查看夏日美白系列全部商品"
+        >
+          <span className="seasonal-image-placeholder-v340" aria-hidden="true">
+            夏日美白副主視覺｜手機版 750 × 600 px
+          </span>
+          <picture className="seasonal-hero-picture-v340">
+            <source media="(min-width: 760px)" srcSet="/products/hero-summer-whitening-desktop.jpg" />
+            <img
+              src="/products/hero-summer-whitening-mobile.jpg"
+              alt="櫻の雪傳明酸夏日美白系列主視覺"
+              onError={(event) => {
+                event.currentTarget.style.opacity = "0";
+              }}
+            />
+          </picture>
+        </button>
+      </section>
+
       <section className="mall-brand-section-v26 mall-brand-section-v27 v3-tag-section v313-status-section activity-stream-v330" aria-label="本月活動入口">
-        <div className="mall-section-head-v26 compact">
-          <p>本月活動</p>
+        <div className="mall-section-head-v26 compact section-title-v340">
+          <p>MONTHLY EVENTS</p>
           <h2>本月活動</h2>
+          <span>組合、限量與新品資訊集中查看</span>
         </div>
 
         <div className="mall-brand-grid-v26 mall-brand-grid-v271">
@@ -5916,9 +5950,10 @@ function Home() {
       </section>
 
       <section className="mobile-category-nav-v322 category-strip-v330" aria-label="商品分類">
-        <div className="mobile-category-head-v322">
-          <p>Shop by category</p>
+        <div className="mobile-category-head-v322 section-title-v340">
+          <p>SHOP BY CATEGORY</p>
           <h2>依分類選購</h2>
+          <span>左右滑動，快速找到想看的商品</span>
         </div>
 
         <div className="mobile-category-scroll-v322">
@@ -6141,7 +6176,7 @@ function Home() {
                 <section className="checkout-free-shipping-card">
                   <div>
                     <p>Free Shipping</p>
-                    <h3>滿 NT$3000 免運</h3>
+                    <h3>滿 NT$3,000 享免運</h3>
                     <span>部分商品為任選、組合價或待確認價格，最終免運金額以 LINE 小幫手確認為準。</span>
                   </div>
                   <strong>宅配限定</strong>
@@ -6198,7 +6233,7 @@ function Home() {
                     </div>
                     <div>
                       <strong>滿額免運</strong>
-                      <span>滿 NT$3000 免運。</span>
+                      <span>滿 NT$3,000 享免運。</span>
                     </div>
                   </div>
 
@@ -6443,7 +6478,7 @@ function Home() {
               <section className="detail-service-grid-v21" aria-label="購買服務提醒">
                 <div>
                   <strong>滿額免運</strong>
-                  <span>滿 NT$3000 免運</span>
+                  <span>滿 NT$3,000 享免運</span>
                 </div>
                 <div>
                   <strong>宅配出貨</strong>
@@ -6501,7 +6536,7 @@ function Home() {
 
               <section className="detail-info-block soft">
                 <h3>配送提醒</h3>
-                <p>滿 NT$3000 免運，僅提供宅配。</p>
+                <p>滿 NT$3,000 享免運，僅提供宅配。</p>
                 <p>送出資料後，請至 LINE 與小幫手確認庫存、效期、金額、付款方式與宅配資訊。</p>
               </section>
 
@@ -6602,7 +6637,7 @@ function Home() {
           </div>
 
           <div className="line-confirm-rule-v244">
-            滿 NT$3000 免運｜僅提供宅配｜付款完成後訂單才正式成立
+            滿 NT$3,000 享免運｜僅提供宅配｜付款完成後訂單才正式成立
           </div>
         </div>
       </section>
@@ -6630,7 +6665,7 @@ function Home() {
           </div>
           <div>
             <span>配送方式</span>
-            <strong>滿 NT$3000 免運｜目前僅提供宅配</strong>
+            <strong>滿 NT$3,000 享免運｜目前僅提供宅配</strong>
           </div>
           <div>
             <span>訂購流程</span>
@@ -18255,6 +18290,566 @@ function Home() {
           .activity-stream-v330 .monthly-activity-card-v318 {
             min-height: 104px !important;
             padding-inline: 18px 48px !important;
+          }
+        }
+
+
+        /* V3.4.0：手機版完整視覺統整——滿版主視覺、季節副主視覺、字體層級與去格子化 */
+        :root {
+          --v340-ink: #3e2924;
+          --v340-muted: #79645a;
+          --v340-wine: #8f2634;
+          --v340-gold: #b57a2d;
+          --v340-cream: #fffaf4;
+          --v340-line: rgba(81, 52, 39, 0.12);
+        }
+
+        .announcement-bar-v340 {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          min-height: 32px !important;
+          padding: 6px 14px !important;
+          background: #7f2731 !important;
+          color: #fffaf2 !important;
+          font-size: 12px !important;
+          font-weight: 750 !important;
+          line-height: 1.35 !important;
+          letter-spacing: 0.04em !important;
+          text-align: center !important;
+          white-space: nowrap !important;
+        }
+
+        .announcement-bar-v340 span,
+        .announcement-bar-v340 strong {
+          white-space: nowrap !important;
+        }
+
+        .announcement-bar-v340 strong {
+          margin-inline: 0.2em;
+          font-weight: 950 !important;
+          font-variant-numeric: tabular-nums;
+        }
+
+        .top-header {
+          box-sizing: border-box !important;
+          width: 100% !important;
+          min-height: 62px !important;
+          border-radius: 0 !important;
+        }
+
+        .brand-block h1,
+        .top-header h1 {
+          color: #67242d !important;
+          font-family: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif !important;
+          font-weight: 900 !important;
+          letter-spacing: 0.01em !important;
+        }
+
+        .header-cart-count {
+          display: grid !important;
+          min-width: 17px !important;
+          height: 17px !important;
+          padding-inline: 4px !important;
+          place-items: center !important;
+          border: 2px solid #fffaf4 !important;
+          border-radius: 999px !important;
+          background: #8f2634 !important;
+          color: #fff !important;
+          font-size: 9px !important;
+          font-weight: 950 !important;
+          line-height: 1 !important;
+        }
+
+        .dragon-hero-v340 {
+          position: relative !important;
+          width: 100% !important;
+          max-width: none !important;
+          margin: 0 0 38px !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: linear-gradient(145deg, #f8e8d5, #f0d3b5) !important;
+          box-shadow: none !important;
+        }
+
+        .dragon-hero-picture-v340,
+        .dragon-hero-picture-v340 img {
+          position: relative;
+          z-index: 1;
+          display: block !important;
+          width: 100% !important;
+        }
+
+        .dragon-hero-picture-v340 img {
+          aspect-ratio: 5 / 6 !important;
+          height: auto !important;
+          object-fit: cover !important;
+          object-position: center !important;
+          transition: opacity 180ms ease;
+        }
+
+        .hero-image-placeholder-v340,
+        .seasonal-image-placeholder-v340 {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          display: grid;
+          place-items: center;
+          padding: 28px;
+          color: rgba(106, 65, 49, 0.72);
+          font-size: 13px;
+          font-weight: 850;
+          line-height: 1.5;
+          letter-spacing: 0.04em;
+          text-align: center;
+        }
+
+        .section-title-v340 {
+          display: block !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          text-align: left !important;
+        }
+
+        .section-title-v340 > p,
+        .section-title-v340 p {
+          margin: 0 0 6px !important;
+          color: var(--v340-gold) !important;
+          font-size: 10px !important;
+          font-weight: 950 !important;
+          line-height: 1.2 !important;
+          letter-spacing: 0.18em !important;
+          text-transform: uppercase !important;
+        }
+
+        .section-title-v340 > h2,
+        .section-title-v340 h2 {
+          margin: 0 !important;
+          color: var(--v340-ink) !important;
+          font-family: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif !important;
+          font-size: clamp(26px, 7vw, 38px) !important;
+          font-weight: 900 !important;
+          line-height: 1.12 !important;
+          letter-spacing: -0.035em !important;
+        }
+
+        .section-title-v340 > span,
+        .section-title-v340 span {
+          display: block !important;
+          margin-top: 8px !important;
+          color: var(--v340-muted) !important;
+          font-size: 13px !important;
+          font-weight: 650 !important;
+          line-height: 1.6 !important;
+          letter-spacing: 0 !important;
+          text-transform: none !important;
+        }
+
+        .top-picks-stream-v330 {
+          margin-bottom: 40px !important;
+          padding-inline: 14px !important;
+        }
+
+        .top-picks-stream-v330 .mall-section-head-v26 {
+          margin-bottom: 18px !important;
+          padding: 0 !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-slot-grid-v321 {
+          gap: 10px !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-slot-card-v321,
+        .top-picks-stream-v330 .top-pick-slot-card-v321.feature {
+          border-radius: 14px !important;
+          background: #f7eee4 !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-rank-v316 {
+          top: 9px !important;
+          left: 9px !important;
+          min-width: 58px !important;
+          height: 28px !important;
+          padding-inline: 10px !important;
+          border: 0 !important;
+          background: rgba(126, 39, 48, 0.94) !important;
+          box-shadow: 0 5px 14px rgba(83, 26, 32, 0.16) !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-1 .top-pick-rank-v316 {
+          background: rgba(172, 119, 39, 0.95) !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-rank-v316 span {
+          font-size: 10px !important;
+          letter-spacing: 0.06em !important;
+        }
+
+        .seasonal-feature-v340 {
+          width: 100% !important;
+          margin: 0 0 42px !important;
+          padding: 0 !important;
+          border: 0 !important;
+          background: transparent !important;
+        }
+
+        .seasonal-feature-heading-v340 {
+          margin: 0 14px 17px !important;
+          padding-top: 36px !important;
+          border-top: 1px solid var(--v340-line) !important;
+        }
+
+        .seasonal-feature-heading-v340 > p {
+          color: #b66578 !important;
+        }
+
+        .seasonal-hero-button-v340 {
+          position: relative !important;
+          display: block !important;
+          width: 100% !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: linear-gradient(145deg, #fff7f8, #f5dfe3) !important;
+          color: inherit !important;
+          cursor: pointer !important;
+          box-shadow: none !important;
+          line-height: 0 !important;
+          text-align: left !important;
+        }
+
+        .seasonal-hero-picture-v340,
+        .seasonal-hero-picture-v340 img {
+          position: relative;
+          z-index: 1;
+          display: block !important;
+          width: 100% !important;
+        }
+
+        .seasonal-hero-picture-v340 img {
+          aspect-ratio: 5 / 4 !important;
+          height: auto !important;
+          object-fit: cover !important;
+          object-position: center !important;
+          transition: opacity 180ms ease;
+        }
+
+        .activity-stream-v330 {
+          margin-bottom: 38px !important;
+          padding-inline: 14px !important;
+        }
+
+        .activity-stream-v330 .mall-section-head-v26 {
+          margin-bottom: 14px !important;
+          padding: 0 !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318 {
+          min-height: 84px !important;
+          padding: 15px 34px 15px 12px !important;
+          column-gap: 10px !important;
+          background: linear-gradient(90deg, var(--activity-wash), transparent 82%) !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318::before {
+          inset-block: 14px !important;
+          width: 3px !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318 .mall-brand-badge-v271 {
+          min-width: 42px !important;
+          padding: 0 !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          font-size: 10px !important;
+          letter-spacing: 0.08em !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318 strong {
+          font-size: 19px !important;
+          letter-spacing: -0.025em !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318 p {
+          margin-top: 3px !important;
+          font-size: 12px !important;
+          line-height: 1.45 !important;
+        }
+
+        .category-strip-v330 {
+          margin-bottom: 14px !important;
+          padding-inline: 14px !important;
+        }
+
+        .category-strip-v330 .mobile-category-head-v322 {
+          margin-bottom: 13px !important;
+          padding: 0 !important;
+        }
+
+        .category-strip-v330 .mobile-category-scroll-v322 {
+          gap: 8px !important;
+          margin-inline: -14px !important;
+          padding: 2px 14px 10px !important;
+        }
+
+        .category-strip-v330 .mobile-category-scroll-v322 button {
+          min-height: 38px !important;
+          padding-inline: 15px !important;
+          border-color: rgba(111, 71, 54, 0.14) !important;
+          background: #fffaf5 !important;
+          color: #6b5147 !important;
+          font-size: 12px !important;
+          box-shadow: none !important;
+        }
+
+        .category-strip-v330 .mobile-category-scroll-v322 button.active {
+          border-color: var(--v340-wine) !important;
+          background: var(--v340-wine) !important;
+          color: #fff !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271 {
+          margin-bottom: 42px !important;
+          padding-inline: 14px !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271 .section-heading.compact {
+          margin-bottom: 15px !important;
+          padding: 0 !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271 .section-heading.compact > p {
+          margin-bottom: 6px !important;
+          color: var(--v340-gold) !important;
+          font-size: 10px !important;
+          font-weight: 950 !important;
+          letter-spacing: 0.16em !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271 .section-heading.compact > h2 {
+          color: var(--v340-ink) !important;
+          font-family: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif !important;
+          font-size: clamp(24px, 6.3vw, 34px) !important;
+          font-weight: 900 !important;
+          line-height: 1.15 !important;
+          letter-spacing: -0.035em !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271 .section-heading.compact > span {
+          margin-top: 7px !important;
+          color: var(--v340-muted) !important;
+          font-size: 12px !important;
+          line-height: 1.55 !important;
+        }
+
+        .home-product-grid {
+          gap: 10px !important;
+        }
+
+        .commerce-product-card.shelf-card-v271 {
+          overflow: hidden !important;
+          border: 1px solid rgba(91, 62, 49, 0.10) !important;
+          border-radius: 14px !important;
+          background: rgba(255, 253, 249, 0.96) !important;
+          box-shadow: none !important;
+          transform: none !important;
+        }
+
+        .commerce-product-card.shelf-card-v271:hover {
+          transform: none !important;
+          box-shadow: none !important;
+        }
+
+        .commerce-product-card.shelf-card-v271 .product-image {
+          border-radius: 0 !important;
+          background: #f7f1ea !important;
+        }
+
+        .commerce-product-card.shelf-card-v271 .product-info {
+          padding: 12px 11px 13px !important;
+        }
+
+        .commerce-product-card.shelf-card-v271 .product-info h3,
+        .featured-card.commerce-product-card.shelf-card-v271 .product-info h3 {
+          display: -webkit-box !important;
+          min-height: 2.7em !important;
+          overflow: hidden !important;
+          color: #3f2d28 !important;
+          font-size: 14px !important;
+          font-weight: 850 !important;
+          line-height: 1.35 !important;
+          letter-spacing: -0.02em !important;
+          -webkit-box-orient: vertical !important;
+          -webkit-line-clamp: 2 !important;
+        }
+
+        .commerce-product-card.shelf-card-v271 .product-info .description {
+          display: none !important;
+        }
+
+        .commerce-product-card.shelf-card-v271 .tag-row .need-tag:nth-of-type(n + 3) {
+          display: none !important;
+        }
+
+        .commerce-product-card.shelf-card-v271 .commerce-card-actions {
+          gap: 6px !important;
+        }
+
+        .commerce-product-card.shelf-card-v271 .commerce-card-actions button {
+          min-height: 36px !important;
+          padding-inline: 7px !important;
+          border-radius: 9px !important;
+          font-size: 11px !important;
+        }
+
+        .home-more-button {
+          min-height: 42px !important;
+          margin-top: 16px !important;
+          border-radius: 999px !important;
+          box-shadow: none !important;
+        }
+
+        @media (max-width: 759px) {
+          .top-header {
+            grid-template-columns: 36px minmax(100px, 1fr) auto !important;
+            gap: 6px !important;
+            min-height: 60px !important;
+            padding: 7px 8px !important;
+          }
+
+          .top-header .brand-logo-wrap {
+            display: none !important;
+          }
+
+          .menu-button {
+            width: 36px !important;
+            min-width: 36px !important;
+            height: 36px !important;
+            font-size: 19px !important;
+          }
+
+          .brand-block {
+            min-width: 0 !important;
+            overflow: visible !important;
+          }
+
+          .brand-block .top-eyebrow,
+          .brand-block > p:last-child {
+            display: none !important;
+          }
+
+          .brand-block h1,
+          .top-header h1 {
+            display: block !important;
+            width: auto !important;
+            max-width: none !important;
+            overflow: visible !important;
+            font-size: clamp(14px, 4vw, 17px) !important;
+            line-height: 1.2 !important;
+            letter-spacing: -0.02em !important;
+            text-overflow: clip !important;
+            white-space: nowrap !important;
+          }
+
+          .header-actions {
+            display: flex !important;
+            gap: 2px !important;
+          }
+
+          .header-actions .header-utility-button {
+            width: 34px !important;
+            min-width: 34px !important;
+            height: 34px !important;
+            padding: 0 !important;
+            border-radius: 10px !important;
+          }
+
+          .header-utility-button svg {
+            width: 18px !important;
+            height: 18px !important;
+          }
+
+          .header-cart-count {
+            top: -3px !important;
+            right: -2px !important;
+          }
+
+          .dragon-hero-v340 {
+            margin-bottom: 36px !important;
+          }
+
+          .top-picks-stream-v330 .top-pick-slot-grid-v321 {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+
+          .top-picks-stream-v330 .top-pick-slot-card-v321.top-pick-1 {
+            grid-column: 1 / -1 !important;
+          }
+
+          .home-product-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+        }
+
+        @media (max-width: 359px) {
+          .top-header {
+            grid-template-columns: 34px minmax(92px, 1fr) auto !important;
+            gap: 3px !important;
+            padding-inline: 5px !important;
+          }
+
+          .menu-button,
+          .header-actions .header-utility-button {
+            width: 32px !important;
+            min-width: 32px !important;
+            height: 32px !important;
+          }
+
+          .brand-block h1,
+          .top-header h1 {
+            font-size: 13px !important;
+          }
+        }
+
+        @media (min-width: 760px) {
+          .dragon-hero-v340 {
+            max-height: none !important;
+          }
+
+          .dragon-hero-picture-v340 img {
+            aspect-ratio: 24 / 19 !important;
+            height: auto !important;
+            max-height: none !important;
+          }
+
+          .seasonal-feature-v340 {
+            max-width: 1180px !important;
+            margin-inline: auto !important;
+            padding-inline: 20px !important;
+          }
+
+          .seasonal-feature-heading-v340 {
+            margin-inline: 0 !important;
+          }
+
+          .seasonal-hero-button-v340 {
+            border-radius: 18px !important;
+          }
+
+          .seasonal-hero-picture-v340 img {
+            aspect-ratio: 16 / 7 !important;
+          }
+
+          .top-picks-stream-v330,
+          .activity-stream-v330,
+          .category-strip-v330,
+          .home-product-section.mall-shelf-section-v271 {
+            max-width: 1180px !important;
+            margin-inline: auto !important;
           }
         }
 
