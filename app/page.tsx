@@ -5918,9 +5918,9 @@ function Home() {
             夏日美白副主視覺｜手機版 750 × 600 px
           </span>
           <picture className="seasonal-hero-picture-v340">
-            <source media="(min-width: 760px)" srcSet="/products/hero-summer-whitening-desktop.jpg" />
+            <source media="(min-width: 760px)" srcSet="/products/no2.png" />
             <img
-              src="/products/hero-summer-whitening-mobile.jpg"
+              src="/products/no2.png"
               alt="櫻の雪傳明酸夏日美白系列主視覺"
               onError={(event) => {
                 event.currentTarget.style.opacity = "0";
@@ -18078,8 +18078,8 @@ function Home() {
         }
 
         .top-picks-stream-v330 .top-pick-slot-card-v321:not(.top-pick-1) .top-pick-image-slot-v321 {
-          /* TOP 2 / TOP 3 改為 4:5 直向比例：寬度不變，向下延伸 */
-          aspect-ratio: 4 / 5 !important;
+          /* 圖片只負責完整填滿卡片；比例由外層卡片控制 */
+          aspect-ratio: auto !important;
         }
 
         .top-picks-stream-v330 .top-pick-rank-v316 {
@@ -19114,6 +19114,31 @@ function Home() {
             font-size: 12px !important;
             line-height: 1.6 !important;
           }
+        }
+
+
+        /* V3.4.9：TOP 2 / TOP 3 真正改外層卡片為 4:5，寬度不變、向下延伸 */
+        .top-picks-stream-v330
+          .mall-deal-card-v26.top-pick-slot-card-v321:not(.top-pick-1) {
+          aspect-ratio: 4 / 5 !important;
+          height: auto !important;
+          min-height: 0 !important;
+        }
+
+        .top-picks-stream-v330
+          .mall-deal-card-v26.top-pick-slot-card-v321.top-pick-1 {
+          aspect-ratio: 3 / 2 !important;
+          height: auto !important;
+        }
+
+        .top-picks-stream-v330
+          .top-pick-slot-card-v321
+          .top-pick-image-slot-v321 {
+          position: absolute !important;
+          inset: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          aspect-ratio: auto !important;
         }
 
 
