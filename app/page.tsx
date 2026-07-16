@@ -3071,6 +3071,7 @@ function Home() {
   const [detailHistoryActive, setDetailHistoryActive] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
+  const [cartNotice, setCartNotice] = useState("");
   const [customer, setCustomer] = useState<CustomerForm>({
     customerName: "",
     lineId: "",
@@ -4794,7 +4795,7 @@ function Home() {
       return [...currentItems, { product, quantity: 1 }];
     });
 
-    setIsCartOpen(true);
+    setCartNotice("已加入購物車");
     setSubmitStatus("idle");
     setSubmitMessage("");
   }
@@ -4903,6 +4904,16 @@ function Home() {
       setLineBindingMessage("LINE 綁定暫時無法使用");
     }
   }, [fetchAndSaveLineProfile, loadLiffSdk]);
+
+  useEffect(() => {
+    if (!cartNotice) return;
+
+    const timer = window.setTimeout(() => {
+      setCartNotice("");
+    }, 1800);
+
+    return () => window.clearTimeout(timer);
+  }, [cartNotice]);
 
   useEffect(() => {
     try {
@@ -5364,6 +5375,17 @@ function Home() {
           </button>
         </div>
       </header>
+
+      {cartNotice && (
+        <div
+          className="cart-added-toast-v353"
+          role="status"
+          aria-live="polite"
+        >
+          <span aria-hidden="true">✓</span>
+          {cartNotice}
+        </div>
+      )}
 
       {isSearchOpen && (
         <section className="search-panel search-page-view search-dropdown-v342" aria-label="商品搜尋頁面">
@@ -19572,6 +19594,305 @@ function Home() {
           .cart-close {
             grid-column: 2 !important;
             grid-row: 2 !important;
+          }
+        }
+
+
+        /* V3.5.3：頂部導覽列、標題節奏與購物車操作統整 */
+        .top-header {
+          box-sizing: border-box !important;
+          position: sticky !important;
+          top: 0 !important;
+          left: auto !important;
+          z-index: 3000 !important;
+          width: 100vw !important;
+          max-width: none !important;
+          min-height: 68px !important;
+          height: 68px !important;
+          margin: 0 0 0 calc(50% - 50vw) !important;
+          padding: 10px max(12px, env(safe-area-inset-right)) 10px
+            max(12px, env(safe-area-inset-left)) !important;
+          border-radius: 0 !important;
+          background: rgba(255, 250, 246, 0.985) !important;
+          border-bottom: 1px solid rgba(112, 65, 48, 0.1) !important;
+          box-shadow: 0 5px 16px rgba(69, 42, 31, 0.06) !important;
+          backdrop-filter: blur(18px) !important;
+          -webkit-backdrop-filter: blur(18px) !important;
+        }
+
+        .site-shell {
+          padding-top: 0 !important;
+          scroll-padding-top: 82px !important;
+        }
+
+        .search-panel.search-page-view.search-dropdown-v342 {
+          inset-block-start: 68px !important;
+          max-height: calc(100dvh - 68px) !important;
+        }
+
+        /* 首頁主標題：統一上下間距，不再出現左右破折號 */
+        .home-product-section.mall-shelf-section-v271 {
+          margin-top: 0 !important;
+          margin-bottom: 28px !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271
+          .section-heading.compact {
+          display: block !important;
+          align-items: initial !important;
+          margin: 0 0 14px !important;
+          padding: 0 2px !important;
+          text-align: left !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271
+          .section-heading.compact
+          h2 {
+          margin: 0 !important;
+          color: var(--v340-ink) !important;
+          font-size: clamp(22px, 5.8vw, 28px) !important;
+          font-weight: 900 !important;
+          line-height: 1.2 !important;
+          letter-spacing: -0.035em !important;
+          text-align: left !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271
+          .section-heading.compact
+          h2::before,
+        .home-product-section.mall-shelf-section-v271
+          .section-heading.compact
+          h2::after {
+          display: none !important;
+          content: none !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271
+          + .home-product-section.mall-shelf-section-v271 {
+          padding-top: 8px !important;
+        }
+
+        .top-picks-stream-v330,
+        .activity-stream-v330 {
+          margin-bottom: 34px !important;
+        }
+
+        .top-picks-stream-v330 .mall-section-head-v26,
+        .activity-stream-v330 .mall-section-head-v26 {
+          margin-bottom: 15px !important;
+        }
+
+        .seasonal-feature-heading-v340 {
+          margin-bottom: 15px !important;
+          padding-top: 28px !important;
+        }
+
+        .seasonal-product-showcase-v342 {
+          padding-top: 22px !important;
+        }
+
+        .seasonal-product-head-v342 {
+          margin-bottom: 14px !important;
+        }
+
+        /* 商品卡購物車按鈕固定為一般手機按鈕高度 */
+        .compact-commerce-card-v350 .compact-add-cart-v350,
+        .compact-commerce-card-v350 .add-cart-button {
+          box-sizing: border-box !important;
+          flex: 0 0 42px !important;
+          width: 100% !important;
+          min-height: 42px !important;
+          height: 42px !important;
+          max-height: 42px !important;
+          margin: 4px 0 0 !important;
+          padding: 0 10px !important;
+          border-radius: 10px !important;
+          font-size: 12px !important;
+          line-height: 1 !important;
+          box-shadow: none !important;
+        }
+
+        /* 加入購物車後只顯示短暫提示，不打斷繼續選購 */
+        .cart-added-toast-v353 {
+          position: fixed !important;
+          left: 50% !important;
+          bottom: calc(22px + env(safe-area-inset-bottom)) !important;
+          z-index: 3600 !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 7px !important;
+          min-width: 150px !important;
+          max-width: calc(100vw - 32px) !important;
+          min-height: 44px !important;
+          padding: 10px 18px !important;
+          border: 1px solid rgba(255, 255, 255, 0.24) !important;
+          border-radius: 999px !important;
+          background: rgba(58, 43, 36, 0.94) !important;
+          color: #fff !important;
+          font-size: 13px !important;
+          font-weight: 900 !important;
+          line-height: 1.2 !important;
+          text-align: center !important;
+          transform: translateX(-50%) !important;
+          box-shadow: 0 14px 32px rgba(49, 31, 25, 0.24) !important;
+          backdrop-filter: blur(12px) !important;
+          -webkit-backdrop-filter: blur(12px) !important;
+          pointer-events: none !important;
+        }
+
+        .cart-added-toast-v353 span {
+          display: grid !important;
+          width: 20px !important;
+          height: 20px !important;
+          place-items: center !important;
+          border-radius: 50% !important;
+          background: #fff !important;
+          color: var(--castle-wine) !important;
+          font-size: 12px !important;
+          line-height: 1 !important;
+        }
+
+        @media (max-width: 759px) {
+          .top-header {
+            display: grid !important;
+            grid-template-columns: 40px minmax(0, 1fr) 116px !important;
+            align-items: center !important;
+            gap: 8px !important;
+            min-height: 68px !important;
+            height: 68px !important;
+            padding-block: 9px !important;
+            overflow: visible !important;
+          }
+
+          .top-header .brand-logo-wrap {
+            display: none !important;
+          }
+
+          .menu-button {
+            grid-column: 1 !important;
+            width: 40px !important;
+            min-width: 40px !important;
+            height: 40px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            font-size: 22px !important;
+          }
+
+          .brand-block {
+            grid-column: 2 !important;
+            min-width: 0 !important;
+            overflow: hidden !important;
+          }
+
+          .brand-block .top-eyebrow,
+          .brand-block > p:last-child {
+            display: none !important;
+          }
+
+          .brand-block h1,
+          .top-header h1 {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+            font-size: clamp(14px, 4.2vw, 17px) !important;
+            line-height: 1.2 !important;
+            letter-spacing: -0.035em !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+          }
+
+          .header-actions {
+            grid-column: 3 !important;
+            display: grid !important;
+            grid-template-columns: repeat(3, 36px) !important;
+            align-items: center !important;
+            justify-content: end !important;
+            gap: 4px !important;
+            width: 116px !important;
+            min-width: 116px !important;
+            overflow: visible !important;
+          }
+
+          .header-actions .header-utility-button {
+            display: inline-grid !important;
+            width: 36px !important;
+            min-width: 36px !important;
+            height: 36px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            place-items: center !important;
+            border-radius: 10px !important;
+          }
+
+          .header-utility-button svg {
+            width: 18px !important;
+            height: 18px !important;
+          }
+
+          .header-cart-count {
+            top: -5px !important;
+            right: -4px !important;
+          }
+
+          .home-product-section.mall-shelf-section-v271 {
+            margin-bottom: 24px !important;
+          }
+
+          .home-product-section.mall-shelf-section-v271
+            .section-heading.compact {
+            margin-bottom: 12px !important;
+          }
+
+          .top-picks-stream-v330,
+          .activity-stream-v330 {
+            margin-bottom: 30px !important;
+          }
+
+          .seasonal-feature-heading-v340 {
+            padding-top: 24px !important;
+          }
+        }
+
+        @media (max-width: 359px) {
+          .top-header {
+            grid-template-columns: 36px minmax(0, 1fr) 104px !important;
+            gap: 5px !important;
+            min-height: 64px !important;
+            height: 64px !important;
+            padding-inline: 7px !important;
+          }
+
+          .menu-button {
+            width: 36px !important;
+            min-width: 36px !important;
+            height: 36px !important;
+          }
+
+          .header-actions {
+            grid-template-columns: repeat(3, 32px) !important;
+            width: 104px !important;
+            min-width: 104px !important;
+            gap: 4px !important;
+          }
+
+          .header-actions .header-utility-button {
+            width: 32px !important;
+            min-width: 32px !important;
+            height: 32px !important;
+          }
+
+          .brand-block h1,
+          .top-header h1 {
+            font-size: 13px !important;
+          }
+
+          .search-panel.search-page-view.search-dropdown-v342 {
+            inset-block-start: 64px !important;
+            max-height: calc(100dvh - 64px) !important;
           }
         }
 
