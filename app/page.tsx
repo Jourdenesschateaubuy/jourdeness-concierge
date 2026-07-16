@@ -97,7 +97,7 @@ declare global {
   }
 }
 
-// V3.2.2：手機版首頁重構，加入龍血樹主視覺、固定搜尋面板、TOP 圖片入口與橫向分類導覽。
+// V3.3.0：主視覺改為單張滿版圖片，首頁主要區塊去卡片化，活動入口改為流動式橫列。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
@@ -5850,39 +5850,20 @@ function Home() {
         </section>
       )}
 
-      <section className="dragon-hero-v322" aria-label="佐登妮絲城堡回購館主視覺">
-        <div className="dragon-hero-copy-v322">
-          <p className="dragon-hero-eyebrow-v322">Jourdeness Castle Reorder</p>
-          <h2>佐登妮絲城堡<br />回購館</h2>
-          <strong>城堡人氣保養・洗護・健康補給</strong>
-          <span>以龍血樹的修護意象，串起熟客最常回購的日常選品。</span>
-
-          <div className="dragon-hero-actions-v322">
-            <button type="button" onClick={() => openCategoryTab("本月優惠", "全部")}>瀏覽本月優惠</button>
-            <button type="button" className="ghost" onClick={() => openCategoryTab("臉部保養", "龍血系列")}>查看龍血系列</button>
-          </div>
-        </div>
-
-        <div className="dragon-hero-media-v322">
-          <picture>
-            <source media="(min-width: 760px)" srcSet="/products/hero-dragon-tree-desktop.jpg" />
-            <img
-              src="/products/hero-dragon-tree-mobile.jpg"
-              alt="龍血樹與城堡主視覺"
-              onError={(event) => {
-                event.currentTarget.style.display = "none";
-              }}
-            />
-          </picture>
-          <div className="dragon-hero-media-shade-v322" aria-hidden="true" />
-          <div className="dragon-hero-seal-v322" aria-hidden="true">
-            <span>CASTLE</span>
-            <strong>SELECT</strong>
-          </div>
-        </div>
+      <section className="dragon-hero-v330" aria-label="佐登妮絲城堡回購館主視覺">
+        <picture className="dragon-hero-picture-v330">
+          <source media="(min-width: 760px)" srcSet="/products/hero-dragon-tree-desktop.jpg" />
+          <img
+            src="/products/hero-dragon-tree-mobile.jpg"
+            alt="龍血樹與城堡主視覺"
+            onError={(event) => {
+              event.currentTarget.style.visibility = "hidden";
+            }}
+          />
+        </picture>
       </section>
 
-      <section className="mall-deal-wall-v26 mall-deal-wall-v27" aria-label="本月優惠">
+      <section className="mall-deal-wall-v26 mall-deal-wall-v27 top-picks-stream-v330" aria-label="本月優惠">
         <div className="mall-section-head-v26 compact top-picks-heading-v316">
           <p>TOP PICKS</p>
           <h2>本月回購主打</h2>
@@ -5912,11 +5893,10 @@ function Home() {
         </div>
       </section>
 
-      <section className="mall-brand-section-v26 mall-brand-section-v27 v3-tag-section v313-status-section" aria-label="本月活動入口">
+      <section className="mall-brand-section-v26 mall-brand-section-v27 v3-tag-section v313-status-section activity-stream-v330" aria-label="本月活動入口">
         <div className="mall-section-head-v26 compact">
           <p>本月活動</p>
           <h2>本月活動</h2>
-          <span>精選回購優惠與新品預告。</span>
         </div>
 
         <div className="mall-brand-grid-v26 mall-brand-grid-v271">
@@ -5935,7 +5915,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="mobile-category-nav-v322" aria-label="商品分類">
+      <section className="mobile-category-nav-v322 category-strip-v330" aria-label="商品分類">
         <div className="mobile-category-head-v322">
           <p>Shop by category</p>
           <h2>依分類選購</h2>
@@ -17948,6 +17928,333 @@ function Home() {
           .mobile-category-scroll-v322 {
             flex-wrap: wrap;
             overflow: visible;
+          }
+        }
+
+
+        /* V3.3.0：主視覺單張滿版、首頁去卡片化 */
+        .dragon-hero-v330 {
+          position: relative;
+          width: 100%;
+          margin: 0 0 34px;
+          overflow: hidden;
+          background: #f6ecdf;
+          line-height: 0;
+        }
+
+        .dragon-hero-picture-v330,
+        .dragon-hero-picture-v330 img {
+          display: block;
+          width: 100%;
+        }
+
+        .dragon-hero-picture-v330 img {
+          height: auto;
+          aspect-ratio: 5 / 6;
+          object-fit: cover;
+          object-position: center;
+        }
+
+        /* TOP PICKS：取消大白卡與卡片套卡片，只保留圖片入口。 */
+        .top-picks-stream-v330 {
+          width: 100% !important;
+          margin: 0 auto 34px !important;
+          padding: 0 12px !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          box-shadow: none !important;
+        }
+
+        .top-picks-stream-v330 .mall-section-head-v26 {
+          margin: 0 0 16px !important;
+          padding: 0 4px !important;
+          background: transparent !important;
+        }
+
+        .top-picks-stream-v330 .mall-section-head-v26 h2 {
+          margin-top: 4px !important;
+          font-size: clamp(28px, 7vw, 42px) !important;
+          line-height: 1.08 !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-slot-grid-v321 {
+          display: grid !important;
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 10px !important;
+          padding: 0 !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-slot-card-v321,
+        .top-picks-stream-v330 .top-pick-slot-card-v321.feature,
+        .top-picks-stream-v330 .top-pick-slot-card-v321.top-pick-1,
+        .top-picks-stream-v330 .top-pick-slot-card-v321:not(.top-pick-1) {
+          position: relative !important;
+          display: block !important;
+          min-height: 0 !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+          border: 0 !important;
+          border-radius: 18px !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          transform: none !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-slot-card-v321.top-pick-1 {
+          grid-column: 1 / -1 !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-image-slot-v321 {
+          width: 100% !important;
+          min-height: 0 !important;
+          border: 0 !important;
+          border-radius: inherit !important;
+          background-color: #f7eee4 !important;
+          background-position: center !important;
+          background-repeat: no-repeat !important;
+          background-size: cover !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-1 .top-pick-image-slot-v321 {
+          aspect-ratio: 1200 / 520 !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-slot-card-v321:not(.top-pick-1) .top-pick-image-slot-v321 {
+          aspect-ratio: 760 / 500 !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-rank-v316 {
+          top: 10px !important;
+          left: 10px !important;
+          z-index: 3 !important;
+          min-width: 72px !important;
+          height: 34px !important;
+          padding: 0 13px !important;
+          border: 1px solid rgba(255, 255, 255, 0.72) !important;
+          border-radius: 999px !important;
+          background: rgba(133, 31, 43, 0.92) !important;
+          box-shadow: 0 8px 20px rgba(96, 26, 34, 0.2) !important;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+
+        .top-picks-stream-v330 .top-pick-1 .top-pick-rank-v316 {
+          background: rgba(180, 126, 34, 0.94) !important;
+        }
+
+        .top-picks-stream-v330 .top-pick-rank-v316 span {
+          font-size: 13px !important;
+          font-weight: 950 !important;
+          letter-spacing: 0.04em !important;
+        }
+
+        /* 本月活動：由三張方格卡改成三條有色導購列。 */
+        .activity-stream-v330 {
+          width: 100% !important;
+          margin: 0 auto 34px !important;
+          padding: 0 12px !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          box-shadow: none !important;
+        }
+
+        .activity-stream-v330 .mall-section-head-v26 {
+          margin: 0 0 10px !important;
+          padding: 0 4px !important;
+        }
+
+        .activity-stream-v330 .mall-brand-grid-v26.mall-brand-grid-v271 {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 0 !important;
+          padding: 0 !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318 {
+          --activity-accent: #b57a28;
+          --activity-wash: rgba(204, 155, 72, 0.13);
+          position: relative !important;
+          display: grid !important;
+          grid-template-columns: auto minmax(0, 1fr) auto !important;
+          grid-template-areas:
+            "badge title arrow"
+            "badge copy arrow" !important;
+          align-items: center !important;
+          column-gap: 13px !important;
+          min-height: 94px !important;
+          padding: 17px 42px 17px 14px !important;
+          overflow: hidden !important;
+          border: 0 !important;
+          border-bottom: 1px solid rgba(86, 58, 43, 0.12) !important;
+          border-radius: 0 !important;
+          background: linear-gradient(90deg, var(--activity-wash), transparent 78%) !important;
+          color: #3f2822 !important;
+          text-align: left !important;
+          box-shadow: none !important;
+          transform: none !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318::before {
+          content: "" !important;
+          position: absolute !important;
+          inset: 15px auto 15px 0 !important;
+          width: 4px !important;
+          height: auto !important;
+          border-radius: 999px !important;
+          background: var(--activity-accent) !important;
+          opacity: 1 !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318::after {
+          content: "→" !important;
+          grid-area: arrow !important;
+          position: static !important;
+          width: auto !important;
+          height: auto !important;
+          color: var(--activity-accent) !important;
+          font-size: 24px !important;
+          font-weight: 800 !important;
+          background: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-2 {
+          --activity-accent: #9c2633;
+          --activity-wash: rgba(156, 38, 51, 0.10);
+        }
+
+        .activity-stream-v330 .monthly-activity-3 {
+          --activity-accent: #687b61;
+          --activity-wash: rgba(104, 123, 97, 0.12);
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318 .mall-brand-badge-v271 {
+          grid-area: badge !important;
+          align-self: center !important;
+          min-width: 52px !important;
+          margin: 0 !important;
+          padding: 7px 10px !important;
+          border: 0 !important;
+          border-radius: 999px !important;
+          background: color-mix(in srgb, var(--activity-accent) 14%, white) !important;
+          color: var(--activity-accent) !important;
+          font-size: 11px !important;
+          font-style: normal !important;
+          font-weight: 900 !important;
+          line-height: 1 !important;
+          text-align: center !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318 strong {
+          grid-area: title !important;
+          margin: 0 !important;
+          color: #3f2822 !important;
+          font-size: clamp(20px, 5.4vw, 27px) !important;
+          font-weight: 950 !important;
+          line-height: 1.18 !important;
+          letter-spacing: -0.04em !important;
+        }
+
+        .activity-stream-v330 .monthly-activity-card-v318 p {
+          grid-area: copy !important;
+          margin: 5px 0 0 !important;
+          color: #765f54 !important;
+          font-size: 13px !important;
+          font-weight: 650 !important;
+          line-height: 1.45 !important;
+        }
+
+        /* 分類導覽與商品貨架：移除外層大白卡，商品本身才保留卡片。 */
+        .category-strip-v330,
+        .home-product-section.mall-shelf-section-v271 {
+          width: 100% !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          box-shadow: none !important;
+        }
+
+        .category-strip-v330 {
+          margin: 0 auto 10px !important;
+          padding: 0 12px !important;
+        }
+
+        .category-strip-v330 .mobile-category-head-v322 {
+          padding-inline: 4px !important;
+        }
+
+        .category-strip-v330 .mobile-category-scroll-v322 button {
+          box-shadow: none !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271 {
+          margin-inline: auto !important;
+          padding-inline: 12px !important;
+        }
+
+        .home-product-section.mall-shelf-section-v271 .section-heading.compact {
+          padding-inline: 4px !important;
+          background: transparent !important;
+        }
+
+        @media (max-width: 420px) {
+          .top-picks-stream-v330 .top-pick-slot-grid-v321 {
+            gap: 8px !important;
+          }
+
+          .top-picks-stream-v330 .top-pick-rank-v316 {
+            top: 7px !important;
+            left: 7px !important;
+            min-width: 60px !important;
+            height: 30px !important;
+            padding-inline: 10px !important;
+          }
+
+          .top-picks-stream-v330 .top-pick-rank-v316 span {
+            font-size: 11px !important;
+          }
+
+          .activity-stream-v330 .monthly-activity-card-v318 {
+            grid-template-columns: auto minmax(0, 1fr) auto !important;
+            column-gap: 10px !important;
+            padding-left: 10px !important;
+          }
+
+          .activity-stream-v330 .monthly-activity-card-v318 .mall-brand-badge-v271 {
+            min-width: 46px !important;
+            padding-inline: 8px !important;
+          }
+        }
+
+        @media (min-width: 760px) {
+          .dragon-hero-v330 {
+            max-height: 720px;
+          }
+
+          .dragon-hero-picture-v330 img {
+            height: min(72vh, 720px);
+            aspect-ratio: auto;
+            object-fit: cover;
+            object-position: center;
+          }
+
+          .top-picks-stream-v330,
+          .activity-stream-v330,
+          .category-strip-v330,
+          .home-product-section.mall-shelf-section-v271 {
+            padding-inline: 20px !important;
+          }
+
+          .top-picks-stream-v330 .top-pick-slot-grid-v321 {
+            gap: 16px !important;
+          }
+
+          .activity-stream-v330 .monthly-activity-card-v318 {
+            min-height: 104px !important;
+            padding-inline: 18px 48px !important;
           }
         }
 
