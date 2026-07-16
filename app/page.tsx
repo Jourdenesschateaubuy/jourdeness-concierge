@@ -97,11 +97,11 @@ declare global {
   }
 }
 
-// V3.1.8：TOP PICKS 改為全寬穩定排版、本月活動加入色彩層級、移除頂部分類捷徑與兩項茶樹商品。
+// V3.1.9：移除未上架、重複與指定下架商品；保留水搖滾10片裝；商品ID與關聯資料全面改為連續編號。
 const ORDER_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbwr7F_SU5JNCzDaos4AP0690pCYFFTO-F-inAudZqhVwzbENYxfhlc8Lna5TXtzgl-0_A/exec";
 
-const CART_STORAGE_KEY = "jourdeness_saved_cart_v1";
+const CART_STORAGE_KEY = "jourdeness_saved_cart_v2";
 const CUSTOMER_DRAFT_STORAGE_KEY = "jourdeness_customer_draft_v1";
 const LINE_PROFILE_STORAGE_KEY = "jourdeness_line_profile_v1";
 const LINE_LIFF_ID = process.env.NEXT_PUBLIC_LINE_LIFF_ID || "";
@@ -120,16 +120,6 @@ const allProducts: Product[] = [
   },
 {
     id: 2,
-    name: "蔓越莓益生菌速酵力配方",
-    category: "健康補給",
-    series: "益生菌系列",
-    originalPrice: "原價 $ 960",
-    price: "產地價 3盒 $ 1,600",
-    image: "/products/probiotic-cranberry.jpg",
-    description: "3g x 30包 / 盒。蔓越莓 × 益生菌複合配方，適合女性日常保健補給。",
-  },
-{
-    id: 4,
     name: "EC晶眸葉黃素",
     category: "健康補給",
     series: "晶眸保健系列",
@@ -139,7 +129,7 @@ const allProducts: Product[] = [
     description: "精華凍 + 精華飲綜合組。適合 3C 族、學生與上班族日常晶亮營養補給。",
   },
 {
-    id: 5,
+    id: 3,
     name: "亮妍魚膠原蛋白飲",
     category: "健康補給",
     series: "美妍飲品系列",
@@ -149,7 +139,7 @@ const allProducts: Product[] = [
     description: "15mL x 10瓶 / 盒。魚膠原蛋白美妍飲，日常美容保健與水潤光澤補給。",
   },
 {
-    id: 6,
+    id: 4,
     name: "薰衣草肌安舒緩化妝水",
     category: "保養品",
     series: "薰衣草系列",
@@ -159,7 +149,7 @@ const allProducts: Product[] = [
     description: "150mL。薰衣草肌安舒緩系列。",
   },
 {
-    id: 7,
+    id: 5,
     name: "薰衣草肌安舒緩精華液",
     category: "保養品",
     series: "薰衣草系列",
@@ -169,7 +159,7 @@ const allProducts: Product[] = [
     description: "30mL。薰衣草肌安舒緩系列。",
   },
 {
-    id: 8,
+    id: 6,
     name: "薰衣草肌安舒緩保濕乳",
     category: "保養品",
     series: "薰衣草系列",
@@ -179,27 +169,7 @@ const allProducts: Product[] = [
     description: "100mL。薰衣草肌安舒緩系列。",
   },
 {
-    id: 10,
-    name: "冷杉型男淨化保濕化妝水",
-    category: "保養品",
-    series: "冷杉系列",
-    originalPrice: "原價 $ 590",
-    price: "即期出清 單瓶 $199",
-    image: "/products/Men's Abies3.jpg",
-    description: "150mL。冷杉系列保養品。",
-  },
-{
-    id: 11,
-    name: "冷杉型男淨化保濕乳",
-    category: "保養品",
-    series: "冷杉系列",
-    originalPrice: "原價 $ 790",
-    price: "即期出清 單瓶 $199",
-    image: "/products/Men's Abies1.jpg",
-    description: "100mL。冷杉系列保養品。",
-  },
-{
-    id: 14,
+    id: 7,
     name: "玫瑰超微晶萃活膚液",
     category: "保養品",
     series: "玫瑰超微晶萃系列",
@@ -209,7 +179,7 @@ const allProducts: Product[] = [
     description: "130mL / 瓶。玫瑰超微晶萃活膚液，洗臉後調理肌膚並維持柔嫩光澤。",
   },
 {
-    id: 16,
+    id: 8,
     name: "玫瑰超微晶萃瞬效霜",
     category: "保養品",
     series: "玫瑰超微晶萃系列",
@@ -219,7 +189,7 @@ const allProducts: Product[] = [
     description: "50mL / 瓶。玫瑰超微晶萃瞬效霜，保養最後一步加強鎖水與潤澤。",
   },
 {
-    id: 17,
+    id: 9,
     name: "龍血求麗化妝水",
     category: "保養品",
     series: "龍血系列",
@@ -229,17 +199,7 @@ const allProducts: Product[] = [
     description: "120mL / 瓶。前導補水、油水平衡，龍血系列肌膚乖乖水。",
   },
 {
-    id: 18,
-    name: "龍血求麗精華",
-    category: "保養品",
-    series: "龍血系列",
-    originalPrice: "原價 $ 1,290",
-    price: "產地價 $ 695",
-    image: "/products/db-2.jpg",
-    description: "30mL / 瓶。龍血小橘瓶，熬夜、初老與疲憊肌修護精華。",
-  },
-{
-    id: 19,
+    id: 10,
     name: "龍血求麗修護乳",
     category: "保養品",
     series: "龍血系列",
@@ -249,17 +209,7 @@ const allProducts: Product[] = [
     description: "80mL / 瓶。買一送一，清爽水凝質地修護乳。",
   },
 {
-    id: 20,
-    name: "龍血求麗修護霜",
-    category: "保養品",
-    series: "龍血系列",
-    originalPrice: "原價 $ 1,490",
-    price: "產地價 $ 1,190",
-    image: "/products/db-4.jpg",
-    description: "35mL / 瓶。第二件五折，夜間深層鎖水修護霜。",
-  },
-{
-    id: 21,
+    id: 11,
     name: "肌光緊緻速妍雪膚液",
     category: "保養品",
     series: "肌光緊緻速妍系列",
@@ -269,7 +219,7 @@ const allProducts: Product[] = [
     description: "130mL / 瓶。緊緻前導雪膚液，洗臉後調理肌膚紋理與彈力光澤。",
   },
 {
-    id: 22,
+    id: 12,
     name: "肌光緊緻速妍精華露",
     category: "保養品",
     series: "肌光緊緻速妍系列",
@@ -279,7 +229,7 @@ const allProducts: Product[] = [
     description: "35mL / 瓶。高濃縮緊緻精華，適合細紋、鬆弛感與熬夜疲憊肌加強保養。",
   },
 {
-    id: 23,
+    id: 13,
     name: "肌光緊緻速妍霜",
     category: "保養品",
     series: "肌光緊緻速妍系列",
@@ -289,7 +239,7 @@ const allProducts: Product[] = [
     description: "50mL / 瓶。緊緻修護霜，保養最後一步鎖住水分與滋養。",
   },
 {
-    id: 24,
+    id: 14,
     name: "肌光緊緻速妍面膜",
     category: "保養品",
     series: "肌光緊緻速妍系列",
@@ -299,7 +249,7 @@ const allProducts: Product[] = [
     description: "23mL x 10入 / 盒。集中型緊緻修護面膜，適合重要場合前與熬夜後加強保養。",
   },
 {
-    id: 29,
+    id: 15,
     name: "龍血求麗頭皮修護洗髮精",
     category: "洗沐",
     series: "洗沐系列",
@@ -309,7 +259,7 @@ const allProducts: Product[] = [
     description: "500mL / 瓶。龍血頭皮修護洗髮精，0矽靈配方，洗後蓬鬆柔順。",
   },
 {
-    id: 30,
+    id: 16,
     name: "龍血求麗潤澤修護沐浴乳",
     category: "洗沐",
     series: "洗沐系列",
@@ -319,7 +269,7 @@ const allProducts: Product[] = [
     description: "500mL / 瓶。龍血潤澤修護沐浴乳，洗後水潤柔嫩不緊繃。",
   },
 {
-    id: 31,
+    id: 17,
     name: "純淨洗髮精",
     category: "洗沐",
     series: "洗沐系列",
@@ -329,7 +279,7 @@ const allProducts: Product[] = [
     description: "洗髮品項。",
   },
 {
-    id: 35,
+    id: 18,
     name: "薰衣草齒齦保健牙膏",
     category: "牙膏",
     series: "牙膏",
@@ -339,7 +289,7 @@ const allProducts: Product[] = [
     description: "120g / 支。薰衣草草本香氣，溫和潔牙並維持口氣清新。",
   },
 {
-    id: 36,
+    id: 19,
     name: "龍血齒齦保健牙膏",
     category: "牙膏",
     series: "牙膏",
@@ -349,7 +299,7 @@ const allProducts: Product[] = [
     description: "120g / 支。龍血齒齦保健牙膏，溫和清潔牙齒與齒齦邊緣。",
   },
 {
-    id: 37,
+    id: 20,
     name: "智慧之冠",
     category: "精油",
     series: "10mL 精油系列",
@@ -359,7 +309,7 @@ const allProducts: Product[] = [
     description: "10mL。精油系列。",
   },
 {
-    id: 38,
+    id: 21,
     name: "亮采橙真",
     category: "精油",
     series: "10mL 精油系列",
@@ -369,7 +319,7 @@ const allProducts: Product[] = [
     description: "10mL。精油系列。",
   },
 {
-    id: 39,
+    id: 22,
     name: "呼暢護隨",
     category: "精油",
     series: "10mL 精油系列",
@@ -379,7 +329,7 @@ const allProducts: Product[] = [
     description: "10mL。精油系列。",
   },
 {
-    id: 40,
+    id: 23,
     name: "魔力輕盈",
     category: "精油",
     series: "10mL 精油系列",
@@ -389,7 +339,7 @@ const allProducts: Product[] = [
     description: "10mL。精油系列。",
   },
 {
-    id: 41,
+    id: 24,
     name: "順暢平衡",
     category: "精油",
     series: "10mL 精油系列",
@@ -399,7 +349,7 @@ const allProducts: Product[] = [
     description: "10mL。精油系列。",
   },
 {
-    id: 42,
+    id: 25,
     name: "心之綻放",
     category: "精油",
     series: "10mL 精油系列",
@@ -409,7 +359,7 @@ const allProducts: Product[] = [
     description: "10mL。精油系列。",
   },
 {
-    id: 43,
+    id: 26,
     name: "青春密碼維 E 精萃油",
     category: "精油",
     series: "50mL 精萃油系列",
@@ -419,7 +369,7 @@ const allProducts: Product[] = [
     description: "50mL。精萃油系列。",
   },
 {
-    id: 44,
+    id: 27,
     name: "防護盾牌維 C 精萃油",
     category: "精油",
     series: "50mL 精萃油系列",
@@ -429,7 +379,7 @@ const allProducts: Product[] = [
     description: "50mL。精萃油系列。",
   },
 {
-    id: 45,
+    id: 28,
     name: "晚安無瑕維 A 精萃油",
     category: "精油",
     series: "50mL 精萃油系列",
@@ -439,7 +389,7 @@ const allProducts: Product[] = [
     description: "50mL。精萃油系列。",
   },
 {
-    id: 46,
+    id: 29,
     name: "高頻霧化香薰機一台（買1台送1瓶茶樹精油10ml）",
     category: "精油",
     series: "擴香設備",
@@ -448,7 +398,7 @@ const allProducts: Product[] = [
     description: "高頻霧化香薰機一台，買1台送1瓶茶樹精油10mL。",
   },
 {
-    id: 47,
+    id: 30,
     name: "石墨烯電氣石精油貼布(涼感)",
     category: "貼布",
     series: "貼布",
@@ -458,7 +408,7 @@ const allProducts: Product[] = [
     description: "10片 / 盒。清爽涼感款，適合運動後、久坐肩頸與炎熱天氣的局部放鬆保養。",
   },
 {
-    id: 48,
+    id: 31,
     name: "石墨烯電氣石精油貼布(溫感)",
     category: "貼布",
     series: "貼布",
@@ -468,7 +418,7 @@ const allProducts: Product[] = [
     description: "10片 / 盒。溫感款，適合冷氣房、家事勞動後與肩頸腰背局部放鬆保養。",
   },
 {
-    id: 49,
+    id: 32,
     name: "茶樹K痘精華",
     category: "保養品",
     series: "茶樹控油系列",
@@ -478,7 +428,7 @@ const allProducts: Product[] = [
     description: "8mL / 盒。局部控油淨痘精華，適合粉刺、痘痘與局部油光調理。",
   },
 {
-    id: 52,
+    id: 33,
     name: "肌可佳膠原蛋白彈潤原液",
     category: "保養品",
     series: "膠原蛋白系列",
@@ -488,7 +438,7 @@ const allProducts: Product[] = [
     description: "30mL / 瓶。膠原蛋白彈潤原液，適合加強澎潤、保濕與肌膚彈性感。",
   },
 {
-    id: 53,
+    id: 34,
     name: "龍血玻尿酸保濕精華液",
     category: "保養品",
     series: "龍血系列",
@@ -498,7 +448,7 @@ const allProducts: Product[] = [
     description: "300mL / 瓶。買一送一，城堡必敗國民保濕精華。",
   },
 {
-    id: 54,
+    id: 35,
     name: "龍血求麗卸妝油",
     category: "保養品",
     series: "龍血系列",
@@ -508,7 +458,7 @@ const allProducts: Product[] = [
     description: "150mL / 瓶。輕盈卸妝油，快速溶解彩妝、防曬與毛孔髒污。",
   },
 {
-    id: 55,
+    id: 36,
     name: "龍血求麗潔顏慕絲",
     category: "保養品",
     series: "龍血系列",
@@ -518,17 +468,7 @@ const allProducts: Product[] = [
     description: "150mL / 瓶。細緻綿密潔顏慕絲，洗後不緊繃、不乾澀。",
   },
 {
-    id: 56,
-    name: "水搖滾保濕面膜 (5片裝)",
-    category: "保養品",
-    series: "龍血系列",
-    originalPrice: "原價待補",
-    price: "5片裝售價請洽小幫手",
-    image: "/products/DBMUSK 5.jpg",
-    description: "22mL x 5pcs / 盒。水搖滾保濕面膜，適合乾燥缺水與急救補水。",
-  },
-{
-    id: 57,
+    id: 37,
     name: "水搖滾保濕面膜 (10片裝)",
     category: "保養品",
     series: "龍血系列",
@@ -538,7 +478,7 @@ const allProducts: Product[] = [
     description: "22mL x 10pcs / 盒。水搖滾保濕面膜，日常補水與集中保養。",
   },
 {
-    id: 58,
+    id: 38,
     name: "水搖滾保濕面膜 (35片大容量桶裝)",
     category: "保養品",
     series: "龍血系列",
@@ -548,17 +488,7 @@ const allProducts: Product[] = [
     description: "22mL x 35pcs / 桶。水搖滾保濕面膜大容量桶裝，適合長期補水保養。",
   },
 {
-    id: 59,
-    name: "極光白美白面膜 (5片裝)",
-    category: "保養品",
-    series: "龍血系列",
-    originalPrice: "原價待補",
-    price: "5片裝售價請洽小幫手",
-    image: "/products/DBMUSK 5 W.jpg",
-    description: "5pcs / 盒。極光白美白面膜，集中亮白調理膚色不均與熬夜暗沉。",
-  },
-{
-    id: 60,
+    id: 39,
     name: "極光白美白面膜 (35片大容量桶裝)",
     category: "保養品",
     series: "龍血系列",
@@ -568,7 +498,7 @@ const allProducts: Product[] = [
     description: "35pcs / 桶。極光白美白面膜大容量桶裝，適合日常亮白集中保養。",
   },
 {
-    id: 62,
+    id: 40,
     name: "水光肌能乳液",
     category: "保養品",
     series: "水光肌能系列",
@@ -578,7 +508,7 @@ const allProducts: Product[] = [
     description: "130mL / 瓶。水光肌能乳液，清爽鎖水並維持柔嫩彈潤感。",
   },
 {
-    id: 63,
+    id: 41,
     name: "水光肌能晚霜",
     category: "保養品",
     series: "水光肌能系列",
@@ -588,7 +518,7 @@ const allProducts: Product[] = [
     description: "50mL / 瓶。水光肌能晚霜，夜間加強潤澤與保濕，維持柔嫩澎潤感。",
   },
 {
-    id: 64,
+    id: 42,
     name: "苦杏仁酸溫和煥顏露",
     category: "保養品",
     series: "杏仁酸系列",
@@ -598,7 +528,7 @@ const allProducts: Product[] = [
     description: "30mL / 瓶。溫和煥顏保養品項，適合日常代謝老廢角質與維持細緻光澤。",
   },
 {
-    id: 66,
+    id: 43,
     name: "冰河淨化淨膚露",
     category: "保養品",
     series: "冰河淨化系列",
@@ -608,7 +538,7 @@ const allProducts: Product[] = [
     description: "120mL / 瓶。冰河淨化淨膚露，調理老廢皮脂、油光與毛孔。",
   },
 {
-    id: 67,
+    id: 44,
     name: "冰河淨化柔膚面膜",
     category: "保養品",
     series: "冰河淨化系列",
@@ -618,7 +548,7 @@ const allProducts: Product[] = [
     description: "100mL / 瓶。冰河淨化柔膚面膜，水洗式淨化保養，維持肌膚潔淨柔嫩。",
   },
 {
-    id: 69,
+    id: 45,
     name: "鳳梨酵素代謝角質凝露",
     category: "保養品",
     series: "鳳梨酵素系列",
@@ -628,17 +558,7 @@ const allProducts: Product[] = [
     description: "120g / 瓶。溫和代謝老廢角質，改善粗糙暗沉與吸收感不佳。",
   },
 {
-    id: 70,
-    name: "鳳梨酵素活膚面膜",
-    category: "保養品",
-    series: "鳳梨酵素系列",
-    originalPrice: "原價 $ 390",
-    price: "產地價洽詢",
-    image: "/products/pineapple 5.jpg",
-    description: "22mL x 5pcs / 盒。鳳梨酵素活膚面膜，補水並提升透亮細緻感。",
-  },
-{
-    id: 71,
+    id: 46,
     name: "櫻の雪淨白潔顏慕絲",
     category: "保養品",
     series: "櫻の雪傳明酸美白系列",
@@ -648,7 +568,7 @@ const allProducts: Product[] = [
     description: "150mL / 瓶。櫻の雪淨白潔顏慕絲新品預告中，正式開放後可加入清單確認。",
   },
 {
-    id: 72,
+    id: 47,
     name: "櫻の雪傳明酸美白化妝水",
     category: "保養品",
     series: "櫻の雪傳明酸美白系列",
@@ -658,7 +578,7 @@ const allProducts: Product[] = [
     description: "150mL / 瓶。亮白前導化妝水，補充亮白水分並打開吸收通道。",
   },
 {
-    id: 141,
+    id: 48,
     name: "櫻の雪傳明酸美白精華液",
     category: "保養品",
     series: "櫻の雪傳明酸美白系列",
@@ -668,7 +588,7 @@ const allProducts: Product[] = [
     description: "30mL / 瓶。密集亮白核心精華，針對斑點、暗沉與膚色不均加強調理。",
   },
 {
-    id: 142,
+    id: 49,
     name: "櫻の雪傳明酸美白乳液",
     category: "保養品",
     series: "櫻の雪傳明酸美白系列",
@@ -678,7 +598,7 @@ const allProducts: Product[] = [
     description: "100mL / 瓶。美白乳液，鎖住亮白保養並維持水嫩不黏膩。",
   },
 {
-    id: 82,
+    id: 50,
     name: "龍血薰衣草舒緩皂",
     category: "肥皂",
     series: "肥皂",
@@ -687,37 +607,7 @@ const allProducts: Product[] = [
     description: "200g±10g / 塊。目前上架薰衣草款，單入 $290，4入優惠 $799。",
   },
 {
-    id: 83,
-    name: "高鈣益生菌 11盒組",
-    category: "組合價",
-    series: "保健食品組合",
-    originalPrice: "原價 $ 8,800",
-    price: "產地價 $ 3,600",
-    image: "/products/BCCA3600.png",
-    description: "BC-CA複合益生菌高鈣活力配方 11盒。",
-  },
-{
-    id: 84,
-    name: "高鈣益生菌6盒 + 蔓越莓益生菌5盒",
-    category: "組合價",
-    series: "保健食品組合",
-    originalPrice: "原價 $ 9,600",
-    price: "產地價 $ 4,200",
-    image: "/products/berry5+bbca6.png",
-    description: "BC-CA高鈣益生菌 6盒 + 蔓越莓益生菌 5盒。",
-  },
-{
-    id: 85,
-    name: "蔓越莓益生菌10盒 + 高鈣益生菌1盒",
-    category: "組合價",
-    series: "保健食品組合",
-    originalPrice: "原價 $ 10,400",
-    price: "產地價 $ 4,800",
-    image: "/products/cranberry+BCCA.png",
-    description: "蔓越莓益生菌 10盒 + BC-CA高鈣益生菌 1盒。",
-  },
-{
-    id: 86,
+    id: 51,
     name: "石墨烯電氣石精油貼布任選4盒",
     category: "組合價",
     series: "貼布組合",
@@ -727,7 +617,7 @@ const allProducts: Product[] = [
     description: "涼感 / 溫感可任選搭配，共4盒。",
   },
 {
-    id: 87,
+    id: 52,
     name: "石墨烯電氣石精油貼布任選10盒",
     category: "組合價",
     series: "貼布組合",
@@ -737,7 +627,7 @@ const allProducts: Product[] = [
     description: "涼感 / 溫感可任選搭配，共10盒。",
   },
 {
-    id: 88,
+    id: 53,
     name: "能量牛樟芝保健潔口液 3罐贈薰衣草牙膏1條",
     category: "組合價",
     series: "口腔保健",
@@ -747,7 +637,7 @@ const allProducts: Product[] = [
     description: "能量牛樟芝保健潔口液 3罐，贈齒齦保健薰衣草舒緩牙膏120g 1條。",
   },
 {
-    id: 90,
+    id: 54,
     name: "齒齦保健牙膏任選3條",
     category: "組合價",
     series: "牙膏組合",
@@ -757,7 +647,7 @@ const allProducts: Product[] = [
     description: "薰衣草舒緩 / 龍血修護可混搭，共3條。",
   },
 {
-    id: 91,
+    id: 55,
     name: "水搖滾 / 極光白美白面膜桶裝任選組",
     category: "組合價",
     series: "面膜組合",
@@ -767,7 +657,7 @@ const allProducts: Product[] = [
     description: "水搖滾保濕面膜22mL x35pcs / 極光白美白面膜 x35pcs 可任選。任選5桶再送10片水搖滾保濕面膜。",
   },
 {
-    id: 92,
+    id: 56,
     name: "挪威 EPAX 高活性 rTG 魚油軟膠囊買一送一",
     category: "組合價",
     series: "口腔保健",
@@ -777,7 +667,7 @@ const allProducts: Product[] = [
     description: "挪威 EPAX 高活性 rTG 魚油軟膠囊買1送1，共2盒，規格依商品標示。",
   },
 {
-    id: 93,
+    id: 57,
     name: "阿甘甦醒髮根養護液",
     category: "洗沐",
     series: "阿甘綠柔護髮系列",
@@ -787,7 +677,7 @@ const allProducts: Product[] = [
     description: "80mL / 瓶。阿甘甦醒髮根養護液，適合日常頭皮與髮根養護。",
   },
 {
-    id: 100,
+    id: 58,
     name: "BC-HA 複合益生菌 2盒組",
     category: "組合價",
     series: "保健食品組合",
@@ -797,7 +687,7 @@ const allProducts: Product[] = [
     description: "BC-HA 複合益生菌 3g x 60包 / 盒，共2盒。",
   },
 {
-    id: 101,
+    id: 59,
     name: "龍血求麗潔顏慕絲 + 龍血求麗卸妝油 1+1組",
     category: "組合價",
     series: "保養套組",
@@ -807,17 +697,7 @@ const allProducts: Product[] = [
     description: "龍血求麗潔顏慕絲150mL + 龍血求麗卸妝油150mL，各1瓶，共2瓶。",
   },
 {
-    id: 105,
-    name: "綠茶多酚保濕平衡面膜",
-    category: "保養品",
-    series: "綠茶多酚保濕平衡系列",
-    originalPrice: "原價 $ 390",
-    price: "產地價洽詢",
-    image: "/products/tee 5.jpg",
-    description: "20mL x 5片 / 盒。綠茶多酚保濕平衡系列。",
-  },
-{
-    id: 107,
+    id: 60,
     name: "賽洛美潤膚美體油(C+E)",
     category: "保養品",
     series: "特殊護理系列",
@@ -827,7 +707,7 @@ const allProducts: Product[] = [
     description: "200mL / 瓶。賽洛美潤膚美體油(C+E)，沐浴後滋潤乾燥粗糙肌膚。",
   },
 {
-    id: 108,
+    id: 61,
     name: "24小時賦活液",
     category: "保養品",
     series: "特殊護理系列",
@@ -837,7 +717,7 @@ const allProducts: Product[] = [
     description: "100mL / 瓶。24小時賦活液，適合疲憊暗沉與保養撞牆期加強打底。",
   },
 {
-    id: 111,
+    id: 62,
     name: "24小時黃金璀璨賦活液",
     category: "保養品",
     series: "特殊護理系列",
@@ -847,7 +727,7 @@ const allProducts: Product[] = [
     description: "40mL / 瓶。24小時黃金璀璨賦活液，維持澎潤、透亮與細緻光澤。",
   },
 {
-    id: 116,
+    id: 63,
     name: "水光苦杏仁酸慕絲",
     category: "保養品",
     series: "水光肌能系列",
@@ -857,7 +737,7 @@ const allProducts: Product[] = [
     description: "150mL / 瓶。水光苦杏仁酸慕絲，溫和清潔並維持肌膚細緻透亮感。",
   },
 {
-    id: 118,
+    id: 64,
     name: "超導水網瞬效面膜",
     category: "保養品",
     series: "特殊護理系列",
@@ -867,17 +747,7 @@ const allProducts: Product[] = [
     description: "26mL x 6入 / 盒。超導水網瞬效面膜，集中補水並加強柔嫩光澤。",
   },
 {
-    id: 119,
-    name: "冰河淨化柔膚面膜",
-    category: "保養品",
-    series: "頂級養護",
-    originalPrice: "原價 $ 1,280",
-    price: "產地價 $ 960",
-    image: "/products/Glacial 5.jpg",
-    description: "100mL / 瓶。冰河淨化柔膚面膜，水洗式淨化保養，維持肌膚潔淨柔嫩。",
-  },
-{
-    id: 120,
+    id: 65,
     name: "Exo-雙粹秘泌凍晶組",
     category: "保養品",
     series: "頂級養護",
@@ -887,7 +757,7 @@ const allProducts: Product[] = [
     description: "一組 / 盒裝。頂級凍晶密集保養組，使用時混合激活，適合急救修護。",
   },
 {
-    id: 121,
+    id: 66,
     name: "奧勒岡小白花美體乳",
     category: "保養品",
     series: "頂級養護",
@@ -897,107 +767,7 @@ const allProducts: Product[] = [
     description: "500mL / 瓶。小白花美體乳，水潤好推不黏膩，適合每日全身保養。",
   },
 {
-    id: 122,
-    name: "肌光緊緻速妍面膜",
-    category: "面膜",
-    series: "面膜",
-    originalPrice: "原價 $ 3,680",
-    price: "產地價 $ 2,760",
-    image: "/products/Radiance and Lifting5.jpg",
-    description: "23mL x 10入 / 盒。集中型緊緻修護面膜，適合重要場合前與熬夜後加強保養。",
-  },
-{
-    id: 124,
-    name: "水搖滾保濕面膜 (5片裝)",
-    category: "面膜",
-    series: "面膜",
-    originalPrice: "原價待補",
-    price: "5片裝售價請洽小幫手",
-    image: "/products/DBMUSK 5.jpg",
-    description: "22mL x 5pcs / 盒。水搖滾保濕面膜，適合乾燥缺水與急救補水。",
-  },
-{
-    id: 125,
-    name: "水搖滾保濕面膜 (10片裝)",
-    category: "面膜",
-    series: "面膜",
-    originalPrice: "原價待補",
-    price: "10片裝售價請洽小幫手",
-    image: "/products/water 5.jpg",
-    description: "22mL x 10pcs / 盒。水搖滾保濕面膜，日常補水與集中保養。",
-  },
-{
-    id: 126,
-    name: "水搖滾保濕面膜 (35片大容量桶裝)",
-    category: "面膜",
-    series: "面膜",
-    originalPrice: "原價 $ 3,000",
-    price: "1桶 $ 599",
-    image: "/products/water 35.png",
-    description: "22mL x 35pcs / 桶。水搖滾保濕面膜大容量桶裝，適合長期補水保養。",
-  },
-{
-    id: 127,
-    name: "極光白美白面膜 (5片裝)",
-    category: "面膜",
-    series: "面膜",
-    originalPrice: "原價待補",
-    price: "5片裝售價請洽小幫手",
-    image: "/products/DBMUSK 5 W.jpg",
-    description: "5pcs / 盒。極光白美白面膜，集中亮白調理膚色不均與熬夜暗沉。",
-  },
-{
-    id: 128,
-    name: "極光白美白面膜 (35片大容量桶裝)",
-    category: "面膜",
-    series: "面膜",
-    originalPrice: "原價 $ 3,000",
-    price: "1桶 $ 599",
-    image: "/products/white 35.png",
-    description: "35pcs / 桶。極光白美白面膜大容量桶裝，適合日常亮白集中保養。",
-  },
-{
-    id: 129,
-    name: "冰河淨化柔膚面膜",
-    category: "面膜",
-    series: "面膜",
-    originalPrice: "原價 $ 1,280",
-    price: "產地價 $ 960",
-    image: "/products/Glacial 5.jpg",
-    description: "100mL / 瓶。冰河淨化柔膚面膜，水洗式淨化保養，維持肌膚潔淨柔嫩。",
-  },
-{
-    id: 130,
-    name: "鳳梨酵素活膚面膜",
-    category: "面膜",
-    series: "面膜",
-    originalPrice: "原價 $ 390",
-    price: "產地價洽詢",
-    image: "/products/pineapple 5.jpg",
-    description: "22mL x 5pcs / 盒。鳳梨酵素活膚面膜，補水並提升透亮細緻感。",
-  },
-{
-    id: 131,
-    name: "綠茶多酚保濕平衡面膜",
-    category: "保養品",
-    series: "面膜",
-    originalPrice: "原價 $ 390",
-    price: "產地價洽詢",
-    image: "/products/tee 5.jpg",
-    description: "20mL x 5片 / 盒。綠茶多酚保濕平衡系列面膜。",
-  },
-{
-    id: 132,
-    name: "超導水網瞬效面膜",
-    category: "保養品",
-    series: "特殊護理系列",
-    originalPrice: "原價 $ 1,680",
-    price: "產地價 $ 1,260",
-    image: "/products/super water.png",
-    description: "26mL x 6入 / 盒。超導水網瞬效面膜，集中補水並加強柔嫩光澤。",
-  },
-{
-    id: 135,
+    id: 67,
     name: "龍血薰衣草舒緩皂 4入優惠",
     category: "組合價",
     series: "肥皂組合",
@@ -1007,7 +777,7 @@ const allProducts: Product[] = [
     description: "目前上架薰衣草款，購買 4 塊同款享優惠價 $799。",
   },
 {
-    id: 136,
+    id: 68,
     name: "櫻の雪傳明酸美白精華液 + 美白乳液贈化妝水",
     category: "組合價",
     series: "保養套組",
@@ -1017,7 +787,7 @@ const allProducts: Product[] = [
     description: "購買櫻の雪傳明酸美白精華液30mL + 櫻の雪傳明酸美白乳液100mL，贈送櫻の雪傳明酸美白化妝水150mL。",
   },
 {
-    id: 138,
+    id: 69,
     name: "亮妍魚膠原蛋白飲兩盒贈 EC 晶眸葉黃素",
     category: "組合價",
     series: "保健食品組合",
@@ -1027,7 +797,7 @@ const allProducts: Product[] = [
     description: "亮妍魚膠原蛋白飲-玫瑰風味 50mL/10入 共兩盒，贈 EC 晶眸葉黃素精華凍+精華飲綜合組。",
   },
 {
-    id: 145,
+    id: 70,
     name: "龍血求麗甦醒精油滾珠",
     category: "精油",
     series: "精油",
@@ -1037,7 +807,7 @@ const allProducts: Product[] = [
     description: "9mL。龍血系列隨身精油滾珠，適合日常香氛與放鬆舒緩保養。",
   },
 {
-    id: 146,
+    id: 71,
     name: "薰衣草萬用精油滾珠",
     category: "精油",
     series: "精油",
@@ -1047,7 +817,7 @@ const allProducts: Product[] = [
     description: "9mL。薰衣草香氛精油滾珠，適合睡前放鬆與日常隨身舒緩。",
   },
 {
-    id: 148,
+    id: 72,
     name: "絕美溫感變色護唇膏",
     category: "護唇膏",
     series: "護唇膏",
@@ -1057,7 +827,7 @@ const allProducts: Product[] = [
     description: "3.5g / 支。溫感變色護唇膏，依唇溫呈現自然氣色。",
   },
 {
-    id: 149,
+    id: 73,
     name: "絕美保濕護唇膏",
     category: "護唇膏",
     series: "護唇膏",
@@ -1067,7 +837,7 @@ const allProducts: Product[] = [
     description: "3.5g / 支。日常保濕護唇膏，滋潤乾燥雙唇。",
   },
 {
-    id: 179,
+    id: 74,
     name: "甜橙單方精油",
     category: "精油",
     series: "單方精油",
@@ -1077,7 +847,7 @@ const allProducts: Product[] = [
     description: "30mL。甜橙單方精油，適合日常擴香營造清新愉悅的香氣氛圍。",
   },
 {
-    id: 180,
+    id: 75,
     name: "尤加利精油",
     category: "精油",
     series: "單方精油",
@@ -1087,7 +857,7 @@ const allProducts: Product[] = [
     description: "30mL。尤加利精油，適合居家擴香與清新空間香氣使用。",
   },
 {
-    id: 181,
+    id: 76,
     name: "45格精油木盒",
     category: "精油",
     series: "精油配件",
@@ -1097,7 +867,7 @@ const allProducts: Product[] = [
     description: "精油收納木盒，適合整理單方、複方精油與居家香氛收藏。",
   },
 {
-    id: 182,
+    id: 77,
     name: "擴香木球5入禮盒",
     category: "精油",
     series: "精油配件",
@@ -1107,7 +877,7 @@ const allProducts: Product[] = [
     description: "5入禮盒。可搭配精油滴入使用，適合桌面、衣櫃或小空間擴香。",
   },
 {
-    id: 183,
+    id: 78,
     name: "薰衣草單方精油",
     category: "精油",
     series: "單方精油",
@@ -1117,7 +887,7 @@ const allProducts: Product[] = [
     description: "30mL。薰衣草單方精油，適合睡前、放鬆與居家香氛擴香。",
   },
 {
-    id: 184,
+    id: 79,
     name: "佐登妮絲5號複方精油",
     category: "精油",
     series: "複方精油",
@@ -1127,7 +897,7 @@ const allProducts: Product[] = [
     description: "10mL。佐登妮絲5號複方精油，適合搭配擴香設備或擴香配件使用。",
   },
 {
-    id: 185,
+    id: 80,
     name: "呼暢護隨精油（30mL）",
     category: "精油",
     series: "複方精油",
@@ -1137,7 +907,7 @@ const allProducts: Product[] = [
     description: "30mL。呼暢護隨精油，適合日常擴香，營造清爽舒適的空間感。",
   },
 {
-    id: 186,
+    id: 81,
     name: "佐登妮絲OMA律動精油",
     category: "精油",
     series: "複方精油",
@@ -1147,7 +917,7 @@ const allProducts: Product[] = [
     description: "10mL。OMA律動精油，適合日常香氛儀式與擴香搭配。",
   },
 {
-    id: 187,
+    id: 82,
     name: "快樂鼠尾草精油",
     category: "精油",
     series: "複方精油",
@@ -1157,7 +927,7 @@ const allProducts: Product[] = [
     description: "10mL。快樂鼠尾草精油，適合營造柔和、放鬆的香氛氛圍。",
   },
 {
-    id: 188,
+    id: 83,
     name: "魔力輕盈精油（30mL）",
     category: "精油",
     series: "複方精油",
@@ -1167,7 +937,7 @@ const allProducts: Product[] = [
     description: "30mL。魔力輕盈精油，適合日常擴香與空間香氛使用。",
   },
 {
-    id: 189,
+    id: 84,
     name: "柚見快樂精油",
     category: "精油",
     series: "複方精油",
@@ -1177,7 +947,7 @@ const allProducts: Product[] = [
     description: "15mL。柚見快樂精油，適合營造明亮、清新的香氣氛圍。",
   },
 {
-    id: 190,
+    id: 85,
     name: "佐登4號複方精油",
     category: "精油",
     series: "複方精油",
@@ -1187,7 +957,7 @@ const allProducts: Product[] = [
     description: "功效：清新醒腦。適合日常擴香，讓空間維持清新感。",
   },
 {
-    id: 191,
+    id: 86,
     name: "佐登妮絲1號複方精油",
     category: "精油",
     series: "複方精油",
@@ -1197,7 +967,7 @@ const allProducts: Product[] = [
     description: "10mL。佐登妮絲1號複方精油，適合居家擴香與日常香氛使用。",
   },
 {
-    id: 192,
+    id: 87,
     name: "智慧之冠精油",
     category: "精油",
     series: "複方精油",
@@ -1207,7 +977,7 @@ const allProducts: Product[] = [
     description: "10mL。智慧之冠精油，適合工作、閱讀與日常空間香氛搭配。",
   },
 {
-    id: 193,
+    id: 88,
     name: "魔力輕盈精油（10mL）",
     category: "精油",
     series: "複方精油",
@@ -1217,7 +987,7 @@ const allProducts: Product[] = [
     description: "10mL。魔力輕盈精油小容量規格，適合初次體驗或外出攜帶。",
   },
 {
-    id: 194,
+    id: 89,
     name: "能量之源精油",
     category: "精油",
     series: "複方精油",
@@ -1227,7 +997,7 @@ const allProducts: Product[] = [
     description: "10mL。能量之源精油，適合日常擴香與空間活力氛圍。",
   },
 {
-    id: 195,
+    id: 90,
     name: "順暢平衡精油",
     category: "精油",
     series: "複方精油",
@@ -1237,7 +1007,7 @@ const allProducts: Product[] = [
     description: "10mL。順暢平衡精油，適合日常香氛與放鬆儀式使用。",
   },
 {
-    id: 196,
+    id: 91,
     name: "亮采橙真精油",
     category: "精油",
     series: "複方精油",
@@ -1247,7 +1017,7 @@ const allProducts: Product[] = [
     description: "10mL。亮采橙真精油，適合喜歡明亮果香調的日常擴香。",
   },
 {
-    id: 197,
+    id: 92,
     name: "心之綻放精油",
     category: "精油",
     series: "複方精油",
@@ -1257,7 +1027,7 @@ const allProducts: Product[] = [
     description: "10mL。心之綻放精油，適合營造柔和、溫暖的居家香氣。",
   },
 {
-    id: 198,
+    id: 93,
     name: "呼暢護隨精油（10mL）",
     category: "精油",
     series: "複方精油",
@@ -1267,7 +1037,7 @@ const allProducts: Product[] = [
     description: "10mL。呼暢護隨精油小容量規格，適合日常擴香與初次體驗。",
   },
 {
-    id: 199,
+    id: 94,
     name: "無印風簡約水氧機（粉）",
     category: "精油",
     series: "擴香設備",
@@ -1276,17 +1046,16 @@ const allProducts: Product[] = [
     description: "精油香氛擴香設備，簡約粉色外型，適合居家與辦公空間使用。",
   },
 {
-    id: 200,
+    id: 95,
     name: "木紋USB夜光霧化機",
     category: "精油",
     series: "擴香設備",
     price: "售價 $ 899",
     image: "/products/placeholder.jpg",
     description: "USB 霧化擴香設備，木紋外型搭配夜光氛圍，適合居家香氛使用。",
-  }
-,
-  {
-    id: 206,
+  },
+{
+    id: 96,
     name: "檸檬精油 10mL",
     category: "精油",
     series: "單方精油",
@@ -1297,8 +1066,8 @@ const allProducts: Product[] = [
     priceNote: "單瓶產地價 $810；單方精油任選 2 瓶 $1,600。",
     expiryNote: "效期：2028.11.16。實際效期以商品包裝標示為準。",
   },
-  {
-    id: 207,
+{
+    id: 97,
     name: "茶樹精油 15mL",
     category: "精油",
     series: "單方精油",
@@ -1308,8 +1077,8 @@ const allProducts: Product[] = [
     description: "15mL。茶樹精油清爽草本香氣，適合居家擴香、空間清新與日常香氛搭配。",
     expiryNote: "效期：2030.04.19。實際效期以商品包裝標示為準。",
   },
-  {
-    id: 208,
+{
+    id: 98,
     name: "天空葵芳香精油 10mL",
     category: "精油",
     series: "單方精油",
@@ -1319,8 +1088,8 @@ const allProducts: Product[] = [
     description: "10mL。天空葵芳香精油，清新花草香氣，適合日常擴香與居家香氛儀式。",
     expiryNote: "效期：2030.03.30。實際效期以商品包裝標示為準。",
   },
-  {
-    id: 209,
+{
+    id: 99,
     name: "佐登妮絲6號複方精油 10mL",
     category: "精油",
     series: "複方精油",
@@ -1330,8 +1099,8 @@ const allProducts: Product[] = [
     description: "10mL。佐登妮絲6號複方精油，適合日常擴香與空間香氛搭配。",
     expiryNote: "效期：2028.02.13。實際效期以商品包裝標示為準。",
   },
-  {
-    id: 210,
+{
+    id: 100,
     name: "擴香木片（買一送一）",
     category: "精油",
     series: "精油配件",
@@ -1339,8 +1108,8 @@ const allProducts: Product[] = [
     image: "/products/placeholder.jpg",
     description: "買一送一。可搭配精油滴入使用，適合衣櫃、抽屜、桌面或小空間香氛。",
   },
-  {
-    id: 211,
+{
+    id: 101,
     name: "刮痧板 2入",
     category: "身體洗護",
     series: "身體舒壓",
@@ -1348,8 +1117,8 @@ const allProducts: Product[] = [
     image: "/products/placeholder.jpg",
     description: "2入組。居家日常舒壓工具，適合搭配身體保養油或日常按摩放鬆。",
   },
-  {
-    id: 212,
+{
+    id: 102,
     name: "溫灸棒－特大",
     category: "身體洗護",
     series: "身體舒壓",
@@ -1357,8 +1126,8 @@ const allProducts: Product[] = [
     image: "/products/placeholder.jpg",
     description: "特大尺寸溫灸棒，適合居家舒壓保養與日常放鬆儀式。",
   },
-  {
-    id: 213,
+{
+    id: 103,
     name: "溫灸棒－小",
     category: "身體洗護",
     series: "身體舒壓",
@@ -1366,8 +1135,8 @@ const allProducts: Product[] = [
     image: "/products/placeholder.jpg",
     description: "小尺寸溫灸棒，握感輕巧，適合居家日常舒壓使用。",
   },
-  {
-    id: 214,
+{
+    id: 104,
     name: "艾草條－小",
     category: "身體洗護",
     series: "身體舒壓",
@@ -1375,8 +1144,8 @@ const allProducts: Product[] = [
     image: "/products/placeholder.jpg",
     description: "小規格艾草條，適合搭配溫灸棒作為居家舒壓保養使用。",
   },
-  {
-    id: 215,
+{
+    id: 105,
     name: "艾草條－特大",
     category: "身體洗護",
     series: "身體舒壓",
@@ -1384,8 +1153,8 @@ const allProducts: Product[] = [
     image: "/products/placeholder.jpg",
     description: "特大規格艾草條，適合搭配溫灸棒作為居家舒壓保養使用。",
   },
-  {
-    id: 216,
+{
+    id: 106,
     name: "如意棒",
     category: "身體洗護",
     series: "身體舒壓",
@@ -1393,8 +1162,8 @@ const allProducts: Product[] = [
     image: "/products/placeholder.jpg",
     description: "居家舒壓工具，適合日常按摩、放鬆與身體保養搭配使用。",
   },
-  {
-    id: 217,
+{
+    id: 107,
     name: "升級版柔筋棒（小）",
     category: "身體洗護",
     series: "身體舒壓",
@@ -1402,8 +1171,8 @@ const allProducts: Product[] = [
     image: "/products/placeholder.jpg",
     description: "小尺寸柔筋棒，適合日常局部放鬆與居家舒壓使用。",
   },
-  {
-    id: 218,
+{
+    id: 108,
     name: "護手霜三款買二送一組",
     category: "組合價",
     series: "護手霜組合",
@@ -1414,8 +1183,8 @@ const allProducts: Product[] = [
     expiryNote: "效期：薰衣草舒緩 2029.01.20；櫻之雪亮澤 2029.01.25；茶樹防禦 2029.01.18。實際效期以商品包裝標示為準。",
     priceNote: "護手霜三款買二送一 $580，實際可搭配品項依 LINE 小幫手確認。",
   },
-  {
-    id: 219,
+{
+    id: 109,
     name: "EC晶眸葉黃素精華凍 20包",
     category: "健康補給",
     series: "葉黃素",
@@ -1425,8 +1194,8 @@ const allProducts: Product[] = [
     description: "20包。晶眸葉黃素精華凍，適合 3C 族、學生與上班族日常晶亮營養補給。",
     expiryNote: "效期：2027.04.28。實際效期以商品包裝標示為準。",
   },
-  {
-    id: 220,
+{
+    id: 110,
     name: "超防禦清透隔離乳 30mL",
     category: "保養品",
     series: "防曬隔離",
@@ -1436,8 +1205,8 @@ const allProducts: Product[] = [
     description: "30mL。清透隔離乳，日常外出前打底使用，維持清爽防護感。",
     expiryNote: "效期：2029.06.14。實際效期以商品包裝標示為準。",
   },
-  {
-    id: 221,
+{
+    id: 111,
     name: "玫瑰超微晶萃精華 30mL",
     category: "保養品",
     series: "玫瑰超微晶萃系列",
@@ -1446,8 +1215,8 @@ const allProducts: Product[] = [
     description: "30mL。玫瑰超微晶萃精華，潤澤修護與日常保養加強，維持柔嫩光澤感。",
     expiryNote: "效期：2029.06.07。實際效期以商品包裝標示為準。",
   },
-  {
-    id: 222,
+{
+    id: 112,
     name: "龍血洗髮精＋阿甘甦醒髮根養護液組合",
     category: "組合價",
     series: "洗沐組合",
@@ -1459,13 +1228,11 @@ const allProducts: Product[] = [
     priceNote: "龍血求麗頭皮修護洗髮精 1 瓶＋阿甘甦醒髮根養護液 1 瓶，組合價 $1,500。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
   }
-
-
 ];
 
 const comingSoonRollerProducts: Product[] = [
-  {
-    id: 12,
+{
+    id: 113,
     name: "冷杉酷涼活絡精油滾珠",
     category: "新品預告",
     series: "新品預告",
@@ -1479,8 +1246,8 @@ const comingSoonRollerProducts: Product[] = [
     usage: "依商品標示使用，避免接觸眼睛與傷口。",
     notice: "新品預告，更多香氛滾珠品項陸續登場。",
   },
-  {
-    id: 201,
+{
+    id: 114,
     name: "龍血玫瑰美膚皂",
     category: "新品預告",
     series: "香氛皂",
@@ -1493,8 +1260,8 @@ const comingSoonRollerProducts: Product[] = [
     usage: "依日常洗沐習慣使用。",
     notice: "新品預告，更多香型陸續登場。",
   },
-  {
-    id: 202,
+{
+    id: 115,
     name: "龍血艾草保庇皂",
     category: "新品預告",
     series: "香氛皂",
@@ -1507,8 +1274,8 @@ const comingSoonRollerProducts: Product[] = [
     usage: "依日常洗沐習慣使用。",
     notice: "新品預告，更多香型陸續登場。",
   },
-  {
-    id: 203,
+{
+    id: 116,
     name: "龍血檸檬馬鞭草皂",
     category: "新品預告",
     series: "香氛皂",
@@ -1521,8 +1288,8 @@ const comingSoonRollerProducts: Product[] = [
     usage: "依日常洗沐習慣使用。",
     notice: "新品預告，更多香型陸續登場。",
   },
-  {
-    id: 204,
+{
+    id: 117,
     name: "龍血檀香靜心皂",
     category: "新品預告",
     series: "香氛皂",
@@ -1535,8 +1302,8 @@ const comingSoonRollerProducts: Product[] = [
     usage: "依日常洗沐習慣使用。",
     notice: "新品預告，更多香型陸續登場。",
   },
-  {
-    id: 205,
+{
+    id: 118,
     name: "繡球花漾香氛皂",
     category: "新品預告",
     series: "香氛皂",
@@ -1548,29 +1315,8 @@ const comingSoonRollerProducts: Product[] = [
     features: ["繡球花系香氣，溫柔花香讓洗沐更有質感。", "新品預告，更多資訊陸續登場。"],
     usage: "依日常洗沐習慣使用。",
     notice: "新品預告，更多香型陸續登場。",
-  },
+  }
 ];
-
-const keepSelfComboIdsV31 = new Set<number>([88, 92]);
-const removedProductIdsV31 = new Set<number>([
-  2, 10, 11, 18, 20, 83, 84, 85,
-  74, 89, 95, 96, 97, 98, 99, 102, 103, 139, 143, 144,
-  160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171,
-  172, 173, 174, 175, 176, 177, 178,
-]);
-const externalVendorKeywordsV31: string[] = [];
-
-function isRemovedPublicProductV31(product: Product) {
-  if (keepSelfComboIdsV31.has(product.id)) return false;
-  if (removedProductIdsV31.has(product.id)) return true;
-  if (product.series.includes("洗沐組合") && product.id !== 222) return true;
-  if (product.name.includes("龍血洗沐任選")) return true;
-  if (product.name.includes("櫻の雪潔顏慕絲任選")) return true;
-
-  const fullText = `${product.name} ${product.category} ${product.series} ${product.description}`;
-  if (product.category === "外部廠商") return true;
-  return externalVendorKeywordsV31.some((keyword) => fullText.includes(keyword));
-}
 
 function normalizeProductForV31(product: Product): Product {
   if (product.id === 1) {
@@ -1588,20 +1334,20 @@ function normalizeProductForV31(product: Product): Product {
     };
   }
 
-  if (product.id === 29 || product.id === 30) {
+  if (product.id === 15 || product.id === 16) {
     return {
       ...product,
       originalPrice: undefined,
       price: "任選 3 瓶 $ 1,100",
       description:
-        product.id === 29
+        product.id === 15
           ? "500mL / 瓶。龍血求麗頭皮修護洗髮精與龍血求麗潤澤修護沐浴乳可任選搭配，共 3 瓶 $1,100。"
           : "500mL / 瓶。龍血求麗潤澤修護沐浴乳與龍血求麗頭皮修護洗髮精可任選搭配，共 3 瓶 $1,100。",
       priceNote: "龍血洗髮精／沐浴乳可自由搭配，任選 3 瓶 $1,100；不提供此頁單瓶優惠價。",
     };
   }
 
-  if (product.id === 145) {
+  if (product.id === 70) {
     return {
       ...product,
       category: "新品預告",
@@ -1612,7 +1358,7 @@ function normalizeProductForV31(product: Product): Product {
     };
   }
 
-  if (product.id === 146) {
+  if (product.id === 71) {
     return {
       ...product,
       category: "新品預告",
@@ -1623,7 +1369,7 @@ function normalizeProductForV31(product: Product): Product {
     };
   }
 
-  if (product.id === 88) {
+  if (product.id === 53) {
     return {
       ...product,
       category: "新品預告",
@@ -1635,7 +1381,7 @@ function normalizeProductForV31(product: Product): Product {
     };
   }
 
-  if (product.id === 92) {
+  if (product.id === 56) {
     return {
       ...product,
       category: "新品預告",
@@ -1647,7 +1393,7 @@ function normalizeProductForV31(product: Product): Product {
     };
   }
 
-  if (product.id === 179) {
+  if (product.id === 74) {
     return {
       ...product,
       originalPrice: "原價 $ 2,200",
@@ -1657,7 +1403,7 @@ function normalizeProductForV31(product: Product): Product {
     };
   }
 
-  if (product.id === 180) {
+  if (product.id === 75) {
     return {
       ...product,
       originalPrice: "原價 $ 2,200",
@@ -1667,7 +1413,7 @@ function normalizeProductForV31(product: Product): Product {
     };
   }
 
-  if (product.id === 183) {
+  if (product.id === 78) {
     return {
       ...product,
       originalPrice: "原價 $ 2,800",
@@ -1677,7 +1423,7 @@ function normalizeProductForV31(product: Product): Product {
     };
   }
 
-  if (product.id === 190) {
+  if (product.id === 85) {
     return {
       ...product,
       name: "佐登4號複方精油 10mL",
@@ -1685,7 +1431,7 @@ function normalizeProductForV31(product: Product): Product {
     };
   }
 
-  if (product.id === 82) {
+  if (product.id === 50) {
     return {
       ...product,
       category: "身體洗護",
@@ -1699,7 +1445,6 @@ function normalizeProductForV31(product: Product): Product {
 }
 
 const products: Product[] = [...allProducts, ...comingSoonRollerProducts]
-  .filter((product) => !isRemovedPublicProductV31(product))
   .map(normalizeProductForV31);
 
 const productContentOverrides: Record<number, Partial<Product>> = {
@@ -1725,48 +1470,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "蔓越莓益生菌 / 高鈣益生菌任選 3 盒 $1,600。",
   },
   2: {
-    cardName: "蔓越莓益生菌速酵力配方",
-    cardSubtitle: "3g x 30包 / 盒・女性日常保健",
-    spec: "3g x 30包 / 盒",
-    intro: "蔓越莓益生菌速酵力配方為女性日常保健與益生菌補給品項，結合蔓越莓與複合益生菌，適合重視私密環境日常維持的客人。",
-    features: [
-      "蔓越莓益生菌酵素複合配方，適合作為女性日常營養補給參考。",
-      "含 A 型原花青素與蔓越莓濃縮配方，幫助維持日常健康狀態。",
-      "適合想補充益生菌、蔓越莓與女性保健營養的人。",
-    ],
-    suitableFor: [
-      "日常保健",
-      "私密修護保養",
-      "女性保健",
-      "益生菌補給",
-    ],
-    usage: "每日建議依產品標示食用，可依客服說明於早上或睡前補充。",
-    notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前保留既有回購群優惠：3 盒 $1,600；庫存、效期與最終金額依 LINE 小幫手確認為準。",
-  },
-  3: {
-    cardName: "BC-HA 複合益生菌",
-    cardSubtitle: "3g x 60包 / 盒・大容量順暢美妍補給",
-    spec: "3g x 60包 / 盒",
-    intro: "BC-HA 複合益生菌為大容量日常保健補給品項，結合益生菌、小分子玻尿酸與菊糖益生質，適合久坐族與想維持順暢養顏的人。",
-    features: [
-      "60 包大容量設計，適合作為日常益生菌補給。",
-      "採用 BC-198 穩定菌株概念，常溫保存也方便日常攜帶與補充。",
-      "添加小分子玻尿酸與益生質菊糖，兼顧順暢與美妍營養補給。",
-    ],
-    suitableFor: [
-      "日常保健",
-      "排便卡卡",
-      "久坐上班族",
-      "順暢養顏補給",
-    ],
-    usage: "每日建議依產品標示或客服說明食用。",
-    notice: "請依產品標示食用。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前保留既有回購群優惠：2 盒 $2,000；庫存、效期與最終金額依 LINE 小幫手確認為準。",
-  },
-  4: {
     cardName: "EC晶眸葉黃素",
     cardSubtitle: "精華凍 + 精華飲綜合組・3C族晶亮補給",
     spec: "精華凍 + 精華飲綜合組（20g x 10入 + 20mL x 10入）/ 盒",
@@ -1787,7 +1490,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  5: {
+  3: {
     cardName: "亮妍魚膠原蛋白飲",
     cardSubtitle: "15mL x 10瓶 / 盒・美妍飲品系列",
     spec: "美妍保健飲品（15mL x 10瓶）/ 盒",
@@ -1808,7 +1511,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  6: {
+  4: {
     cardName: "薰衣草肌安舒緩化妝水",
     cardSubtitle: "150mL・薰衣草系列",
     spec: "150mL",
@@ -1826,7 +1529,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  7: {
+  5: {
     cardName: "薰衣草肌安舒緩精華液",
     cardSubtitle: "30mL・薰衣草系列",
     spec: "30mL",
@@ -1844,7 +1547,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  8: {
+  6: {
     cardName: "薰衣草肌安舒緩保濕乳",
     cardSubtitle: "100mL・薰衣草系列",
     spec: "100mL",
@@ -1862,68 +1565,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  9: {
-    cardName: "冷杉潔顏乳",
-    cardSubtitle: "120mL・冷杉系列",
-    spec: "120mL",
-    intro: "冷杉型男淨化潔顏乳為冷杉系列清潔保養品項，適合日常清潔與保養前使用。",
-    features: [
-      "適合日常清潔、卸妝或保養前的潔膚步驟。",
-      "可依膚況搭配同系列保養品使用。",
-      "洗卸清潔後再進行後續保養，保養流程更完整。",
-    ],
-    suitableFor: [
-      "清潔卸妝",
-      "男士保養",
-    ],
-    usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "售價 $1,980，庫存依 LINE 小幫手確認為準。",
-  },
-  10: {
-    cardName: "冷杉保濕化妝水",
-    cardSubtitle: "150mL・即期出清・單瓶 $199",
-    spec: "150mL",
-    intro: "冷杉型男淨化保濕化妝水為冷杉系列清爽保濕品項，目前為單瓶 $199 即期出清。",
-    features: [
-      "即期出清單瓶 $199，適合想補充清爽保濕品項的客人。",
-      "清爽水感質地，適合男士日常保養使用。",
-      "限量優惠品項，實際效期請以 LINE 小幫手確認為準。",
-    ],
-    suitableFor: [
-      "即期出清",
-      "男士保養",
-      "清爽保濕",
-    ],
-    usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
-    notice: "即期商品售出前會由客服協助確認效期。使用後若有不適，請暫停使用。",
-    expiryNote: "此為即期出清品項，實際效期請以 LINE 小幫手確認為準。",
-    priceNote: "即期出清單瓶 $199，庫存與效期依 LINE 小幫手確認為準。",
-  },
-
-  11: {
-    cardName: "冷杉保濕乳",
-    cardSubtitle: "100mL・即期出清・單瓶 $199",
-    spec: "100mL",
-    intro: "冷杉型男淨化保濕乳為冷杉系列清爽保濕品項，目前為單瓶 $199 即期出清。",
-    features: [
-      "即期出清單瓶 $199，適合想補充清爽保濕品項的客人。",
-      "乳液質地可作為日常保濕步驟，適合男士簡單保養。",
-      "限量優惠品項，實際效期請以 LINE 小幫手確認為準。",
-    ],
-    suitableFor: [
-      "即期出清",
-      "男士保養",
-      "清爽保濕",
-    ],
-    usage: "化妝水後取適量均勻塗抹於臉部與頸部。",
-    notice: "即期商品售出前會由客服協助確認效期。使用後若有不適，請暫停使用。",
-    expiryNote: "此為即期出清品項，實際效期請以 LINE 小幫手確認為準。",
-    priceNote: "即期出清單瓶 $199，庫存與效期依 LINE 小幫手確認為準。",
-  },
-
-  12: {
+  113: {
     cardName: "冷杉酷涼活絡精油滾珠",
     cardSubtitle: "9mL・冷杉系列",
     spec: "9mL",
@@ -1941,26 +1583,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  13: {
-    cardName: "玫瑰潔顏慕絲",
-    cardSubtitle: "150mL・玫瑰超微晶萃系列",
-    spec: "150mL",
-    intro: "玫瑰超微晶萃潔顏慕絲為玫瑰超微晶萃系列清潔保養品項，適合日常清潔與保養前使用。",
-    features: [
-      "適合日常清潔、卸妝或保養前的潔膚步驟。",
-      "可依膚況搭配同系列保養品使用。",
-      "洗卸清潔後再進行後續保養，保養流程更完整。",
-    ],
-    suitableFor: [
-      "清潔卸妝",
-      "乾燥缺水",
-    ],
-    usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  14: {
+  7: {
     cardName: "玫瑰活膚液",
     cardSubtitle: "130mL・玫瑰超微晶萃系列",
     spec: "130mL",
@@ -1978,25 +1601,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  15: {
-    cardName: "玫瑰瞬效乳",
-    cardSubtitle: "130mL・玫瑰超微晶萃系列",
-    spec: "130mL",
-    intro: "玫瑰超微晶萃瞬效乳為玫瑰超微晶萃系列保養品項，可依日常膚況與保養需求搭配使用。",
-    features: [
-      "適合保養程序後段使用，幫助維持肌膚潤澤。",
-      "可依膚況搭配同系列化妝水或精華。",
-      "適合日常保濕、修護或滋潤保養需求。",
-    ],
-    suitableFor: [
-      "乾燥缺水",
-    ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  16: {
+  8: {
     cardName: "玫瑰瞬效霜",
     cardSubtitle: "50g・滋潤修護・細緻保養",
     spec: "50g",
@@ -2016,7 +1621,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠依 LINE 小幫手確認為準。",
   },
-  17: {
+  9: {
     cardName: "龍血求麗化妝水",
     cardSubtitle: "120mL・肌膚乖乖水・前導補水",
     spec: "120mL / 瓶",
@@ -2039,31 +1644,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
-  18: {
-    name: "龍血求麗精華",
-    cardName: "龍血求麗精華",
-    cardSubtitle: "30mL・龍血小橘瓶・熬夜修護",
-    spec: "30mL / 瓶",
-    intro: "風靡美妝圈、被譽為熬夜族神級救星的「龍血小橘瓶」。專為初老肌、嬌弱肌與經常面對 3C 螢幕的疲憊肌打造，清透水感質地快速吸收，幫助穩定膚況、修護疲憊暗沉肌。",
-    features: [
-      "秘魯龍血樹脂修護力：嚴選通過歐盟 ECOCERT 有機認證與公平交易的秘魯龍血素，幫助修護肌膚、穩定膚況並強化屏障。",
-      "日本富士雨生紅球藻：添加藻紅素成分，幫助對抗初老、維持肌膚彈潤度與細緻光澤感。",
-      "IRB 人體實測有感：舒緩度有感提升，並同步幫助保濕、亮白與緊緻。",
-      "4 大安心無添加：無酒精、香精、色素與 PARABEN 防腐劑，搭配檸檬、尤加利、快樂鼠尾草等天然植萃精油香調。",
-    ],
-    suitableFor: [
-      "敏感舒緩",
-      "抗皺緊緻",
-      "熬夜暗沉肌",
-      "初老肌",
-      "3C 壓力疲憊肌",
-    ],
-    usage: "每日早晚於化妝水後，使用玻璃滴管取適量精華液，均勻塗抹於臉部與頸部肌膚，順著肌膚紋理輕柔拍勻並按摩至吸收。妝前使用也可提升肌膚保濕度，使底妝更服貼。",
-    notice: "本產品含天然植物萃取成分，可能因產地、氣候或季節不同，使色澤或氣味略有差異，屬正常現象。使用後若有不適請立即停止使用並諮詢皮膚科醫師。配方含天然植物精油，對精油成分過敏者建議先於手臂內側測試。請存放於避免陽光直射、高溫或潮濕處，並放置於孩童不易取得處。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
-  },
-  19: {
+  10: {
     cardName: "龍血求麗修護乳",
     cardSubtitle: "80mL・修護水乳液・買一送一",
     spec: "80mL / 瓶",
@@ -2086,30 +1667,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "買一送一，實際活動、庫存與最終金額依 LINE 小幫手確認為準。",
   },
-  20: {
-    cardName: "龍血求麗修護霜",
-    cardSubtitle: "35mL・夜間鎖水・第二件五折",
-    spec: "35mL / 瓶",
-    intro: "美妝社群與網美口碑盛讚、被譽為初老肌對抗細紋的「神奇撫紋小熨燙」。作為保養最後一步，幫助夜間深層封存滋養，讓肌膚重回彈嫩、緊實與細緻透亮感。",
-    features: [
-      "秘魯龍血樹脂 × 五、六胜肽：深層修護並強健肌膚屏障，幫助撫平乾燥細紋，改善初老疲憊肌。",
-      "摩洛哥堅果油 × 乳木果油：富含維生素 E 與植物油脂，帶來柔潤滋養，幫助緊實並平滑肌膚。",
-      "24 小時長效鎖水防護膜：玻尿酸鈉幫助封存水分，即使長時間待在冷氣房，也能維持水嫩飽滿。",
-      "4 大安心零負擔：無酒精、無香精、無色素、無 PARABEN 防腐劑，敏弱肌與換季不穩定肌也能安心使用。",
-    ],
-    suitableFor: [
-      "乾燥缺水",
-      "抗皺緊緻",
-      "敏感舒緩",
-      "初老細紋",
-      "夜間鎖水修護",
-    ],
-    usage: "每日早晚於化妝水、精華液或修護乳後使用。利用挖勺取適量修護霜塗抹於臉部與頸部肌膚，順著肌膚紋理以指腹輕柔畫圈按摩，透過指腹溫熱幫助霜體吸收並封存滋養。",
-    notice: "本產品含天然植物萃取成分，可能因產地、氣候或季節不同，使色澤或氣味略有差異，屬正常現象。使用後若有不適請立即停止使用並諮詢皮膚科醫師。配方含天然植物精油，對精油成分過敏者建議先於手臂內側測試。請存放於避免陽光直射、高溫或潮濕處，並放置於孩童不易取得處。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "第二件五折，實際活動、庫存與最終金額依 LINE 小幫手確認為準。",
-  },
-  21: {
+  11: {
     cardName: "肌光緊緻速妍雪膚液",
     cardSubtitle: "130mL・肌光緊緻速妍系列",
     spec: "130mL / 瓶",
@@ -2130,7 +1688,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  22: {
+  12: {
     cardName: "肌光緊緻速妍精華露",
     cardSubtitle: "30mL・肌光緊緻速妍系列",
     spec: "30mL / 瓶",
@@ -2151,7 +1709,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  23: {
+  13: {
     cardName: "肌光緊緻速妍霜",
     cardSubtitle: "50mL・肌光緊緻速妍系列",
     spec: "50mL / 瓶",
@@ -2172,7 +1730,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  24: {
+  14: {
     cardName: "肌光緊緻速妍面膜",
     cardSubtitle: "單片 / 盒裝・肌光緊緻速妍系列",
     spec: "單片 / 盒裝",
@@ -2193,91 +1751,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  25: {
-    cardName: "INSK乳酸平衡機能水",
-    cardSubtitle: "150mL・INSK乳酸平衡系列",
-    spec: "150mL / 瓶",
-    intro: "INSK乳酸平衡機能水是洗臉後的關鍵第一步，幫助溫和調理肌膚表層，維持健康菌叢與油水平衡。",
-    features: [
-      "清潔後作為保養前導，幫助平衡肌膚環境。",
-      "可搭配同系列精華、乳液或乳霜，層層加乘。",
-      "建立日常保養基礎步驟，提升肌膚自我防禦力。"
-    ],
-    suitableFor: [
-      "INSK乳酸平衡系列",
-      "外油內乾",
-      "油水平衡",
-      "不穩定膚況"
-    ],
-    usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  26: {
-    cardName: "INSK乳酸平衡修護乳",
-    cardSubtitle: "100mL・INSK乳酸平衡系列",
-    spec: "100mL / 瓶",
-    intro: "質地輕盈好吸收的乳酸平衡修護乳，深度滋潤並修護肌膚水脂膜，長效鎖水、告別粗糙紊亂。",
-    features: [
-      "保養程序後段使用，幫助維持肌膚潤澤度。",
-      "可搭配同系列化妝水或精華，加強鎖水屏障。",
-      "適合日常保濕、修護與平衡滋潤需求。"
-    ],
-    suitableFor: [
-      "INSK乳酸平衡系列",
-      "乾燥缺水",
-      "油水平衡",
-      "外油內乾"
-    ],
-    usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  27: {
-    cardName: "BA-5肌密抗皺精華",
-    cardSubtitle: "30mL・BA-5肌密抗皺系列",
-    spec: "30mL / 瓶",
-    intro: "高階密集抗皺精華，質地細緻高滲透，針對細紋、乾紋與熟齡肌膚進行深度修護。",
-    features: [
-      "日常保養中的加強型精華，密集補充抗老能量。",
-      "可搭配同系列化妝水與抗皺霜，層層封存營養。",
-      "適合特定抗皺、淡化細紋與極致修護需求。"
-    ],
-    suitableFor: [
-      "抗皺緊緻",
-      "熟齡肌",
-      "初老細紋",
-      "高階保養"
-    ],
-    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或抗皺霜。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  28: {
-    cardName: "BA-5肌密抗皺霜",
-    cardSubtitle: "50mL・BA-5肌密抗皺系列",
-    spec: "50mL / 瓶",
-    intro: "奢華豐潤抗皺霜，作為保養最後一道鎖水修護防線，幫助封存抗老成分與滋養。",
-    features: [
-      "保養程序最後步驟使用，維持長效潤澤。",
-      "搭配同系列化妝水或精華，帶來深層滋養與撫紋修護。",
-      "適合高階保濕、密集修護與深度抗老保養。"
-    ],
-    suitableFor: [
-      "抗皺緊緻",
-      "極度乾燥",
-      "熟齡肌",
-      "夜間鎖水"
-    ],
-    usage: "化妝水與精華液後，取適量均勻塗抹於臉部與頸部肌膚，並以指腹按摩至吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  29: {
+  15: {
     cardName: "龍血求麗頭皮修護洗髮精",
     cardSubtitle: "500mL・龍血洗沐髮品",
     spec: "500mL × 3 瓶（洗髮精／沐浴乳任選搭配）",
@@ -2298,7 +1772,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "龍血洗髮精／沐浴乳可自由搭配，任選 3 瓶 $1,100；不提供此頁單瓶優惠價。",
   },
-  30: {
+  16: {
     cardName: "龍血求麗潤澤修護沐浴乳",
     cardSubtitle: "500mL・龍血洗沐髮品",
     spec: "500mL × 3 瓶（洗髮精／沐浴乳任選搭配）",
@@ -2319,7 +1793,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "龍血洗髮精／沐浴乳可自由搭配，任選 3 瓶 $1,100；不提供此頁單瓶優惠價。",
   },
-  31: {
+  17: {
     cardName: "純淨洗髮精",
     cardSubtitle: "洗髮品項・洗沐系列",
     spec: "洗髮品項",
@@ -2338,68 +1812,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  32: {
-    cardName: "阿甘絲柔洗髮精",
-    cardSubtitle: "洗髮品項・洗沐系列",
-    spec: "洗髮品項",
-    intro: "阿甘絲柔洗髮精為洗沐系列日常用品，適合搭配日常清潔、保養或香氛使用。",
-    features: [
-      "適合日常清潔、保養或香氛搭配使用。",
-      "可依個人使用習慣加入回購清單。",
-      "商品優惠與庫存依 LINE 小幫手確認為準。",
-    ],
-    suitableFor: [
-      "洗沐",
-      "洗沐系列",
-    ],
-    usage: "取適量於濕髮或身體肌膚，搓揉清潔後以清水洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  33: {
-    cardName: "INSK乳酸淨痘修護膠",
-    cardSubtitle: "15mL・INSK乳酸平衡系列",
-    spec: "15mL / 支",
-    intro: "針對局部瑕疵與不安定膚況設計，溫和調理毛孔、安撫粉刺與痘痘問題，是隨身控油修護好物。",
-    features: [
-      "保養程序後段使用，針對局部瑕疵密集調理。",
-      "可搭配同系列化妝水或精華，維持全臉油水平衡。",
-      "適合局部保濕、控油、修護與面皰保養需求。"
-    ],
-    suitableFor: [
-      "油性毛孔",
-      "粉刺痘痘",
-      "控油調理",
-      "INSK乳酸平衡系列"
-    ],
-    usage: "化妝水與精華後，取適量局部塗抹於臉部瑕疵或易出油部位。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  34: {
-    cardName: "INSK乳酸平衡水嫩膜",
-    cardSubtitle: "23mL x 6片・INSK乳酸平衡系列",
-    spec: "23mL x 6片 / 盒",
-    intro: "集中型乳酸平衡水嫩膜，適合乾燥缺水與膚況不穩時加強保養，快速補水並回復透亮。",
-    features: [
-      "日常保養或急救保養時搭配使用。",
-      "幫助補充水分、舒緩與平衡不穩定膚況。",
-      "敷臉後再搭配日常保養程序，維持潤澤感。"
-    ],
-    suitableFor: [
-      "面膜保養",
-      "乾燥缺水",
-      "不穩定膚況",
-      "INSK乳酸平衡系列"
-    ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  35: {
+  18: {
     cardName: "薰衣草齒齦保健牙膏",
     cardSubtitle: "120g・牙膏",
     spec: "120g / 支",
@@ -2420,7 +1833,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "可搭配齒齦保健牙膏任選活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
-  36: {
+  19: {
     cardName: "龍血齒齦保健牙膏",
     cardSubtitle: "120g・牙膏",
     spec: "120g / 支",
@@ -2441,7 +1854,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "可搭配齒齦保健牙膏任選活動，庫存與優惠依 LINE 小幫手確認為準。",
   },
-  37: {
+  20: {
     cardName: "智慧之冠",
     cardSubtitle: "10mL・10mL 精油系列",
     spec: "10mL",
@@ -2460,7 +1873,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
-  38: {
+  21: {
     cardName: "亮采橙真",
     cardSubtitle: "10mL・10mL 精油系列",
     spec: "10mL",
@@ -2479,7 +1892,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
-  39: {
+  22: {
     cardName: "呼暢護隨",
     cardSubtitle: "10mL・10mL 精油系列",
     spec: "10mL",
@@ -2498,7 +1911,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
-  40: {
+  23: {
     cardName: "魔力輕盈",
     cardSubtitle: "10mL・10mL 精油系列",
     spec: "10mL",
@@ -2517,7 +1930,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
-  41: {
+  24: {
     cardName: "順暢平衡",
     cardSubtitle: "10mL・10mL 精油系列",
     spec: "10mL",
@@ -2536,7 +1949,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
-  42: {
+  25: {
     cardName: "心之綻放",
     cardSubtitle: "10mL・10mL 精油系列",
     spec: "10mL",
@@ -2555,7 +1968,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
-  43: {
+  26: {
     cardName: "青春密碼維 E 精萃油",
     cardSubtitle: "50mL・50mL 精萃油系列",
     spec: "50mL",
@@ -2574,7 +1987,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
-  44: {
+  27: {
     cardName: "防護盾牌維 C 精萃油",
     cardSubtitle: "50mL・50mL 精萃油系列",
     spec: "50mL",
@@ -2593,7 +2006,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
-  45: {
+  28: {
     cardName: "晚安無瑕維 A 精萃油",
     cardSubtitle: "50mL・50mL 精萃油系列",
     spec: "50mL",
@@ -2612,7 +2025,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "實際優惠與庫存依 LINE 小幫手確認為準。",
   },
-  46: {
+  29: {
     cardName: "高頻霧化香薰機一台（買1台送1瓶茶樹精油10ml）",
     cardSubtitle: "擴香設備・售價 $1,980",
     spec: "買1台送1瓶茶樹精油10mL",
@@ -2631,7 +2044,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "售價 $1,980，庫存依 LINE 小幫手確認為準。",
   },
-  47: {
+  30: {
     cardName: "石墨烯電氣石精油貼布｜涼感",
     cardSubtitle: "10片 / 盒・清爽沁涼款",
     spec: "10片 / 盒",
@@ -2653,7 +2066,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "單盒價格保留既有設定；另有任選 4 盒、10 盒優惠組合，庫存與最終金額依 LINE 小幫手確認為準。",
     gallery: ["/products/patch 1.png", "/products/blue 100.jpg"],
   },
-  48: {
+  31: {
     cardName: "石墨烯電氣石精油貼布｜溫感",
     cardSubtitle: "10片 / 盒・溫熱舒緩款",
     spec: "10片 / 盒",
@@ -2675,7 +2088,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "單盒價格保留既有設定；另有任選 4 盒、10 盒優惠組合，庫存與最終金額依 LINE 小幫手確認為準。",
     gallery: ["/products/patch 5.png", "/products/red 100.jpg"],
   },
-  49: {
+  32: {
     cardName: "茶樹K痘精華",
     cardSubtitle: "8mL・茶樹控油系列",
     spec: "8mL / 盒",
@@ -2696,7 +2109,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  52: {
+  33: {
     cardName: "肌可佳膠原蛋白彈潤原液",
     cardSubtitle: "30mL・膠原蛋白系列",
     spec: "30mL",
@@ -2714,7 +2127,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  53: {
+  34: {
     cardName: "龍血玻尿酸保濕精華液",
     cardSubtitle: "300mL・國民保濕精華・買一送一",
     spec: "300mL / 瓶",
@@ -2737,7 +2150,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "買一送一，依通路活動為準。實際活動、庫存與最終金額依 LINE 小幫手確認。",
   },
-  54: {
+  35: {
     cardName: "龍血求麗卸妝油",
     cardSubtitle: "150mL・龍血系列",
     spec: "150mL / 瓶",
@@ -2758,7 +2171,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  55: {
+  36: {
     cardName: "龍血求麗潔顏慕絲",
     cardSubtitle: "150mL・龍血系列",
     spec: "150mL / 瓶",
@@ -2779,28 +2192,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  56: {
-    cardName: "水搖滾保濕面膜 (5片裝)",
-    cardSubtitle: "22mL x 5pcs・保濕面膜",
-    spec: "22mL x 5pcs / 盒",
-    intro: "明星保濕面膜，滿載澎湃保濕精華，快速浸潤乾燥缺水肌，適合日常補水、熬夜後急救與集中保養。",
-    features: [
-      "長效爆水續航力，適合日常基礎保養或急救補水。",
-      "高持水面膜剪裁，快速補足肌膚日常保濕需求。",
-      "敷臉後搭配乳液或乳霜，封存透亮水光感。"
-    ],
-    suitableFor: [
-      "乾燥缺水",
-      "外油內乾",
-      "面膜保養",
-      "龍血系列"
-    ],
-    usage: "臉部清潔後取出面膜並撕下外層襯膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  57: {
+  37: {
     cardName: "水搖滾保濕面膜 (10片裝)",
     cardSubtitle: "22mL x 10pcs・保濕面膜",
     spec: "22mL x 10pcs / 盒",
@@ -2821,7 +2213,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  58: {
+  38: {
     cardName: "水搖滾保濕面膜 (35片桶裝)",
     cardSubtitle: "22mL x 35pcs・保濕面膜",
     spec: "22mL x 35pcs / 桶",
@@ -2842,28 +2234,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  59: {
-    cardName: "極光白美白面膜 (5片裝)",
-    cardSubtitle: "5pcs・亮白面膜",
-    spec: "5pcs / 盒",
-    intro: "集中亮白面膜，適合膚色不均、熬夜暗沉與蠟黃肌膚加強保養，敷後維持透亮水嫩光澤。",
-    features: [
-      "密集勻亮去暗沉，適合日常亮白特別調理。",
-      "集中注入亮白保養精華，改善疲憊膚色。",
-      "敷後搭配日常保養，維持柔嫩、透亮與妝前服貼感。"
-    ],
-    suitableFor: [
-      "美白淡斑",
-      "膚色不均",
-      "熬夜暗沉",
-      "面膜保養"
-    ],
-    usage: "臉部清潔後取出面膜，均勻平整敷於全臉；依標示時間取下後，輕拍幫助吸收，再進行鎖水保養。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  60: {
+  39: {
     cardName: "極光白美白面膜 (35片桶裝)",
     cardSubtitle: "35pcs・亮白面膜",
     spec: "35pcs / 桶",
@@ -2884,28 +2255,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  61: {
-    cardName: "水光肌能化妝水",
-    cardSubtitle: "130mL・水光肌能系列",
-    spec: "130mL / 瓶",
-    intro: "水光肌能化妝水是洗臉後的補水前導第一步，幫助溫和浸潤角質層，為後續精華與乳液打開水合通道。",
-    features: [
-      "復活草保濕複方，幫助肌膚維持長時間水潤。",
-      "洗臉後作為第一道前導補水，提升後續保養延展與吸收感。",
-      "適合換季乾燥、粗糙暗沉或環境壓力造成的不穩膚況。"
-    ],
-    suitableFor: [
-      "乾燥缺水",
-      "換季乾燥",
-      "粗糙暗沉",
-      "水光肌能系列"
-    ],
-    usage: "早晚清潔後，取適量於掌心或化妝棉，輕拍或擦拭於臉部與頸部至吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  62: {
+  40: {
     cardName: "水光肌能乳液",
     cardSubtitle: "130mL・水光肌能系列",
     spec: "130mL / 瓶",
@@ -2926,7 +2276,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  63: {
+  41: {
     cardName: "水光肌能晚霜",
     cardSubtitle: "50mL・水光肌能系列",
     spec: "50mL / 瓶",
@@ -2947,7 +2297,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  64: {
+  42: {
     cardName: "苦杏仁酸溫和煥顏露",
     cardSubtitle: "30mL・杏仁酸系列",
     spec: "30mL",
@@ -2965,28 +2315,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  65: {
-    cardName: "冰河淨化潔顏慕絲",
-    cardSubtitle: "150mL・冰河淨化系列",
-    spec: "150mL / 瓶",
-    intro: "冰河淨化系列清潔第一步，豐盈細緻慕絲溫和洗去多餘皮脂與環境髒污，洗後清爽柔嫩。",
-    features: [
-      "適合日常清潔、卸妝後或保養前潔膚步驟。",
-      "溫和慕絲質地，深層潔淨毛孔同時不傷肌膚屏障。",
-      "洗卸清潔後再保養，讓肌膚回到清爽潔淨狀態。"
-    ],
-    suitableFor: [
-      "清潔卸妝",
-      "油性毛孔",
-      "毛孔清潔",
-      "冰河淨化系列"
-    ],
-    usage: "取適量慕絲於掌心，在濕潤臉部輕柔按摩，再以清水徹底洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  66: {
+  43: {
     cardName: "冰河淨化淨膚露",
     cardSubtitle: "120mL・冰河淨化系列",
     spec: "120mL / 瓶",
@@ -3007,7 +2336,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  67: {
+  44: {
     cardName: "冰河淨化柔膚面膜",
     cardSubtitle: "100mL・水洗泥膜",
     spec: "100mL / 瓶",
@@ -3028,28 +2357,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  68: {
-    cardName: "晶淬雪潤白乳",
-    cardSubtitle: "100mL・晶淬雪系列",
-    spec: "100mL / 瓶",
-    intro: "主打亮白與高保濕的晶淬雪潤白乳，質地絲滑清爽，幫助改善暗沉、膚色不均與乾燥粗糙。",
-    features: [
-      "添加傳明酸與多重亮白複方，支援膚色均勻保養。",
-      "拉絲精華質地清爽好吸收，為乾燥肌建立持水保護膜。",
-      "亮白同時兼顧高保濕，適合日常早晚使用。"
-    ],
-    suitableFor: [
-      "美白淡斑",
-      "膚色不均",
-      "暗沉蠟黃",
-      "乾燥缺水"
-    ],
-    usage: "每日早晚於化妝水與精華後，取適量塗抹於全臉及頸部，輕拍至吸收。",
-    notice: "含天然植物萃取與精油成分，色澤或氣味隨時間變化屬正常現象。若使用後不適請暫停使用，並置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  69: {
+  45: {
     cardName: "鳳梨酵素代謝角質凝露",
     cardSubtitle: "120g・鳳梨酵素系列",
     spec: "120g / 瓶",
@@ -3070,28 +2378,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  70: {
-    cardName: "鳳梨酵素活膚面膜",
-    cardSubtitle: "22mL x 5pcs・鳳梨酵素系列",
-    spec: "22mL x 5pcs / 盒",
-    intro: "集中型鳳梨酵素活膚面膜，適合暗沉、疲憊與粗糙肌膚加強保養，快速補水並提升透亮細緻感。",
-    features: [
-      "酵素活膚密集調理，適合亮白、嫩膚與平滑膚觸需求。",
-      "集中注入水嫩精華，補足保濕與修護需求。",
-      "敷臉後搭配乳液或乳霜，延續光滑澎潤感。"
-    ],
-    suitableFor: [
-      "面膜保養",
-      "暗沉粗糙",
-      "透亮保養",
-      "鳳梨酵素系列"
-    ],
-    usage: "清潔後取出面膜敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收，再進行鎖水保養。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  71: {
+  46: {
     cardName: "櫻の雪淨白潔顏慕絲",
     cardSubtitle: "150mL・新品預告",
     spec: "150mL / 瓶",
@@ -3107,7 +2394,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "上架後依商品標示或 LINE 小幫手確認為準。",
     priceNote: "新品預告・敬請期待。",
   },
-  72: {
+  47: {
     cardName: "櫻の雪傳明酸美白化妝水",
     cardSubtitle: "150mL・櫻の雪系列",
     spec: "150mL / 瓶",
@@ -3128,7 +2415,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  142: {
+  49: {
     cardName: "櫻の雪傳明酸美白乳液",
     cardSubtitle: "100mL・櫻の雪系列",
     spec: "100mL / 瓶",
@@ -3149,91 +2436,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  75: {
-    cardName: "櫻の雪亮澤護手霜",
-    cardSubtitle: "50mL・護手霜",
-    spec: "50mL / 支",
-    intro: "亮澤護手霜，幫助手背暗沉、關節蠟黃與乾燥粗糙問題，質地快速吸收、不黏膩。",
-    features: [
-      "亮澤精華注入，支援手部暗沉與斑點感保養。",
-      "密集修護頻繁洗手或做家事造成的乾荒。",
-      "絲滑不黏膩，抹後用手機或電腦也不厚重。"
-    ],
-    suitableFor: [
-      "手部暗沉",
-      "乾燥粗糙",
-      "護手霜",
-      "亮澤保養"
-    ],
-    usage: "洗手後或覺得雙手乾燥時，取適量塗抹雙手，按摩手背、手指與指緣至吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  76: {
-    cardName: "茶樹防禦護手霜",
-    cardSubtitle: "50mL・護手霜",
-    spec: "50mL / 支",
-    intro: "茶樹精油系輕質護手霜，清爽不厚重，適合夏天、易流手汗或害怕護手霜黏膩感的人。",
-    features: [
-      "茶樹精油清爽防護，為雙手建立清透保養感。",
-      "保濕補水同時拒絕油光，減少悶厚感。",
-      "適合夏天或容易流手汗者，無負擔持潤。"
-    ],
-    suitableFor: [
-      "護手霜",
-      "茶樹香氣",
-      "易流手汗",
-      "清爽不黏"
-    ],
-    usage: "取適量塗抹於清潔後雙手，順著肌理推開，並針對指緣粗糙處加強按摩。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  77: {
-    cardName: "薰衣草舒緩護手霜",
-    cardSubtitle: "50mL・護手霜",
-    spec: "50mL / 支",
-    intro: "薰衣草香氛護手霜，適合日間疲憊或睡前滋養，幫助粗糙乾燥雙手維持柔嫩、潤澤與放鬆感。",
-    features: [
-      "薰衣草精華舒緩，安撫頻繁洗手造成的乾燥不適。",
-      "深度鎖水滋養，改善乾燥引起的乾紋感。",
-      "療癒薰衣草香氣，擦拭時同步放鬆思緒。"
-    ],
-    suitableFor: [
-      "護手霜",
-      "乾燥缺水",
-      "夜間舒緩",
-      "薰衣草香氣"
-    ],
-    usage: "取適量護手霜於雙手，雙掌搓揉溫熱後按摩手背與指緣至吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  78: {
-    cardName: "麝香棉花香氛護手霜",
-    cardSubtitle: "50mL・護手霜",
-    spec: "50mL / 支",
-    intro: "白麝香與棉花香調的香氛護手霜，質地絲滑潤澤，幫助乾燥粗糙雙手維持柔嫩水潤。",
-    features: [
-      "奢華絲滑觸感，滋潤但不膩。",
-      "建立日常水屏障，抵禦環境乾燥。",
-      "經典白麝香與棉花香，乾淨溫暖又療癒。"
-    ],
-    suitableFor: [
-      "護手霜",
-      "白麝香",
-      "乾燥粗糙",
-      "香氛保養"
-    ],
-    usage: "每日日常或雙手乾燥時，取適量均勻塗抹全手，並以指腹按摩至吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  82: {
+  50: {
     cardName: "龍血薰衣草舒緩皂",
     cardSubtitle: "薰衣草香氛皂・4入優惠",
     spec: "200g±10g / 塊",
@@ -3249,65 +2452,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前上架薰衣草款；單入 $290，4入優惠 $799。",
   },
-
-  83: {
-    cardName: "高鈣益生菌 11盒組",
-    cardSubtitle: "BC-CA複合益生菌高鈣活力配方 11盒・保健食品組合",
-    spec: "BC-CA複合益生菌高鈣活力配方 11盒",
-    intro: "高鈣益生菌 11盒組為回購群優惠組合品項，適合想一次補齊常用商品的客人。",
-    features: [
-      "回購群優惠組合，適合一次補齊常用品項。",
-      "組合內容與優惠依當日公告及客服確認為準。",
-      "送出清單後，客服會協助確認最適合的優惠方案。",
-    ],
-    suitableFor: [
-      "組合優惠",
-      "益生菌補給",
-    ],
-    usage: "每日 1–3 包，餐前餐後均可食用；可直接食用或加入溫涼飲品中。",
-    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
-  },
-  84: {
-    cardName: "高鈣益生菌6盒 + 蔓越莓益生菌5盒",
-    cardSubtitle: "BC-CA高鈣益生菌 6盒 + 蔓越莓益生菌 5盒・保健食品組合",
-    spec: "BC-CA高鈣益生菌 6盒 + 蔓越莓益生菌 5盒",
-    intro: "高鈣益生菌6盒 + 蔓越莓益生菌5盒為回購群優惠組合品項，適合想一次補齊常用商品的客人。",
-    features: [
-      "回購群優惠組合，適合一次補齊常用品項。",
-      "組合內容與優惠依當日公告及客服確認為準。",
-      "送出清單後，客服會協助確認最適合的優惠方案。",
-    ],
-    suitableFor: [
-      "組合優惠",
-      "益生菌補給",
-    ],
-    usage: "依高鈣益生菌與蔓越莓益生菌各自商品標示食用；可依日常需求分時補充。",
-    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
-  },
-  85: {
-    cardName: "蔓越莓益生菌10盒 + 高鈣益生菌1盒",
-    cardSubtitle: "蔓越莓益生菌 10盒 + BC-CA高鈣益生菌 1盒・保健食品組合",
-    spec: "蔓越莓益生菌 10盒 + BC-CA高鈣益生菌 1盒",
-    intro: "蔓越莓益生菌10盒 + 高鈣益生菌1盒為回購群優惠組合品項，適合想一次補齊常用商品的客人。",
-    features: [
-      "回購群優惠組合，適合一次補齊常用品項。",
-      "組合內容與優惠依當日公告及客服確認為準。",
-      "送出清單後，客服會協助確認最適合的優惠方案。",
-    ],
-    suitableFor: [
-      "組合優惠",
-      "益生菌補給",
-    ],
-    usage: "蔓越莓益生菌請依商品標示固定補充；高鈣益生菌可於餐後搭配食用。",
-    notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
-  },
-  86: {
+  51: {
     cardName: "石墨烯電氣石精油貼布任選4盒",
     cardSubtitle: "涼感 / 溫感爆款貼布任選",
     spec: "涼感 / 溫感可任選搭配，共4盒",
@@ -3325,7 +2470,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
-  87: {
+  52: {
     cardName: "石墨烯電氣石精油貼布任選10盒",
     cardSubtitle: "涼感 / 溫感可任選搭配，共10盒・貼布組合",
     spec: "涼感 / 溫感可任選搭配，共10盒",
@@ -3343,7 +2488,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
-  88: {
+  53: {
     cardName: "牛樟芝潔口液3罐組",
     cardSubtitle: "贈薰衣草牙膏1條・$1,500",
     spec: "能量牛樟芝保健潔口液 3罐 + 齒齦保健薰衣草舒緩牙膏120g 1條",
@@ -3362,7 +2507,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "3罐潔口液贈薰衣草牙膏1條，組合價 $1,500；庫存與效期依 LINE 小幫手確認為準。",
   },
-  90: {
+  54: {
     cardName: "牙膏任選3條",
     cardSubtitle: "口腔清新補貨組",
     spec: "薰衣草舒緩 / 龍血修護可混搭，共3條",
@@ -3380,7 +2525,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
-  91: {
+  55: {
     cardName: "水搖滾 / 極光白美白面膜桶裝任選組",
     cardSubtitle: "爆水面膜 / 亮白面膜桶裝任選",
     spec: "水搖滾保濕面膜22mL x35pcs / 極光白美白面膜 x35pcs 可任選",
@@ -3399,8 +2544,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
-
-  93: {
+  57: {
     cardName: "阿甘甦醒髮根養護液",
     cardSubtitle: "80mL・洗沐系列",
     spec: "80mL",
@@ -3419,8 +2563,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-
-  222: {
+  112: {
     cardName: "龍血洗髮精＋阿甘養護液組合",
     cardSubtitle: "洗髮精 500mL＋髮根養護液 80mL",
     spec: "龍血求麗頭皮修護洗髮精 500mL × 1 瓶＋阿甘甦醒髮根養護液 80mL × 1 瓶",
@@ -3436,8 +2579,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "龍血求麗頭皮修護洗髮精 1 瓶＋阿甘甦醒髮根養護液 1 瓶，組合價 $1,500。",
   },
-
-  100: {
+  58: {
     cardName: "BC-HA 複合益生菌 2盒組",
     cardSubtitle: "BC-HA 複合益生菌 3g x 60包 / 盒，共2盒・保健食品組合",
     spec: "BC-HA 複合益生菌 3g x 60包 / 盒，共2盒",
@@ -3456,7 +2598,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
   },
-  101: {
+  59: {
     cardName: "龍血洗卸1+1組",
     cardSubtitle: "潔顏慕絲 + 卸妝油・$1,080",
     spec: "龍血求麗潔顏慕絲150mL + 龍血求麗卸妝油150mL，各1瓶，共2瓶",
@@ -3476,65 +2618,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "潔顏慕絲 1 瓶 + 卸妝油 1 瓶，1+1 兩瓶 $1,080；庫存與效期依 LINE 小幫手確認為準。",
   },
-  104: {
-    cardName: "綠茶多酚保濕平衡精華液",
-    cardSubtitle: "30mL・綠茶多酚保濕平衡系列",
-    spec: "30mL",
-    intro: "綠茶多酚保濕平衡精華液為綠茶多酚保濕平衡系列保養品項，可依日常膚況與保養需求搭配使用。",
-    features: [
-      "適合作為日常保養中的加強型品項。",
-      "可依需求搭配化妝水與乳霜使用。",
-      "適合想加強特定保養需求的客人。",
-    ],
-    suitableFor: [
-      "乾燥缺水",
-    ],
-    usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  105: {
-    cardName: "綠茶多酚保濕平衡面膜",
-    cardSubtitle: "20mL x 5片 / 盒・綠茶多酚保濕平衡系列",
-    spec: "20mL x 5片 / 盒",
-    intro: "綠茶多酚保濕平衡面膜為綠茶多酚保濕平衡系列集中保養品項，適合依膚況加強日常保養。",
-    features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
-    ],
-    suitableFor: [
-      "乾燥缺水",
-      "面膜保養",
-    ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  106: {
-    cardName: "白金密集煥白淡斑筆",
-    cardSubtitle: "單支・白金密集煥白系列",
-    spec: "單支 / 盒裝",
-    intro: "針對局部斑點、曬斑與痘疤暗沉設計的精準淡斑筆，筆型設計方便局部加強，幫助暗沉部位集中亮白保養。",
-    features: [
-      "局部精準亮白，針對色素沉澱、雀斑或痘疤暗沉加強保養。",
-      "白金級煥白複方，支援局部瑕疵調理。",
-      "攜帶方便好導入，可作為保養程序中的特殊局部加強品項。"
-    ],
-    suitableFor: [
-      "美白淡斑",
-      "局部斑點",
-      "痘疤暗沉",
-      "精準保養"
-    ],
-    usage: "化妝水與精華液後，取適量精準塗抹於斑點或暗沉部位，再進行後續乳液鎖水。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  107: {
+  60: {
     cardName: "賽洛美潤膚美體油(C+E)",
     cardSubtitle: "單瓶・頂級養護",
     spec: "單瓶 / 盒裝",
@@ -3555,7 +2639,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  108: {
+  61: {
     cardName: "24小時賦活液",
     cardSubtitle: "單瓶・頂級養護",
     spec: "單瓶 / 盒裝",
@@ -3576,49 +2660,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  109: {
-    cardName: "鉑金無痕煥白雙導精華",
-    cardSubtitle: "單瓶・頂級養護",
-    spec: "單瓶 / 盒裝",
-    intro: "雙管設計高階精華，結合緊緻抗老與煥白保養，適合想同時改善暗沉、細紋與鬆弛感的熟齡肌膚。",
-    features: [
-      "雙管雙導科技，新鮮封存亮白與抗老雙精華。",
-      "鉑金級撫紋抗老概念，支援緊緻與細紋保養。",
-      "密集勻亮去暗沉，改善蠟黃與斑點感。"
-    ],
-    suitableFor: [
-      "抗皺緊緻",
-      "美白淡斑",
-      "熟齡肌",
-      "膚色不均"
-    ],
-    usage: "每日早晚於化妝水後，按壓適量雙導精華於掌心混合，塗抹全臉與頸部並往上按摩至吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  110: {
-    cardName: "黑耀緊緻奢華眼霜",
-    cardSubtitle: "單瓶・頂級養護",
-    spec: "單瓶 / 盒裝",
-    intro: "專為眼周設計的奢華緊緻眼霜，豐潤細緻質地幫助滋養眼周乾紋與細紋，適合高階眼部抗老保養。",
-    features: [
-      "黑耀緊緻能量概念，支援眼周屏障與彈力保養。",
-      "淡化乾燥、熬夜或老化引起的細紋感。",
-      "豐潤但好吸收，適合眼周日常滋養。"
-    ],
-    suitableFor: [
-      "抗皺緊緻",
-      "眼周細紋",
-      "乾燥乾紋",
-      "熟齡肌"
-    ],
-    usage: "每日早晚於保養最後步驟，用無名指取適量眼霜，輕點眼周並由內向外溫和按壓至吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免直接接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  111: {
+  62: {
     cardName: "24小時黃金璀璨賦活液",
     cardSubtitle: "單瓶・頂級養護",
     spec: "單瓶 / 盒裝",
@@ -3639,7 +2681,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  116: {
+  63: {
     cardName: "水光苦杏仁酸慕絲",
     cardSubtitle: "水光肌能系列品項・水光肌能系列",
     spec: "水光肌能系列品項",
@@ -3659,27 +2701,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  117: {
-    cardName: "時光瑞亞淡香水",
-    cardSubtitle: "30mL・效期至2027/03/05",
-    spec: "30mL",
-    intro: "時光瑞亞淡香水為香氛品項，可搭配櫻の雪亮澤護手霜組合活動。",
-    features: [
-      "淡香水 30mL，日常香氛搭配使用。",
-      "效期至 2027/03/05。",
-      "可搭配櫻の雪亮澤護手霜組合優惠，庫存依 LINE 小幫手確認。",
-    ],
-    suitableFor: [
-      "香水",
-        "組合優惠",
-    ],
-    usage: "噴灑於手腕、耳後或衣物適當位置，請避免接觸眼睛。",
-    notice: "請避免接觸眼睛與敏感部位，並放置於陰涼處保存。",
-    expiryNote: "效期至 2027/03/05。",
-    priceNote: "可搭配櫻の雪亮澤護手霜組合活動；庫存與效期依 LINE 小幫手確認為準。",
-  },
-
-  118: {
+  64: {
     cardName: "超導水網瞬效面膜",
     cardSubtitle: "頂級養護面膜品項・頂級養護",
     spec: "頂級養護面膜品項",
@@ -3699,27 +2721,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  119: {
-    cardName: "冰河淨化柔膚面膜",
-    cardSubtitle: "100mL・頂級養護",
-    spec: "100mL",
-    intro: "冰河淨化柔膚面膜為頂級養護集中保養品項，適合依膚況加強日常保養。",
-    features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
-    ],
-    suitableFor: [
-      "抗皺緊緻",
-      "油性毛孔",
-      "面膜保養",
-    ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  120: {
+  65: {
     cardName: "Exo-雙粹秘泌凍晶組",
     cardSubtitle: "一組・頂級養護",
     spec: "一組 / 盒裝",
@@ -3740,7 +2742,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  121: {
+  66: {
     cardName: "奧勒岡小白花美體乳",
     cardSubtitle: "500mL・頂級養護",
     spec: "500mL / 瓶",
@@ -3761,234 +2763,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  122: {
-    cardName: "肌光緊緻速妍面膜",
-    cardSubtitle: "單片 / 盒裝・面膜專區",
-    spec: "單片 / 盒裝",
-    intro: "集中型緊緻修護面膜，適合約會前、熬夜後或需要快速加強保養時使用。",
-    features: [
-      "特殊場合與急救保養時的集中修護。",
-      "敷後幫助肌膚維持水亮、潤澤與彈力感。",
-      "可搭配同系列日常保養維持緊緻光澤。"
-    ],
-    suitableFor: [
-      "抗皺緊緻",
-      "面膜保養",
-      "約會前",
-      "熬夜後"
-    ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  123: {
-    cardName: "INSK乳酸平衡水嫩膜",
-    cardSubtitle: "23mL x 6片 / 盒・面膜專區",
-    spec: "23mL x 6片 / 盒",
-    intro: "集中型乳酸平衡水嫩膜，適合乾燥缺水與膚況不穩時加強保養，快速補水並回復透亮。",
-    features: [
-      "日常保養或急救保養時搭配使用。",
-      "幫助補充水分、舒緩與平衡不穩定膚況。",
-      "敷臉後再搭配日常保養程序，維持潤澤感。"
-    ],
-    suitableFor: [
-      "面膜保養",
-      "乾燥缺水",
-      "不穩定膚況",
-      "INSK乳酸平衡系列"
-    ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  124: {
-    cardName: "水搖滾保濕面膜 (5片裝)",
-    cardSubtitle: "22mL x 5pcs / 盒・面膜專區",
-    spec: "22mL x 5pcs / 盒",
-    intro: "明星保濕面膜，滿載澎湃保濕精華，快速浸潤乾燥缺水肌，適合日常補水、熬夜後急救與集中保養。",
-    features: [
-      "長效爆水續航力，適合日常基礎保養或急救補水。",
-      "高持水面膜剪裁，快速補足肌膚日常保濕需求。",
-      "敷臉後搭配乳液或乳霜，封存透亮水光感。"
-    ],
-    suitableFor: [
-      "乾燥缺水",
-      "外油內乾",
-      "面膜保養",
-      "龍血系列"
-    ],
-    usage: "臉部清潔後取出面膜並撕下外層襯膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  125: {
-    cardName: "水搖滾保濕面膜 (10片裝)",
-    cardSubtitle: "22mL x 10pcs / 盒・面膜專區",
-    spec: "22mL x 10pcs / 盒",
-    intro: "明星保濕面膜 10 片裝，適合日常補水、熬夜後急救與集中保養。",
-    features: [
-      "長效爆水續航力，適合日常基礎保養或急救補水。",
-      "高持水面膜剪裁，快速補足肌膚日常保濕需求。",
-      "敷臉後搭配乳液或乳霜，封存透亮水光感。"
-    ],
-    suitableFor: [
-      "乾燥缺水",
-      "外油內乾",
-      "面膜保養",
-      "龍血系列"
-    ],
-    usage: "臉部清潔後取出面膜並撕下外層襯膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  126: {
-    cardName: "水搖滾保濕面膜 (35片大容量桶裝)",
-    cardSubtitle: "22mL x 35pcs / 桶・面膜專區",
-    spec: "22mL x 35pcs / 桶",
-    intro: "明星保濕面膜大容量桶裝，適合長期日常補水、乾燥缺水與面膜集中保養。",
-    features: [
-      "長效爆水續航力，適合日常基礎保養或急救補水。",
-      "35 片大容量，適合固定敷臉與家庭回購。",
-      "敷臉後搭配乳液或乳霜，封存透亮水光感。"
-    ],
-    suitableFor: [
-      "乾燥缺水",
-      "外油內乾",
-      "面膜保養",
-      "大容量桶裝"
-    ],
-    usage: "臉部清潔後取出面膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  127: {
-    cardName: "極光白美白面膜 (5片裝)",
-    cardSubtitle: "5pcs / 盒・面膜專區",
-    spec: "5pcs / 盒",
-    intro: "集中亮白面膜，適合膚色不均、熬夜暗沉與蠟黃肌膚加強保養，敷後維持透亮水嫩光澤。",
-    features: [
-      "密集勻亮去暗沉，適合日常亮白特別調理。",
-      "集中注入亮白保養精華，改善疲憊膚色。",
-      "敷後搭配日常保養，維持柔嫩、透亮與妝前服貼感。"
-    ],
-    suitableFor: [
-      "美白淡斑",
-      "膚色不均",
-      "熬夜暗沉",
-      "面膜保養"
-    ],
-    usage: "臉部清潔後取出面膜，均勻平整敷於全臉；依標示時間取下後，輕拍幫助吸收，再進行鎖水保養。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  128: {
-    cardName: "極光白美白面膜 (35片大容量桶裝)",
-    cardSubtitle: "35pcs / 桶・面膜專區",
-    spec: "35pcs / 桶",
-    intro: "集中亮白面膜大容量桶裝，適合膚色不均、熬夜暗沉與日常亮白集中保養。",
-    features: [
-      "密集勻亮去暗沉，適合日常亮白特別調理。",
-      "35 片大容量，適合長期固定亮白保養。",
-      "敷後搭配日常保養，維持柔嫩、透亮與妝前服貼感。"
-    ],
-    suitableFor: [
-      "美白淡斑",
-      "膚色不均",
-      "熬夜暗沉",
-      "大容量桶裝"
-    ],
-    usage: "臉部清潔後取出面膜，均勻平整敷於全臉；依標示時間取下後，輕拍幫助吸收，再進行鎖水保養。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  129: {
-    cardName: "冰河淨化柔膚面膜",
-    cardSubtitle: "100mL / 瓶・面膜專區",
-    spec: "100mL / 瓶",
-    intro: "水洗式冰河淨化泥膜，富含高礦物質淨化因子，幫助吸附毛孔髒污與多餘油脂，重塑平滑透亮膚質。",
-    features: [
-      "適合特別保養或深層淨化髒污時使用。",
-      "泥膜調理可溫和舒緩，同步補足保濕修護需求。",
-      "水洗後搭配日常保養，維持細緻潤澤感。"
-    ],
-    suitableFor: [
-      "油性毛孔",
-      "毛孔粗大",
-      "面膜保養",
-      "深層淨化"
-    ],
-    usage: "臉部清潔後，避開眼唇均勻塗抹全臉，依標示時間靜置後以清水溫和洗淨。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  130: {
-    cardName: "鳳梨酵素活膚面膜",
-    cardSubtitle: "22mL x 5pcs / 盒・面膜專區",
-    spec: "22mL x 5pcs / 盒",
-    intro: "集中型鳳梨酵素活膚面膜，適合暗沉、疲憊與粗糙肌膚加強保養，快速補水並提升透亮細緻感。",
-    features: [
-      "酵素活膚密集調理，適合亮白、嫩膚與平滑膚觸需求。",
-      "集中注入水嫩精華，補足保濕與修護需求。",
-      "敷臉後搭配乳液或乳霜，延續光滑澎潤感。"
-    ],
-    suitableFor: [
-      "面膜保養",
-      "暗沉粗糙",
-      "透亮保養",
-      "鳳梨酵素系列"
-    ],
-    usage: "清潔後取出面膜敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收，再進行鎖水保養。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  131: {
-    cardName: "綠茶多酚保濕平衡面膜",
-    cardSubtitle: "20mL x 5片 / 盒・面膜",
-    spec: "20mL x 5片 / 盒",
-    intro: "綠茶多酚保濕平衡面膜為面膜集中保養品項，適合依膚況加強日常保養。",
-    features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
-    ],
-    suitableFor: [
-      "乾燥缺水",
-      "面膜保養",
-    ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  132: {
-    cardName: "超導水網瞬效面膜",
-    cardSubtitle: "頂級養護面膜品項・面膜",
-    spec: "頂級養護面膜品項",
-    intro: "超導水網瞬效面膜為面膜集中保養品項，適合依膚況加強日常保養。",
-    features: [
-      "適合日常保養或需要加強保養時搭配使用。",
-      "可依膚況選擇保濕、亮白、舒緩或修護需求。",
-      "敷臉後再搭配日常保養程序，維持肌膚潤澤感。",
-    ],
-    suitableFor: [
-      "乾燥缺水",
-      "面膜保養",
-    ],
-    usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
-    notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
-    expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
-  },
-  135: {
+  67: {
     cardName: "龍血薰衣草舒緩皂 4入優惠",
     cardSubtitle: "目前上架薰衣草款・4入優惠",
     spec: "龍血薰衣草舒緩皂 200g±10g / 塊，共4塊",
@@ -4004,7 +2779,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前薰衣草款 4入優惠 $799。",
   },
-  136: {
+  68: {
     cardName: "櫻の雪美白精華乳液組",
     cardSubtitle: "買精華液+乳液・贈化妝水・$1,780",
     spec: "精華液30mL + 乳液100mL，贈化妝水150mL",
@@ -4024,7 +2799,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "購買精華液30mL + 乳液100mL，贈化妝水150mL，組合價 $1,780；庫存與效期依 LINE 小幫手確認為準。",
   },
-  138: {
+  69: {
     cardName: "亮妍膠原飲兩盒贈晶眸",
     cardSubtitle: "玫瑰風味50mL/10入兩盒・贈EC晶眸・$4,400",
     spec: "亮妍魚膠原蛋白飲-玫瑰風味 50mL/10入 x 2盒，贈 EC 晶眸葉黃素精華凍+精華飲綜合組",
@@ -4044,28 +2819,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "亮妍魚膠原蛋白飲兩盒贈 EC 晶眸葉黃素綜合組，組合價 $4,400；庫存與效期依 LINE 小幫手確認為準。",
   },
-  140: {
-    cardName: "時光瑞亞淡香水贈護手霜",
-    cardSubtitle: "30mL・贈JDST護手霜30g・$780",
-    spec: "時光瑞亞淡香水30mL + 櫻の雪亮澤護手霜JDST 30g",
-    intro: "時光瑞亞淡香水贈櫻の雪亮澤護手霜為香氛組合優惠，淡香水效期至 2027/03/05。",
-    features: [
-      "時光瑞亞淡香水30mL，牌價 $790，效期至 2027/03/05。",
-      "贈送價值 $290 的櫻の雪亮澤護手霜 JDST 30g。",
-      "組合價 $780，庫存與效期依 LINE 小幫手確認為準。",
-    ],
-    suitableFor: [
-      "組合優惠",
-        "護手霜",
-    ],
-    usage: "淡香水可噴灑於手腕、耳後或衣物適當位置；護手霜取適量塗抹於手部肌膚。",
-    notice: "香水與護手霜請避免接觸眼睛與敏感部位，並放置於陰涼處保存。",
-    expiryNote: "淡香水效期至 2027/03/05；護手霜效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "時光瑞亞淡香水30mL + 櫻の雪亮澤護手霜JDST 30g，組合價 $780；庫存與效期依 LINE 小幫手確認為準。",
-  },
-
-
-  141: {
+  48: {
     cardName: "櫻の雪傳明酸美白精華液",
     cardSubtitle: "30mL・櫻の雪系列",
     spec: "30mL / 瓶",
@@ -4086,7 +2840,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "目前售價由 LINE 小幫手確認，送出清單後會協助回覆。",
   },
-  145: {
+  70: {
     cardName: "龍血求麗甦醒精油滾珠",
     cardSubtitle: "9mL・精油滾珠",
     spec: "9mL / 支",
@@ -4107,7 +2861,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "牌價 $390；庫存與效期依 LINE 小幫手確認為準。",
   },
-  146: {
+  71: {
     cardName: "薰衣草萬用精油滾珠",
     cardSubtitle: "9mL・精油滾珠",
     spec: "9mL / 支",
@@ -4128,7 +2882,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "牌價 $390；庫存與效期依 LINE 小幫手確認為準。",
   },
-  148: {
+  72: {
     cardName: "絕美溫感變色護唇膏",
     cardSubtitle: "3.5g・護唇膏",
     spec: "3.5g / 支",
@@ -4149,7 +2903,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "單支 $290；護唇膏任選2條 $500。",
   },
-  149: {
+  73: {
     cardName: "絕美保濕護唇膏",
     cardSubtitle: "3.5g・護唇膏",
     spec: "3.5g / 支",
@@ -4170,7 +2924,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "單支 $290；護唇膏任選2條 $500。",
   }
-
 };
 
 const skinFilters = [
@@ -4187,135 +2940,112 @@ const skinFilters = [
 
 type SkinFilter = (typeof skinFilters)[number];
 
-const comboProductIds = new Set<number>([
-  1, 2, 3,
-  99, 141, 142,
-  29, 30,
-  35, 36,
-  47, 48,
-  54, 55,
-  56, 57, 58, 59, 60,
-  71,
-  79, 80, 81, 82, 93, 94, 147, 148, 149, 150,
-]);
+const comboProductIds = new Set<number>([1, 48, 49, 15, 16, 18, 19, 30, 31, 35, 36, 37, 38, 39, 46, 50, 57, 72, 73]);
 
-const expiringProductIds = new Set<number>([58, 126, 179]);
+const expiringProductIds = new Set<number>([38, 74]);
 
 const expiryNotesV315: Record<number, string> = {
   1: "高鈣益生菌效期：2027.10.14；蔓越莓益生菌效期：2028.01.03。實際效期以商品包裝標示為準。",
-  4: "晶眸葉黃素精華凍效期：2027.04.28；晶眸葉黃素綜合莓果口味效期：2027.05.05。實際效期以商品包裝標示為準。",
-  5: "效期：2028.03.08。實際效期以商品包裝標示為準。",
-  6: "效期：2028.03.09。實際效期以商品包裝標示為準。",
-  7: "效期：2028.03.09。實際效期以商品包裝標示為準。",
-  8: "效期：2028.03.24。實際效期以商品包裝標示為準。",
-  14: "效期：2029.06.13。實際效期以商品包裝標示為準。",
-  16: "效期：2029.05.19。實際效期以商品包裝標示為準。",
-  17: "效期：2029.01.26。實際效期以商品包裝標示為準。",
-  19: "效期：2027.03.04。實際效期以商品包裝標示為準。",
-  21: "效期：2028.02.05。實際效期以商品包裝標示為準。",
-  22: "效期：2028.01.12。實際效期以商品包裝標示為準。",
-  23: "效期：2029.01.03。實際效期以商品包裝標示為準。",
-  24: "效期：2028.03.09。實際效期以商品包裝標示為準。",
-  29: "效期：2029.04.21。實際效期以商品包裝標示為準。",
-  30: "效期：2029.03.29。實際效期以商品包裝標示為準。",
-  31: "效期：2027.07.26。實際效期以商品包裝標示為準。",
-  35: "效期：2029.04.22。實際效期以商品包裝標示為準。",
-  36: "效期：2028.07.17。實際效期以商品包裝標示為準。",
-  37: "效期：2029.05.21。實際效期以商品包裝標示為準。",
-  39: "效期：2029.04.05。實際效期以商品包裝標示為準。",
-  40: "效期：2029.04.05。實際效期以商品包裝標示為準。",
-  41: "效期：2029.05.21。實際效期以商品包裝標示為準。",
-  42: "效期：2029.04.05。實際效期以商品包裝標示為準。",
-  43: "效期：2029.02.28。實際效期以商品包裝標示為準。",
-  44: "效期：2029.03.07。實際效期以商品包裝標示為準。",
-  45: "效期：2029.05.25。實際效期以商品包裝標示為準。",
-  47: "效期：2031.04.26。實際效期以商品包裝標示為準。",
-  48: "效期：2031.04.26。實際效期以商品包裝標示為準。",
-  49: "效期：2028.07.07。實際效期以商品包裝標示為準。",
-  52: "效期：2028.03.15。實際效期以商品包裝標示為準。",
-  53: "效期：2029.06.04。實際效期以商品包裝標示為準。",
-  54: "效期：2029.06.08。實際效期以商品包裝標示為準。",
-  55: "效期：2029.06.08。實際效期以商品包裝標示為準。",
-  57: "效期：2027.06.10。實際效期以商品包裝標示為準。",
-  58: "效期：2026.11.02。限量優惠品項，建議確認可於效期內使用後再加入清單。",
-  60: "效期：2027.04.22。實際效期以商品包裝標示為準。",
-  62: "效期：2029.03.15。實際效期以商品包裝標示為準。",
-  63: "效期之後更新，實際效期以商品包裝標示或 LINE 小幫手確認為準。",
-  64: "效期：2029.03.08。實際效期以商品包裝標示為準。",
-  66: "效期：2029.03.17。實際效期以商品包裝標示為準。",
-  67: "效期：2027.11.26。實際效期以商品包裝標示為準。",
-  69: "效期：2028.11.09。實際效期以商品包裝標示為準。",
-  72: "效期：2029.02.03。實際效期以商品包裝標示為準。",
-  82: "效期：2029.05.26。實際效期以商品包裝標示為準。",
-  86: "涼感 / 溫感貼布效期：2031.04.26。實際效期以商品包裝標示為準。",
-  87: "涼感 / 溫感貼布效期：2031.04.26。實際效期以商品包裝標示為準。",
-  90: "龍血牙膏效期：2028.07.17；薰衣草牙膏效期：2029.04.22。實際效期以商品包裝標示為準。",
-  91: "水搖滾桶裝效期：2026.11.02；極光白桶裝效期：2027.04.22。實際效期以商品包裝標示為準。",
-  93: "效期：2028.10.28。實際效期以商品包裝標示為準。",
-  100: "效期：2027.05.26。實際效期以商品包裝標示為準。",
-  101: "潔顏慕絲 / 卸妝油效期：2029.06.08。實際效期以商品包裝標示為準。",
-  107: "效期：2027.07.22。實際效期以商品包裝標示為準。",
-  108: "效期：2028.11.19。實際效期以商品包裝標示為準。",
-  116: "效期：2029.03.09。實際效期以商品包裝標示為準。",
-  118: "效期：2027.10.07。實際效期以商品包裝標示為準。",
-  119: "效期：2027.11.26。實際效期以商品包裝標示為準。",
-  120: "效期：2028.10.15。實際效期以商品包裝標示為準。",
-  121: "效期：2029.06.08。實際效期以商品包裝標示為準。",
-  122: "效期：2028.03.09。實際效期以商品包裝標示為準。",
-  125: "效期：2027.06.10。實際效期以商品包裝標示為準。",
-  126: "效期：2026.11.02。限量優惠品項，建議確認可於效期內使用後再加入清單。",
-  128: "效期：2027.04.22。實際效期以商品包裝標示為準。",
-  129: "效期：2027.11.26。實際效期以商品包裝標示為準。",
-  132: "效期：2027.10.07。實際效期以商品包裝標示為準。",
-  135: "效期：2029.05.26。實際效期以商品包裝標示為準。",
-  138: "亮妍魚膠原蛋白飲效期：2028.03.08；EC 晶眸葉黃素效期依商品包裝標示為準。",
-  141: "效期：2029.06.15。實際效期以商品包裝標示為準。",
-  142: "效期：2029.06.15。實際效期以商品包裝標示為準。",
-  179: "效期：2026.10.17。限量優惠品項，建議確認可於效期內使用後再加入清單。",
-  180: "效期：2028.01.03。實際效期以商品包裝標示為準。",
-  183: "效期：2028.03.03。實際效期以商品包裝標示為準。",
-  184: "效期：2027.09.11。實際效期以商品包裝標示為準。",
-  185: "效期：2031.03.16。實際效期以商品包裝標示為準。",
-  190: "效期：2030.06.18。實際效期以商品包裝標示為準。",
-  191: "效期：2028.11.04。實際效期以商品包裝標示為準。",
-  192: "效期：2029.05.21。實際效期以商品包裝標示為準。",
-  193: "效期：2029.04.05。實際效期以商品包裝標示為準。",
-  194: "效期：2029.04.05。實際效期以商品包裝標示為準。",
-  195: "效期：2029.05.21。實際效期以商品包裝標示為準。",
-  197: "效期：2029.04.05。實際效期以商品包裝標示為準。",
-  198: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  2: "晶眸葉黃素精華凍效期：2027.04.28；晶眸葉黃素綜合莓果口味效期：2027.05.05。實際效期以商品包裝標示為準。",
+  3: "效期：2028.03.08。實際效期以商品包裝標示為準。",
+  4: "效期：2028.03.09。實際效期以商品包裝標示為準。",
+  5: "效期：2028.03.09。實際效期以商品包裝標示為準。",
+  6: "效期：2028.03.24。實際效期以商品包裝標示為準。",
+  7: "效期：2029.06.13。實際效期以商品包裝標示為準。",
+  8: "效期：2029.05.19。實際效期以商品包裝標示為準。",
+  9: "效期：2029.01.26。實際效期以商品包裝標示為準。",
+  10: "效期：2027.03.04。實際效期以商品包裝標示為準。",
+  11: "效期：2028.02.05。實際效期以商品包裝標示為準。",
+  12: "效期：2028.01.12。實際效期以商品包裝標示為準。",
+  13: "效期：2029.01.03。實際效期以商品包裝標示為準。",
+  14: "效期：2028.03.09。實際效期以商品包裝標示為準。",
+  15: "效期：2029.04.21。實際效期以商品包裝標示為準。",
+  16: "效期：2029.03.29。實際效期以商品包裝標示為準。",
+  17: "效期：2027.07.26。實際效期以商品包裝標示為準。",
+  18: "效期：2029.04.22。實際效期以商品包裝標示為準。",
+  19: "效期：2028.07.17。實際效期以商品包裝標示為準。",
+  20: "效期：2029.05.21。實際效期以商品包裝標示為準。",
+  22: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  23: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  24: "效期：2029.05.21。實際效期以商品包裝標示為準。",
+  25: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  26: "效期：2029.02.28。實際效期以商品包裝標示為準。",
+  27: "效期：2029.03.07。實際效期以商品包裝標示為準。",
+  28: "效期：2029.05.25。實際效期以商品包裝標示為準。",
+  30: "效期：2031.04.26。實際效期以商品包裝標示為準。",
+  31: "效期：2031.04.26。實際效期以商品包裝標示為準。",
+  32: "效期：2028.07.07。實際效期以商品包裝標示為準。",
+  33: "效期：2028.03.15。實際效期以商品包裝標示為準。",
+  34: "效期：2029.06.04。實際效期以商品包裝標示為準。",
+  35: "效期：2029.06.08。實際效期以商品包裝標示為準。",
+  36: "效期：2029.06.08。實際效期以商品包裝標示為準。",
+  37: "效期：2027.06.10。實際效期以商品包裝標示為準。",
+  38: "效期：2026.11.02。限量優惠品項，建議確認可於效期內使用後再加入清單。",
+  39: "效期：2027.04.22。實際效期以商品包裝標示為準。",
+  40: "效期：2029.03.15。實際效期以商品包裝標示為準。",
+  41: "效期之後更新，實際效期以商品包裝標示或 LINE 小幫手確認為準。",
+  42: "效期：2029.03.08。實際效期以商品包裝標示為準。",
+  43: "效期：2029.03.17。實際效期以商品包裝標示為準。",
+  44: "效期：2027.11.26。實際效期以商品包裝標示為準。",
+  45: "效期：2028.11.09。實際效期以商品包裝標示為準。",
+  47: "效期：2029.02.03。實際效期以商品包裝標示為準。",
+  50: "效期：2029.05.26。實際效期以商品包裝標示為準。",
+  51: "涼感 / 溫感貼布效期：2031.04.26。實際效期以商品包裝標示為準。",
+  52: "涼感 / 溫感貼布效期：2031.04.26。實際效期以商品包裝標示為準。",
+  54: "龍血牙膏效期：2028.07.17；薰衣草牙膏效期：2029.04.22。實際效期以商品包裝標示為準。",
+  55: "水搖滾桶裝效期：2026.11.02；極光白桶裝效期：2027.04.22。實際效期以商品包裝標示為準。",
+  57: "效期：2028.10.28。實際效期以商品包裝標示為準。",
+  58: "效期：2027.05.26。實際效期以商品包裝標示為準。",
+  59: "潔顏慕絲 / 卸妝油效期：2029.06.08。實際效期以商品包裝標示為準。",
+  60: "效期：2027.07.22。實際效期以商品包裝標示為準。",
+  61: "效期：2028.11.19。實際效期以商品包裝標示為準。",
+  63: "效期：2029.03.09。實際效期以商品包裝標示為準。",
+  64: "效期：2027.10.07。實際效期以商品包裝標示為準。",
+  65: "效期：2028.10.15。實際效期以商品包裝標示為準。",
+  66: "效期：2029.06.08。實際效期以商品包裝標示為準。",
+  67: "效期：2029.05.26。實際效期以商品包裝標示為準。",
+  69: "亮妍魚膠原蛋白飲效期：2028.03.08；EC 晶眸葉黃素效期依商品包裝標示為準。",
+  48: "效期：2029.06.15。實際效期以商品包裝標示為準。",
+  49: "效期：2029.06.15。實際效期以商品包裝標示為準。",
+  74: "效期：2026.10.17。限量優惠品項，建議確認可於效期內使用後再加入清單。",
+  75: "效期：2028.01.03。實際效期以商品包裝標示為準。",
+  78: "效期：2028.03.03。實際效期以商品包裝標示為準。",
+  79: "效期：2027.09.11。實際效期以商品包裝標示為準。",
+  80: "效期：2031.03.16。實際效期以商品包裝標示為準。",
+  85: "效期：2030.06.18。實際效期以商品包裝標示為準。",
+  86: "效期：2028.11.04。實際效期以商品包裝標示為準。",
+  87: "效期：2029.05.21。實際效期以商品包裝標示為準。",
+  88: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  89: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  90: "效期：2029.05.21。實際效期以商品包裝標示為準。",
+  92: "效期：2029.04.05。實際效期以商品包裝標示為準。",
+  93: "效期：2029.04.05。實際效期以商品包裝標示為準。"
 };
 
 
 
 const productImageFallbacks: Record<number, string[]> = {
-  47: ["/products/patch 1.png", "/products/blue 100.jpg"],
-  48: ["/products/patch 5.png", "/products/red 100.jpg"],
-  35: [
+  30: ["/products/patch 1.png", "/products/blue 100.jpg"],
+  31: ["/products/patch 5.png", "/products/red 100.jpg"],
+  18: [
     "/products/lav-washtoothpaste.jpg",
     "/products/toothpaste lav.png",
     "/products/toothpaste-lav.png",
     "/products/toothpaste_lav.png",
     "/products/tooth500.png",
   ],
-  36: [
+  19: [
     "/products/bd-washtoothpaste.jpg",
     "/products/toothpaste bd.png",
     "/products/toothpaste-bd.png",
     "/products/toothpaste_bd.png",
     "/products/tooth500.png",
   ],
-  79: ["/products/soap rose.png", "/products/bdsoap.png"],
-  80: ["/products/soap Artemisia.png", "/products/bdsoap.png"],
-  81: ["/products/soap lemo.png", "/products/bdsoap.png"],
-  82: ["/products/soap lav.png", "/products/bdsoap.png"],
-  94: ["/products/soap sandalwood.png", "/products/bdsoap.png"],
-  145: ["/products/dragon roller.png", "/products/龍血求麗甦醒精油滾珠.jpg", "/products/龍血求麗甦醒精油滾珠.png"],
-  146: ["/products/lavender roller.png", "/products/薰衣草萬用精油滾珠.jpg", "/products/薰衣草萬用精油滾珠.png"],
-  147: ["/products/soap Hydrangea.png", "/products/soap hydrangea.png", "/products/bdsoap.png"],
-  148: ["/products/lip tint.jpg", "/products/lip tint.png", "/products/lip combo.jpg"],
-  149: ["/products/lip balm.jpg", "/products/lip balm.png", "/products/lip combo.jpg"],
-  150: ["/products/lip combo.jpg", "/products/lip tint.jpg", "/products/lip balm.jpg"],
+  50: ["/products/soap lav.png", "/products/bdsoap.png"],
+  70: ["/products/dragon roller.png", "/products/龍血求麗甦醒精油滾珠.jpg", "/products/龍血求麗甦醒精油滾珠.png"],
+  71: ["/products/lavender roller.png", "/products/薰衣草萬用精油滾珠.jpg", "/products/薰衣草萬用精油滾珠.png"],
+  72: ["/products/lip tint.jpg", "/products/lip tint.png", "/products/lip combo.jpg"],
+  73: ["/products/lip balm.jpg", "/products/lip balm.png", "/products/lip combo.jpg"]
 };
 
 
@@ -4358,7 +3088,7 @@ function Home() {
   const seriesList = categoryConfig[selectedCategory];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
-  const monthlyOfferIdsV316 = new Set([53, 1, 86, 100, 101, 91, 82, 90, 222]);
+  const monthlyOfferIdsV316 = new Set([34, 1, 51, 58, 59, 55, 50, 54, 112]);
 
   function isFeaturedProductV31(product: Product) {
     return monthlyOfferIdsV316.has(product.id) || product.series.includes("本月主打");
@@ -4507,28 +3237,28 @@ function Home() {
   const searchPreviewProducts = normalizedSearchQuery ? filteredProducts : [];
   const searchRemainingCount = 0;
 
-  const featuredProductIds = [53, 1, 86, 100, 101, 91, 82, 90, 4, 5, 88, 92];
+  const featuredProductIds = [34, 1, 51, 58, 59, 55, 50, 54, 2, 3, 53, 56];
   const featuredProducts = featuredProductIds
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([53, 83, 100, 101, 91, 82, 90, 88, 92]);
-  const homeClearanceProducts = getProductsByIds([10, 11]);
-  const homeDragonBloodProducts = getProductsByIds([53, 101, 89, 135]);
-  const homeWaterGlowProducts = getProductsByIds([61, 62, 63, 116]);
-  const homeTeaControlProducts = getProductsByIds([49, 64, 69, 70]);
-  const homeBrighteningProducts = getProductsByIds([136, 141, 142, 127, 128]);
-  const homeFirmingProducts = getProductsByIds([21, 22, 23, 24, 108, 120]);
-  const homeMaskProducts = getProductsByIds([91, 126, 128]);
-  const homeHealthProducts = getProductsByIds([83, 100, 84, 85, 1, 2]);
-  const homeDailyLifeProducts = getProductsByIds([82, 90, 145, 146, 12]);
+  const homeComboProducts = getProductsByIds([34, 58, 59, 55, 50, 54, 53, 56]);
+  const homeClearanceProducts: Product[] = [];
+  const homeDragonBloodProducts = getProductsByIds([34, 59, 67]);
+  const homeWaterGlowProducts = getProductsByIds([40, 41, 63]);
+  const homeTeaControlProducts = getProductsByIds([32, 42, 45]);
+  const homeBrighteningProducts = getProductsByIds([68, 48, 49, 39]);
+  const homeFirmingProducts = getProductsByIds([11, 12, 13, 14, 61, 65]);
+  const homeMaskProducts = getProductsByIds([55, 38, 39]);
+  const homeHealthProducts = getProductsByIds([58, 1]);
+  const homeDailyLifeProducts = getProductsByIds([50, 54, 70, 71, 113]);
 
-  const campaignHeroProducts = getProductsByIds([53, 83, 100, 86]);
-  const campaignSpotlightProducts = getProductsByIds([53, 83, 100, 101, 91, 82]);
+  const campaignHeroProducts = getProductsByIds([34, 58, 51]);
+  const campaignSpotlightProducts = getProductsByIds([34, 58, 59, 55, 50]);
 
-  const heroTopProduct = products.find((product) => product.id === 53);
-  const heroSecondaryProducts = getProductsByIds([83, 100, 82]);
-  const heroComboProducts = getProductsByIds([53, 83, 100, 101, 91, 82]);
+  const heroTopProduct = products.find((product) => product.id === 34);
+  const heroSecondaryProducts = getProductsByIds([58, 50]);
+  const heroComboProducts = getProductsByIds([34, 58, 59, 55, 50]);
   const heroSeriesEntries: {
     title: string;
     text: string;
@@ -4543,35 +3273,35 @@ function Home() {
       text: "玻尿酸精華、洗卸保養熱賣",
       category: "臉部保養",
       series: "龍血系列",
-      product: products.find((product) => product.id === 53),
+      product: products.find((product) => product.id === 34),
     },
     {
       title: "益生菌熱賣",
       text: "蔓越莓 / 高鈣任選、BC-HA 組合",
       category: "健康補給",
       series: "益生菌系列",
-      product: products.find((product) => product.id === 83),
+      product: products.find((product) => product.id === 1),
     },
     {
       title: "精油香氛",
       text: "單方、複方與擴香設備",
       category: "精油香氛",
       series: "全部",
-      product: products.find((product) => product.id === 190) ?? products.find((product) => product.id === 82),
+      product: products.find((product) => product.id === 85) ?? products.find((product) => product.id === 50),
     },
     {
       title: "薰衣草舒緩皂",
       text: "目前上架薰衣草款，單入與4入優惠",
       category: "精油香氛",
       series: "香氛皂",
-      product: products.find((product) => product.id === 82),
+      product: products.find((product) => product.id === 50),
     },
     {
       title: "限量優惠",
       text: "限量優惠，售完為止",
       filter: "clearance-all",
       label: "限量優惠",
-      product: products.find((product) => product.id === 10) ?? products.find((product) => product.id === 11),
+      product: products.find((product) => product.id === 38),
     },
   ];
 
@@ -4614,13 +3344,13 @@ function Home() {
     },
   ];
 
-  const mallDealProducts = getProductsByIds([53, 1, 86]);
-  const mallHotProducts = getProductsByIds([53, 1, 86, 91, 100, 90, 82, 222]);
-  const mallSkincareShelfProducts = getProductsByIds([53, 101, 54, 55, 61, 62]);
-  const mallBodyShelfProducts = getProductsByIds([90, 82, 222, 29, 30, 135]);
-  const mallHealthShelfProducts = getProductsByIds([1, 100, 4, 5, 138, 92]);
-  const mallAromaShelfProducts = getProductsByIds([190, 179, 184, 187, 180, 181]);
-  const mallComingSoonProducts = getProductsByIds([145, 146, 12, 71, 201, 202, 203, 204, 205]);
+  const mallDealProducts = getProductsByIds([34, 1, 51]);
+  const mallHotProducts = getProductsByIds([34, 1, 51, 55, 58, 54, 50, 112]);
+  const mallSkincareShelfProducts = getProductsByIds([34, 59, 35, 36, 40]);
+  const mallBodyShelfProducts = getProductsByIds([54, 50, 112, 15, 16, 67]);
+  const mallHealthShelfProducts = getProductsByIds([1, 58, 2, 3, 69, 56]);
+  const mallAromaShelfProducts = getProductsByIds([85, 74, 79, 82, 75, 76]);
+  const mallComingSoonProducts = getProductsByIds([70, 71, 113, 46, 114, 115, 116, 117, 118]);
 
   const mallBrandEntries = [
     {
@@ -4655,17 +3385,7 @@ function Home() {
 
   const collectionSeriesChips = seriesList.filter((series) => series !== "全部").slice(0, 14);
 
-  const hotCollectionProductIds = [
-    53, 1, 100, 101, 91, 82, 90, 4, 5, 88, 92,
-    138, 1,
-    222, 29, 30, 93,
-    35, 36,
-    126, 128, 124, 127,
-    135, 79,
-    54, 55, 17, 18, 19, 20, 136, 141, 142, 68, 71, 72, 61, 62, 63, 49,
-    145, 146, 12, 179, 184, 190,
-    47, 48, 134,
-  ];
+  const hotCollectionProductIds = [34, 1, 58, 59, 55, 50, 54, 2, 3, 53, 56, 69, 112, 15, 16, 57, 18, 19, 38, 39, 67, 35, 36, 9, 10, 68, 48, 49, 46, 47, 40, 41, 32, 70, 71, 113, 74, 79, 85, 30, 31];
 
   const collectionProducts = normalizedSearchQuery
     ? filteredProducts
@@ -4799,7 +3519,7 @@ function Home() {
       case "deals-all":
         return product.category === "組合價" || hasComboPrice(product);
       case "v3-featured":
-        return [53, 1, 86, 100, 101, 91, 82, 90, 4, 5, 88, 92].includes(product.id);
+        return [34, 1, 51, 58, 59, 55, 50, 54, 2, 3, 53, 56].includes(product.id);
       case "deals-monthly":
         return product.category === "組合價" && product.series.includes("本月主打");
       case "deals-combo":
@@ -4811,7 +3531,7 @@ function Home() {
 
 
       case "need-hot":
-        return [53, 1, 86, 100, 101, 91, 82, 90, 4, 5, 88, 92].includes(product.id);
+        return [34, 1, 51, 58, 59, 55, 50, 54, 2, 3, 53, 56].includes(product.id);
       case "need-dragon":
         return fullText.includes("龍血") || product.series.includes("龍血");
       case "need-cleansing":
@@ -5225,9 +3945,9 @@ function Home() {
   }
 
   function getTopPickBadge(product: Product) {
-    if (product.id === 53) return "TOP 1";
+    if (product.id === 34) return "TOP 1";
     if (product.id === 1) return "TOP 2";
-    if (product.id === 86) return "TOP 3";
+    if (product.id === 51) return "TOP 3";
     return "";
   }
 
@@ -5240,23 +3960,23 @@ function Home() {
       }
     };
 
-    if (product.id === 53) push("爆水保濕", "買一送一");
+    if (product.id === 34) push("爆水保濕", "買一送一");
     if (product.id === 1) push("任選補給", "日常補給");
-    if (product.id === 86) push("爆款貼布", "任選優惠");
-    if (product.id === 91 || fullText.includes("水搖滾")) push("爆水面膜", "水潤補給");
-    if (product.id === 90) push("口腔補貨", "任選優惠");
-    if (product.id === 82) push("香氛皂", "4入優惠");
-    if (product.id === 100) push("菌相補給", "2盒組");
-    if (product.id === 101) push("洗卸組", "1+1優惠");
-    if (product.id === 88) push("口腔補貨", "贈品組");
-    if (product.id === 92) push("魚油補給", "買一送一");
-    if (product.id === 4) push("晶亮補給", "3C族");
-    if (product.id === 5) push("美妍飲", "膠原補給");
-    if ([179, 180, 183, 206].includes(product.id)) push("單方精油", "任選優惠");
-    if ([207, 208, 209].includes(product.id)) push("香氛儀式", "產地價");
-    if (product.id === 218) push("買二送一", "護手補貨");
-    if ([211, 212, 213, 214, 215, 216, 217].includes(product.id)) push("居家舒壓", "身體保養");
-    if (product.id === 210) push("擴香配件", "買一送一");
+    if (product.id === 51) push("爆款貼布", "任選優惠");
+    if (product.id === 55 || fullText.includes("水搖滾")) push("爆水面膜", "水潤補給");
+    if (product.id === 54) push("口腔補貨", "任選優惠");
+    if (product.id === 50) push("香氛皂", "4入優惠");
+    if (product.id === 58) push("菌相補給", "2盒組");
+    if (product.id === 59) push("洗卸組", "1+1優惠");
+    if (product.id === 53) push("口腔補貨", "贈品組");
+    if (product.id === 56) push("魚油補給", "買一送一");
+    if (product.id === 2) push("晶亮補給", "3C族");
+    if (product.id === 3) push("美妍飲", "膠原補給");
+    if ([74, 75, 78, 96].includes(product.id)) push("單方精油", "任選優惠");
+    if ([97, 98, 99].includes(product.id)) push("香氛儀式", "產地價");
+    if (product.id === 108) push("買二送一", "護手補貨");
+    if ([101, 102, 103, 104, 105, 106, 107].includes(product.id)) push("居家舒壓", "身體保養");
+    if (product.id === 100) push("擴香配件", "買一送一");
     if (isComingSoon(product)) push("新品預告");
     if (isExpiringDeal(product)) push("限量優惠");
 
@@ -5272,24 +3992,24 @@ function Home() {
 
   function getSalesCardSubtitle(product: Product) {
     const fullText = `${product.name} ${product.series} ${product.category} ${product.price} ${product.description}`;
-    if (product.id === 53) return "爆水保濕回購組";
+    if (product.id === 34) return "爆水保濕回購組";
     if (product.id === 1) return "蔓越莓 / 高鈣任選補給";
-    if (product.id === 86) return "涼感 / 溫感爆款貼布任選";
-    if (product.id === 91) return "爆水面膜・桶裝回購";
-    if (product.id === 90) return "口腔清新補貨組";
-    if (product.id === 82) return "薰衣草香氛皂・洗沐儀式感";
-    if (product.id === 100) return "日常菌相補給 2盒組";
-    if (product.id === 101) return "龍血洗卸 1+1 清潔組";
-    if (product.id === 88) return "潔口液 3罐贈牙膏";
-    if (product.id === 92) return "魚油日常補給買一送一";
-    if (product.id === 4) return "3C族晶亮營養補給";
-    if (product.id === 5) return "美妍膠原飲補貨";
-    if (product.id === 218) return "護手霜買二送一補貨組";
-    if ([211, 212, 213, 214, 215, 216, 217].includes(product.id)) return "居家舒壓工具補貨";
-    if ([179, 180, 183, 206].includes(product.id)) return "單方精油任選更划算";
-    if ([207, 208, 209].includes(product.id)) return "日常香氛儀式感";
-    if (product.id === 210) return "擴香配件買一送一";
-    if (product.id === 58) return "爆水保濕桶，日常敷臉補貨";
+    if (product.id === 51) return "涼感 / 溫感爆款貼布任選";
+    if (product.id === 55) return "爆水面膜・桶裝回購";
+    if (product.id === 54) return "口腔清新補貨組";
+    if (product.id === 50) return "薰衣草香氛皂・洗沐儀式感";
+    if (product.id === 58) return "日常菌相補給 2盒組";
+    if (product.id === 59) return "龍血洗卸 1+1 清潔組";
+    if (product.id === 53) return "潔口液 3罐贈牙膏";
+    if (product.id === 56) return "魚油日常補給買一送一";
+    if (product.id === 2) return "3C族晶亮營養補給";
+    if (product.id === 3) return "美妍膠原飲補貨";
+    if (product.id === 108) return "護手霜買二送一補貨組";
+    if ([101, 102, 103, 104, 105, 106, 107].includes(product.id)) return "居家舒壓工具補貨";
+    if ([74, 75, 78, 96].includes(product.id)) return "單方精油任選更划算";
+    if ([97, 98, 99].includes(product.id)) return "日常香氛儀式感";
+    if (product.id === 100) return "擴香配件買一送一";
+    if (product.id === 38) return "爆水保濕桶，日常敷臉補貨";
     if (isComingSoon(product)) return "新品預告・敬請期待";
 
     if (fullText.includes("水搖滾")) return "爆水感保濕補給";
@@ -5490,9 +4210,7 @@ function Home() {
 
   function getCartUpsellProducts() {
     const currentIds = new Set(cartItems.map((item) => item.product.id));
-    const recommendIds = [
-      90, 89, 143, 92, 88, 100, 35, 36, 47, 48, 1, 2, 74, 99, 144, 133, 134,
-    ];
+    const recommendIds = [54, 56, 53, 58, 18, 19, 30, 31, 1];
 
     return getProductsByIds(recommendIds)
       .filter((product) => !currentIds.has(product.id) && !isCartDisabled(product))
@@ -5931,18 +4649,14 @@ function Home() {
 
   function getRelatedProducts(product: Product) {
     const manualRelatedIds: Record<number, number[]> = {
-      99: [144, 92, 88, 74, 143],
-      144: [99, 92, 88, 74, 143],
-      29: [139, 30, 93, 89],
-      30: [89, 29, 139, 93],
-      54: [101, 55, 17, 19],
-      55: [101, 54, 71, 137],
-      71: [137, 136, 72, 141, 142],
-      75: [140, 117, 76, 77],
-      74: [92, 99, 144, 88],
-      4: [138, 5, 74, 92],
-      5: [138, 4, 1, 2],
-    };
+  15: [16, 57],
+  16: [15, 57],
+  35: [59, 36, 9, 10],
+  36: [59, 35, 46],
+  46: [68, 47, 48, 49],
+  2: [69, 3, 56],
+  3: [69, 2, 1]
+};
 
     const manual = getProductsByIds(manualRelatedIds[product.id] ?? []);
 
