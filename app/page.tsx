@@ -1196,13 +1196,13 @@ const allProducts: Product[] = [
   },
 {
     id: 110,
-    name: "超防禦清透隔離乳 30mL",
+    name: "超防禦輕透隔離乳 30mL",
     category: "保養品",
     series: "防曬隔離",
     originalPrice: "原價 $ 1,380",
     price: "產地價 $ 1,035",
     image: "/products/placeholder.jpg",
-    description: "30mL。清透隔離乳，日常外出前打底使用，維持清爽防護感。",
+    description: "30mL。輕透隔離乳，日常外出前打底使用，維持清爽防護感。",
     expiryNote: "效期：2029.06.14。實際效期以商品包裝標示為準。",
   },
 {
@@ -3346,6 +3346,7 @@ function Home() {
   ];
 
   const mallDealProducts = getProductsByIds([34, 1, 51]);
+  const summerWhiteningProducts = getProductsByIds([47, 48, 49, 110]);
   const mallHotProducts = getProductsByIds([34, 1, 51, 55, 58, 54, 50, 112]);
   const mallSkincareShelfProducts = getProductsByIds([34, 59, 35, 36, 40]);
   const mallBodyShelfProducts = getProductsByIds([54, 50, 112, 15, 16, 67]);
@@ -5269,13 +5270,17 @@ function Home() {
     };
 
     try {
+      // 使用 UTF-8 Blob 傳送，避免含中文商品名稱的 JSON
+      // 被瀏覽器、擴充功能或 fetch 攔截層誤當成 ByteString。
+      const payloadText = JSON.stringify(payload);
+      const payloadBlob = new Blob([payloadText], {
+        type: "text/plain;charset=UTF-8",
+      });
+
       await fetch(ORDER_WEB_APP_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8",
-        },
-        body: JSON.stringify(payload),
+        body: payloadBlob,
       });
 
       window.localStorage.removeItem(CART_STORAGE_KEY);
@@ -5303,10 +5308,6 @@ function Home() {
 
   return (
     <main className="site-shell">
-      <div className="announcement-bar announcement-bar-v340">
-        <span>滿 <strong>NT$3,000</strong> 享免運</span>
-      </div>
-
       <header className="top-header">
         <button
           className="menu-button"
@@ -5389,34 +5390,32 @@ function Home() {
       </header>
 
       {isSearchOpen && (
-        <section className="search-panel search-page-view" aria-label="商品搜尋頁面">
-          <div className="search-page-head">
+        <section className="search-panel search-page-view search-dropdown-v342" aria-label="商品搜尋頁面">
+          <div className="search-top-row-v342">
+            <div className="search-input-wrap search-input-full-v342">
+              <span aria-hidden="true">🔍</span>
+              <input
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="搜尋商品、系列或活動"
+                autoFocus
+              />
+              {searchQuery.trim() && (
+                <button type="button" onClick={clearSearch}>清除</button>
+              )}
+            </div>
+
             <button
               type="button"
-              className="search-back-button"
+              className="search-close-v342"
               onClick={() => setIsSearchOpen(false)}
+              aria-label="關閉搜尋"
             >
-              ← 返回
+              ×
             </button>
-
-            <div>
-              <p>Jourdeness Castle</p>
-              <h2>搜尋商品</h2>
-            </div>
           </div>
 
-          <div className="search-input-wrap">
-            <span>🔍</span>
-            <input
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="模糊搜尋：龍血、益生菌、BC-HA、精油、薰衣草皂"
-              autoFocus
-            />
-            {searchQuery.trim() && (
-              <button type="button" onClick={clearSearch}>清除</button>
-            )}
-          </div>
+          <div className="search-content-v342">
           <div className="search-hot-panel-v22 search-hot-panel-v272">
             <div>
               <strong>熱門搜尋</strong>
@@ -5501,6 +5500,7 @@ function Home() {
               )}
             </div>
           )}
+          </div>
         </section>
       )}
 
@@ -5916,7 +5916,7 @@ function Home() {
           <picture className="seasonal-hero-picture-v340">
             <source media="(min-width: 760px)" srcSet="/products/no2.png" />
             <img
-              src="/products/hero-summer-whitening-mobile.jpg"
+              src="/products/no2.png"
               alt="櫻の雪傳明酸夏日美白系列主視覺"
               onError={(event) => {
                 event.currentTarget.style.opacity = "0";
@@ -5924,6 +5924,20 @@ function Home() {
             />
           </picture>
         </button>
+
+        <div className="seasonal-product-showcase-v342" aria-label="夏日美白精選商品">
+          <div className="seasonal-product-head-v342">
+            <p>SUMMER WHITENING PICKS</p>
+            <h3>夏日美白精選</h3>
+            <span>櫻の雪化妝水、精華液、乳液與超防禦輕透隔離乳，直接快速選購。</span>
+          </div>
+
+          <div className="seasonal-product-grid-v342">
+            {summerWhiteningProducts.map((product) => (
+              <ProductCard product={product} key={`summer-whitening-${product.id}`} />
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="mall-brand-section-v26 mall-brand-section-v27 v3-tag-section v313-status-section activity-stream-v330" aria-label="本月活動入口">
@@ -18850,6 +18864,195 @@ function Home() {
           .home-product-section.mall-shelf-section-v271 {
             max-width: 1180px !important;
             margin-inline: auto !important;
+          }
+        }
+
+
+        /* V3.4.2：移除公告列、搜尋列滿寬、夏日美白四品快速選購 */
+        .announcement-bar,
+        .announcement-bar-v340 {
+          display: none !important;
+        }
+
+        .site-shell {
+          padding-top: 0 !important;
+        }
+
+        .top-header {
+          top: 0 !important;
+          width: 100vw !important;
+          max-width: none !important;
+          margin: 0 0 0 calc(50% - 50vw) !important;
+          border-radius: 0 !important;
+        }
+
+        .search-panel.search-page-view.search-dropdown-v342 {
+          position: fixed !important;
+          inset: 62px 0 auto 0 !important;
+          z-index: 1490 !important;
+          width: 100vw !important;
+          max-width: none !important;
+          min-height: 0 !important;
+          max-height: calc(100dvh - 62px) !important;
+          margin: 0 !important;
+          padding: 0 0 calc(24px + env(safe-area-inset-bottom)) !important;
+          overflow-y: auto !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: rgba(255, 252, 248, 0.985) !important;
+          box-shadow: 0 18px 40px rgba(65, 39, 29, 0.16) !important;
+          backdrop-filter: blur(18px) !important;
+          -webkit-backdrop-filter: blur(18px) !important;
+        }
+
+        .search-top-row-v342 {
+          position: sticky;
+          top: 0;
+          z-index: 5;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 42px;
+          align-items: center;
+          gap: 9px;
+          width: 100%;
+          padding: 10px max(14px, calc((100vw - 1180px) / 2 + 20px));
+          border-bottom: 1px solid rgba(91, 60, 47, 0.10);
+          background: rgba(255, 252, 248, 0.97);
+        }
+
+        .search-input-full-v342 {
+          width: 100% !important;
+          min-height: 46px !important;
+          margin: 0 !important;
+          border: 1px solid rgba(115, 74, 56, 0.16) !important;
+          border-radius: 13px !important;
+          background: #fff !important;
+          box-shadow: none !important;
+        }
+
+        .search-input-full-v342 input {
+          min-width: 0 !important;
+          font-size: 15px !important;
+        }
+
+        .search-close-v342 {
+          width: 42px;
+          height: 42px;
+          display: grid;
+          place-items: center;
+          padding: 0;
+          border: 1px solid rgba(115, 74, 56, 0.14);
+          border-radius: 12px;
+          background: #fff;
+          color: #6e3b35;
+          font-size: 25px;
+          font-weight: 500;
+          line-height: 1;
+          cursor: pointer;
+        }
+
+        .search-content-v342 {
+          width: min(100%, 1180px);
+          margin-inline: auto;
+          padding: 13px 20px 30px;
+        }
+
+        .search-content-v342 .search-hot-panel-v22,
+        .search-content-v342 .search-results-block {
+          width: 100% !important;
+          max-width: none !important;
+          margin-inline: 0 !important;
+        }
+
+        .seasonal-product-showcase-v342 {
+          width: min(100%, 1180px);
+          margin: 0 auto;
+          padding: 24px 14px 0;
+        }
+
+        .seasonal-product-head-v342 {
+          margin-bottom: 14px;
+          text-align: left;
+        }
+
+        .seasonal-product-head-v342 p {
+          margin: 0 0 5px;
+          color: #b66578;
+          font-size: 10px;
+          font-weight: 950;
+          line-height: 1.2;
+          letter-spacing: 0.15em;
+        }
+
+        .seasonal-product-head-v342 h3 {
+          margin: 0;
+          color: var(--v340-ink);
+          font-family: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif;
+          font-size: clamp(22px, 5.8vw, 30px);
+          font-weight: 900;
+          line-height: 1.18;
+          letter-spacing: -0.035em;
+        }
+
+        .seasonal-product-head-v342 span {
+          display: block;
+          margin-top: 7px;
+          color: var(--v340-muted);
+          font-size: 12px;
+          font-weight: 650;
+          line-height: 1.55;
+        }
+
+        .seasonal-product-grid-v342 {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 12px;
+        }
+
+        .seasonal-product-grid-v342 > .commerce-product-card {
+          min-width: 0;
+        }
+
+        @media (max-width: 759px) {
+          .search-panel.search-page-view.search-dropdown-v342 {
+            inset: 60px 0 auto 0 !important;
+            max-height: calc(100dvh - 60px) !important;
+          }
+
+          .search-top-row-v342 {
+            grid-template-columns: minmax(0, 1fr) 38px;
+            gap: 7px;
+            padding: 9px 10px;
+          }
+
+          .search-input-full-v342 {
+            min-height: 44px !important;
+          }
+
+          .search-close-v342 {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            font-size: 22px;
+          }
+
+          .search-content-v342 {
+            padding: 11px 12px 26px;
+          }
+
+          .seasonal-product-showcase-v342 {
+            padding: 22px 14px 0;
+          }
+
+          .seasonal-product-grid-v342 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+          }
+        }
+
+        @media (max-width: 359px) {
+          .search-panel.search-page-view.search-dropdown-v342 {
+            inset-block-start: 58px !important;
+            max-height: calc(100dvh - 58px) !important;
           }
         }
 
