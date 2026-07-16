@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
+// Jourdeness storefront build: V3.5.7 — every product starts with one explicit gallery image; add more paths to gallery when needed.
+import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
   本月優惠: ["全部", "組合優惠", "買一送一", "任選優惠"],
-  臉部保養: ["全部", "龍血系列", "保濕修護", "亮白保養", "舒緩敏感", "面膜", "限量優惠"],
+  臉部保養: ["全部", "龍血系列", "保濕修護", "亮白保養", "舒緩敏感", "面膜", "高級養護"],
   身體洗護: ["全部", "口腔護理", "手工皂", "洗髮沐浴", "身體保養", "身體舒壓"],
   健康補給: ["全部", "益生菌", "葉黃素", "膠原蛋白", "魚油"],
   精油香氛: ["全部", "單方精油 10mL", "單方精油 15mL", "單方精油 30mL", "複方精油 10mL", "複方精油 15mL", "複方精油 30mL", "精萃油 50mL", "精油配件", "擴香設備"],
@@ -116,6 +117,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 800",
     price: "產地價 3盒 $ 1,100",
     image: "/products/probiotic-bc-ca.jpg",
+    gallery: ["/products/probiotic-bc-ca.jpg"],
     description: "3g x 30包 / 盒。複合益生菌 × 高鈣活力配方，日常保健與補鈣一起補給。",
   },
 {
@@ -126,6 +128,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,500",
     price: "產地價 $ 1,125",
     image: "/products/Lutein.jpg",
+    gallery: ["/products/Lutein.jpg"],
     description: "精華凍 + 精華飲綜合組。適合 3C 族、學生與上班族日常晶亮營養補給。",
   },
 {
@@ -136,6 +139,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,200",
     price: "產地價 $ 1,650",
     image: "/products/FISH-Collagen.jpg",
+    gallery: ["/products/FISH-Collagen.jpg"],
     description: "15mL x 10瓶 / 盒。魚膠原蛋白美妍飲，日常美容保健與水潤光澤補給。",
   },
 {
@@ -146,6 +150,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 790",
     price: "產地價 $ 590",
     image: "/products/Lavender1.jpg",
+    gallery: ["/products/Lavender1.jpg"],
     description: "150mL。薰衣草肌安舒緩系列。",
   },
 {
@@ -156,6 +161,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 890",
     price: "產地價 $ 660",
     image: "/products/Lavender2.jpg",
+    gallery: ["/products/Lavender2.jpg"],
     description: "30mL。薰衣草肌安舒緩系列。",
   },
 {
@@ -166,6 +172,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 890",
     price: "產地價 $ 660",
     image: "/products/Lavender3.jpg",
+    gallery: ["/products/Lavender3.jpg"],
     description: "100mL。薰衣草肌安舒緩系列。",
   },
 {
@@ -176,6 +183,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
     image: "/products/rose1.jpg",
+    gallery: ["/products/rose1.jpg"],
     description: "130mL / 瓶。玫瑰超微晶萃活膚液，洗臉後調理肌膚並維持柔嫩光澤。",
   },
 {
@@ -186,6 +194,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,880",
     price: "產地價 $ 2,160",
     image: "/products/rose4.jpg",
+    gallery: ["/products/rose4.jpg"],
     description: "50mL / 瓶。玫瑰超微晶萃瞬效霜，保養最後一步加強鎖水與潤澤。",
   },
 {
@@ -196,6 +205,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,190",
     price: "產地價 $ 890",
     image: "/products/db-1.jpg",
+    gallery: ["/products/db-1.jpg"],
     description: "120mL / 瓶。前導補水、油水平衡，龍血系列肌膚乖乖水。",
   },
 {
@@ -206,6 +216,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,290",
     price: "產地價 $ 1,290",
     image: "/products/db-3.jpg",
+    gallery: ["/products/db-3.jpg"],
     description: "80mL / 瓶。買一送一，清爽水凝質地修護乳。",
   },
 {
@@ -216,6 +227,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 3,280",
     price: "產地價 $ 2,460",
     image: "/products/Radiance and Lifting1.jpg",
+    gallery: ["/products/Radiance and Lifting1.jpg"],
     description: "130mL / 瓶。緊緻前導雪膚液，洗臉後調理肌膚紋理與彈力光澤。",
   },
 {
@@ -226,6 +238,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 3,880",
     price: "產地價 $ 2,910",
     image: "/products/Radiance and Lifting2.jpg",
+    gallery: ["/products/Radiance and Lifting2.jpg"],
     description: "35mL / 瓶。高濃縮緊緻精華，適合細紋、鬆弛感與熬夜疲憊肌加強保養。",
   },
 {
@@ -236,6 +249,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 4,680",
     price: "產地價 $ 3,510",
     image: "/products/Radiance and Lifting4.jpg",
+    gallery: ["/products/Radiance and Lifting4.jpg"],
     description: "50mL / 瓶。緊緻修護霜，保養最後一步鎖住水分與滋養。",
   },
 {
@@ -246,6 +260,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 3,680",
     price: "產地價 $ 2,760",
     image: "/products/Radiance and Lifting5.jpg",
+    gallery: ["/products/Radiance and Lifting5.jpg"],
     description: "23mL x 10入 / 盒。集中型緊緻修護面膜，適合重要場合前與熬夜後加強保養。",
   },
 {
@@ -256,6 +271,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 790",
     price: "任選3瓶 $ 1,100",
     image: "/products/BDwash2.jpg",
+    gallery: ["/products/BDwash2.jpg"],
     description: "500mL / 瓶。龍血頭皮修護洗髮精，0矽靈配方，洗後蓬鬆柔順。",
   },
 {
@@ -266,6 +282,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 790",
     price: "任選3瓶 $ 1,100",
     image: "/products/BDwash1.jpg",
+    gallery: ["/products/BDwash1.jpg"],
     description: "500mL / 瓶。龍血潤澤修護沐浴乳，洗後水潤柔嫩不緊繃。",
   },
 {
@@ -276,6 +293,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 780",
     price: "產地價 $ 585",
     image: "/products/Refined Hair Shampoo.jpg",
+    gallery: ["/products/Refined Hair Shampoo.jpg"],
     description: "洗髮品項。",
   },
 {
@@ -285,7 +303,8 @@ const allProducts: Product[] = [
     series: "牙膏",
     originalPrice: "原價 $ 250",
     price: "任選3條 $ 500",
-    image: "/products/lav-washtoothpaste.jpg",
+    image: "/products/Lavender toothpaste.jpg",
+    gallery: ["/products/Lavender toothpaste.jpg"],
     description: "120g / 支。薰衣草草本香氣，溫和潔牙並維持口氣清新。",
   },
 {
@@ -296,6 +315,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 250",
     price: "任選3條 $ 500",
     image: "/products/bd-washtoothpaste.jpg",
+    gallery: ["/products/bd-washtoothpaste.jpg"],
     description: "120g / 支。龍血齒齦保健牙膏，溫和清潔牙齒與齒齦邊緣。",
   },
 {
@@ -306,6 +326,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。精油系列。",
   },
 {
@@ -316,6 +337,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。精油系列。",
   },
 {
@@ -326,6 +348,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。精油系列。",
   },
 {
@@ -336,6 +359,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。精油系列。",
   },
 {
@@ -346,6 +370,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。精油系列。",
   },
 {
@@ -356,6 +381,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。精油系列。",
   },
 {
@@ -366,6 +392,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,200",
     price: "產地價 $ 1,650",
     image: "/products/Essential Oil E.jpg",
+    gallery: ["/products/Essential Oil E.jpg"],
     description: "50mL。精萃油系列。",
   },
 {
@@ -376,6 +403,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,200",
     price: "產地價 $ 1,650",
     image: "/products/Essential Oil C.jpg",
+    gallery: ["/products/Essential Oil C.jpg"],
     description: "50mL。精萃油系列。",
   },
 {
@@ -386,6 +414,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,200",
     price: "產地價 $ 1,650",
     image: "/products/Essential Oil A.jpg",
+    gallery: ["/products/Essential Oil A.jpg"],
     description: "50mL。精萃油系列。",
   },
 {
@@ -395,6 +424,7 @@ const allProducts: Product[] = [
     series: "擴香設備",
     price: "售價 $ 1,980",
     image: "/products/Ultrasonic Aroma Diffuser.jpg",
+    gallery: ["/products/Ultrasonic Aroma Diffuser.jpg"],
     description: "高頻霧化香薰機一台，買1台送1瓶茶樹精油10mL。",
   },
 {
@@ -405,6 +435,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 800",
     price: "產地價 $ 500",
     image: "/products/patch 1.png",
+    gallery: ["/products/patch 1.png"],
     description: "10片 / 盒。清爽涼感款，適合運動後、久坐肩頸與炎熱天氣的局部放鬆保養。",
   },
 {
@@ -415,6 +446,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 800",
     price: "產地價 $ 500",
     image: "/products/patch 5.png",
+    gallery: ["/products/patch 5.png"],
     description: "10片 / 盒。溫感款，適合冷氣房、家事勞動後與肩頸腰背局部放鬆保養。",
   },
 {
@@ -425,6 +457,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 290",
     price: "產地價 $ 240",
     image: "/products/tt6.jpg",
+    gallery: ["/products/tt6.jpg"],
     description: "8mL / 盒。局部控油淨痘精華，適合粉刺、痘痘與局部油光調理。",
   },
 {
@@ -435,6 +468,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,290",
     price: "產地價 $ 960",
     image: "/products/collagen 1.jpg",
+    gallery: ["/products/collagen 1.jpg"],
     description: "30mL / 瓶。膠原蛋白彈潤原液，適合加強澎潤、保濕與肌膚彈性感。",
   },
 {
@@ -445,6 +479,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 3,390",
     price: "產地價 $ 1,980",
     image: "/products/DBME.jpg",
+    gallery: ["/products/DBME.jpg"],
     description: "300mL / 瓶。買一送一，城堡必敗國民保濕精華。",
   },
 {
@@ -455,6 +490,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 890",
     price: "產地價 $ 590",
     image: "/products/BD001.jpg",
+    gallery: ["/products/BD001.jpg"],
     description: "150mL / 瓶。輕盈卸妝油，快速溶解彩妝、防曬與毛孔髒污。",
   },
 {
@@ -465,6 +501,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 790",
     price: "產地價 $ 590",
     image: "/products/BD0.jpg",
+    gallery: ["/products/BD0.jpg"],
     description: "150mL / 瓶。細緻綿密潔顏慕絲，洗後不緊繃、不乾澀。",
   },
 {
@@ -475,6 +512,7 @@ const allProducts: Product[] = [
     originalPrice: "原價待補",
     price: "10片裝售價請洽小幫手",
     image: "/products/water 5.jpg",
+    gallery: ["/products/water 5.jpg"],
     description: "22mL x 10pcs / 盒。水搖滾保濕面膜，日常補水與集中保養。",
   },
 {
@@ -485,6 +523,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 3,000",
     price: "1桶 $ 599",
     image: "/products/water 35.png",
+    gallery: ["/products/water 35.png"],
     description: "22mL x 35pcs / 桶。水搖滾保濕面膜大容量桶裝，適合長期補水保養。",
   },
 {
@@ -495,6 +534,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 3,000",
     price: "1桶 $ 599",
     image: "/products/white 35.png",
+    gallery: ["/products/white 35.png"],
     description: "35pcs / 桶。極光白美白面膜大容量桶裝，適合日常亮白集中保養。",
   },
 {
@@ -505,6 +545,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,180",
     price: "產地價 $ 1,185",
     image: "/products/glassskin 3.jpg",
+    gallery: ["/products/glassskin 3.jpg"],
     description: "130mL / 瓶。水光肌能乳液，清爽鎖水並維持柔嫩彈潤感。",
   },
 {
@@ -515,6 +556,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,380",
     price: "產地價 $ 1,785",
     image: "/products/glassskin 4.jpg",
+    gallery: ["/products/glassskin 4.jpg"],
     description: "50mL / 瓶。水光肌能晚霜，夜間加強潤澤與保濕，維持柔嫩澎潤感。",
   },
 {
@@ -525,6 +567,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 880",
     price: "產地價 $ 630",
     image: "/products/mandelic acid.jpg",
+    gallery: ["/products/mandelic acid.jpg"],
     description: "30mL / 瓶。溫和煥顏保養品項，適合日常代謝老廢角質與維持細緻光澤。",
   },
 {
@@ -535,6 +578,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,380",
     price: "產地價 $ 1,035",
     image: "/products/Glacial 1.jpg",
+    gallery: ["/products/Glacial 1.jpg"],
     description: "120mL / 瓶。冰河淨化淨膚露，調理老廢皮脂、油光與毛孔。",
   },
 {
@@ -545,6 +589,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,280",
     price: "產地價 $ 960",
     image: "/products/Glacial 5.jpg",
+    gallery: ["/products/Glacial 5.jpg"],
     description: "100mL / 瓶。冰河淨化柔膚面膜，水洗式淨化保養，維持肌膚潔淨柔嫩。",
   },
 {
@@ -555,6 +600,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 590",
     price: "產地價 $ 460",
     image: "/products/pineapple 0.jpg",
+    gallery: ["/products/pineapple 0.jpg"],
     description: "120g / 瓶。溫和代謝老廢角質，改善粗糙暗沉與吸收感不佳。",
   },
 {
@@ -565,6 +611,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 590",
     price: "新品預告",
     image: "/products/sukola0.jpg",
+    gallery: ["/products/sukola0.jpg"],
     description: "150mL / 瓶。櫻の雪淨白潔顏慕絲新品預告中，正式開放後可加入購物車確認。",
   },
 {
@@ -575,6 +622,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 790",
     price: "產地價 $ 590",
     image: "/products/sukola1.jpg",
+    gallery: ["/products/sukola1.jpg"],
     description: "150mL / 瓶。亮白前導化妝水，補充亮白水分並打開吸收通道。",
   },
 {
@@ -585,6 +633,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 890",
     price: "產地價 $ 660",
     image: "/products/su2.jpg",
+    gallery: ["/products/su2.jpg"],
     description: "30mL / 瓶。密集亮白核心精華，針對斑點、暗沉與膚色不均加強調理。",
   },
 {
@@ -595,6 +644,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 790",
     price: "產地價 $ 660",
     image: "/products/su3.jpg",
+    gallery: ["/products/su3.jpg"],
     description: "100mL / 瓶。美白乳液，鎖住亮白保養並維持水嫩不黏膩。",
   },
 {
@@ -604,6 +654,7 @@ const allProducts: Product[] = [
     series: "肥皂",
     price: "單入 $ 290｜4入優惠 $ 799",
     image: "/products/soap lav.png",
+    gallery: ["/products/soap lav.png"],
     description: "200g±10g / 塊。目前上架薰衣草款，單入 $290，4入優惠 $799。",
   },
 {
@@ -614,6 +665,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 3,200",
     price: "產地價 $ 1,099",
     image: "/products/patch 1099.png",
+    gallery: ["/products/patch 1099.png"],
     description: "涼感 / 溫感可任選搭配，共4盒。",
   },
 {
@@ -624,6 +676,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 8,000",
     price: "產地價 $ 2,500",
     image: "/products/patch 2500.png",
+    gallery: ["/products/patch 2500.png"],
     description: "涼感 / 溫感可任選搭配，共10盒。",
   },
 {
@@ -634,6 +687,7 @@ const allProducts: Product[] = [
     originalPrice: "原價待補",
     price: "3罐贈1條牙膏 $ 1,500",
     image: "/products/watertooth 31.png",
+    gallery: ["/products/watertooth 31.png"],
     description: "能量牛樟芝保健潔口液 3罐，贈齒齦保健薰衣草舒緩牙膏120g 1條。",
   },
 {
@@ -644,6 +698,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 750",
     price: "產地價 $ 500",
     image: "/products/tooth500.png",
+    gallery: ["/products/tooth500.png"],
     description: "薰衣草舒緩 / 龍血修護可混搭，共3條。",
   },
 {
@@ -654,6 +709,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 3,000 / 桶",
     price: "1桶 $ 599｜任選2桶 $ 1,100｜任選5桶 $ 2,750",
     image: "/products/white water 5.png",
+    gallery: ["/products/white water 5.png"],
     description: "水搖滾保濕面膜22mL x35pcs / 極光白美白面膜 x35pcs 可任選。任選5桶再送10片水搖滾保濕面膜。",
   },
 {
@@ -664,6 +720,7 @@ const allProducts: Product[] = [
     originalPrice: "原價待補",
     price: "買一送一 $ 1,580",
     image: "/products/fishoil1+1.png",
+    gallery: ["/products/fishoil1+1.png"],
     description: "挪威 EPAX 高活性 rTG 魚油軟膠囊買1送1，共2盒，規格依商品標示。",
   },
 {
@@ -674,6 +731,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,680",
     price: "產地價 $ 1,260",
     image: "/products/Argan Oil3.jpg",
+    gallery: ["/products/Argan Oil3.jpg"],
     description: "80mL / 瓶。阿甘甦醒髮根養護液，適合日常頭皮與髮根養護。",
   },
 {
@@ -684,6 +742,7 @@ const allProducts: Product[] = [
     originalPrice: "原價價值 $ 2,600",
     price: "產地價 2盒 $ 2,000",
     image: "/products/BCHA2000.png",
+    gallery: ["/products/BCHA2000.png"],
     description: "BC-HA 複合益生菌 3g x 60包 / 盒，共2盒。",
   },
 {
@@ -694,6 +753,7 @@ const allProducts: Product[] = [
     originalPrice: "原價價值 $ 1,680",
     price: "1+1 兩瓶 $ 1,080",
     image: "/products/wash11.png",
+    gallery: ["/products/wash11.png"],
     description: "龍血求麗潔顏慕絲150mL + 龍血求麗卸妝油150mL，各1瓶，共2瓶。",
   },
 {
@@ -704,6 +764,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,280",
     price: "產地價 $ 1,710",
     image: "/products/Ceramide Body Oil (C+E).jpg",
+    gallery: ["/products/Ceramide Body Oil (C+E).jpg"],
     description: "200mL / 瓶。賽洛美潤膚美體油(C+E)，沐浴後滋潤乾燥粗糙肌膚。",
   },
 {
@@ -714,6 +775,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,980",
     price: "產地價 $ 2,160",
     image: "/products/24H Revitalizing Essence.jpg",
+    gallery: ["/products/24H Revitalizing Essence.jpg"],
     description: "100mL / 瓶。24小時賦活液，適合疲憊暗沉與保養撞牆期加強打底。",
   },
 {
@@ -724,6 +786,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,280",
     price: "產地價 $ 1,710",
     image: "/products/24K Gold.jpg",
+    gallery: ["/products/24K Gold.jpg"],
     description: "40mL / 瓶。24小時黃金璀璨賦活液，維持澎潤、透亮與細緻光澤。",
   },
 {
@@ -734,6 +797,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,280",
     price: "產地價 $ 960",
     image: "/products/glassskin 0.jpg",
+    gallery: ["/products/glassskin 0.jpg"],
     description: "150mL / 瓶。水光苦杏仁酸慕絲，溫和清潔並維持肌膚細緻透亮感。",
   },
 {
@@ -744,6 +808,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,680",
     price: "產地價 $ 1,260",
     image: "/products/super water.png",
+    gallery: ["/products/super water.png"],
     description: "26mL x 6入 / 盒。超導水網瞬效面膜，集中補水並加強柔嫩光澤。",
   },
 {
@@ -754,6 +819,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,580",
     price: "產地價 $ 1,185",
     image: "/products/Plant Exosome.jpg",
+    gallery: ["/products/Plant Exosome.jpg"],
     description: "一組 / 盒裝。頂級凍晶密集保養組，使用時混合激活，適合急救修護。",
   },
 {
@@ -764,6 +830,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,280",
     price: "產地價 $ 960",
     image: "/products/smell white.jpg",
+    gallery: ["/products/smell white.jpg"],
     description: "500mL / 瓶。小白花美體乳，水潤好推不黏膩，適合每日全身保養。",
   },
 {
@@ -774,6 +841,7 @@ const allProducts: Product[] = [
     originalPrice: "原價價值 $ 1,160",
     price: "4入優惠 $ 799",
     image: "/products/soap lav.png",
+    gallery: ["/products/soap lav.png"],
     description: "目前上架薰衣草款，購買 4 塊同款享優惠價 $799。",
   },
 {
@@ -784,6 +852,7 @@ const allProducts: Product[] = [
     originalPrice: "原價價值 $ 2,470",
     price: "組合價 $ 1,780",
     image: "/products/su2+1.png",
+    gallery: ["/products/su2+1.png"],
     description: "購買櫻の雪傳明酸美白精華液30mL + 櫻の雪傳明酸美白乳液100mL，贈送櫻の雪傳明酸美白化妝水150mL。",
   },
 {
@@ -794,6 +863,7 @@ const allProducts: Product[] = [
     originalPrice: "原價價值 $ 5,900",
     price: "組合價 $ 4,400",
     image: "/products/bb2+1.png",
+    gallery: ["/products/bb2+1.png"],
     description: "亮妍魚膠原蛋白飲-玫瑰風味 50mL/10入 共兩盒，贈 EC 晶眸葉黃素精華凍+精華飲綜合組。",
   },
 {
@@ -804,6 +874,7 @@ const allProducts: Product[] = [
     originalPrice: "牌價 $ 390",
     price: "$ 390",
     image: "/products/DB Essential Oil.png",
+    gallery: ["/products/DB Essential Oil.png"],
     description: "9mL。龍血系列隨身精油滾珠，適合日常香氛與放鬆舒緩保養。",
   },
 {
@@ -814,6 +885,7 @@ const allProducts: Product[] = [
     originalPrice: "牌價 $ 390",
     price: "$ 390",
     image: "/products/Lavender Essential Oil.png",
+    gallery: ["/products/Lavender Essential Oil.png"],
     description: "9mL。薰衣草香氛精油滾珠，適合睡前放鬆與日常隨身舒緩。",
   },
 {
@@ -824,6 +896,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 290",
     price: "單支 $ 290",
     image: "/products/lip tint.jpg",
+    gallery: ["/products/lip tint.jpg"],
     description: "3.5g / 支。溫感變色護唇膏，依唇溫呈現自然氣色。",
   },
 {
@@ -834,6 +907,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 290",
     price: "單支 $ 290",
     image: "/products/lip balm.jpg",
+    gallery: ["/products/lip balm.jpg"],
     description: "3.5g / 支。日常保濕護唇膏，滋潤乾燥雙唇。",
   },
 {
@@ -844,6 +918,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,200",
     price: "產地價 $ 899",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "30mL。甜橙單方精油，適合日常擴香營造清新愉悅的香氣氛圍。",
   },
 {
@@ -854,6 +929,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,200",
     price: "產地價 $ 899",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "30mL。尤加利精油，適合居家擴香與清新空間香氣使用。",
   },
 {
@@ -864,6 +940,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 980",
     price: "產地價 $ 680",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "精油收納木盒，適合整理單方、複方精油與居家香氛收藏。",
   },
 {
@@ -874,6 +951,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 250",
     price: "產地價 $ 168",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "5入禮盒。可搭配精油滴入使用，適合桌面、衣櫃或小空間擴香。",
   },
 {
@@ -884,6 +962,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,200",
     price: "產地價 $ 899",
     image: "/products/Lavender Essential Oil.jpg",
+    gallery: ["/products/Lavender Essential Oil.jpg"],
     description: "30mL。薰衣草單方精油，適合睡前、放鬆與居家香氛擴香。",
   },
 {
@@ -894,6 +973,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
     image: "/products/jd5.jpg",
+    gallery: ["/products/jd5.jpg"],
     description: "10mL。佐登妮絲5號複方精油，適合搭配擴香設備或擴香配件使用。",
   },
 {
@@ -904,6 +984,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,280",
     price: "產地價 $ 1,710",
     image: "/products/Easy Breath Essential Oil.jpg",
+    gallery: ["/products/Easy Breath Essential Oil.jpg"],
     description: "30mL。呼暢護隨精油，適合日常擴香，營造清爽舒適的空間感。",
   },
 {
@@ -914,6 +995,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
     image: "/products/jd12.jpg",
+    gallery: ["/products/jd12.jpg"],
     description: "10mL。OMA律動精油，適合日常香氛儀式與擴香搭配。",
   },
 {
@@ -924,6 +1006,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
     image: "/products/Clary Sage Essential Oil.jpg",
+    gallery: ["/products/Clary Sage Essential Oil.jpg"],
     description: "10mL。快樂鼠尾草精油，適合營造柔和、放鬆的香氛氛圍。",
   },
 {
@@ -934,6 +1017,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 3,280",
     price: "產地價 $ 2,460",
     image: "/products/Magic Slim.jpg",
+    gallery: ["/products/Magic Slim.jpg"],
     description: "30mL。魔力輕盈精油，適合日常擴香與空間香氛使用。",
   },
 {
@@ -944,6 +1028,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
     image: "/products/Joyous.jpg",
+    gallery: ["/products/Joyous.jpg"],
     description: "15mL。柚見快樂精油，適合營造明亮、清新的香氣氛圍。",
   },
 {
@@ -954,6 +1039,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,620",
     image: "/products/jd4.jpg",
+    gallery: ["/products/jd4.jpg"],
     description: "功效：清新醒腦。適合日常擴香，讓空間維持清新感。",
   },
 {
@@ -964,6 +1050,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
     image: "/products/jd1.jpg",
+    gallery: ["/products/jd1.jpg"],
     description: "10mL。佐登妮絲1號複方精油，適合居家擴香與日常香氛使用。",
   },
 {
@@ -974,6 +1061,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。智慧之冠精油，適合工作、閱讀與日常空間香氛搭配。",
   },
 {
@@ -984,6 +1072,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/magic.jpg",
+    gallery: ["/products/magic.jpg"],
     description: "10mL。魔力輕盈精油小容量規格，適合初次體驗或外出攜帶。",
   },
 {
@@ -994,6 +1083,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。能量之源精油，適合日常擴香與空間活力氛圍。",
   },
 {
@@ -1004,6 +1094,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。順暢平衡精油，適合日常香氛與放鬆儀式使用。",
   },
 {
@@ -1014,6 +1105,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。亮采橙真精油，適合喜歡明亮果香調的日常擴香。",
   },
 {
@@ -1024,6 +1116,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。心之綻放精油，適合營造柔和、溫暖的居家香氣。",
   },
 {
@@ -1034,6 +1127,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,800",
     price: "產地價 $ 1,350",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "10mL。呼暢護隨精油小容量規格，適合日常擴香與初次體驗。",
   },
 {
@@ -1043,6 +1137,7 @@ const allProducts: Product[] = [
     series: "擴香設備",
     price: "售價 $ 899",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "精油香氛擴香設備，簡約粉色外型，適合居家與辦公空間使用。",
   },
 {
@@ -1052,6 +1147,7 @@ const allProducts: Product[] = [
     series: "擴香設備",
     price: "售價 $ 899",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "USB 霧化擴香設備，木紋外型搭配夜光氛圍，適合居家香氛使用。",
   },
 {
@@ -1062,6 +1158,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,080",
     price: "產地價 $ 810",
     image: "/products/Lemon Essential Oil.jpg",
+    gallery: ["/products/Lemon Essential Oil.jpg"],
     description: "10mL。清新明亮的檸檬香氣，適合日常擴香與空間清新；可搭配單方精油任選 2 瓶 $1,600。",
     priceNote: "單瓶產地價 $810；單方精油任選 2 瓶 $1,600。",
     expiryNote: "效期：2028.11.16。實際效期以商品包裝標示為準。",
@@ -1074,6 +1171,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,680",
     price: "產地價 $ 1,260",
     image: "/products/Tea Tree Oil.jpg",
+    gallery: ["/products/Tea Tree Oil.jpg"],
     description: "15mL。茶樹精油清爽草本香氣，適合居家擴香、空間清新與日常香氛搭配。",
     expiryNote: "效期：2030.04.19。實際效期以商品包裝標示為準。",
   },
@@ -1085,6 +1183,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,680",
     price: "產地價 $ 1,260",
     image: "/products/Geranium Essential Oil.jpg",
+    gallery: ["/products/Geranium Essential Oil.jpg"],
     description: "10mL。天空葵芳香精油，清新花草香氣，適合日常擴香與居家香氛儀式。",
     expiryNote: "效期：2030.03.30。實際效期以商品包裝標示為準。",
   },
@@ -1096,6 +1195,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 2,080",
     price: "產地價 $ 1,560",
     image: "/products/jd6.jpg",
+    gallery: ["/products/jd6.jpg"],
     description: "10mL。佐登妮絲6號複方精油，適合日常擴香與空間香氛搭配。",
     expiryNote: "效期：2028.02.13。實際效期以商品包裝標示為準。",
   },
@@ -1106,6 +1206,7 @@ const allProducts: Product[] = [
     series: "精油配件",
     price: "售價 $ 199",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "買一送一。可搭配精油滴入使用，適合衣櫃、抽屜、桌面或小空間香氛。",
   },
 {
@@ -1115,6 +1216,7 @@ const allProducts: Product[] = [
     series: "身體舒壓",
     price: "售價 $ 390",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "2入組。居家日常舒壓工具，適合搭配身體保養油或日常按摩放鬆。",
   },
 {
@@ -1124,6 +1226,7 @@ const allProducts: Product[] = [
     series: "身體舒壓",
     price: "售價 $ 1,500",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "特大尺寸溫灸棒，適合居家舒壓保養與日常放鬆儀式。",
   },
 {
@@ -1133,6 +1236,7 @@ const allProducts: Product[] = [
     series: "身體舒壓",
     price: "售價 $ 1,100",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "小尺寸溫灸棒，握感輕巧，適合居家日常舒壓使用。",
   },
 {
@@ -1142,6 +1246,7 @@ const allProducts: Product[] = [
     series: "身體舒壓",
     price: "售價 $ 240",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "小規格艾草條，適合搭配溫灸棒作為居家舒壓保養使用。",
   },
 {
@@ -1151,6 +1256,7 @@ const allProducts: Product[] = [
     series: "身體舒壓",
     price: "售價 $ 240",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "特大規格艾草條，適合搭配溫灸棒作為居家舒壓保養使用。",
   },
 {
@@ -1160,6 +1266,7 @@ const allProducts: Product[] = [
     series: "身體舒壓",
     price: "售價 $ 2,500",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "居家舒壓工具，適合日常按摩、放鬆與身體保養搭配使用。",
   },
 {
@@ -1169,6 +1276,7 @@ const allProducts: Product[] = [
     series: "身體舒壓",
     price: "售價 $ 400",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "小尺寸柔筋棒，適合日常局部放鬆與居家舒壓使用。",
   },
 {
@@ -1179,6 +1287,7 @@ const allProducts: Product[] = [
     originalPrice: "原價價值 $ 870",
     price: "買二送一 $ 580",
     image: "/products/placeholder.jpg",
+    gallery: ["/products/placeholder.jpg"],
     description: "薰衣草舒緩、櫻之雪亮澤、茶樹防禦護手霜可搭配，買二送一 $580。",
     expiryNote: "效期：薰衣草舒緩 2029.01.20；櫻之雪亮澤 2029.01.25；茶樹防禦 2029.01.18。實際效期以商品包裝標示為準。",
     priceNote: "護手霜三款買二送一 $580，實際可搭配品項依 LINE 小幫手確認。",
@@ -1191,6 +1300,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,500",
     price: "產地價 $ 1,125",
     image: "/products/Lutein.jpg",
+    gallery: ["/products/Lutein.jpg"],
     description: "20包。晶眸葉黃素精華凍，適合 3C 族、學生與上班族日常晶亮營養補給。",
     expiryNote: "效期：2027.04.28。實際效期以商品包裝標示為準。",
   },
@@ -1202,6 +1312,7 @@ const allProducts: Product[] = [
     originalPrice: "原價 $ 1,380",
     price: "產地價 $ 1,035",
     image: "/products/sunscreen.jpg",
+    gallery: ["/products/sunscreen.jpg"],
     description: "30mL。輕透隔離乳，日常外出前打底使用，維持清爽防護感。",
     expiryNote: "效期：2029.06.14。實際效期以商品包裝標示為準。",
   },
@@ -1212,6 +1323,7 @@ const allProducts: Product[] = [
     series: "玫瑰超微晶萃系列",
     price: "產地價 $ 2,760",
     image: "/products/rose2.jpg",
+    gallery: ["/products/rose2.jpg"],
     description: "30mL。玫瑰超微晶萃精華，潤澤修護與日常保養加強，維持柔嫩光澤感。",
     expiryNote: "效期：2029.06.07。實際效期以商品包裝標示為準。",
   },
@@ -1222,8 +1334,8 @@ const allProducts: Product[] = [
     series: "洗沐組合",
     originalPrice: "原價價值 $ 2,470",
     price: "組合價 $ 1,500",
-    image: "/products/BDwash2.jpg",
-    gallery: ["/products/BDwash2.jpg", "/products/Argan Oil3.jpg"],
+    image: "/products/hair1+1.pg",
+    gallery: ["/products/hair1+1.pg"],
     description: "龍血求麗頭皮修護洗髮精 500mL × 1 瓶，加阿甘甦醒髮根養護液 80mL × 1 瓶。",
     priceNote: "龍血求麗頭皮修護洗髮精 1 瓶＋阿甘甦醒髮根養護液 1 瓶，組合價 $1,500。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
@@ -1239,6 +1351,7 @@ const comingSoonRollerProducts: Product[] = [
     originalPrice: "牌價 $ 390",
     price: "新品預告",
     image: "/products/Siberian Fir Essential Oil Roller.jpg",
+    gallery: ["/products/Siberian Fir Essential Oil Roller.jpg"],
     description: "9mL。冷杉系清爽香氣滾珠，清新感受適合日常隨身使用。",
     cardSubtitle: "9mL・冷杉系列滾珠",
     priceNote: "新品預告・敬請期待。",
@@ -1253,6 +1366,7 @@ const comingSoonRollerProducts: Product[] = [
     series: "香氛皂",
     price: "新品預告",
     image: "/products/soap rose.png",
+    gallery: ["/products/soap rose.png"],
     description: "200g±10g / 塊。柔和花香，打造日常沐浴儀式感。",
     cardSubtitle: "柔和花香・新品預告",
     priceNote: "新品預告・敬請期待。",
@@ -1267,6 +1381,7 @@ const comingSoonRollerProducts: Product[] = [
     series: "香氛皂",
     price: "新品預告",
     image: "/products/soap Artemisia.png",
+    gallery: ["/products/soap Artemisia.png"],
     description: "200g±10g / 塊。草本香氣，適合喜歡清爽感的日常洗沐。",
     cardSubtitle: "草本香氣・新品預告",
     priceNote: "新品預告・敬請期待。",
@@ -1281,6 +1396,7 @@ const comingSoonRollerProducts: Product[] = [
     series: "香氛皂",
     price: "新品預告",
     image: "/products/soap lemo.png",
+    gallery: ["/products/soap lemo.png"],
     description: "200g±10g / 塊。清新柑橘調，洗後帶來明亮清爽感。",
     cardSubtitle: "柑橘清香・新品預告",
     priceNote: "新品預告・敬請期待。",
@@ -1295,6 +1411,7 @@ const comingSoonRollerProducts: Product[] = [
     series: "香氛皂",
     price: "新品預告",
     image: "/products/soap sandalwood.png",
+    gallery: ["/products/soap sandalwood.png"],
     description: "200g±10g / 塊。木質香氣，沉穩放鬆的沐浴選擇。",
     cardSubtitle: "木質檀香・新品預告",
     priceNote: "新品預告・敬請期待。",
@@ -1309,6 +1426,7 @@ const comingSoonRollerProducts: Product[] = [
     series: "香氛皂",
     price: "新品預告",
     image: "/products/Hydrangea Floral.png",
+    gallery: ["/products/Hydrangea Floral.png"],
     description: "200g±10g / 塊。花香系香氛皂，讓日常洗沐更有質感。",
     cardSubtitle: "花香系・新品預告",
     priceNote: "新品預告・敬請期待。",
@@ -1327,8 +1445,8 @@ function normalizeProductForV31(product: Product): Product {
       series: "益生菌系列",
       originalPrice: "單盒參考價見商品資訊",
       price: "任選 3 盒 $ 1,600",
-      image: "/products/probiotic-bc-ca.jpg",
-      gallery: ["/products/probiotic-bc-ca.jpg", "/products/probiotic-cranberry.jpg"],
+      image: "/products/top-pick-2.jpg",
+      gallery: ["/products/top-pick-2.jpg"],
       description: "蔓越莓益生菌與高鈣益生菌可任選搭配，共 3 盒 $1,600。",
       priceNote: "高鈣益生菌與蔓越莓益生菌可任選搭配，共 3 盒 $1,600；實際庫存由 LINE 小幫手確認。",
     };
@@ -2122,7 +2240,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     notice: "本產品僅供外用，請勿直接貼敷於傷口、濕疹、潰爛或黏膜受損部位。使用後若出現發紅、搔癢或刺痛等不適，請立即撕除並以清水洗淨。請存放於避免陽光直射、高溫或潮濕的陰涼密閉場所，並放置於孩童不易取得處。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "單盒價格保留既有設定；另有任選 4 盒、10 盒優惠組合，庫存與最終金額依 LINE 小幫手確認為準。",
-    gallery: ["/products/patch 1.png", "/products/blue 100.jpg"],
+    gallery: ["/products/patch 1.png"],
   },
   31: {
     cardName: "石墨烯電氣石精油貼布｜溫感",
@@ -2144,7 +2262,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     notice: "本產品僅供外用，請勿直接貼敷於傷口、紅腫潰爛或皮膚異常部位。孕婦、哺乳期婦女及 2 歲以下兒童使用前，請先諮詢專業醫師。撕除時請勿用力猛撕，建議溫和地順著毛髮生長方向撕下。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
     priceNote: "單盒價格保留既有設定；另有任選 4 盒、10 盒優惠組合，庫存與最終金額依 LINE 小幫手確認為準。",
-    gallery: ["/products/patch 5.png", "/products/red 100.jpg"],
+    gallery: ["/products/patch 5.png"],
   },
   32: {
     cardName: "茶樹K痘精華",
@@ -3128,6 +3246,10 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<Product | null>(null);
   const [detailHistoryActive, setDetailHistoryActive] = useState(false);
+  const [cartReturnProduct, setCartReturnProduct] = useState<Product | null>(null);
+  const [cartStep, setCartStep] = useState<1 | 2>(1);
+  const [detailGalleryIndex, setDetailGalleryIndex] = useState(0);
+  const detailGalleryRef = useRef<HTMLDivElement | null>(null);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
   const [cartNotice, setCartNotice] = useState("");
@@ -3146,10 +3268,20 @@ function Home() {
   const [lineCopyMessage, setLineCopyMessage] = useState("");
   const [hasRestoredSavedDraft, setHasRestoredSavedDraft] = useState(false);
 
+  useEffect(() => {
+    setDetailGalleryIndex(0);
+
+    window.setTimeout(() => {
+      detailGalleryRef.current?.scrollTo({ left: 0, behavior: "auto" });
+    }, 0);
+  }, [selectedDetailProduct?.id]);
+
   const seriesList = categoryConfig[selectedCategory];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
   const monthlyOfferIdsV316 = new Set([34, 1, 51, 58, 59, 55, 50, 54, 112]);
+  const moisturizingRepairProductIdsV355 = new Set([34, 37, 38, 64]);
+  const premiumCareProductIdsV355 = new Set([11, 12, 13, 14, 111, 8, 61, 62]);
 
   function isFeaturedProductV31(product: Product) {
     return monthlyOfferIdsV316.has(product.id) || product.series.includes("本月主打");
@@ -3228,11 +3360,14 @@ function Home() {
     if (selectedSeries === "任選優惠") return fullText.includes("任選");
 
     if (selectedSeries === "龍血系列") return fullText.includes("龍血");
-    if (selectedSeries === "保濕修護") return tags.includes("乾燥缺水") || tags.includes("敏感舒緩") || ["保濕", "修護", "水光", "玫瑰", "玻尿酸"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "保濕修護") return moisturizingRepairProductIdsV355.has(product.id);
     if (selectedSeries === "亮白保養") return tags.includes("美白淡斑") || ["亮白", "美白", "櫻", "傳明酸", "極光", "淡斑"].some((keyword) => fullText.includes(keyword));
-    if (selectedSeries === "舒緩敏感") return tags.includes("敏感舒緩") || ["薰衣草", "舒緩", "敏感", "冷杉"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "舒緩敏感") {
+      const isHandCream = product.category === "護手霜" || product.series.includes("護手霜") || fullText.includes("護手霜");
+      return !isHandCream && (tags.includes("敏感舒緩") || ["薰衣草", "舒緩", "敏感", "冷杉"].some((keyword) => fullText.includes(keyword)));
+    }
     if (selectedSeries === "面膜") return fullText.includes("面膜");
-    if (selectedSeries === "限量優惠") return isExpiringDeal(product) || fullText.includes("即期");
+    if (selectedSeries === "高級養護" || selectedSeries === "限量優惠") return premiumCareProductIdsV355.has(product.id);
 
     if (selectedSeries === "口腔護理") return ["牙膏", "潔口", "口腔", "齒齦"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "手工皂") return ["皂", "肥皂", "香氛皂"].some((keyword) => fullText.includes(keyword));
@@ -3498,6 +3633,28 @@ function Home() {
     (total, item) => total + item.quantity,
     0
   );
+
+  function getEstimatedUnitPrice(product: Product) {
+    const match = product.price.match(/\$\s*([\d,]+)/);
+    return match ? Number(match[1].replace(/,/g, "")) : 0;
+  }
+
+  const cartEstimatedSubtotal = cartItems.reduce(
+    (total, item) => total + getEstimatedUnitPrice(item.product) * item.quantity,
+    0
+  );
+  const freeShippingThresholdV355 = 3000;
+  const freeShippingRemainingV355 = Math.max(
+    freeShippingThresholdV355 - cartEstimatedSubtotal,
+    0
+  );
+  const freeShippingProgressV355 = Math.min(
+    (cartEstimatedSubtotal / freeShippingThresholdV355) * 100,
+    100
+  );
+  const selectedDetailGalleryImages = selectedDetailProduct
+    ? getDetailGalleryImages(selectedDetailProduct)
+    : [];
 
   function getProductsByIds(ids: number[]) {
     return ids
@@ -3880,14 +4037,14 @@ function Home() {
 
   function getDetailGalleryImages(product: Product) {
     const override = productContent(product);
-    const candidates = [
-      ...(override.gallery ?? []),
+    const configuredGallery = [
       ...(product.gallery ?? []),
-      product.image,
-      ...(productImageFallbacks[product.id] ?? []),
-      ...getNameBasedImageCandidates(product),
+      ...(override.gallery ?? []),
     ].filter((image): image is string => Boolean(image && !image.includes("placeholder")));
 
+    // 商品資訊圖片只讀取明確設定的 gallery；未設定時僅顯示主圖一張。
+    // 後續要增加圖片時，直接在該商品的 gallery 陣列繼續加入路徑即可。
+    const candidates = configuredGallery.length > 0 ? configuredGallery : [product.image];
     return Array.from(new Set(candidates)).slice(0, 8);
   }
 
@@ -4338,23 +4495,65 @@ function Home() {
     }
   }
 
+  function openCart() {
+    setCartReturnProduct(null);
+    setCartStep(1);
+    setIsCartOpen(true);
+  }
+
+  function openCartFromDetail() {
+    if (selectedDetailProduct) {
+      setCartReturnProduct(selectedDetailProduct);
+    }
+
+    setSelectedDetailProduct(null);
+    setCartStep(1);
+    setIsCartOpen(true);
+  }
+
   function continueShopping() {
     setIsCartOpen(false);
+    setCartStep(1);
 
-    if (selectedDetailProduct) {
-      closeProductDetail(false);
-    }
+    if (cartReturnProduct) {
+      const productToRestore = cartReturnProduct;
+      setCartReturnProduct(null);
+      setSelectedDetailProduct(productToRestore);
 
-    if (typeof window !== "undefined") {
       window.setTimeout(() => {
-        const shopSection = document.getElementById("home-hot-products-v26");
-
-        shopSection?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        const detailScroller = document.querySelector(".detail-backdrop") as HTMLElement | null;
+        detailScroller?.scrollTo({ top: 0, behavior: "auto" });
       }, 0);
+      return;
     }
+
+    setCartReturnProduct(null);
+  }
+
+  function moveDetailGallery(nextIndex: number) {
+    if (!selectedDetailGalleryImages.length) return;
+
+    const safeIndex = Math.max(
+      0,
+      Math.min(nextIndex, selectedDetailGalleryImages.length - 1)
+    );
+    const scroller = detailGalleryRef.current;
+
+    setDetailGalleryIndex(safeIndex);
+    scroller?.scrollTo({
+      left: safeIndex * scroller.clientWidth,
+      behavior: "smooth",
+    });
+  }
+
+  function handleDetailGalleryScroll() {
+    const scroller = detailGalleryRef.current;
+    if (!scroller || scroller.clientWidth <= 0) return;
+
+    const nextIndex = Math.round(scroller.scrollLeft / scroller.clientWidth);
+    setDetailGalleryIndex(
+      Math.max(0, Math.min(nextIndex, selectedDetailGalleryImages.length - 1))
+    );
   }
 
   function currentFilterText() {
@@ -4799,7 +4998,12 @@ function Home() {
         key={featured ? `featured-${product.id}` : product.id}
         role="button"
         tabIndex={0}
-        onClick={() => openProductDetail(product)}
+        onClick={() => {
+                                  setIsCartOpen(false);
+                                  setCartStep(1);
+                                  setCartReturnProduct(null);
+                                  openProductDetail(product);
+                                }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
@@ -4903,6 +5107,7 @@ function Home() {
     }
 
     setCartItems([]);
+    setCartStep(1);
     setSubmitStatus("idle");
     setSubmitMessage("");
   }
@@ -5376,7 +5581,7 @@ function Home() {
   }
 
   return (
-    <main className="site-shell">
+    <main className="site-shell" data-build="jourdeness-v3.5.6-verified">
       <header className="top-header">
         <button
           className="menu-button"
@@ -5441,7 +5646,7 @@ function Home() {
             onClick={() => {
               setIsSearchOpen(false);
               setIsProfileOpen(false);
-              setIsCartOpen(true);
+              openCart();
             }}
             aria-label={`購物車，共 ${cartTotalQuantity} 件商品`}
             title="購物車"
@@ -5806,7 +6011,7 @@ function Home() {
                     <button type="button" onClick={() => handleDrawerCategory("臉部保養", "亮白保養")}>亮白保養</button>
                     <button type="button" onClick={() => handleDrawerCategory("臉部保養", "舒緩敏感")}>舒緩敏感</button>
                     <button type="button" onClick={() => handleDrawerCategory("臉部保養", "面膜")}>面膜</button>
-                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "限量優惠")}>限量優惠</button>
+                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "高級養護")}>高級養護</button>
                   </div>
                 )}
               </div>
@@ -6081,35 +6286,33 @@ function Home() {
 
 
       {cartTotalQuantity > 0 && (
-        <button className="floating-cart-button floating-cart-button-v273" onClick={() => setIsCartOpen(true)}>
+        <button className="floating-cart-button floating-cart-button-v273" onClick={openCart}>
           <span>購物車</span>
           <strong>{cartTotalQuantity}</strong>
         </button>
       )}
 
       {isCartOpen && (
-        <section className="cart-backdrop" onClick={() => setIsCartOpen(false)}>
-          <div className="cart-panel checkout-panel-v21" onClick={(event) => event.stopPropagation()}>
-            <div className="cart-header checkout-header-v21 cart-header-v352">
+        <section className="cart-backdrop cart-backdrop-v355" onClick={continueShopping}>
+          <div className="cart-panel checkout-panel-v21 cart-panel-v355" onClick={(event) => event.stopPropagation()}>
+            <div className="cart-header cart-header-v355">
               <button
                 type="button"
-                className="cart-return-button-v352"
+                className="cart-return-button-v355"
                 onClick={continueShopping}
-                aria-label="返回賣場繼續逛"
+                aria-label="返回繼續選購"
               >
-                <span aria-hidden="true">‹</span>
+                <span aria-hidden="true">←</span>
                 繼續逛賣場
               </button>
 
-              <div className="cart-title-v352">
-                <h2>購物車</h2>
-              </div>
+              <h2>購物車（{cartTotalQuantity}）</h2>
 
               <button
                 type="button"
-                className="cart-close"
+                className="cart-close cart-close-v355"
                 onClick={continueShopping}
-                aria-label="關閉購物車並返回賣場"
+                aria-label="關閉購物車"
               >
                 ×
               </button>
@@ -6117,266 +6320,275 @@ function Home() {
 
             {cartItems.length > 0 ? (
               <>
-                <div className="checkout-step-strip" aria-label="訂購流程">
-                  <div>
+                <div className="checkout-step-strip checkout-step-strip-v355" aria-label="訂購流程">
+                  <div className={cartStep >= 1 ? "active" : ""}>
                     <strong>1</strong>
                     <span>確認商品</span>
                   </div>
-                  <div>
+                  <i aria-hidden="true" />
+                  <div className={cartStep >= 2 ? "active" : ""}>
                     <strong>2</strong>
-                    <span>填宅配資料</span>
+                    <span>填寫資料</span>
                   </div>
+                  <i aria-hidden="true" />
                   <div>
                     <strong>3</strong>
-                    <span>LINE 確認</span>
+                    <span>LINE確認</span>
                   </div>
+                  <i aria-hidden="true" />
                   <div>
                     <strong>4</strong>
-                    <span>匯款成立</span>
+                    <span>完成</span>
                   </div>
                 </div>
 
-                <section className="cart-summary-ribbon-v273" aria-label="購物車提醒">
-                  <div>
-                    <strong>{cartTotalQuantity}</strong>
-                    <span>件商品已加入</span>
-                  </div>
-                  <p>購物車內容會自動保存；重新整理或從 LINE 再打開，也會優先恢復同一台裝置上的內容。</p>
-                </section>
-
-                <section className="checkout-card-v21">
-                  <div className="checkout-card-title">
-                    <h3>商品明細</h3>
-                  </div>
-
-                  <div className="cart-items checkout-items-v21">
-                    {cartItems.map((item) => (
-                      <div className="cart-item checkout-item-v21" key={item.product.id}>
-                        <div className="checkout-item-image">
-                          {hasRealImage(item.product) ? (
-                            <img src={item.product.image} alt={item.product.name} />
-                          ) : (
-                            <span>圖片準備中</span>
-                          )}
-                        </div>
-
-                        <div className="checkout-item-main">
-                          <p className="cart-item-series">{item.product.series}</p>
-                          <h3>{item.product.name}</h3>
-                          <p>{displayPrice(item.product)}</p>
-                          {hasComboPrice(item.product) && (
-                            <button
-                              type="button"
-                              className="combo-badge-mini"
-                              onClick={goToComboSection}
-                            >
-                              有組合價
-                            </button>
-                          )}
-                        </div>
-
-                        <div className="cart-quantity-control checkout-quantity-v21">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              updateCartQuantity(item.product.id, item.quantity - 1)
-                            }
-                          >
-                            −
-                          </button>
-                          <span>{item.quantity}</span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              updateCartQuantity(item.product.id, item.quantity + 1)
-                            }
-                          >
-                            +
-                          </button>
-                        </div>
+                {cartStep === 1 ? (
+                  <>
+                    <section className="cart-products-v355">
+                      <div className="cart-section-heading-v355">
+                        <h3>商品明細</h3>
+                        <button type="button" onClick={clearCart}>清空</button>
                       </div>
-                    ))}
-                  </div>
 
-                  <button className="clear-cart-button" onClick={clearCart}>
-                    清空購物車
-                  </button>
-                </section>
+                      <div className="cart-item-list-v355">
+                        {cartItems.map((item) => (
+                          <article className="cart-item-row-v355" key={item.product.id}>
+                            <div className="cart-item-image-v355">
+                              {hasRealImage(item.product) ? (
+                                <img
+                                  src={getPrimaryImage(item.product)}
+                                  alt={item.product.name}
+                                  data-fallback-index="0"
+                                  onError={(event) => handleProductImageError(item.product, event)}
+                                />
+                              ) : (
+                                <span>商品圖</span>
+                              )}
+                            </div>
 
-                <section className="checkout-free-shipping-card">
-                  <div>
-                    <h3>滿 NT$3,000 享免運</h3>
-                  </div>
-                  <strong>宅配限定</strong>
-                </section>
+                            <div className="cart-item-copy-v355">
+                              <small>{item.product.series}</small>
+                              <h3>{getCardName(item.product)}</h3>
+                              <strong>{displayPrice(item.product)}</strong>
 
-                {cartUpsellProducts.length > 0 && (
-                  <section className="checkout-upsell-card-v22">
-                    <div className="checkout-card-title">
-                      <h3>可加購湊免運</h3>
-                    </div>
+                              <div className="cart-item-actions-v355">
+                                <div className="cart-quantity-v355" aria-label={`${item.product.name} 數量`}>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)}
+                                    aria-label="減少數量"
+                                  >
+                                    −
+                                  </button>
+                                  <span>{item.quantity}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)}
+                                    aria-label="增加數量"
+                                  >
+                                    ＋
+                                  </button>
+                                </div>
 
-                    <div className="checkout-upsell-list-v22">
-                      {cartUpsellProducts.map((product) => (
-                        <button
-                          type="button"
-                          key={`cart-upsell-${product.id}`}
-                          onClick={() => addToCart(product)}
-                        >
-                          {hasRealImage(product) ? (
-                            <img src={getPrimaryImage(product)} alt={product.name} data-fallback-index="0" onError={(event) => handleProductImageError(product, event)} />
-                          ) : (
-                            <span>商品圖</span>
-                          )}
-                          <strong>{getCardName(product)}</strong>
-                          <em>{displayPrice(product)}</em>
-                        </button>
-                      ))}
-                    </div>
-                  </section>
-                )}
+                                <button
+                                  type="button"
+                                  className="cart-remove-v355"
+                                  onClick={() => removeFromCart(item.product.id)}
+                                >
+                                  刪除
+                                </button>
+                              </div>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </section>
 
-                <form className="order-form checkout-form-v21" onSubmit={submitOrder}>
-                  <div className="checkout-card-title">
-                    <h3>宅配資料</h3>
-                  </div>
+                    <section className="shipping-progress-v355" aria-label="宅配免運進度">
+                      <div>
+                        <h3>宅配免運進度</h3>
+                        {freeShippingRemainingV355 > 0 ? (
+                          <p>還差 NT${freeShippingRemainingV355.toLocaleString("zh-TW")} 即享免運</p>
+                        ) : (
+                          <p className="reached">✓ 已享宅配免運</p>
+                        )}
+                      </div>
 
-                  <div className="delivery-summary checkout-line-flow">
-                    <strong>送出後流程</strong>
-                    <span>LINE 小幫手會確認商品庫存、效期、訂單金額與宅配資訊；確認無誤後才會提供匯款資訊。</span>
-                  </div>
+                      <div className="shipping-progress-track-v355" aria-hidden="true">
+                        <span style={{ width: `${freeShippingProgressV355}%` }} />
+                      </div>
 
-                  <div className="checkout-assurance-grid-v23" aria-label="訂購保障">
-                    <div>
-                      <strong>不會直接付款</strong>
-                      <span>送出後只是建立訂購資料。</span>
-                    </div>
-                    <div>
-                      <strong>確認後成立</strong>
-                      <span>庫存、效期、金額確認後成立。</span>
-                    </div>
-                    <div>
-                      <strong>滿額免運</strong>
-                      <span>滿 NT$3,000 享免運。</span>
-                    </div>
-                  </div>
+                      <small>
+                        NT${cartEstimatedSubtotal.toLocaleString("zh-TW")} / NT${freeShippingThresholdV355.toLocaleString("zh-TW")}
+                      </small>
+                    </section>
 
-                  <div className="line-bind-card-v25313">
-                    <div>
-                      <span>LINE 帳號</span>
-                      {lineProfile ? (
-                        <strong>已綁定：{lineProfile.displayName}</strong>
-                      ) : (
-                        <strong>資料可綁定 LINE 保存</strong>
-                      )}
-                      {lineBindingMessage ? <em>{lineBindingMessage}</em> : null}
-                    </div>
-                    {lineProfile ? (
-                      <small>送出時會帶入 LINE 身分</small>
-                    ) : (
+                    {cartUpsellProducts.length > 0 && (
+                      <section className="cart-upsell-v355">
+                        <div className="cart-section-heading-v355">
+                          <h3>湊免運推薦</h3>
+                        </div>
+
+                        <div className="cart-upsell-track-v355">
+                          {cartUpsellProducts.map((product) => (
+                            <article key={`cart-upsell-${product.id}`}>
+                              <button
+                                type="button"
+                                className="cart-upsell-product-v355"
+                                onClick={() => openProductDetail(product)}
+                              >
+                                {hasRealImage(product) ? (
+                                  <img
+                                    src={getPrimaryImage(product)}
+                                    alt={product.name}
+                                    data-fallback-index="0"
+                                    onError={(event) => handleProductImageError(product, event)}
+                                  />
+                                ) : (
+                                  <span>商品圖</span>
+                                )}
+                                <strong>{getCardName(product)}</strong>
+                                <em>{displayPrice(product)}</em>
+                              </button>
+
+                              <button
+                                type="button"
+                                className="cart-upsell-add-v355"
+                                onClick={() => addToCart(product)}
+                                aria-label={`加入 ${product.name}`}
+                              >
+                                ＋
+                              </button>
+                            </article>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+
+                    <div className="cart-bottom-bar-v355">
+                      <div>
+                        <span>共 {cartTotalQuantity} 件</span>
+                        <strong>預估小計 NT${cartEstimatedSubtotal.toLocaleString("zh-TW")}</strong>
+                      </div>
                       <button
                         type="button"
-                        onClick={startLineBinding}
-                        disabled={lineBindingStatus === "loading" || !LINE_LIFF_ID}
+                        onClick={() => {
+                          setCartStep(2);
+                          window.setTimeout(() => {
+                            document.querySelector(".cart-panel-v355")?.scrollTo({ top: 0, behavior: "smooth" });
+                          }, 0);
+                        }}
                       >
-                        {lineBindingStatus === "loading" ? "綁定中" : "綁定 LINE"}
+                        下一步：填寫訂購資料
                       </button>
-                    )}
-                  </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="cart-back-to-items-v355"
+                      onClick={() => setCartStep(1)}
+                    >
+                      ← 返回商品確認
+                    </button>
 
-                  <div className="checkout-field-grid">
-                    <label>
-                      姓名 <span>*</span>
-                      <input
-                        value={customer.customerName}
-                        onChange={(event) =>
-                          setCustomer({ ...customer, customerName: event.target.value })
-                        }
-                        placeholder="請輸入姓名"
-                      />
-                    </label>
+                    <form id="jourdeness-order-form-v355" className="order-form checkout-form-v21 order-form-v355" onSubmit={submitOrder}>
+                      <div className="checkout-card-title">
+                        <h3>宅配資料</h3>
+                      </div>
 
-                    <label>
-                      LINE ID（備用）
-                      <input
-                        value={customer.lineId}
-                        onChange={(event) =>
-                          setCustomer({ ...customer, lineId: event.target.value })
-                        }
-                        placeholder="未綁定時可填寫"
-                      />
-                    </label>
+                      <div className="line-bind-card-v25313">
+                        <div>
+                          <span>LINE 帳號</span>
+                          {lineProfile ? (
+                            <strong>已綁定：{lineProfile.displayName}</strong>
+                          ) : (
+                            <strong>資料可綁定 LINE 保存</strong>
+                          )}
+                          {lineBindingMessage ? <em>{lineBindingMessage}</em> : null}
+                        </div>
+                        {lineProfile ? (
+                          <small>送出時會帶入 LINE 身分</small>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={startLineBinding}
+                            disabled={lineBindingStatus === "loading" || !LINE_LIFF_ID}
+                          >
+                            {lineBindingStatus === "loading" ? "綁定中" : "綁定 LINE"}
+                          </button>
+                        )}
+                      </div>
 
-                    <label>
-                      電話
-                      <input
-                        value={customer.phone}
-                        onChange={(event) =>
-                          setCustomer({ ...customer, phone: event.target.value })
-                        }
-                        placeholder="請輸入電話"
-                      />
-                    </label>
+                      <div className="checkout-field-grid">
+                        <label>
+                          姓名 <span>*</span>
+                          <input
+                            value={customer.customerName}
+                            onChange={(event) => setCustomer({ ...customer, customerName: event.target.value })}
+                            placeholder="請輸入姓名"
+                          />
+                        </label>
 
-                    <label className="checkout-field-full">
-                      宅配地址 <span>*</span>
-                      <input
-                        value={customer.address}
-                        onChange={(event) =>
-                          setCustomer({ ...customer, address: event.target.value })
-                        }
-                        placeholder="請輸入宅配地址"
-                      />
-                    </label>
+                        <label>
+                          LINE ID（備用）
+                          <input
+                            value={customer.lineId}
+                            onChange={(event) => setCustomer({ ...customer, lineId: event.target.value })}
+                            placeholder="未綁定時可填寫"
+                          />
+                        </label>
 
-                    <label className="checkout-field-full">
-                      備註
-                      <textarea
-                        value={customer.note}
-                        onChange={(event) =>
-                          setCustomer({ ...customer, note: event.target.value })
-                        }
-                        placeholder="可填寫想確認庫存、品項搭配、指定需求"
-                      />
-                    </label>
-                  </div>
+                        <label>
+                          電話
+                          <input
+                            value={customer.phone}
+                            onChange={(event) => setCustomer({ ...customer, phone: event.target.value })}
+                            placeholder="請輸入電話"
+                          />
+                        </label>
 
-                  {submitMessage && (
-                    <p className={submitStatus === "success" ? "form-message success" : "form-message error"}>
-                      {submitMessage}
-                    </p>
-                  )}
+                        <label className="checkout-field-full">
+                          宅配地址 <span>*</span>
+                          <input
+                            value={customer.address}
+                            onChange={(event) => setCustomer({ ...customer, address: event.target.value })}
+                            placeholder="請輸入宅配地址"
+                          />
+                        </label>
 
-                  <button className="submit-order-button checkout-submit-v21" type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "送出中..." : "確認訂購資料"}
-                  </button>
+                        <label className="checkout-field-full">
+                          備註
+                          <textarea
+                            value={customer.note}
+                            onChange={(event) => setCustomer({ ...customer, note: event.target.value })}
+                            placeholder="可填寫想確認庫存、品項搭配、指定需求"
+                          />
+                        </label>
+                      </div>
 
-                  <p className="order-form-note">
-                    送出資料不代表付款完成。商品價格、庫存、優惠組合、滿額免運與付款方式，仍依 LINE 小幫手確認為準。
-                  </p>
-                </form>
+                      {submitMessage && (
+                        <p className={submitStatus === "success" ? "form-message success" : "form-message error"}>
+                          {submitMessage}
+                        </p>
+                      )}
 
-                <button
-                  type="button"
-                  className="continue-shopping-button-v352"
-                  onClick={continueShopping}
-                >
-                  <span aria-hidden="true">←</span>
-                  回到賣場繼續逛
-                </button>
+                      <button className="submit-order-button checkout-submit-v21" type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? "送出中..." : "確認訂購資料"}
+                      </button>
+
+                      <p className="order-form-note">
+                        送出資料不代表付款完成；庫存、效期、金額與付款方式仍由 LINE 小幫手確認。
+                      </p>
+                    </form>
+                  </>
+                )}
               </>
             ) : (
-              <div className="empty-cart checkout-empty-v21">
+              <div className="empty-cart checkout-empty-v21 empty-cart-v355">
                 <h3>購物車目前是空的</h3>
-                <p>回到賣場加入想詢問或訂購的品項。</p>
-                <button
-                  type="button"
-                  className="continue-shopping-button-v352 empty-cart-return-v352"
-                  onClick={continueShopping}
-                >
-                  <span aria-hidden="true">←</span>
-                  回到賣場繼續逛
-                </button>
+                <button type="button" onClick={continueShopping}>回到賣場繼續逛</button>
               </div>
             )}
           </div>
@@ -6391,17 +6603,21 @@ function Home() {
                 ‹
               </button>
               <h2>商品詳情</h2>
-              <button className="detail-cart-button" onClick={() => setIsCartOpen(true)}>
+              <button className="detail-cart-button" onClick={openCartFromDetail}>
                 購物車 {cartTotalQuantity}
               </button>
             </div>
 
-            <div className="detail-gallery-v291" aria-label="商品圖片">
-              {getDetailGalleryImages(selectedDetailProduct).length > 0 ? (
-                <>
-                  <div className="detail-gallery-track-v291">
-                    {getDetailGalleryImages(selectedDetailProduct).map((image, index) => (
-                      <figure className="detail-gallery-item-v291" key={`detail-gallery-${selectedDetailProduct.id}-${image}-${index}`}>
+            <div className="detail-gallery-v291 detail-gallery-v355" aria-label="商品圖片">
+              {selectedDetailGalleryImages.length > 0 ? (
+                <div className="detail-gallery-shell-v355">
+                  <div
+                    ref={detailGalleryRef}
+                    className="detail-gallery-track-v291 detail-gallery-track-v355"
+                    onScroll={handleDetailGalleryScroll}
+                  >
+                    {selectedDetailGalleryImages.map((image, index) => (
+                      <figure className="detail-gallery-item-v291 detail-gallery-item-v355" key={`detail-gallery-${selectedDetailProduct.id}-${image}-${index}`}>
                         <img
                           src={image}
                           alt={`${selectedDetailProduct.name} 圖片 ${index + 1}`}
@@ -6412,12 +6628,46 @@ function Home() {
                     ))}
                   </div>
 
-                  {getDetailGalleryImages(selectedDetailProduct).length > 1 && (
-                    <div className="detail-gallery-hint-v291">
-                      <span>左右滑動看更多圖片</span>
-                    </div>
+                  {selectedDetailGalleryImages.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        className="detail-gallery-arrow-v355 previous"
+                        onClick={() => moveDetailGallery(detailGalleryIndex - 1)}
+                        disabled={detailGalleryIndex === 0}
+                        aria-label="上一張商品圖片"
+                      >
+                        ‹
+                      </button>
+                      <button
+                        type="button"
+                        className="detail-gallery-arrow-v355 next"
+                        onClick={() => moveDetailGallery(detailGalleryIndex + 1)}
+                        disabled={detailGalleryIndex === selectedDetailGalleryImages.length - 1}
+                        aria-label="下一張商品圖片"
+                      >
+                        ›
+                      </button>
+
+                      <span className="detail-gallery-counter-v355">
+                        {detailGalleryIndex + 1} / {selectedDetailGalleryImages.length}
+                      </span>
+
+                      <div className="detail-gallery-dots-v355" aria-label="商品圖片頁碼">
+                        {selectedDetailGalleryImages.map((_, index) => (
+                          <button
+                            type="button"
+                            key={`detail-dot-${selectedDetailProduct.id}-${index}`}
+                            className={index === detailGalleryIndex ? "active" : ""}
+                            onClick={() => moveDetailGallery(index)}
+                            aria-label={`查看第 ${index + 1} 張圖片`}
+                            aria-current={index === detailGalleryIndex ? "true" : undefined}
+                          />
+                        ))}
+                      </div>
+                    </>
                   )}
-                </>
+                </div>
               ) : (
                 <div className="image-placeholder detail-placeholder detail-placeholder-v291">
                   <span>Jourdeness Castle</span>
@@ -6481,7 +6731,7 @@ function Home() {
                   >
                     {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : "加入購物車"}
                   </button>
-                  <button type="button" onClick={() => setIsCartOpen(true)}>
+                  <button type="button" onClick={openCartFromDetail}>
                     購物車 {cartTotalQuantity}
                   </button>
                 </div>
@@ -20095,6 +20345,661 @@ function Home() {
           .search-panel.search-page-view.collection-page-v22 {
             top: 64px !important;
             height: calc(100dvh - 64px) !important;
+          }
+        }
+
+
+        /* V3.5.5：手機購物車、商品資訊圖片輪播與臉部保養分類 */
+        .cart-backdrop-v355 {
+          z-index: 4200 !important;
+          padding: 0 !important;
+          align-items: stretch !important;
+          background: rgba(30, 20, 17, 0.42) !important;
+        }
+
+        .cart-panel-v355 {
+          box-sizing: border-box !important;
+          width: min(100%, 520px) !important;
+          height: 100dvh !important;
+          max-height: 100dvh !important;
+          margin: 0 auto !important;
+          padding: 70px 14px 118px !important;
+          border-radius: 0 !important;
+          background: #fffaf6 !important;
+          scroll-padding-top: 74px !important;
+        }
+
+        .cart-header-v355 {
+          position: fixed !important;
+          top: 0 !important;
+          left: 50% !important;
+          z-index: 5 !important;
+          display: grid !important;
+          grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+          align-items: center !important;
+          width: min(100%, 520px) !important;
+          min-height: 58px !important;
+          margin: 0 !important;
+          padding: 10px 12px !important;
+          border-bottom: 1px solid rgba(112, 65, 48, 0.12) !important;
+          background: rgba(255, 250, 246, 0.98) !important;
+          transform: translateX(-50%) !important;
+          backdrop-filter: blur(16px) !important;
+          -webkit-backdrop-filter: blur(16px) !important;
+        }
+
+        .cart-header-v355 h2 {
+          grid-column: 2 !important;
+          margin: 0 !important;
+          color: var(--ink) !important;
+          font-size: 18px !important;
+          font-weight: 950 !important;
+          line-height: 1.2 !important;
+          white-space: nowrap !important;
+        }
+
+        .cart-return-button-v355 {
+          grid-column: 1 !important;
+          justify-self: start !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 5px !important;
+          min-height: 38px !important;
+          padding: 6px 4px !important;
+          border: 0 !important;
+          background: transparent !important;
+          color: var(--castle-wine) !important;
+          font-size: 12px !important;
+          font-weight: 900 !important;
+          white-space: nowrap !important;
+        }
+
+        .cart-return-button-v355 span {
+          margin: 0 !important;
+          color: inherit !important;
+          font-size: 18px !important;
+        }
+
+        .cart-close-v355 {
+          grid-column: 3 !important;
+          justify-self: end !important;
+          width: 38px !important;
+          height: 38px !important;
+          background: transparent !important;
+          font-size: 28px !important;
+        }
+
+        .checkout-step-strip-v355 {
+          display: grid !important;
+          grid-template-columns: auto 1fr auto 1fr auto 1fr auto !important;
+          align-items: center !important;
+          gap: 5px !important;
+          margin: 0 0 16px !important;
+          padding: 10px 8px !important;
+          border: 0 !important;
+          border-radius: 14px !important;
+          background: #fff !important;
+          box-shadow: 0 8px 20px rgba(77, 55, 38, 0.06) !important;
+        }
+
+        .checkout-step-strip-v355 div {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          gap: 4px !important;
+          min-height: 0 !important;
+          padding: 0 !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          box-shadow: none !important;
+        }
+
+        .checkout-step-strip-v355 i {
+          display: block !important;
+          width: 100% !important;
+          height: 1px !important;
+          background: #dfd4cc !important;
+        }
+
+        .checkout-step-strip-v355 strong {
+          width: 24px !important;
+          height: 24px !important;
+          background: #e7dfd9 !important;
+          color: #8b7d73 !important;
+          font-size: 11px !important;
+        }
+
+        .checkout-step-strip-v355 div.active strong {
+          background: var(--castle-wine) !important;
+          color: #fff !important;
+        }
+
+        .checkout-step-strip-v355 span {
+          color: #8b7d73 !important;
+          font-size: 10px !important;
+          line-height: 1.1 !important;
+          white-space: nowrap !important;
+        }
+
+        .checkout-step-strip-v355 div.active span {
+          color: var(--castle-wine) !important;
+        }
+
+        .cart-products-v355,
+        .shipping-progress-v355,
+        .cart-upsell-v355,
+        .order-form-v355 {
+          margin-bottom: 14px !important;
+          padding: 14px !important;
+          border: 1px solid rgba(112, 65, 48, 0.1) !important;
+          border-radius: 18px !important;
+          background: #fff !important;
+          box-shadow: 0 8px 22px rgba(77, 55, 38, 0.055) !important;
+        }
+
+        .cart-section-heading-v355 {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          gap: 12px !important;
+          margin-bottom: 8px !important;
+        }
+
+        .cart-section-heading-v355 h3 {
+          margin: 0 !important;
+          color: var(--ink) !important;
+          font-size: 18px !important;
+          font-weight: 950 !important;
+        }
+
+        .cart-section-heading-v355 > button {
+          min-height: 34px !important;
+          padding: 5px 7px !important;
+          border: 0 !important;
+          background: transparent !important;
+          color: #8f1f3b !important;
+          font-size: 12px !important;
+          font-weight: 900 !important;
+        }
+
+        .cart-item-list-v355 {
+          display: grid !important;
+          gap: 0 !important;
+        }
+
+        .cart-item-row-v355 {
+          display: grid !important;
+          grid-template-columns: 72px minmax(0, 1fr) !important;
+          gap: 12px !important;
+          padding: 12px 0 !important;
+          border-bottom: 1px solid rgba(112, 65, 48, 0.1) !important;
+        }
+
+        .cart-item-row-v355:last-child {
+          border-bottom: 0 !important;
+        }
+
+        .cart-item-image-v355 {
+          display: grid !important;
+          place-items: center !important;
+          width: 72px !important;
+          height: 72px !important;
+          overflow: hidden !important;
+          border: 1px solid rgba(112, 65, 48, 0.1) !important;
+          border-radius: 14px !important;
+          background: #fffaf6 !important;
+        }
+
+        .cart-item-image-v355 img {
+          width: 100% !important;
+          height: 100% !important;
+          padding: 4px !important;
+          object-fit: contain !important;
+        }
+
+        .cart-item-image-v355 span {
+          color: var(--muted) !important;
+          font-size: 10px !important;
+          font-weight: 800 !important;
+        }
+
+        .cart-item-copy-v355 {
+          min-width: 0 !important;
+        }
+
+        .cart-item-copy-v355 small {
+          display: block !important;
+          margin: 0 0 3px !important;
+          overflow: hidden !important;
+          color: #9a8c83 !important;
+          font-size: 10px !important;
+          font-weight: 800 !important;
+          text-overflow: ellipsis !important;
+          white-space: nowrap !important;
+        }
+
+        .cart-item-copy-v355 h3 {
+          display: -webkit-box !important;
+          margin: 0 0 5px !important;
+          overflow: hidden !important;
+          color: var(--ink) !important;
+          font-size: 14px !important;
+          font-weight: 900 !important;
+          line-height: 1.35 !important;
+          -webkit-box-orient: vertical !important;
+          -webkit-line-clamp: 2 !important;
+        }
+
+        .cart-item-copy-v355 > strong {
+          display: block !important;
+          color: var(--castle-wine) !important;
+          font-size: 14px !important;
+          font-weight: 950 !important;
+        }
+
+        .cart-item-actions-v355 {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          gap: 10px !important;
+          margin-top: 9px !important;
+        }
+
+        .cart-quantity-v355 {
+          display: inline-grid !important;
+          grid-template-columns: 32px 34px 32px !important;
+          align-items: center !important;
+          overflow: hidden !important;
+          border: 1px solid rgba(112, 65, 48, 0.16) !important;
+          border-radius: 10px !important;
+          background: #fff !important;
+        }
+
+        .cart-quantity-v355 button,
+        .cart-quantity-v355 span {
+          display: grid !important;
+          place-items: center !important;
+          min-width: 0 !important;
+          height: 32px !important;
+          margin: 0 !important;
+          border: 0 !important;
+          background: transparent !important;
+          color: var(--ink) !important;
+          font-size: 14px !important;
+          font-weight: 900 !important;
+        }
+
+        .cart-remove-v355 {
+          min-height: 32px !important;
+          padding: 4px 8px !important;
+          border: 0 !important;
+          background: transparent !important;
+          color: #9b6d68 !important;
+          font-size: 11px !important;
+          font-weight: 850 !important;
+        }
+
+        .shipping-progress-v355 h3,
+        .shipping-progress-v355 p {
+          margin: 0 !important;
+        }
+
+        .shipping-progress-v355 h3 {
+          color: var(--ink) !important;
+          font-size: 16px !important;
+          font-weight: 950 !important;
+        }
+
+        .shipping-progress-v355 p {
+          margin-top: 4px !important;
+          color: var(--castle-wine) !important;
+          font-size: 13px !important;
+          font-weight: 900 !important;
+        }
+
+        .shipping-progress-v355 p.reached {
+          color: #3d7c53 !important;
+        }
+
+        .shipping-progress-track-v355 {
+          height: 8px !important;
+          margin: 11px 0 7px !important;
+          overflow: hidden !important;
+          border-radius: 999px !important;
+          background: #eee5df !important;
+        }
+
+        .shipping-progress-track-v355 span {
+          display: block !important;
+          height: 100% !important;
+          border-radius: inherit !important;
+          background: linear-gradient(90deg, var(--castle-wine), #c77b77) !important;
+          transition: width 220ms ease !important;
+        }
+
+        .shipping-progress-v355 small {
+          display: block !important;
+          color: #8f8178 !important;
+          font-size: 11px !important;
+          font-weight: 800 !important;
+          text-align: right !important;
+        }
+
+        .cart-upsell-track-v355 {
+          display: flex !important;
+          gap: 10px !important;
+          margin: 0 -2px !important;
+          padding: 2px 2px 6px !important;
+          overflow-x: auto !important;
+          scroll-snap-type: x mandatory !important;
+          scrollbar-width: none !important;
+        }
+
+        .cart-upsell-track-v355::-webkit-scrollbar {
+          display: none !important;
+        }
+
+        .cart-upsell-track-v355 article {
+          position: relative !important;
+          flex: 0 0 min(42vw, 170px) !important;
+          scroll-snap-align: start !important;
+        }
+
+        .cart-upsell-product-v355 {
+          display: grid !important;
+          width: 100% !important;
+          min-height: 186px !important;
+          padding: 8px 8px 34px !important;
+          border: 1px solid rgba(112, 65, 48, 0.11) !important;
+          border-radius: 14px !important;
+          background: #fffaf6 !important;
+          text-align: left !important;
+        }
+
+        .cart-upsell-product-v355 img,
+        .cart-upsell-product-v355 > span {
+          width: 100% !important;
+          height: 94px !important;
+          margin-bottom: 7px !important;
+          object-fit: contain !important;
+        }
+
+        .cart-upsell-product-v355 strong {
+          display: -webkit-box !important;
+          overflow: hidden !important;
+          color: var(--ink) !important;
+          font-size: 12px !important;
+          line-height: 1.35 !important;
+          -webkit-box-orient: vertical !important;
+          -webkit-line-clamp: 2 !important;
+        }
+
+        .cart-upsell-product-v355 em {
+          margin-top: 5px !important;
+          color: var(--castle-wine) !important;
+          font-size: 12px !important;
+          font-style: normal !important;
+          font-weight: 900 !important;
+        }
+
+        .cart-upsell-add-v355 {
+          position: absolute !important;
+          right: 8px !important;
+          bottom: 8px !important;
+          display: grid !important;
+          width: 28px !important;
+          height: 28px !important;
+          place-items: center !important;
+          border: 0 !important;
+          border-radius: 50% !important;
+          background: var(--castle-wine) !important;
+          color: #fff !important;
+          font-size: 18px !important;
+          line-height: 1 !important;
+        }
+
+        .cart-bottom-bar-v355 {
+          position: fixed !important;
+          left: 50% !important;
+          bottom: 0 !important;
+          z-index: 6 !important;
+          display: grid !important;
+          grid-template-columns: minmax(0, 0.8fr) minmax(170px, 1.2fr) !important;
+          align-items: center !important;
+          gap: 10px !important;
+          width: min(100%, 520px) !important;
+          min-height: 92px !important;
+          padding: 12px max(14px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)) !important;
+          border-top: 1px solid rgba(112, 65, 48, 0.12) !important;
+          background: rgba(255, 250, 246, 0.985) !important;
+          transform: translateX(-50%) !important;
+          box-shadow: 0 -12px 28px rgba(77, 55, 38, 0.11) !important;
+          backdrop-filter: blur(16px) !important;
+          -webkit-backdrop-filter: blur(16px) !important;
+        }
+
+        .cart-bottom-bar-v355 div {
+          min-width: 0 !important;
+        }
+
+        .cart-bottom-bar-v355 span,
+        .cart-bottom-bar-v355 strong {
+          display: block !important;
+        }
+
+        .cart-bottom-bar-v355 span {
+          color: #8f8178 !important;
+          font-size: 11px !important;
+          font-weight: 800 !important;
+        }
+
+        .cart-bottom-bar-v355 strong {
+          margin-top: 2px !important;
+          color: var(--ink) !important;
+          font-size: 14px !important;
+          font-weight: 950 !important;
+          line-height: 1.25 !important;
+        }
+
+        .cart-bottom-bar-v355 > button {
+          min-height: 48px !important;
+          padding: 10px 12px !important;
+          border: 0 !important;
+          border-radius: 12px !important;
+          background: var(--castle-wine) !important;
+          color: #fff !important;
+          font-size: 13px !important;
+          font-weight: 950 !important;
+          line-height: 1.3 !important;
+        }
+
+        .cart-back-to-items-v355 {
+          min-height: 40px !important;
+          margin: 0 0 10px !important;
+          padding: 7px 4px !important;
+          border: 0 !important;
+          background: transparent !important;
+          color: var(--castle-wine) !important;
+          font-size: 13px !important;
+          font-weight: 900 !important;
+        }
+
+        .order-form-v355 {
+          margin-bottom: 8px !important;
+          box-shadow: none !important;
+        }
+
+        .empty-cart-v355 {
+          display: grid !important;
+          min-height: calc(100dvh - 120px) !important;
+          place-content: center !important;
+          gap: 14px !important;
+          text-align: center !important;
+        }
+
+        .empty-cart-v355 h3 {
+          margin: 0 !important;
+          font-size: 20px !important;
+        }
+
+        .empty-cart-v355 button {
+          min-height: 46px !important;
+          padding: 10px 18px !important;
+          border: 1px solid rgba(143, 31, 59, 0.2) !important;
+          border-radius: 12px !important;
+          background: #fff !important;
+          color: var(--castle-wine) !important;
+          font-weight: 900 !important;
+        }
+
+        .detail-gallery-v355 {
+          padding: 0 !important;
+          overflow: hidden !important;
+        }
+
+        .detail-gallery-shell-v355 {
+          position: relative !important;
+          width: 100% !important;
+          overflow: hidden !important;
+          background: #fff !important;
+        }
+
+        .detail-gallery-track-v355 {
+          display: flex !important;
+          width: 100% !important;
+          overflow-x: auto !important;
+          overflow-y: hidden !important;
+          scroll-snap-type: x mandatory !important;
+          scroll-behavior: smooth !important;
+          scrollbar-width: none !important;
+          overscroll-behavior-inline: contain !important;
+          touch-action: pan-x pan-y pinch-zoom !important;
+          -webkit-overflow-scrolling: touch !important;
+        }
+
+        .detail-gallery-track-v355::-webkit-scrollbar {
+          display: none !important;
+        }
+
+        .detail-gallery-item-v355 {
+          flex: 0 0 100% !important;
+          width: 100% !important;
+          min-width: 100% !important;
+          margin: 0 !important;
+          scroll-snap-align: start !important;
+          scroll-snap-stop: always !important;
+        }
+
+        .detail-gallery-item-v355 img {
+          width: 100% !important;
+          height: auto !important;
+          aspect-ratio: 1 / 1.06 !important;
+          padding: 12px !important;
+          object-fit: contain !important;
+          background: #fff !important;
+        }
+
+        .detail-gallery-arrow-v355 {
+          position: absolute !important;
+          top: 50% !important;
+          z-index: 2 !important;
+          display: grid !important;
+          width: 38px !important;
+          height: 38px !important;
+          place-items: center !important;
+          border: 1px solid rgba(112, 65, 48, 0.12) !important;
+          border-radius: 50% !important;
+          background: rgba(255, 255, 255, 0.9) !important;
+          color: var(--ink) !important;
+          font-size: 28px !important;
+          line-height: 1 !important;
+          transform: translateY(-50%) !important;
+          box-shadow: 0 8px 18px rgba(77, 55, 38, 0.12) !important;
+        }
+
+        .detail-gallery-arrow-v355.previous {
+          left: 10px !important;
+        }
+
+        .detail-gallery-arrow-v355.next {
+          right: 10px !important;
+        }
+
+        .detail-gallery-arrow-v355:disabled {
+          opacity: 0.28 !important;
+          pointer-events: none !important;
+        }
+
+        .detail-gallery-counter-v355 {
+          position: absolute !important;
+          top: 10px !important;
+          right: 10px !important;
+          z-index: 2 !important;
+          min-width: 46px !important;
+          padding: 6px 9px !important;
+          border-radius: 999px !important;
+          background: rgba(45, 35, 31, 0.72) !important;
+          color: #fff !important;
+          font-size: 11px !important;
+          font-weight: 900 !important;
+          text-align: center !important;
+        }
+
+        .detail-gallery-dots-v355 {
+          position: absolute !important;
+          left: 50% !important;
+          bottom: 10px !important;
+          z-index: 2 !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          padding: 6px 8px !important;
+          border-radius: 999px !important;
+          background: rgba(255, 255, 255, 0.9) !important;
+          transform: translateX(-50%) !important;
+          box-shadow: 0 5px 14px rgba(77, 55, 38, 0.1) !important;
+        }
+
+        .detail-gallery-dots-v355 button {
+          width: 7px !important;
+          height: 7px !important;
+          padding: 0 !important;
+          border: 0 !important;
+          border-radius: 50% !important;
+          background: #d2c5bc !important;
+        }
+
+        .detail-gallery-dots-v355 button.active {
+          width: 18px !important;
+          border-radius: 999px !important;
+          background: var(--castle-wine) !important;
+        }
+
+        @media (max-width: 390px) {
+          .cart-panel-v355 {
+            padding-inline: 10px !important;
+          }
+
+          .cart-header-v355 h2 {
+            font-size: 16px !important;
+          }
+
+          .cart-return-button-v355 {
+            font-size: 11px !important;
+          }
+
+          .checkout-step-strip-v355 span {
+            font-size: 9px !important;
+          }
+
+          .cart-bottom-bar-v355 {
+            grid-template-columns: minmax(0, 0.72fr) minmax(158px, 1.28fr) !important;
+            padding-inline: 10px !important;
+          }
+
+          .cart-bottom-bar-v355 strong {
+            font-size: 12px !important;
           }
         }
 
