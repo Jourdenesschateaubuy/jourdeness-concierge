@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.5.9 — product pricing, face-care taxonomy, and explicit essential-oil classification.
+// Jourdeness storefront build: V3.6.0 — exact mix-and-match picker, editable combo cart lines, and persisted selections.
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -57,9 +57,42 @@ type Product = {
   gallery?: string[];
 };
 
+type ComboOption = {
+  id: string;
+  name: string;
+};
+
+type ComboPlan = {
+  id: string;
+  label: string;
+  requiredQuantity: number;
+  price: number;
+  priceLabel: string;
+  note?: string;
+};
+
+type ComboConfig = {
+  productId: number;
+  unitLabel: string;
+  options: ComboOption[];
+  plans: ComboPlan[];
+  note?: string;
+};
+
+type ComboSelection = {
+  optionId: string;
+  name: string;
+  quantity: number;
+};
+
 type CartItem = {
+  cartKey: string;
   product: Product;
   quantity: number;
+  comboPlanId?: string;
+  comboPlanLabel?: string;
+  comboSelections?: ComboSelection[];
+  comboPrice?: number;
 };
 
 type CustomerForm = {
@@ -107,6 +140,150 @@ const CUSTOMER_DRAFT_STORAGE_KEY = "jourdeness_customer_draft_v1";
 const LINE_PROFILE_STORAGE_KEY = "jourdeness_line_profile_v1";
 const LINE_LIFF_ID = process.env.NEXT_PUBLIC_LINE_LIFF_ID || "";
 const LIFF_SDK_SRC = "https://static.line-scdn.net/liff/edge/2/sdk.js";
+
+const comboConfigsV360: Record<number, ComboConfig> = {
+  1: {
+    productId: 1,
+    unitLabel: "盒",
+    options: [
+      { id: "cranberry-probiotic", name: "蔓越莓益生菌" },
+      { id: "calcium-probiotic", name: "高鈣益生菌" },
+    ],
+    plans: [
+      {
+        id: "three-boxes",
+        label: "任選 3 盒",
+        requiredQuantity: 3,
+        price: 1600,
+        priceLabel: "$1,600",
+      },
+    ],
+  },
+  51: {
+    productId: 51,
+    unitLabel: "盒",
+    options: [
+      { id: "cool-patch", name: "石墨烯電氣石精油貼布（涼感）" },
+      { id: "warm-patch", name: "石墨烯電氣石精油貼布（溫感）" },
+    ],
+    plans: [
+      {
+        id: "four-boxes",
+        label: "任選 4 盒",
+        requiredQuantity: 4,
+        price: 1099,
+        priceLabel: "$1,099",
+      },
+    ],
+  },
+  52: {
+    productId: 52,
+    unitLabel: "盒",
+    options: [
+      { id: "cool-patch", name: "石墨烯電氣石精油貼布（涼感）" },
+      { id: "warm-patch", name: "石墨烯電氣石精油貼布（溫感）" },
+    ],
+    plans: [
+      {
+        id: "ten-boxes",
+        label: "任選 10 盒",
+        requiredQuantity: 10,
+        price: 2500,
+        priceLabel: "$2,500",
+      },
+    ],
+  },
+  54: {
+    productId: 54,
+    unitLabel: "條",
+    options: [
+      { id: "lavender-toothpaste", name: "薰衣草齒齦保健牙膏" },
+      { id: "dragon-blood-toothpaste", name: "龍血齒齦保健牙膏" },
+    ],
+    plans: [
+      {
+        id: "three-tubes",
+        label: "任選 3 條",
+        requiredQuantity: 3,
+        price: 500,
+        priceLabel: "$500",
+      },
+    ],
+  },
+  55: {
+    productId: 55,
+    unitLabel: "桶",
+    options: [
+      { id: "water-mask-bucket", name: "水搖滾保濕面膜 35片桶裝" },
+      { id: "white-mask-bucket", name: "極光白美白面膜 35片桶裝" },
+    ],
+    plans: [
+      {
+        id: "one-bucket",
+        label: "1 桶",
+        requiredQuantity: 1,
+        price: 599,
+        priceLabel: "$599",
+      },
+      {
+        id: "two-buckets",
+        label: "任選 2 桶",
+        requiredQuantity: 2,
+        price: 1100,
+        priceLabel: "$1,100",
+      },
+      {
+        id: "five-buckets",
+        label: "任選 5 桶",
+        requiredQuantity: 5,
+        price: 2750,
+        priceLabel: "$2,750",
+        note: "任選 5 桶另贈水搖滾保濕面膜 10 片。",
+      },
+    ],
+    note: "先選優惠方案，再分配水搖滾與極光白的桶數。",
+  },
+  119: {
+    productId: 119,
+    unitLabel: "瓶",
+    options: [
+      { id: "dragon-blood-shampoo", name: "龍血求麗頭皮修護洗髮精" },
+      { id: "dragon-blood-body-wash", name: "龍血求麗潤澤修護沐浴乳" },
+    ],
+    plans: [
+      {
+        id: "three-bottles",
+        label: "任選 3 瓶",
+        requiredQuantity: 3,
+        price: 1100,
+        priceLabel: "$1,100",
+      },
+    ],
+  },
+};
+
+function getComboConfig(productId: number) {
+  return comboConfigsV360[productId] ?? null;
+}
+
+function buildSimpleCartKey(productId: number) {
+  return `product-${productId}`;
+}
+
+function buildComboCartKey(
+  productId: number,
+  planId: string,
+  selections: ComboSelection[]
+) {
+  const selectionKey = selections
+    .filter((selection) => selection.quantity > 0)
+    .slice()
+    .sort((a, b) => a.optionId.localeCompare(b.optionId))
+    .map((selection) => `${selection.optionId}:${selection.quantity}`)
+    .join("|");
+
+  return `combo-${productId}-${planId}-${selectionKey}`;
+}
 
 const allProducts: Product[] = [
 {
@@ -3340,6 +3517,22 @@ function Home() {
   const [lineBindingMessage, setLineBindingMessage] = useState("");
   const [lineCopyMessage, setLineCopyMessage] = useState("");
   const [hasRestoredSavedDraft, setHasRestoredSavedDraft] = useState(false);
+  const [comboPickerProduct, setComboPickerProduct] = useState<Product | null>(null);
+  const [comboPlanId, setComboPlanId] = useState("");
+  const [comboDraftSelections, setComboDraftSelections] = useState<Record<string, number>>({});
+  const [comboEditingItemKey, setComboEditingItemKey] = useState<string | null>(null);
+
+  const activeComboConfig = comboPickerProduct
+    ? getComboConfig(comboPickerProduct.id)
+    : null;
+  const activeComboPlan = activeComboConfig
+    ? activeComboConfig.plans.find((plan) => plan.id === comboPlanId) ??
+      activeComboConfig.plans[0]
+    : null;
+  const comboSelectedCount = Object.values(comboDraftSelections).reduce(
+    (total, quantity) => total + quantity,
+    0
+  );
 
   useEffect(() => {
     setDetailGalleryIndex(0);
@@ -3348,6 +3541,27 @@ function Home() {
       detailGalleryRef.current?.scrollTo({ left: 0, behavior: "auto" });
     }, 0);
   }, [selectedDetailProduct?.id]);
+
+  useEffect(() => {
+    if (!comboPickerProduct) return;
+
+    const previousOverflow = document.body.style.overflow;
+
+    function handleComboPickerKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setComboPickerProduct(null);
+        setComboEditingItemKey(null);
+      }
+    }
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleComboPickerKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleComboPickerKeyDown);
+    };
+  }, [comboPickerProduct]);
 
   const seriesList = categoryConfig[selectedCategory];
 
@@ -3729,8 +3943,16 @@ function Home() {
     return match ? Number(match[1].replace(/,/g, "")) : 0;
   }
 
+  function getCartItemUnitPrice(item: CartItem) {
+    return item.comboPrice ?? getEstimatedUnitPrice(item.product);
+  }
+
+  function getCartItemDisplayPrice(item: CartItem) {
+    return item.comboPlanLabel ?? displayPrice(item.product);
+  }
+
   const cartEstimatedSubtotal = cartItems.reduce(
-    (total, item) => total + getEstimatedUnitPrice(item.product) * item.quantity,
+    (total, item) => total + getCartItemUnitPrice(item) * item.quantity,
     0
   );
   const freeShippingThresholdV355 = 3000;
@@ -5173,23 +5395,189 @@ function Home() {
     );
   }
 
-  function addToCart(product: Product) {
-    if (isCartDisabled(product)) return;
+  function createEmptyComboDraft(config: ComboConfig) {
+    return Object.fromEntries(config.options.map((option) => [option.id, 0]));
+  }
 
-    setCartItems((currentItems) => {
-      const existingItem = currentItems.find(
-        (item) => item.product.id === product.id
+  function openComboPicker(product: Product, editingItem?: CartItem) {
+    const config = getComboConfig(product.id);
+    if (!config) return;
+
+    const plan =
+      (editingItem?.comboPlanId
+        ? config.plans.find((item) => item.id === editingItem.comboPlanId)
+        : null) ?? config.plans[0];
+    const draft = createEmptyComboDraft(config);
+
+    editingItem?.comboSelections?.forEach((selection) => {
+      if (Object.prototype.hasOwnProperty.call(draft, selection.optionId)) {
+        draft[selection.optionId] = selection.quantity;
+      }
+    });
+
+    setComboPickerProduct(product);
+    setComboPlanId(plan.id);
+    setComboDraftSelections(draft);
+    setComboEditingItemKey(editingItem?.cartKey ?? null);
+    setSubmitStatus("idle");
+    setSubmitMessage("");
+  }
+
+  function closeComboPicker() {
+    setComboPickerProduct(null);
+    setComboPlanId("");
+    setComboDraftSelections({});
+    setComboEditingItemKey(null);
+  }
+
+  function selectComboPlan(planId: string) {
+    if (!activeComboConfig || planId === comboPlanId) return;
+    setComboPlanId(planId);
+    setComboDraftSelections(createEmptyComboDraft(activeComboConfig));
+  }
+
+  function updateComboDraftQuantity(optionId: string, delta: number) {
+    if (!activeComboPlan) return;
+
+    setComboDraftSelections((current) => {
+      const currentQuantity = current[optionId] ?? 0;
+      const currentTotal = Object.values(current).reduce(
+        (total, quantity) => total + quantity,
+        0
       );
 
+      if (delta > 0 && currentTotal >= activeComboPlan.requiredQuantity) {
+        return current;
+      }
+
+      const nextQuantity = Math.max(currentQuantity + delta, 0);
+      if (nextQuantity === currentQuantity) return current;
+
+      return {
+        ...current,
+        [optionId]: nextQuantity,
+      };
+    });
+  }
+
+  function confirmComboSelection() {
+    if (!comboPickerProduct || !activeComboConfig || !activeComboPlan) return;
+    if (comboSelectedCount !== activeComboPlan.requiredQuantity) return;
+
+    const selections: ComboSelection[] = activeComboConfig.options
+      .map((option) => ({
+        optionId: option.id,
+        name: option.name,
+        quantity: comboDraftSelections[option.id] ?? 0,
+      }))
+      .filter((selection) => selection.quantity > 0);
+    const cartKey = buildComboCartKey(
+      comboPickerProduct.id,
+      activeComboPlan.id,
+      selections
+    );
+    const comboPlanLabel = `${activeComboPlan.label} ${activeComboPlan.priceLabel}`;
+    const editingKey = comboEditingItemKey;
+
+    setCartItems((currentItems) => {
+      if (editingKey) {
+        const editingItem = currentItems.find((item) => item.cartKey === editingKey);
+        if (!editingItem) return currentItems;
+
+        if (editingKey === cartKey) {
+          return currentItems.map((item) =>
+            item.cartKey === editingKey
+              ? {
+                  ...item,
+                  comboPlanId: activeComboPlan.id,
+                  comboPlanLabel,
+                  comboSelections: selections,
+                  comboPrice: activeComboPlan.price,
+                }
+              : item
+          );
+        }
+
+        const itemsWithoutEditing = currentItems.filter(
+          (item) => item.cartKey !== editingKey
+        );
+        const matchingItem = itemsWithoutEditing.find(
+          (item) => item.cartKey === cartKey
+        );
+
+        if (matchingItem) {
+          return itemsWithoutEditing.map((item) =>
+            item.cartKey === cartKey
+              ? { ...item, quantity: item.quantity + editingItem.quantity }
+              : item
+          );
+        }
+
+        return [
+          ...itemsWithoutEditing,
+          {
+            cartKey,
+            product: comboPickerProduct,
+            quantity: editingItem.quantity,
+            comboPlanId: activeComboPlan.id,
+            comboPlanLabel,
+            comboSelections: selections,
+            comboPrice: activeComboPlan.price,
+          },
+        ];
+      }
+
+      const existingItem = currentItems.find((item) => item.cartKey === cartKey);
       if (existingItem) {
         return currentItems.map((item) =>
-          item.product.id === product.id
+          item.cartKey === cartKey
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
 
-      return [...currentItems, { product, quantity: 1 }];
+      return [
+        ...currentItems,
+        {
+          cartKey,
+          product: comboPickerProduct,
+          quantity: 1,
+          comboPlanId: activeComboPlan.id,
+          comboPlanLabel,
+          comboSelections: selections,
+          comboPrice: activeComboPlan.price,
+        },
+      ];
+    });
+
+    setCartNotice(editingKey ? "組合內容已更新" : "已加入購物車");
+    closeComboPicker();
+  }
+
+  function addToCart(product: Product) {
+    if (isCartDisabled(product)) return;
+
+    if (getComboConfig(product.id)) {
+      openComboPicker(product);
+      return;
+    }
+
+    const cartKey = buildSimpleCartKey(product.id);
+
+    setCartItems((currentItems) => {
+      const existingItem = currentItems.find(
+        (item) => item.cartKey === cartKey
+      );
+
+      if (existingItem) {
+        return currentItems.map((item) =>
+          item.cartKey === cartKey
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [...currentItems, { cartKey, product, quantity: 1 }];
     });
 
     setCartNotice("已加入購物車");
@@ -5197,22 +5585,22 @@ function Home() {
     setSubmitMessage("");
   }
 
-  function updateCartQuantity(productId: number, quantity: number) {
+  function updateCartQuantity(cartKey: string, quantity: number) {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(cartKey);
       return;
     }
 
     setCartItems((currentItems) =>
       currentItems.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
+        item.cartKey === cartKey ? { ...item, quantity } : item
       )
     );
   }
 
-  function removeFromCart(productId: number) {
+  function removeFromCart(cartKey: string) {
     setCartItems((currentItems) =>
-      currentItems.filter((item) => item.product.id !== productId)
+      currentItems.filter((item) => item.cartKey !== cartKey)
     );
   }
 
@@ -5326,25 +5714,104 @@ function Home() {
         const parsedCart = JSON.parse(savedCart);
 
         if (Array.isArray(parsedCart)) {
-          const restoredCart = parsedCart
-            .map((savedItem) => {
-              const productId = Number(savedItem?.id);
-              const quantity = Number(savedItem?.quantity);
-              const product = products.find((item) => item.id === productId);
+          const restoredCart: CartItem[] = [];
+          let skippedLegacyCombo = false;
 
-              if (!product || !Number.isFinite(quantity) || quantity <= 0) {
-                return null;
+          parsedCart.forEach((savedItem) => {
+            const productId = Number(savedItem?.id);
+            const quantity = Number(savedItem?.quantity);
+            const product = products.find((item) => item.id === productId);
+
+            if (!product || !Number.isFinite(quantity) || quantity <= 0) {
+              return;
+            }
+
+            const safeQuantity = Math.min(
+              Math.max(Math.floor(quantity), 1),
+              99
+            );
+            const comboConfig = getComboConfig(productId);
+
+            if (!comboConfig) {
+              restoredCart.push({
+                cartKey: buildSimpleCartKey(productId),
+                product,
+                quantity: safeQuantity,
+              });
+              return;
+            }
+
+            const planId =
+              typeof savedItem?.comboPlanId === "string"
+                ? savedItem.comboPlanId
+                : "";
+            const plan = comboConfig.plans.find((item) => item.id === planId);
+            const rawSelections = Array.isArray(savedItem?.comboSelections)
+              ? savedItem.comboSelections
+              : [];
+
+            if (!plan || rawSelections.length === 0) {
+              skippedLegacyCombo = true;
+              return;
+            }
+
+            const quantityByOption = new Map<string, number>();
+            rawSelections.forEach((selection) => {
+              const optionId =
+                typeof selection?.optionId === "string"
+                  ? selection.optionId
+                  : "";
+              const optionQuantity = Number(selection?.quantity);
+
+              if (
+                !comboConfig.options.some((option) => option.id === optionId) ||
+                !Number.isFinite(optionQuantity) ||
+                optionQuantity <= 0
+              ) {
+                return;
               }
 
-              return {
-                product,
-                quantity: Math.min(Math.max(Math.floor(quantity), 1), 99),
-              };
-            })
-            .filter((item): item is CartItem => item !== null);
+              quantityByOption.set(
+                optionId,
+                (quantityByOption.get(optionId) ?? 0) +
+                  Math.floor(optionQuantity)
+              );
+            });
+
+            const selections: ComboSelection[] = comboConfig.options
+              .map((option) => ({
+                optionId: option.id,
+                name: option.name,
+                quantity: quantityByOption.get(option.id) ?? 0,
+              }))
+              .filter((selection) => selection.quantity > 0);
+            const selectedTotal = selections.reduce(
+              (total, selection) => total + selection.quantity,
+              0
+            );
+
+            if (selectedTotal !== plan.requiredQuantity) {
+              skippedLegacyCombo = true;
+              return;
+            }
+
+            restoredCart.push({
+              cartKey: buildComboCartKey(productId, plan.id, selections),
+              product,
+              quantity: safeQuantity,
+              comboPlanId: plan.id,
+              comboPlanLabel: `${plan.label} ${plan.priceLabel}`,
+              comboSelections: selections,
+              comboPrice: plan.price,
+            });
+          });
 
           if (restoredCart.length > 0) {
             setCartItems(restoredCart);
+          }
+
+          if (skippedLegacyCombo) {
+            setCartNotice("任選商品已更新，請重新選擇組合內容");
           }
         }
       }
@@ -5458,6 +5925,11 @@ function Home() {
         cartItems.map((item) => ({
           id: item.product.id,
           quantity: item.quantity,
+          cartKey: item.cartKey,
+          comboPlanId: item.comboPlanId,
+          comboPlanLabel: item.comboPlanLabel,
+          comboSelections: item.comboSelections,
+          comboPrice: item.comboPrice,
         }))
       )
     );
@@ -5597,7 +6069,18 @@ function Home() {
       .join("\n");
 
     const itemsText = cartItems
-      .map((item) => `${item.product.name} × ${item.quantity}｜${displayPrice(item.product)}`)
+      .map((item) => {
+        const comboDetails = item.comboSelections
+          ?.map(
+            (selection) =>
+              `－${selection.name} × ${selection.quantity}`
+          )
+          .join("\n");
+
+        return `${item.product.name} × ${item.quantity}｜${getCartItemDisplayPrice(item)}${
+          comboDetails ? `\n${comboDetails}` : ""
+        }`;
+      })
       .join("\n");
 
     const sheetHeaders = [
@@ -5649,11 +6132,17 @@ function Home() {
         originalPrice: hasKnownOriginalPrice(item.product)
           ? item.product.originalPrice
           : "",
-        price: displayPrice(item.product),
+        price: getCartItemDisplayPrice(item),
         description: item.product.description,
         quantity: item.quantity,
         tags: displayTags(item.product).join("、"),
-        combo: hasComboPrice(item.product) ? "有組合價" : "",
+        combo: item.comboSelections
+          ? "任選組合"
+          : hasComboPrice(item.product)
+            ? "有組合價"
+            : "",
+        comboPlan: item.comboPlanLabel || "",
+        comboSelections: item.comboSelections ?? [],
       })),
     };
 
@@ -5786,6 +6275,125 @@ function Home() {
           <span aria-hidden="true">✓</span>
           {cartNotice}
         </div>
+      )}
+
+      {comboPickerProduct && activeComboConfig && activeComboPlan && (
+        <section
+          className="combo-picker-backdrop-v360"
+          onClick={closeComboPicker}
+          role="presentation"
+        >
+          <div
+            className="combo-picker-panel-v360"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="combo-picker-title-v360"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header className="combo-picker-header-v360">
+              <div>
+                <small>{comboEditingItemKey ? "修改組合" : "選擇組合內容"}</small>
+                <h2 id="combo-picker-title-v360">{getCardName(comboPickerProduct)}</h2>
+              </div>
+              <button
+                type="button"
+                onClick={closeComboPicker}
+                aria-label="關閉組合選擇"
+              >
+                ×
+              </button>
+            </header>
+
+            {activeComboConfig.plans.length > 1 && (
+              <div className="combo-plan-grid-v360" aria-label="選擇優惠方案">
+                {activeComboConfig.plans.map((plan) => (
+                  <button
+                    type="button"
+                    className={plan.id === activeComboPlan.id ? "active" : ""}
+                    key={plan.id}
+                    onClick={() => selectComboPlan(plan.id)}
+                  >
+                    <strong>{plan.label}</strong>
+                    <span>{plan.priceLabel}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="combo-picker-progress-v360">
+              <div>
+                <span>已選</span>
+                <strong>
+                  {comboSelectedCount}／{activeComboPlan.requiredQuantity}
+                </strong>
+                <span>{activeComboConfig.unitLabel}</span>
+              </div>
+              <em>
+                {comboSelectedCount === activeComboPlan.requiredQuantity
+                  ? "已選滿，可以加入購物車"
+                  : `還要選 ${activeComboPlan.requiredQuantity - comboSelectedCount} ${activeComboConfig.unitLabel}`}
+              </em>
+            </div>
+
+            <div className="combo-option-list-v360">
+              {activeComboConfig.options.map((option) => {
+                const quantity = comboDraftSelections[option.id] ?? 0;
+                const reachedLimit =
+                  comboSelectedCount >= activeComboPlan.requiredQuantity;
+
+                return (
+                  <article key={option.id} className="combo-option-row-v360">
+                    <div>
+                      <h3>{option.name}</h3>
+                      <p>選擇數量</p>
+                    </div>
+                    <div className="combo-option-quantity-v360">
+                      <button
+                        type="button"
+                        disabled={quantity <= 0}
+                        onClick={() => updateComboDraftQuantity(option.id, -1)}
+                        aria-label={`減少 ${option.name}`}
+                      >
+                        −
+                      </button>
+                      <strong>{quantity}</strong>
+                      <button
+                        type="button"
+                        disabled={reachedLimit}
+                        onClick={() => updateComboDraftQuantity(option.id, 1)}
+                        aria-label={`增加 ${option.name}`}
+                      >
+                        ＋
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            {(activeComboConfig.note || activeComboPlan.note) && (
+              <div className="combo-picker-note-v360">
+                {activeComboConfig.note && <p>{activeComboConfig.note}</p>}
+                {activeComboPlan.note && <strong>{activeComboPlan.note}</strong>}
+              </div>
+            )}
+
+            <footer className="combo-picker-footer-v360">
+              <div>
+                <span>{activeComboPlan.label}</span>
+                <strong>{activeComboPlan.priceLabel}</strong>
+              </div>
+              <button
+                type="button"
+                className="combo-picker-confirm-v360"
+                disabled={comboSelectedCount !== activeComboPlan.requiredQuantity}
+                onClick={confirmComboSelection}
+              >
+                {comboEditingItemKey ? "儲存修改" : "加入購物車"}
+              </button>
+            </footer>
+          </div>
+        </section>
       )}
 
       {isSearchOpen && (
@@ -6447,7 +7055,7 @@ function Home() {
 
                       <div className="cart-item-list-v355">
                         {cartItems.map((item) => (
-                          <article className="cart-item-row-v355" key={item.product.id}>
+                          <article className="cart-item-row-v355" key={item.cartKey}>
                             <div className="cart-item-image-v355">
                               {hasRealImage(item.product) ? (
                                 <img
@@ -6464,13 +7072,31 @@ function Home() {
                             <div className="cart-item-copy-v355">
                               <small>{item.product.series}</small>
                               <h3>{getCardName(item.product)}</h3>
-                              <strong>{displayPrice(item.product)}</strong>
+                              <strong>{getCartItemDisplayPrice(item)}</strong>
+
+                              {item.comboSelections && (
+                                <div className="cart-combo-details-v360">
+                                  <div>
+                                    {item.comboSelections.map((selection) => (
+                                      <span key={`${item.cartKey}-${selection.optionId}`}>
+                                        {selection.name} × {selection.quantity}
+                                      </span>
+                                    ))}
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => openComboPicker(item.product, item)}
+                                  >
+                                    修改組合
+                                  </button>
+                                </div>
+                              )}
 
                               <div className="cart-item-actions-v355">
                                 <div className="cart-quantity-v355" aria-label={`${item.product.name} 數量`}>
                                   <button
                                     type="button"
-                                    onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)}
+                                    onClick={() => updateCartQuantity(item.cartKey, item.quantity - 1)}
                                     aria-label="減少數量"
                                   >
                                     −
@@ -6478,7 +7104,7 @@ function Home() {
                                   <span>{item.quantity}</span>
                                   <button
                                     type="button"
-                                    onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)}
+                                    onClick={() => updateCartQuantity(item.cartKey, item.quantity + 1)}
                                     aria-label="增加數量"
                                   >
                                     ＋
@@ -6488,7 +7114,7 @@ function Home() {
                                 <button
                                   type="button"
                                   className="cart-remove-v355"
-                                  onClick={() => removeFromCart(item.product.id)}
+                                  onClick={() => removeFromCart(item.cartKey)}
                                 >
                                   刪除
                                 </button>
@@ -21465,6 +22091,365 @@ function Home() {
 
           .product-card-actions-v358 > button {
             font-size: 12px !important;
+          }
+        }
+
+
+        /* V3.6.0：任選組合選品視窗與購物車組合明細。 */
+        .combo-picker-backdrop-v360 {
+          position: fixed;
+          inset: 0;
+          z-index: 5200;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+          background: rgba(46, 28, 21, 0.56);
+          backdrop-filter: blur(5px);
+        }
+
+        .combo-picker-panel-v360 {
+          width: min(100%, 560px);
+          max-height: min(88dvh, 760px);
+          overflow: auto;
+          overscroll-behavior: contain;
+          border: 1px solid rgba(74, 46, 34, 0.14);
+          border-radius: 24px 24px 18px 18px;
+          background: #fbf6ef;
+          color: #4a2e22;
+          box-shadow: 0 26px 70px rgba(46, 28, 21, 0.28);
+        }
+
+        .combo-picker-header-v360 {
+          position: sticky;
+          top: 0;
+          z-index: 4;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 42px;
+          gap: 12px;
+          align-items: center;
+          padding: 18px 18px 14px;
+          border-bottom: 1px solid rgba(74, 46, 34, 0.1);
+          background: rgba(251, 246, 239, 0.96);
+          backdrop-filter: blur(12px);
+        }
+
+        .combo-picker-header-v360 small {
+          display: block;
+          margin-bottom: 4px;
+          color: #9a3042;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.06em;
+        }
+
+        .combo-picker-header-v360 h2 {
+          margin: 0;
+          color: #4a2e22;
+          font-size: clamp(18px, 5vw, 24px);
+          line-height: 1.28;
+        }
+
+        .combo-picker-header-v360 > button {
+          display: grid;
+          place-items: center;
+          width: 42px;
+          height: 42px;
+          padding: 0;
+          border: 1px solid rgba(74, 46, 34, 0.15);
+          border-radius: 50%;
+          background: #fffaf4;
+          color: #4a2e22;
+          font-size: 27px;
+          line-height: 1;
+        }
+
+        .combo-plan-grid-v360 {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+          padding: 14px 16px 4px;
+        }
+
+        .combo-plan-grid-v360 button {
+          display: flex;
+          min-width: 0;
+          min-height: 66px;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          padding: 9px 6px;
+          border: 1px solid rgba(74, 46, 34, 0.16);
+          border-radius: 14px;
+          background: #fffaf4;
+          color: #6a4a3a;
+        }
+
+        .combo-plan-grid-v360 button strong {
+          font-size: 13px;
+          line-height: 1.2;
+        }
+
+        .combo-plan-grid-v360 button span {
+          color: #9a3042;
+          font-size: 14px;
+          font-weight: 950;
+        }
+
+        .combo-plan-grid-v360 button.active {
+          border-color: #9a3042;
+          background: #9a3042;
+          color: #fff;
+          box-shadow: 0 8px 18px rgba(154, 48, 66, 0.18);
+        }
+
+        .combo-plan-grid-v360 button.active span {
+          color: #fff;
+        }
+
+        .combo-picker-progress-v360 {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin: 14px 16px 10px;
+          padding: 13px 14px;
+          border-radius: 15px;
+          background: #f0dfc7;
+        }
+
+        .combo-picker-progress-v360 > div {
+          display: inline-flex;
+          align-items: baseline;
+          gap: 5px;
+          white-space: nowrap;
+        }
+
+        .combo-picker-progress-v360 span {
+          color: #6a4a3a;
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .combo-picker-progress-v360 strong {
+          color: #9a3042;
+          font-size: 22px;
+          line-height: 1;
+        }
+
+        .combo-picker-progress-v360 em {
+          color: #6a4a3a;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 800;
+          text-align: right;
+        }
+
+        .combo-option-list-v360 {
+          display: grid;
+          gap: 9px;
+          padding: 0 16px 14px;
+        }
+
+        .combo-option-row-v360 {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 14px;
+          align-items: center;
+          padding: 14px;
+          border: 1px solid rgba(74, 46, 34, 0.12);
+          border-radius: 16px;
+          background: #fffaf4;
+        }
+
+        .combo-option-row-v360 h3 {
+          margin: 0;
+          color: #4a2e22;
+          font-size: 15px;
+          line-height: 1.35;
+        }
+
+        .combo-option-row-v360 p {
+          margin: 4px 0 0;
+          color: #9a826c;
+          font-size: 11px;
+        }
+
+        .combo-option-quantity-v360 {
+          display: grid;
+          grid-template-columns: 38px 34px 38px;
+          align-items: center;
+          border: 1px solid rgba(74, 46, 34, 0.14);
+          border-radius: 13px;
+          overflow: hidden;
+          background: #fbf6ef;
+        }
+
+        .combo-option-quantity-v360 button {
+          display: grid;
+          place-items: center;
+          width: 38px;
+          height: 40px;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: #9a3042;
+          font-size: 21px;
+          font-weight: 900;
+        }
+
+        .combo-option-quantity-v360 button:disabled {
+          color: #c9b8aa;
+          cursor: not-allowed;
+        }
+
+        .combo-option-quantity-v360 strong {
+          display: grid;
+          place-items: center;
+          height: 40px;
+          color: #4a2e22;
+          font-size: 16px;
+        }
+
+        .combo-picker-note-v360 {
+          margin: 0 16px 14px;
+          padding: 11px 13px;
+          border-left: 3px solid #c89b3c;
+          border-radius: 0 12px 12px 0;
+          background: #f6ebdd;
+        }
+
+        .combo-picker-note-v360 p,
+        .combo-picker-note-v360 strong {
+          display: block;
+          margin: 0;
+          color: #6a4a3a;
+          font-size: 12px;
+          line-height: 1.55;
+        }
+
+        .combo-picker-note-v360 strong {
+          margin-top: 3px;
+          color: #9a3042;
+        }
+
+        .combo-picker-footer-v360 {
+          position: sticky;
+          bottom: 0;
+          z-index: 4;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(150px, 46%);
+          gap: 12px;
+          align-items: center;
+          padding: 13px 16px max(13px, env(safe-area-inset-bottom));
+          border-top: 1px solid rgba(74, 46, 34, 0.1);
+          background: rgba(251, 246, 239, 0.97);
+          backdrop-filter: blur(12px);
+        }
+
+        .combo-picker-footer-v360 > div {
+          display: flex;
+          min-width: 0;
+          flex-direction: column;
+        }
+
+        .combo-picker-footer-v360 span {
+          color: #6a4a3a;
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .combo-picker-footer-v360 strong {
+          color: #9a3042;
+          font-size: 21px;
+          line-height: 1.2;
+        }
+
+        .combo-picker-confirm-v360 {
+          width: 100%;
+          min-height: 46px;
+          border: 0;
+          border-radius: 15px;
+          background: #9a3042;
+          color: #fff;
+          font-size: 15px;
+          font-weight: 950;
+          box-shadow: 0 8px 18px rgba(154, 48, 66, 0.2);
+        }
+
+        .combo-picker-confirm-v360:disabled {
+          background: #c9b8aa;
+          box-shadow: none;
+          cursor: not-allowed;
+        }
+
+        .cart-combo-details-v360 {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 10px;
+          margin-top: 8px;
+          padding: 9px 10px;
+          border-radius: 11px;
+          background: #f6ebdd;
+        }
+
+        .cart-combo-details-v360 > div {
+          display: grid;
+          gap: 3px;
+          min-width: 0;
+        }
+
+        .cart-combo-details-v360 span {
+          color: #6a4a3a;
+          font-size: 11px;
+          font-weight: 750;
+          line-height: 1.4;
+        }
+
+        .cart-combo-details-v360 button {
+          flex: 0 0 auto;
+          padding: 5px 8px;
+          border: 1px solid rgba(154, 48, 66, 0.35);
+          border-radius: 9px;
+          background: #fffaf4;
+          color: #9a3042;
+          font-size: 11px;
+          font-weight: 900;
+        }
+
+        @media (min-width: 640px) {
+          .combo-picker-backdrop-v360 {
+            align-items: center;
+          }
+
+          .combo-picker-panel-v360 {
+            border-radius: 24px;
+          }
+        }
+
+        @media (max-width: 370px) {
+          .combo-picker-progress-v360 {
+            align-items: flex-start;
+            flex-direction: column;
+          }
+
+          .combo-picker-progress-v360 em {
+            text-align: left;
+          }
+
+          .combo-option-row-v360 {
+            gap: 9px;
+            padding: 12px;
+          }
+
+          .combo-option-quantity-v360 {
+            grid-template-columns: 34px 30px 34px;
+          }
+
+          .combo-option-quantity-v360 button {
+            width: 34px;
           }
         }
 
