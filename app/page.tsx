@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.6.0 — exact mix-and-match picker, editable combo cart lines, and persisted selections.
+// Jourdeness storefront build: V3.6.1 — automatic 35-sheet mask discounts, simplified mask shopping, and clearer mix-and-match actions.
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -210,39 +210,6 @@ const comboConfigsV360: Record<number, ComboConfig> = {
       },
     ],
   },
-  55: {
-    productId: 55,
-    unitLabel: "桶",
-    options: [
-      { id: "water-mask-bucket", name: "水搖滾保濕面膜 35片桶裝" },
-      { id: "white-mask-bucket", name: "極光白美白面膜 35片桶裝" },
-    ],
-    plans: [
-      {
-        id: "one-bucket",
-        label: "1 桶",
-        requiredQuantity: 1,
-        price: 599,
-        priceLabel: "$599",
-      },
-      {
-        id: "two-buckets",
-        label: "任選 2 桶",
-        requiredQuantity: 2,
-        price: 1100,
-        priceLabel: "$1,100",
-      },
-      {
-        id: "five-buckets",
-        label: "任選 5 桶",
-        requiredQuantity: 5,
-        price: 2750,
-        priceLabel: "$2,750",
-        note: "任選 5 桶另贈水搖滾保濕面膜 10 片。",
-      },
-    ],
-    note: "先選優惠方案，再分配水搖滾與極光白的桶數。",
-  },
   119: {
     productId: 119,
     unitLabel: "瓶",
@@ -283,6 +250,144 @@ function buildComboCartKey(
     .join("|");
 
   return `combo-${productId}-${planId}-${selectionKey}`;
+}
+
+
+const MASK_BUCKET_PRODUCT_IDS_V361 = new Set<number>([38, 39]);
+const MASK_BUCKET_UNIT_PRICE_V361 = 599;
+
+type MaskPromotionCountsV361 = {
+  single: number;
+  two: number;
+  five: number;
+};
+
+type MaskPromotionV361 = {
+  quantity: number;
+  totalPrice: number;
+  regularPrice: number;
+  savings: number;
+  giftSheetCount: number;
+  counts: MaskPromotionCountsV361;
+  label: string;
+};
+
+function calculateMaskPromotionV361(quantity: number): MaskPromotionV361 {
+  const safeQuantity = Math.max(0, Math.floor(quantity));
+  const emptyCounts: MaskPromotionCountsV361 = { single: 0, two: 0, five: 0 };
+
+  if (safeQuantity === 0) {
+    return {
+      quantity: 0,
+      totalPrice: 0,
+      regularPrice: 0,
+      savings: 0,
+      giftSheetCount: 0,
+      counts: emptyCounts,
+      label: "尚未選購",
+    };
+  }
+
+  type PromotionState = {
+    cost: number;
+    counts: MaskPromotionCountsV361;
+  };
+
+  const plans: Array<{
+    size: number;
+    price: number;
+    key: keyof MaskPromotionCountsV361;
+  }> = [
+    { size: 1, price: 599, key: "single" },
+    { size: 2, price: 1100, key: "two" },
+    { size: 5, price: 2750, key: "five" },
+  ];
+
+  const states: Array<PromotionState | null> = Array(safeQuantity + 1).fill(null);
+  states[0] = { cost: 0, counts: { ...emptyCounts } };
+
+  const isBetter = (candidate: PromotionState, current: PromotionState | null) => {
+    if (!current) return true;
+    if (candidate.cost !== current.cost) return candidate.cost < current.cost;
+    if (candidate.counts.five !== current.counts.five) {
+      return candidate.counts.five > current.counts.five;
+    }
+    if (candidate.counts.two !== current.counts.two) {
+      return candidate.counts.two > current.counts.two;
+    }
+    return candidate.counts.single < current.counts.single;
+  };
+
+  for (let currentQuantity = 1; currentQuantity <= safeQuantity; currentQuantity += 1) {
+    plans.forEach((plan) => {
+      if (currentQuantity < plan.size) return;
+      const previous = states[currentQuantity - plan.size];
+      if (!previous) return;
+
+      const nextCounts = { ...previous.counts };
+      nextCounts[plan.key] += 1;
+      const candidate: PromotionState = {
+        cost: previous.cost + plan.price,
+        counts: nextCounts,
+      };
+
+      if (isBetter(candidate, states[currentQuantity])) {
+        states[currentQuantity] = candidate;
+      }
+    });
+  }
+
+  const best = states[safeQuantity] ?? {
+    cost: safeQuantity * MASK_BUCKET_UNIT_PRICE_V361,
+    counts: { single: safeQuantity, two: 0, five: 0 },
+  };
+  const labelParts: string[] = [];
+
+  if (best.counts.five > 0) {
+    labelParts.push(`5桶優惠${best.counts.five > 1 ? ` × ${best.counts.five}` : ""}`);
+  }
+  if (best.counts.two > 0) {
+    labelParts.push(`2桶優惠${best.counts.two > 1 ? ` × ${best.counts.two}` : ""}`);
+  }
+  if (best.counts.single > 0) {
+    labelParts.push(`單桶${best.counts.single > 1 ? ` × ${best.counts.single}` : ""}`);
+  }
+
+  const regularPrice = safeQuantity * MASK_BUCKET_UNIT_PRICE_V361;
+
+  return {
+    quantity: safeQuantity,
+    totalPrice: best.cost,
+    regularPrice,
+    savings: Math.max(regularPrice - best.cost, 0),
+    giftSheetCount: best.counts.five * 10,
+    counts: best.counts,
+    label: labelParts.join("＋"),
+  };
+}
+
+function getMaskBucketQuantityV361(items: CartItem[]) {
+  return items.reduce((total, item) => {
+    if (!MASK_BUCKET_PRODUCT_IDS_V361.has(item.product.id)) return total;
+    return total + item.quantity;
+  }, 0);
+}
+
+function getMaskPromotionNoticeV361(quantity: number) {
+  const promotion = calculateMaskPromotionV361(quantity);
+
+  if (promotion.savings > 0) {
+    const giftText = promotion.giftSheetCount > 0
+      ? `，另贈 ${promotion.giftSheetCount} 片`
+      : "";
+    return `✓ 已自動套用${promotion.label}｜優惠價 NT$${promotion.totalPrice.toLocaleString("zh-TW")}，現省 NT$${promotion.savings.toLocaleString("zh-TW")}${giftText}`;
+  }
+
+  if (quantity === 1) {
+    return "已加入購物車｜再選 1 桶可享任選 2 桶 NT$1,100";
+  }
+
+  return "已加入購物車";
 }
 
 const allProducts: Product[] = [
@@ -701,7 +806,7 @@ const allProducts: Product[] = [
     price: "1桶 $ 599",
     image: "/products/water 35.png",
     gallery: ["/products/water 35.png"],
-    description: "22mL x 35pcs / 桶。水搖滾保濕面膜大容量桶裝，適合長期補水保養。",
+    description: "22mL x 35pcs / 桶。兩款35片桶裝可自由混搭，購物車滿2桶或5桶會自動套用優惠。",
   },
 {
     id: 39,
@@ -712,7 +817,7 @@ const allProducts: Product[] = [
     price: "1桶 $ 599",
     image: "/products/white 35.png",
     gallery: ["/products/white 35.png"],
-    description: "35pcs / 桶。極光白美白面膜大容量桶裝，適合日常亮白集中保養。",
+    description: "35pcs / 桶。兩款35片桶裝可自由混搭，購物車滿2桶或5桶會自動套用優惠。",
   },
 {
     id: 40,
@@ -1851,7 +1956,7 @@ const products: Product[] = [...allProducts, ...comingSoonRollerProducts, ...add
   .map(normalizeProductForV31)
   .map(normalizeProductForV354)
   .map(normalizeProductForV359)
-  .filter((product) => ![20, 21, 22, 23, 24, 25].includes(product.id));
+  .filter((product) => ![20, 21, 22, 23, 24, 25, 55].includes(product.id));
 
 const productContentOverrides: Record<number, Partial<Product>> = {
   1: {
@@ -2658,7 +2763,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "臉部清潔後取出面膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
+    priceNote: "單桶 $599；水搖滾與極光白可混搭，購物車自動套用任選2桶 $1,100、5桶 $2,750；每滿5桶另贈面膜10片。",
   },
   39: {
     cardName: "極光白美白面膜 (35片桶裝)",
@@ -2679,7 +2784,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "臉部清潔後取出面膜，均勻平整敷於全臉；依標示時間取下後，輕拍幫助吸收，再進行鎖水保養。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
+    priceNote: "單桶 $599；水搖滾與極光白可混搭，購物車自動套用任選2桶 $1,100、5桶 $2,750；每滿5桶另贈面膜10片。",
   },
   40: {
     cardName: "水光肌能乳液",
@@ -3951,10 +4056,18 @@ function Home() {
     return item.comboPlanLabel ?? displayPrice(item.product);
   }
 
-  const cartEstimatedSubtotal = cartItems.reduce(
+  const cartRegularSubtotalV361 = cartItems.reduce(
     (total, item) => total + getCartItemUnitPrice(item) * item.quantity,
     0
   );
+  const maskBucketQuantityV361 = getMaskBucketQuantityV361(cartItems);
+  const maskPromotionV361 = calculateMaskPromotionV361(maskBucketQuantityV361);
+  const maskBucketRegularSubtotalV361 =
+    maskBucketQuantityV361 * MASK_BUCKET_UNIT_PRICE_V361;
+  const cartEstimatedSubtotal =
+    cartRegularSubtotalV361 -
+    maskBucketRegularSubtotalV361 +
+    maskPromotionV361.totalPrice;
   const freeShippingThresholdV355 = 3000;
   const freeShippingRemainingV355 = Math.max(
     freeShippingThresholdV355 - cartEstimatedSubtotal,
@@ -5303,6 +5416,8 @@ function Home() {
     const unavailable = isCartDisabled(product);
     const inquiry = hasInquiryPrice(product);
     const badgeLabel = getCommerceBadgeLabel(product);
+    const selectableCombo = Boolean(getComboConfig(product.id));
+    const autoMaskPromotionProduct = MASK_BUCKET_PRODUCT_IDS_V361.has(product.id);
 
     return (
       <article
@@ -5354,6 +5469,13 @@ function Home() {
             </p>
           </div>
 
+          {autoMaskPromotionProduct && (
+            <p className="auto-mask-promo-hint-v361">
+              <span>兩款可混搭｜2桶 NT$1,100</span>
+              <span>5桶 NT$2,750＋贈10片</span>
+            </p>
+          )}
+
           <div className="product-card-actions-v358">
             <button
               type="button"
@@ -5367,7 +5489,7 @@ function Home() {
               }}
               aria-label={`查看 ${product.name} 商品詳情`}
             >
-              商品詳情
+              {selectableCombo ? "查看內容" : "商品詳情"}
             </button>
 
             <button
@@ -5378,16 +5500,30 @@ function Home() {
                 addToCart(product);
               }}
               disabled={unavailable}
-              aria-label={unavailable ? `${product.name}目前無法加入購物車` : `將 ${product.name} 加入購物車`}
+              aria-label={
+                unavailable
+                  ? `${product.name}目前無法加入購物車`
+                  : selectableCombo
+                    ? `選擇 ${product.name} 的搭配內容`
+                    : `將 ${product.name} 加入購物車`
+              }
             >
-              {!unavailable && (
+              {!unavailable && !selectableCombo && (
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M3 4h2l1.8 10.1a2 2 0 0 0 2 1.7h7.7a2 2 0 0 0 1.9-1.4L21 7H7" />
                   <circle cx="10" cy="20" r="1.4" />
                   <circle cx="18" cy="20" r="1.4" />
                 </svg>
               )}
-              <span>{comingSoon ? "新品預告" : soldOut ? "缺貨中" : "加入"}</span>
+              <span>
+                {comingSoon
+                  ? "新品預告"
+                  : soldOut
+                    ? "缺貨中"
+                    : selectableCombo
+                      ? "選擇搭配"
+                      : "加入"}
+              </span>
             </button>
           </div>
         </div>
@@ -5580,7 +5716,14 @@ function Home() {
       return [...currentItems, { cartKey, product, quantity: 1 }];
     });
 
-    setCartNotice("已加入購物車");
+    const nextMaskQuantity = MASK_BUCKET_PRODUCT_IDS_V361.has(product.id)
+      ? getMaskBucketQuantityV361(cartItems) + 1
+      : getMaskBucketQuantityV361(cartItems);
+    setCartNotice(
+      MASK_BUCKET_PRODUCT_IDS_V361.has(product.id)
+        ? getMaskPromotionNoticeV361(nextMaskQuantity)
+        : "已加入購物車"
+    );
     setSubmitStatus("idle");
     setSubmitMessage("");
   }
@@ -6068,7 +6211,7 @@ function Home() {
       .filter(Boolean)
       .join("\n");
 
-    const itemsText = cartItems
+    const productItemsText = cartItems
       .map((item) => {
         const comboDetails = item.comboSelections
           ?.map(
@@ -6081,6 +6224,23 @@ function Home() {
           comboDetails ? `\n${comboDetails}` : ""
         }`;
       })
+      .join("\n");
+    const maskPromotionOrderText = maskBucketQuantityV361 > 0
+      ? [
+          `35片面膜自動優惠｜${maskPromotionV361.label}`,
+          `優惠後 NT$${maskPromotionV361.totalPrice.toLocaleString("zh-TW")}`,
+          maskPromotionV361.savings > 0
+            ? `現省 NT$${maskPromotionV361.savings.toLocaleString("zh-TW")}`
+            : "",
+          maskPromotionV361.giftSheetCount > 0
+            ? `加贈面膜 ${maskPromotionV361.giftSheetCount} 片`
+            : "",
+        ]
+          .filter(Boolean)
+          .join("｜")
+      : "";
+    const itemsText = [productItemsText, maskPromotionOrderText]
+      .filter(Boolean)
       .join("\n");
 
     const sheetHeaders = [
@@ -7053,6 +7213,32 @@ function Home() {
                         <button type="button" onClick={clearCart}>清空</button>
                       </div>
 
+                      {maskBucketQuantityV361 > 0 && (
+                        <section
+                          className={`mask-auto-promo-card-v361 ${maskPromotionV361.savings > 0 ? "active" : "progress"}`}
+                          aria-label="35片面膜自動優惠"
+                        >
+                          <div>
+                            <small>35片面膜自動優惠</small>
+                            <strong>
+                              {maskPromotionV361.savings > 0
+                                ? maskPromotionV361.label
+                                : "再選 1 桶享任選 2 桶優惠"}
+                            </strong>
+                            <span>水搖滾與極光白目前共 {maskBucketQuantityV361} 桶</span>
+                          </div>
+                          <div>
+                            <strong>NT${maskPromotionV361.totalPrice.toLocaleString("zh-TW")}</strong>
+                            {maskPromotionV361.savings > 0 && (
+                              <em>現省 NT${maskPromotionV361.savings.toLocaleString("zh-TW")}</em>
+                            )}
+                            {maskPromotionV361.giftSheetCount > 0 && (
+                              <b>加贈面膜 {maskPromotionV361.giftSheetCount} 片</b>
+                            )}
+                          </div>
+                        </section>
+                      )}
+
                       <div className="cart-item-list-v355">
                         {cartItems.map((item) => (
                           <article className="cart-item-row-v355" key={item.cartKey}>
@@ -7073,6 +7259,11 @@ function Home() {
                               <small>{item.product.series}</small>
                               <h3>{getCardName(item.product)}</h3>
                               <strong>{getCartItemDisplayPrice(item)}</strong>
+
+                              {MASK_BUCKET_PRODUCT_IDS_V361.has(item.product.id) &&
+                                maskPromotionV361.savings > 0 && (
+                                  <span className="mask-promo-line-tag-v361">已納入面膜自動優惠</span>
+                                )}
 
                               {item.comboSelections && (
                                 <div className="cart-combo-details-v360">
@@ -7450,7 +7641,7 @@ function Home() {
                     disabled={isCartDisabled(selectedDetailProduct)}
                     onClick={() => addToCart(selectedDetailProduct)}
                   >
-                    {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : "加入購物車"}
+                    {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : getComboConfig(selectedDetailProduct.id) ? "選擇搭配" : "加入購物車"}
                   </button>
                   <button type="button" onClick={openCartFromDetail}>
                     購物車 {cartTotalQuantity}
@@ -7542,7 +7733,7 @@ function Home() {
                   disabled={isCartDisabled(selectedDetailProduct)}
                   onClick={() => addToCart(selectedDetailProduct)}
                 >
-                  {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : "加入購物車"}
+                  {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : getComboConfig(selectedDetailProduct.id) ? "選擇搭配" : "加入購物車"}
                 </button>
               </section>
 
@@ -22450,6 +22641,126 @@ function Home() {
 
           .combo-option-quantity-v360 button {
             width: 34px;
+          }
+        }
+
+
+        /* V3.6.1：35片面膜普通商品自由加入，購物車自動套用最佳優惠 */
+        .auto-mask-promo-hint-v361 {
+          display: grid;
+          gap: 2px;
+          margin: -1px 0 9px;
+          padding: 7px 9px;
+          border: 1px solid rgba(184, 90, 122, 0.18);
+          border-radius: 11px;
+          background: linear-gradient(135deg, rgba(249, 244, 247, 0.96), rgba(234, 246, 255, 0.96));
+          color: #7a4b5d;
+          font-size: 10.5px;
+          font-weight: 850;
+          line-height: 1.4;
+          text-align: center;
+        }
+
+        .auto-mask-promo-hint-v361 span {
+          display: block;
+        }
+
+        .mask-auto-promo-card-v361 {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 14px;
+          align-items: center;
+          margin: 0 0 12px;
+          padding: 13px 14px;
+          border: 1px solid rgba(184, 90, 122, 0.2);
+          border-radius: 16px;
+          background: linear-gradient(135deg, #fff9fb 0%, #eaf6ff 100%);
+        }
+
+        .mask-auto-promo-card-v361 > div:first-child {
+          display: grid;
+          gap: 3px;
+          min-width: 0;
+        }
+
+        .mask-auto-promo-card-v361 small {
+          color: #b85a7a;
+          font-size: 10px;
+          font-weight: 950;
+          letter-spacing: 0.04em;
+        }
+
+        .mask-auto-promo-card-v361 > div:first-child strong {
+          color: #4a2e22;
+          font-size: 14px;
+          line-height: 1.35;
+        }
+
+        .mask-auto-promo-card-v361 > div:first-child span {
+          color: #7a4b5d;
+          font-size: 11px;
+          line-height: 1.4;
+        }
+
+        .mask-auto-promo-card-v361 > div:last-child {
+          display: grid;
+          justify-items: end;
+          gap: 2px;
+          text-align: right;
+        }
+
+        .mask-auto-promo-card-v361 > div:last-child strong {
+          color: #9a3042;
+          font-size: 19px;
+          line-height: 1.15;
+        }
+
+        .mask-auto-promo-card-v361 em,
+        .mask-auto-promo-card-v361 b {
+          color: #b85a7a;
+          font-size: 10.5px;
+          font-style: normal;
+          font-weight: 900;
+        }
+
+        .mask-auto-promo-card-v361.progress {
+          border-color: rgba(200, 155, 60, 0.28);
+          background: linear-gradient(135deg, #fffaf2 0%, #f6ebdd 100%);
+        }
+
+        .mask-auto-promo-card-v361.progress small,
+        .mask-auto-promo-card-v361.progress > div:last-child strong {
+          color: #8c6231;
+        }
+
+        .mask-promo-line-tag-v361 {
+          display: inline-flex;
+          width: fit-content;
+          margin-top: 6px;
+          padding: 4px 7px;
+          border-radius: 999px;
+          background: #f9f4f7;
+          color: #b85a7a;
+          font-size: 10px;
+          font-weight: 900;
+        }
+
+        @media (max-width: 390px) {
+          .mask-auto-promo-card-v361 {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 9px;
+          }
+
+          .mask-auto-promo-card-v361 > div:last-child {
+            grid-template-columns: auto auto;
+            justify-content: space-between;
+            justify-items: start;
+            width: 100%;
+            text-align: left;
+          }
+
+          .mask-auto-promo-card-v361 > div:last-child b {
+            grid-column: 1 / -1;
           }
         }
 
