@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.6.1 — automatic 35-sheet mask discounts, simplified mask shopping, and clearer mix-and-match actions.
+// Jourdeness storefront build: V3.6.1.1 — fixes TS7006 when restoring persisted combo selections.
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -5889,7 +5889,9 @@ function Home() {
                 ? savedItem.comboPlanId
                 : "";
             const plan = comboConfig.plans.find((item) => item.id === planId);
-            const rawSelections = Array.isArray(savedItem?.comboSelections)
+            const rawSelections: Array<Partial<ComboSelection>> = Array.isArray(
+              savedItem?.comboSelections
+            )
               ? savedItem.comboSelections
               : [];
 
