@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.6.4 — quick-filter combo separation, centered product titles, cleaned status badges, and simplified home flow.
+// Jourdeness storefront build: V3.6.5 — vertically centered product-name zones and seamless opaque collection overlay below the fixed header.
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -93,6 +93,27 @@ type CartItem = {
   comboPlanLabel?: string;
   comboSelections?: ComboSelection[];
   comboPrice?: number;
+};
+
+type CartPromotionAllocationV366 = {
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+  optionId?: string;
+  optionName?: string;
+};
+
+type CartPromotionSuggestionV366 = {
+  id: string;
+  title: string;
+  detail: string;
+  comboProductId: number;
+  comboPlanId?: string;
+  allocations: CartPromotionAllocationV366[];
+  comboSelections?: ComboSelection[];
+  bundlePrice: number;
+  savings: number;
+  note?: string;
 };
 
 type CustomerForm = {
@@ -301,6 +322,297 @@ function buildComboCartKey(
     .join("|");
 
   return `combo-${productId}-${planId}-${selectionKey}`;
+}
+
+function getSimpleCartQuantityV366(cartItems: CartItem[], productId: number) {
+  const simpleKey = buildSimpleCartKey(productId);
+  return cartItems.reduce((total, item) => {
+    if (item.cartKey !== simpleKey || item.comboSelections) return total;
+    return total + item.quantity;
+  }, 0);
+}
+
+function allocateSimpleProductsV366(
+  cartItems: CartItem[],
+  candidates: Array<{
+    productId: number;
+    unitPrice: number;
+    optionId?: string;
+    optionName?: string;
+  }>,
+  requiredQuantity: number
+) {
+  let remaining = requiredQuantity;
+  const allocations: CartPromotionAllocationV366[] = [];
+
+  for (const candidate of candidates) {
+    if (remaining <= 0) break;
+    const available = getSimpleCartQuantityV366(cartItems, candidate.productId);
+    const quantity = Math.min(available, remaining);
+    if (quantity <= 0) continue;
+
+    allocations.push({
+      ...candidate,
+      quantity,
+    });
+    remaining -= quantity;
+  }
+
+  return remaining === 0 ? allocations : [];
+}
+
+function buildCartPromotionSuggestionsV366(
+  cartItems: CartItem[]
+): CartPromotionSuggestionV366[] {
+  const suggestions: CartPromotionSuggestionV366[] = [];
+
+  const pushFlexibleSuggestion = ({
+    id,
+    title,
+    detail,
+    comboProductId,
+    comboPlanId,
+    candidates,
+    requiredQuantity,
+    bundlePrice,
+    note,
+  }: {
+    id: string;
+    title: string;
+    detail: string;
+    comboProductId: number;
+    comboPlanId: string;
+    candidates: Array<{
+      productId: number;
+      unitPrice: number;
+      optionId: string;
+      optionName: string;
+    }>;
+    requiredQuantity: number;
+    bundlePrice: number;
+    note?: string;
+  }) => {
+    const allocations = allocateSimpleProductsV366(
+      cartItems,
+      candidates,
+      requiredQuantity
+    );
+    if (allocations.length === 0) return;
+
+    const regularPrice = allocations.reduce(
+      (total, allocation) => total + allocation.unitPrice * allocation.quantity,
+      0
+    );
+    const savings = regularPrice - bundlePrice;
+    if (savings <= 0) return;
+
+    const comboSelections: ComboSelection[] = allocations
+      .filter((allocation) => allocation.optionId && allocation.optionName)
+      .map((allocation) => ({
+        optionId: allocation.optionId as string,
+        name: allocation.optionName as string,
+        quantity: allocation.quantity,
+      }));
+
+    suggestions.push({
+      id,
+      title,
+      detail,
+      comboProductId,
+      comboPlanId,
+      allocations,
+      comboSelections,
+      bundlePrice,
+      savings,
+      note,
+    });
+  };
+
+  // 石墨烯貼布：滿 10 盒優先套 10 盒方案，否則套 4 盒方案。
+  const patchCandidates = [
+    {
+      productId: 30,
+      unitPrice: 500,
+      optionId: "cool-patch",
+      optionName: "石墨烯電氣石精油貼布（涼感）",
+    },
+    {
+      productId: 31,
+      unitPrice: 500,
+      optionId: "warm-patch",
+      optionName: "石墨烯電氣石精油貼布（溫感）",
+    },
+  ];
+  const patchQuantity = patchCandidates.reduce(
+    (total, item) => total + getSimpleCartQuantityV366(cartItems, item.productId),
+    0
+  );
+  if (patchQuantity >= 10) {
+    pushFlexibleSuggestion({
+      id: "patch-10",
+      title: "石墨烯貼布任選 10 盒",
+      detail: "涼感／溫感可自由搭配，共 10 盒",
+      comboProductId: 51,
+      comboPlanId: "ten-boxes",
+      candidates: patchCandidates,
+      requiredQuantity: 10,
+      bundlePrice: 2500,
+    });
+  } else if (patchQuantity >= 4) {
+    pushFlexibleSuggestion({
+      id: "patch-4",
+      title: "石墨烯貼布任選 4 盒",
+      detail: "涼感／溫感可自由搭配，共 4 盒",
+      comboProductId: 51,
+      comboPlanId: "four-boxes",
+      candidates: patchCandidates,
+      requiredQuantity: 4,
+      bundlePrice: 1099,
+    });
+  }
+
+  // 龍血洗髮精／沐浴乳任選 3 瓶。
+  const washCandidates = [
+    {
+      productId: 15,
+      unitPrice: 590,
+      optionId: "dragon-blood-shampoo",
+      optionName: "龍血求麗頭皮修護洗髮精",
+    },
+    {
+      productId: 16,
+      unitPrice: 590,
+      optionId: "dragon-blood-body-wash",
+      optionName: "龍血求麗潤澤修護沐浴乳",
+    },
+  ];
+  if (
+    washCandidates.reduce(
+      (total, item) => total + getSimpleCartQuantityV366(cartItems, item.productId),
+      0
+    ) >= 3
+  ) {
+    pushFlexibleSuggestion({
+      id: "dragon-wash-3",
+      title: "龍血洗髮精／沐浴乳任選 3 瓶",
+      detail: "洗髮精與沐浴乳可自由搭配，共 3 瓶",
+      comboProductId: 119,
+      comboPlanId: "three-bottles",
+      candidates: washCandidates,
+      requiredQuantity: 3,
+      bundlePrice: 1100,
+    });
+  }
+
+  // 龍血洗髮精＋阿甘養護液 1+1 固定組合。
+  const hasOneShampoo = getSimpleCartQuantityV366(cartItems, 15) >= 1;
+  const hasOneHairCare = getSimpleCartQuantityV366(cartItems, 57) >= 1;
+  if (hasOneShampoo && hasOneHairCare) {
+    const allocations: CartPromotionAllocationV366[] = [
+      { productId: 15, quantity: 1, unitPrice: 590 },
+      { productId: 57, quantity: 1, unitPrice: 1260 },
+    ];
+    const regularPrice = allocations.reduce(
+      (total, allocation) => total + allocation.unitPrice * allocation.quantity,
+      0
+    );
+    suggestions.push({
+      id: "shampoo-haircare-1plus1",
+      title: "龍血洗髮精＋阿甘養護液 1+1",
+      detail: "龍血求麗頭皮修護洗髮精 × 1＋阿甘甦醒髮根養護液 × 1",
+      comboProductId: 112,
+      allocations,
+      bundlePrice: 1500,
+      savings: regularPrice - 1500,
+    });
+  }
+
+  // 香氛皂任選 4 入。
+  const soapCandidates = [
+    {
+      productId: 50,
+      unitPrice: 290,
+      optionId: "lavender-soap",
+      optionName: "龍血薰衣草舒緩皂",
+    },
+    {
+      productId: 115,
+      unitPrice: 290,
+      optionId: "mugwort-soap",
+      optionName: "龍血艾草保庇皂",
+    },
+    {
+      productId: 116,
+      unitPrice: 290,
+      optionId: "lemon-soap",
+      optionName: "龍血檸檬馬鞭草皂",
+    },
+  ];
+  if (
+    soapCandidates.reduce(
+      (total, item) => total + getSimpleCartQuantityV366(cartItems, item.productId),
+      0
+    ) >= 4
+  ) {
+    pushFlexibleSuggestion({
+      id: "soap-4",
+      title: "香氛皂任選 4 入",
+      detail: "薰衣草、艾草、檸檬馬鞭草可自由搭配，共 4 入",
+      comboProductId: 67,
+      comboPlanId: "four-soaps",
+      candidates: soapCandidates,
+      requiredQuantity: 4,
+      bundlePrice: 799,
+    });
+  }
+
+  // 35 片面膜：滿 5 桶優先套 5 桶方案，否則套 2 桶方案。
+  const maskCandidates = [
+    {
+      productId: 38,
+      unitPrice: 599,
+      optionId: "water-mask-35",
+      optionName: "水搖滾保濕面膜 35片",
+    },
+    {
+      productId: 39,
+      unitPrice: 599,
+      optionId: "white-mask-35",
+      optionName: "極光白美白面膜 35片",
+    },
+  ];
+  const maskQuantity = maskCandidates.reduce(
+    (total, item) => total + getSimpleCartQuantityV366(cartItems, item.productId),
+    0
+  );
+  if (maskQuantity >= 5) {
+    pushFlexibleSuggestion({
+      id: "mask-5",
+      title: "35片面膜任選 5 桶",
+      detail: "水搖滾／極光白可自由搭配，共 5 桶",
+      comboProductId: 55,
+      comboPlanId: "five-buckets",
+      candidates: maskCandidates,
+      requiredQuantity: 5,
+      bundlePrice: 2750,
+      note: "套用後加贈面膜 10 片。",
+    });
+  } else if (maskQuantity >= 2) {
+    pushFlexibleSuggestion({
+      id: "mask-2",
+      title: "35片面膜任選 2 桶",
+      detail: "水搖滾／極光白可自由搭配，共 2 桶",
+      comboProductId: 55,
+      comboPlanId: "two-buckets",
+      candidates: maskCandidates,
+      requiredQuantity: 2,
+      bundlePrice: 1100,
+    });
+  }
+
+  return suggestions
+    .filter((suggestion) => suggestion.savings > 0)
+    .sort((a, b) => b.savings - a.savings);
 }
 
 
@@ -4313,6 +4625,8 @@ function Home() {
     (total, item) => total + item.quantity,
     0
   );
+  const cartPromotionSuggestionsV366 =
+    buildCartPromotionSuggestionsV366(cartItems);
 
   function getEstimatedUnitPrice(product: Product) {
     const match = product.price.match(/\$\s*([\d,]+)/);
@@ -5739,20 +6053,22 @@ function Home() {
         <ProductVisual product={product} variant={featured ? "featured" : "normal"} />
 
         <div className={featured ? "featured-info product-info" : "product-info"}>
-          {(comingSoon || soldOut || (inquiry && !unavailable)) && (
-            <div className="compact-card-status-v350">
-              {comingSoon && <span>新品預告</span>}
-              {soldOut && <span>缺貨</span>}
-              {inquiry && !unavailable && <span>價格洽詢</span>}
+          <div className="product-card-title-zone-v365">
+            {(comingSoon || soldOut || (inquiry && !unavailable)) && (
+              <div className="compact-card-status-v350">
+                {comingSoon && <span>新品預告</span>}
+                {soldOut && <span>缺貨</span>}
+                {inquiry && !unavailable && <span>價格洽詢</span>}
+              </div>
+            )}
+
+            {isSevenSequenceOilV354(product) && (
+              <span className="seven-sequence-badge-v354">七序精油</span>
+            )}
+
+            <div className="product-card-title-slot-v364">
+              <h3>{product.name}</h3>
             </div>
-          )}
-
-          {isSevenSequenceOilV354(product) && (
-            <span className="seven-sequence-badge-v354">七序精油</span>
-          )}
-
-          <div className="product-card-title-slot-v364">
-            <h3>{product.name}</h3>
           </div>
 
           <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
@@ -5998,6 +6314,125 @@ function Home() {
       MASK_BUCKET_PRODUCT_IDS_V361.has(product.id)
         ? getMaskPromotionNoticeV361(nextMaskQuantity)
         : "已加入購物車"
+    );
+    setSubmitStatus("idle");
+    setSubmitMessage("");
+  }
+
+  function applyCartPromotionV366(
+    suggestion: CartPromotionSuggestionV366
+  ) {
+    const comboProduct = products.find(
+      (product) => product.id === suggestion.comboProductId
+    );
+    if (!comboProduct) return;
+
+    const comboConfig = suggestion.comboPlanId
+      ? getComboConfig(suggestion.comboProductId)
+      : null;
+    const comboPlan =
+      comboConfig && suggestion.comboPlanId
+        ? comboConfig.plans.find(
+            (plan) => plan.id === suggestion.comboPlanId
+          ) ?? null
+        : null;
+
+    if (suggestion.comboPlanId && (!comboConfig || !comboPlan)) return;
+
+    setCartItems((currentItems) => {
+      const canApply = suggestion.allocations.every(
+        (allocation) =>
+          getSimpleCartQuantityV366(currentItems, allocation.productId) >=
+          allocation.quantity
+      );
+      if (!canApply) return currentItems;
+
+      const remainingToConsume = new Map(
+        suggestion.allocations.map((allocation) => [
+          allocation.productId,
+          allocation.quantity,
+        ])
+      );
+
+      const nextItems: CartItem[] = [];
+      for (const item of currentItems) {
+        const remaining = remainingToConsume.get(item.product.id) ?? 0;
+        const isSimpleEligibleItem =
+          remaining > 0 &&
+          item.cartKey === buildSimpleCartKey(item.product.id) &&
+          !item.comboSelections;
+
+        if (!isSimpleEligibleItem) {
+          nextItems.push(item);
+          continue;
+        }
+
+        const consumed = Math.min(item.quantity, remaining);
+        const nextQuantity = item.quantity - consumed;
+        remainingToConsume.set(item.product.id, remaining - consumed);
+
+        if (nextQuantity > 0) {
+          nextItems.push({ ...item, quantity: nextQuantity });
+        }
+      }
+
+      if (comboConfig && comboPlan) {
+        const selections = suggestion.comboSelections ?? [];
+        const cartKey = buildComboCartKey(
+          comboProduct.id,
+          comboPlan.id,
+          selections
+        );
+        const comboPlanLabel = `${comboPlan.label} ${comboPlan.priceLabel}`;
+        const existingItem = nextItems.find(
+          (item) => item.cartKey === cartKey
+        );
+
+        if (existingItem) {
+          return nextItems.map((item) =>
+            item.cartKey === cartKey
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        }
+
+        return [
+          ...nextItems,
+          {
+            cartKey,
+            product: comboProduct,
+            quantity: 1,
+            comboPlanId: comboPlan.id,
+            comboPlanLabel,
+            comboSelections: selections,
+            comboPrice: comboPlan.price,
+          },
+        ];
+      }
+
+      const cartKey = buildSimpleCartKey(comboProduct.id);
+      const existingItem = nextItems.find(
+        (item) => item.cartKey === cartKey
+      );
+
+      if (existingItem) {
+        return nextItems.map((item) =>
+          item.cartKey === cartKey
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [
+        ...nextItems,
+        { cartKey, product: comboProduct, quantity: 1 },
+      ];
+    });
+
+    setCartNotice(
+      `已套用「${suggestion.title}」，現省 NT$${suggestion.savings.toLocaleString(
+        "zh-TW"
+      )}`
     );
     setSubmitStatus("idle");
     setSubmitMessage("");
@@ -7492,6 +7927,60 @@ function Home() {
                         <h3>商品明細</h3>
                         <button type="button" onClick={clearCart}>清空</button>
                       </div>
+
+                      {cartPromotionSuggestionsV366.length > 0 && (
+                        <section
+                          className="cart-promotion-suggestions-v366"
+                          aria-label="可套用組合優惠"
+                        >
+                          <div className="cart-promotion-head-v366">
+                            <div>
+                              <small>SMART DEAL</small>
+                              <strong>找到可套用的組合優惠</strong>
+                            </div>
+                            <span>不會自動改價</span>
+                          </div>
+
+                          <div className="cart-promotion-list-v366">
+                            {cartPromotionSuggestionsV366.map((suggestion, index) => (
+                              <article
+                                className={`cart-promotion-card-v366 ${index === 0 ? "best" : ""}`}
+                                key={suggestion.id}
+                              >
+                                <div className="cart-promotion-copy-v366">
+                                  <div className="cart-promotion-badges-v366">
+                                    <span>{index === 0 ? "最省方案" : "可套用優惠"}</span>
+                                    <em>現省 NT${suggestion.savings.toLocaleString("zh-TW")}</em>
+                                  </div>
+                                  <strong>{suggestion.title}</strong>
+                                  <p>{suggestion.detail}</p>
+                                  {suggestion.comboSelections && suggestion.comboSelections.length > 0 && (
+                                    <div className="cart-promotion-selection-v366">
+                                      {suggestion.comboSelections.map((selection) => (
+                                        <span key={`${suggestion.id}-${selection.optionId}`}>
+                                          {selection.name} × {selection.quantity}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                  <div className="cart-promotion-price-v366">
+                                    <b>優惠價 NT${suggestion.bundlePrice.toLocaleString("zh-TW")}</b>
+                                    {suggestion.note && <span>{suggestion.note}</span>}
+                                  </div>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  className="cart-promotion-apply-v366"
+                                  onClick={() => applyCartPromotionV366(suggestion)}
+                                >
+                                  套用組合優惠
+                                </button>
+                              </article>
+                            ))}
+                          </div>
+                        </section>
+                      )}
 
                       {maskBucketQuantityV361 > 0 && (
                         <section
@@ -23339,6 +23828,326 @@ function Home() {
             min-height: 64px !important;
           }
         }
+
+        /* =====================================================
+           V3.6.5：全站商品名稱真正置中；分類頁遮罩與 Header 無縫銜接
+        ===================================================== */
+
+        /* 商品資訊區保持上下結構：名稱區吃滿中間剩餘空間，價格與按鈕固定在下方。 */
+        .compact-commerce-card-v350 .product-info,
+        .featured-card.compact-commerce-card-v350 .product-info {
+          display: flex !important;
+          flex: 1 1 auto !important;
+          flex-direction: column !important;
+          min-height: 0 !important;
+        }
+
+        /* 狀態標籤、七序標籤與品名視為同一個「名稱區」，整區在價格上方垂直置中。 */
+        .product-card-title-zone-v365 {
+          box-sizing: border-box !important;
+          display: flex !important;
+          flex: 1 1 104px !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 6px !important;
+          width: 100% !important;
+          min-height: 104px !important;
+          margin: 0 !important;
+          padding: 8px 2px !important;
+          text-align: center !important;
+        }
+
+        .product-card-title-zone-v365 .product-card-title-slot-v364 {
+          display: flex !important;
+          flex: 0 0 auto !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 100% !important;
+          min-height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+
+        .compact-commerce-card-v350 .product-card-title-zone-v365 h3,
+        .featured-card.compact-commerce-card-v350 .product-card-title-zone-v365 h3 {
+          display: -webkit-box !important;
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          margin: 0 !important;
+          padding: 0 2px !important;
+          overflow: hidden !important;
+          color: #4a2e22 !important;
+          font-size: 14px !important;
+          font-weight: 900 !important;
+          line-height: 1.45 !important;
+          letter-spacing: -0.02em !important;
+          text-align: center !important;
+          text-wrap: balance !important;
+          word-break: break-word !important;
+          overflow-wrap: anywhere !important;
+          -webkit-box-orient: vertical !important;
+          -webkit-line-clamp: 3 !important;
+        }
+
+        .product-card-title-zone-v365 .compact-card-status-v350,
+        .product-card-title-zone-v365 .seven-sequence-badge-v354 {
+          flex: 0 0 auto !important;
+          align-self: center !important;
+          margin: 0 !important;
+        }
+
+        .compact-commerce-card-v350 .commerce-price-block,
+        .featured-card.compact-commerce-card-v350 .commerce-price-block,
+        .compact-commerce-card-v350 .product-card-actions-v358,
+        .featured-card.compact-commerce-card-v350 .product-card-actions-v358 {
+          flex: 0 0 auto !important;
+        }
+
+        /* 漢堡選單進入分類頁時，分類頁必須緊貼 Header，不可露出底下首頁商品。 */
+        .search-panel.search-page-view.collection-page-v22 {
+          box-sizing: border-box !important;
+          position: fixed !important;
+          inset: 68px 0 0 !important;
+          top: 68px !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          z-index: 2900 !important;
+          width: 100vw !important;
+          height: calc(100dvh - 68px) !important;
+          max-height: calc(100dvh - 68px) !important;
+          margin: 0 !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: #f6ebdd !important;
+          box-shadow: 0 -4px 0 #f6ebdd !important;
+          overflow-x: hidden !important;
+          overflow-y: auto !important;
+          overscroll-behavior: contain !important;
+          isolation: isolate !important;
+        }
+
+        .search-panel.search-page-view.collection-page-v22 .collection-head-v22 {
+          border-radius: 0 !important;
+          background: #fbf6ef !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+        }
+
+        @media (max-width: 759px) {
+          .product-card-title-zone-v365 {
+            flex-basis: 104px !important;
+            min-height: 104px !important;
+            padding: 8px 1px !important;
+          }
+
+          .compact-commerce-card-v350 .product-card-title-zone-v365 h3,
+          .featured-card.compact-commerce-card-v350 .product-card-title-zone-v365 h3 {
+            font-size: 13px !important;
+            line-height: 1.45 !important;
+          }
+        }
+
+        @media (max-width: 359px) {
+          .search-panel.search-page-view.collection-page-v22 {
+            inset: 64px 0 0 !important;
+            top: 64px !important;
+            height: calc(100dvh - 64px) !important;
+            max-height: calc(100dvh - 64px) !important;
+          }
+
+          .product-card-title-zone-v365 {
+            flex-basis: 98px !important;
+            min-height: 98px !important;
+          }
+        }
+
+
+        /* =====================================================
+           V3.6.6：購物車組合優惠偵測與手動套用
+        ===================================================== */
+        .cart-promotion-suggestions-v366 {
+          margin: 0 0 12px !important;
+          padding: 12px !important;
+          border: 1px solid rgba(154, 48, 66, 0.18) !important;
+          border-radius: 16px !important;
+          background: linear-gradient(180deg, #fffaf7 0%, #f8eee8 100%) !important;
+          box-shadow: 0 7px 18px rgba(77, 55, 38, 0.055) !important;
+        }
+
+        .cart-promotion-head-v366 {
+          display: flex !important;
+          align-items: flex-start !important;
+          justify-content: space-between !important;
+          gap: 10px !important;
+          margin-bottom: 10px !important;
+        }
+
+        .cart-promotion-head-v366 > div {
+          display: grid !important;
+          gap: 2px !important;
+        }
+
+        .cart-promotion-head-v366 small {
+          color: #9a3042 !important;
+          font-size: 9px !important;
+          font-weight: 950 !important;
+          letter-spacing: 0.08em !important;
+        }
+
+        .cart-promotion-head-v366 strong {
+          color: #4a2e22 !important;
+          font-size: 16px !important;
+          font-weight: 950 !important;
+          line-height: 1.3 !important;
+        }
+
+        .cart-promotion-head-v366 > span {
+          flex: 0 0 auto !important;
+          padding: 4px 7px !important;
+          border-radius: 999px !important;
+          background: rgba(154, 48, 66, 0.08) !important;
+          color: #7f2635 !important;
+          font-size: 10px !important;
+          font-weight: 900 !important;
+        }
+
+        .cart-promotion-list-v366 {
+          display: grid !important;
+          gap: 8px !important;
+        }
+
+        .cart-promotion-card-v366 {
+          display: grid !important;
+          grid-template-columns: minmax(0, 1fr) auto !important;
+          align-items: center !important;
+          gap: 10px !important;
+          padding: 10px !important;
+          border: 1px solid rgba(74, 46, 34, 0.1) !important;
+          border-radius: 13px !important;
+          background: #fff !important;
+        }
+
+        .cart-promotion-card-v366.best {
+          border-color: rgba(154, 48, 66, 0.34) !important;
+          box-shadow: inset 0 0 0 1px rgba(154, 48, 66, 0.08) !important;
+        }
+
+        .cart-promotion-copy-v366 {
+          min-width: 0 !important;
+          display: grid !important;
+          gap: 4px !important;
+        }
+
+        .cart-promotion-badges-v366 {
+          display: flex !important;
+          flex-wrap: wrap !important;
+          align-items: center !important;
+          gap: 5px !important;
+        }
+
+        .cart-promotion-badges-v366 span,
+        .cart-promotion-badges-v366 em {
+          display: inline-flex !important;
+          align-items: center !important;
+          min-height: 20px !important;
+          padding: 2px 6px !important;
+          border-radius: 999px !important;
+          font-size: 9px !important;
+          font-weight: 950 !important;
+          font-style: normal !important;
+          line-height: 1 !important;
+        }
+
+        .cart-promotion-badges-v366 span {
+          background: #9a3042 !important;
+          color: #fff !important;
+        }
+
+        .cart-promotion-badges-v366 em {
+          background: rgba(200, 155, 60, 0.14) !important;
+          color: #7a5a1a !important;
+        }
+
+        .cart-promotion-copy-v366 > strong {
+          color: #4a2e22 !important;
+          font-size: 13px !important;
+          font-weight: 950 !important;
+          line-height: 1.35 !important;
+        }
+
+        .cart-promotion-copy-v366 p {
+          margin: 0 !important;
+          color: #6a4a3a !important;
+          font-size: 11px !important;
+          font-weight: 700 !important;
+          line-height: 1.45 !important;
+        }
+
+        .cart-promotion-selection-v366 {
+          display: flex !important;
+          flex-wrap: wrap !important;
+          gap: 4px 7px !important;
+        }
+
+        .cart-promotion-selection-v366 span {
+          color: #9a826c !important;
+          font-size: 10px !important;
+          font-weight: 800 !important;
+          line-height: 1.3 !important;
+        }
+
+        .cart-promotion-price-v366 {
+          display: flex !important;
+          flex-wrap: wrap !important;
+          align-items: center !important;
+          gap: 4px 8px !important;
+        }
+
+        .cart-promotion-price-v366 b {
+          color: #9a3042 !important;
+          font-size: 12px !important;
+          font-weight: 950 !important;
+        }
+
+        .cart-promotion-price-v366 span {
+          color: #7a5a1a !important;
+          font-size: 10px !important;
+          font-weight: 850 !important;
+        }
+
+        .cart-promotion-apply-v366 {
+          flex: 0 0 auto !important;
+          min-height: 38px !important;
+          padding: 0 12px !important;
+          border: 0 !important;
+          border-radius: 11px !important;
+          background: #9a3042 !important;
+          color: #fff !important;
+          font-size: 11px !important;
+          font-weight: 950 !important;
+          white-space: nowrap !important;
+          cursor: pointer !important;
+        }
+
+        .cart-promotion-apply-v366:hover,
+        .cart-promotion-apply-v366:focus-visible {
+          background: #7f2635 !important;
+        }
+
+        @media (max-width: 520px) {
+          .cart-promotion-card-v366 {
+            grid-template-columns: 1fr !important;
+          }
+
+          .cart-promotion-apply-v366 {
+            width: 100% !important;
+          }
+        }
+
       `}
 
 
