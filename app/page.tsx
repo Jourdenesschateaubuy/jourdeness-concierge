@@ -4126,6 +4126,25 @@ function Home() {
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
   const monthlyOfferIdsV316 = new Set([34, 1, 51, 54, 55, 58, 59, 67, 68, 108, 112, 119]);
+
+  // V3.6.8：漢堡分類改採固定商品歸屬，不再用「龍血／薰衣草／茶樹」等模糊關鍵字判斷主分類。
+  // 本月優惠是額外活動入口；每個在售商品仍會落在一個用途主分類，確保可由漢堡選單找到。
+  const faceCareProductIdsV368 = new Set([
+    4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+    32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45,
+    47, 48, 49, 55, 59, 61, 62, 63, 64, 65, 68, 110, 111,
+  ]);
+  const bodyCareProductIdsV368 = new Set([
+    15, 16, 17, 18, 19, 30, 31, 50, 51, 54, 57, 60, 66, 67,
+    72, 73, 101, 102, 103, 104, 105, 106, 107, 108, 112, 115, 116, 119,
+  ]);
+  const healthProductIdsV368 = new Set([1, 2, 3, 58, 69, 109]);
+
+  const oralCareProductIdsV368 = new Set([18, 19, 54]);
+  const handmadeSoapProductIdsV368 = new Set([50, 67, 115, 116]);
+  const hairBodyWashProductIdsV368 = new Set([15, 16, 17, 57, 112, 119]);
+  const bodyMoistureProductIdsV368 = new Set([60, 66, 72, 73, 108]);
+  const bodyRelaxProductIdsV368 = new Set([30, 31, 51, 101, 102, 103, 104, 105, 106, 107]);
   const moisturizingRepairProductIdsV355 = new Set([34, 37, 38, 64]);
   const premiumCareProductIdsV355 = new Set([11, 12, 13, 14, 33, 111, 8, 61, 62]);
   const essentialOilProductIdsV359 = new Set([
@@ -4150,38 +4169,18 @@ function Home() {
   }
 
   function matchesMainCategoryV31(product: Product) {
-    const fullText = `${product.name} ${product.category} ${product.series} ${product.description} ${product.price}`;
-
-    if (selectedCategory === "本月優惠") return isFeaturedProductV31(product) && !isComingSoon(product);
-
-    if (selectedCategory === "臉部保養") {
-      return (
-        ["保養品", "面膜"].includes(product.category) ||
-        product.series.includes("面膜") ||
-        ["龍血", "薰衣草肌安", "水光", "櫻", "玫瑰", "肌光", "冰河", "杏仁酸", "茶樹", "冷杉", "潔顏", "卸妝", "美體", "面膜"].some((keyword) => fullText.includes(keyword))
-      ) && !isComingSoon(product);
+    if (selectedCategory === "本月優惠") {
+      return isFeaturedProductV31(product) && !isComingSoon(product);
     }
 
-    if (selectedCategory === "身體洗護") {
-      return (
-        ["牙膏", "肥皂", "洗沐", "護唇膏"].includes(product.category) ||
-        ["牙膏", "潔口", "口腔", "手工皂", "舒緩皂", "洗髮", "沐浴", "身體乳", "美體油", "護手", "護唇", "刮痧", "溫灸", "艾草", "如意棒", "柔筋", "舒壓"].some((keyword) => fullText.includes(keyword))
-      ) && !isComingSoon(product);
-    }
-
-    if (selectedCategory === "健康補給") {
-      if (product.id === 33) return false;
-      return (
-        product.category === "保健食品" ||
-        ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "營養", "玻尿酸益生菌", "BC-HA", "BC-CA"].some((keyword) => fullText.includes(keyword))
-      ) && !isComingSoon(product);
-    }
-
-    if (selectedCategory === "精油香氛") {
-      return essentialOilProductIdsV359.has(product.id) && !isComingSoon(product);
-    }
-
+    // 新品預告獨立成一個入口，不與正式販售用途分類混在一起。
     if (selectedCategory === "新品預告") return isComingSoon(product);
+    if (isComingSoon(product)) return false;
+
+    if (selectedCategory === "臉部保養") return faceCareProductIdsV368.has(product.id);
+    if (selectedCategory === "身體洗護") return bodyCareProductIdsV368.has(product.id);
+    if (selectedCategory === "健康補給") return healthProductIdsV368.has(product.id);
+    if (selectedCategory === "精油香氛") return essentialOilProductIdsV359.has(product.id);
 
     // 舊分類相容：避免內部跳轉或搜尋仍使用舊分類名稱時失效。
     if (selectedCategory === "本月精選") return isFeaturedProductV31(product) && !isComingSoon(product);
@@ -4192,24 +4191,11 @@ function Home() {
   }
 
   function matchesMainCategoryAlias(product: Product, alias: MainCategory) {
-    const fullText = `${product.name} ${product.category} ${product.series} ${product.description} ${product.price}`;
-
-    if (alias === "臉部保養") {
-      return (
-        ["保養品", "面膜"].includes(product.category) ||
-        product.series.includes("面膜") ||
-        ["龍血", "薰衣草肌安", "水光", "櫻", "玫瑰", "肌光", "冰河", "杏仁酸", "茶樹", "冷杉", "潔顏", "卸妝", "美體", "面膜"].some((keyword) => fullText.includes(keyword))
-      ) && !isComingSoon(product);
-    }
-
-    if (alias === "健康補給") {
-      if (product.id === 33) return false;
-      return (
-        product.category === "保健食品" ||
-        ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "營養", "玻尿酸益生菌", "BC-HA", "BC-CA"].some((keyword) => fullText.includes(keyword))
-      ) && !isComingSoon(product);
-    }
-
+    if (isComingSoon(product)) return false;
+    if (alias === "臉部保養") return faceCareProductIdsV368.has(product.id);
+    if (alias === "身體洗護") return bodyCareProductIdsV368.has(product.id);
+    if (alias === "健康補給") return healthProductIdsV368.has(product.id);
+    if (alias === "精油香氛") return essentialOilProductIdsV359.has(product.id);
     return false;
   }
 
@@ -4233,11 +4219,11 @@ function Home() {
     if (selectedSeries === "面膜") return fullText.includes("面膜");
     if (selectedSeries === "高級養護" || selectedSeries === "限量優惠") return premiumCareProductIdsV355.has(product.id);
 
-    if (selectedSeries === "口腔護理") return ["牙膏", "潔口", "口腔", "齒齦"].some((keyword) => fullText.includes(keyword));
-    if (selectedSeries === "手工皂") return ["皂", "肥皂", "香氛皂"].some((keyword) => fullText.includes(keyword));
-    if (selectedSeries === "洗髮沐浴") return ["洗髮", "沐浴", "頭皮", "髮根"].some((keyword) => fullText.includes(keyword));
-    if (selectedSeries === "身體保養") return ["身體", "美體", "乳", "油", "護唇"].some((keyword) => fullText.includes(keyword)) && !fullText.includes("乳酸") && !fullText.includes("乳液");
-    if (selectedSeries === "身體舒壓") return ["刮痧", "溫灸", "艾草", "如意棒", "柔筋", "舒壓"].some((keyword) => fullText.includes(keyword));
+    if (selectedSeries === "口腔護理") return oralCareProductIdsV368.has(product.id);
+    if (selectedSeries === "手工皂") return handmadeSoapProductIdsV368.has(product.id);
+    if (selectedSeries === "洗髮沐浴") return hairBodyWashProductIdsV368.has(product.id);
+    if (selectedSeries === "身體保養") return bodyMoistureProductIdsV368.has(product.id);
+    if (selectedSeries === "身體舒壓") return bodyRelaxProductIdsV368.has(product.id);
 
     if (selectedSeries === "益生菌") return ["益生菌", "玻尿酸益生菌", "BC-HA", "BC-CA", "蔓越莓", "高鈣"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "葉黃素") return ["葉黃素", "晶眸"].some((keyword) => fullText.includes(keyword));
@@ -23932,6 +23918,14 @@ function Home() {
           }
         }
 
+
+        /* =====================================================
+           V3.6.8：分類頁與 Header 之間最後殘留的露底縫隙
+        ===================================================== */
+        .search-panel.search-page-view.collection-page-v22 {
+          /* Header 層級較高，因此用向上的實色陰影補滿邊界，不改動內容定位。 */
+          box-shadow: 0 -40px 0 #fbf6ef !important;
+        }
 
         /* =====================================================
            V3.6.6：購物車組合優惠偵測與手動套用
