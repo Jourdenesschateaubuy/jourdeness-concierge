@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.6.1.1 — fixes TS7006 when restoring persisted combo selections.
+// Jourdeness storefront build: V3.6.3 — full-bleed product images and hierarchical essential-oil categories with an independent Seven Sequence collection.
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -8,7 +8,7 @@ const categoryConfig = {
   臉部保養: ["全部", "龍血系列", "保濕修護", "亮白保養", "舒緩敏感", "面膜", "高級養護"],
   身體洗護: ["全部", "口腔護理", "手工皂", "洗髮沐浴", "身體保養", "身體舒壓"],
   健康補給: ["全部", "益生菌", "葉黃素", "膠原蛋白", "魚油"],
-  精油香氛: ["全部", "單方精油 10mL", "單方精油 15mL", "單方精油 30mL", "複方精油 10mL", "複方精油 15mL", "複方精油 30mL", "精萃油 50mL", "精油配件", "擴香設備"],
+  精油香氛: ["全部", "單方精油", "複方精油", "七序精油", "精萃油", "精油配件", "擴香設備"],
   新品預告: ["全部", "潔顏", "精油滾珠", "香氛皂", "護手霜", "魚油", "潔口液"],
 
   // 以下舊分類保留為資料型別相容與內部搜尋用，不再顯示為前台主分類。
@@ -20,7 +20,7 @@ const categoryConfig = {
   保養品: ["全部", "冷杉系列", "薰衣草系列", "龍血系列", "INSK乳酸平衡系列", "水光肌能系列", "晶淬雪系列", "玫瑰超微晶萃系列", "肌光緊緻速妍系列", "冰河淨化系列", "櫻の雪傳明酸美白系列", "茶樹控油系列", "杏仁酸系列", "膠原蛋白系列", "鳳梨酵素系列", "防曬", "特殊護理", "頂級養護", "面膜"],
   保健食品: ["全部", "益生菌系列", "晶眸保健系列", "美妍飲品系列"],
   洗沐: ["全部", "洗沐系列", "阿甘綠柔護髮系列"],
-  精油: ["全部", "單方精油 10mL", "單方精油 15mL", "單方精油 30mL", "複方精油 10mL", "複方精油 15mL", "複方精油 30mL", "精萃油 50mL", "精油配件", "擴香設備"],
+  精油: ["全部", "單方精油", "複方精油", "七序精油", "精萃油", "精油配件", "擴香設備"],
   牙膏: ["全部", "牙膏"],
   肥皂: ["全部", "肥皂"],
   護唇膏: ["全部", "護唇膏"],
@@ -174,16 +174,6 @@ const comboConfigsV360: Record<number, ComboConfig> = {
         price: 1099,
         priceLabel: "$1,099",
       },
-    ],
-  },
-  52: {
-    productId: 52,
-    unitLabel: "盒",
-    options: [
-      { id: "cool-patch", name: "石墨烯電氣石精油貼布（涼感）" },
-      { id: "warm-patch", name: "石墨烯電氣石精油貼布（溫感）" },
-    ],
-    plans: [
       {
         id: "ten-boxes",
         label: "任選 10 盒",
@@ -207,6 +197,67 @@ const comboConfigsV360: Record<number, ComboConfig> = {
         requiredQuantity: 3,
         price: 500,
         priceLabel: "$500",
+      },
+    ],
+  },
+  55: {
+    productId: 55,
+    unitLabel: "桶",
+    options: [
+      { id: "water-mask-35", name: "水搖滾保濕面膜 35片" },
+      { id: "white-mask-35", name: "極光白美白面膜 35片" },
+    ],
+    plans: [
+      {
+        id: "two-buckets",
+        label: "任選 2 桶",
+        requiredQuantity: 2,
+        price: 1100,
+        priceLabel: "$1,100",
+      },
+      {
+        id: "five-buckets",
+        label: "任選 5 桶",
+        requiredQuantity: 5,
+        price: 2750,
+        priceLabel: "$2,750",
+        note: "任選 5 桶加贈面膜 10 片。",
+      },
+    ],
+  },
+  67: {
+    productId: 67,
+    unitLabel: "入",
+    options: [
+      { id: "lavender-soap", name: "龍血薰衣草舒緩皂" },
+      { id: "mugwort-soap", name: "龍血艾草保庇皂" },
+      { id: "lemon-soap", name: "龍血檸檬馬鞭草皂" },
+    ],
+    plans: [
+      {
+        id: "four-soaps",
+        label: "任選 4 入",
+        requiredQuantity: 4,
+        price: 799,
+        priceLabel: "$799",
+      },
+    ],
+  },
+  108: {
+    productId: 108,
+    unitLabel: "條",
+    options: [
+      { id: "lavender-hand-cream", name: "薰衣草舒緩護手霜" },
+      { id: "sakura-hand-cream", name: "櫻之雪亮澤護手霜" },
+      { id: "tea-tree-hand-cream", name: "茶樹防禦護手霜" },
+    ],
+    plans: [
+      {
+        id: "three-hand-creams",
+        label: "買二送一・共 3 條",
+        requiredQuantity: 3,
+        price: 580,
+        priceLabel: "$580",
       },
     ],
   },
@@ -253,7 +304,7 @@ function buildComboCartKey(
 }
 
 
-const MASK_BUCKET_PRODUCT_IDS_V361 = new Set<number>([38, 39]);
+const MASK_BUCKET_PRODUCT_IDS_V361 = new Set<number>([]);
 const MASK_BUCKET_UNIT_PRICE_V361 = 599;
 
 type MaskPromotionCountsV361 = {
@@ -1018,7 +1069,7 @@ const allProducts: Product[] = [
   },
 {
     id: 58,
-    name: "BC-HA 複合益生菌 2盒組",
+    name: "玻尿酸益生菌 2盒組",
     category: "組合價",
     series: "保健食品組合",
     originalPrice: "原價價值 $ 2,600",
@@ -1902,13 +1953,13 @@ function normalizeProductForV354(product: Product): Product {
     84: { name: "柚見快樂精油 15mL", series: "複方精油 15mL" },
     85: { name: "佐登妮絲4號精油 10mL", series: "複方精油 10mL" },
     86: { name: "佐登妮絲1號精油 10mL", series: "複方精油 10mL" },
-    87: { name: "智慧之冠精油 10mL", series: "複方精油 10mL｜七序精油" },
-    88: { name: "魔力輕盈精油 10mL", series: "複方精油 10mL｜七序精油" },
-    89: { name: "能量之源精油 10mL", series: "複方精油 10mL｜七序精油" },
-    90: { name: "順暢平衡精油 10mL", series: "複方精油 10mL｜七序精油" },
-    91: { name: "亮采橙真精油 10mL", series: "複方精油 10mL｜七序精油" },
-    92: { name: "心之綻放精油 10mL", series: "複方精油 10mL｜七序精油" },
-    93: { name: "呼暢護隨精油 10mL", series: "複方精油 10mL｜七序精油" },
+    87: { name: "智慧之冠精油 10mL", series: "七序精油" },
+    88: { name: "魔力輕盈精油 10mL", series: "七序精油" },
+    89: { name: "能量之源精油 10mL", series: "七序精油" },
+    90: { name: "順暢平衡精油 10mL", series: "七序精油" },
+    91: { name: "亮采橙真精油 10mL", series: "七序精油" },
+    92: { name: "心之綻放精油 10mL", series: "七序精油" },
+    93: { name: "呼暢護隨精油 10mL", series: "七序精油" },
     96: { name: "檸檬精油 10mL", series: "單方精油 10mL" },
     97: { name: "茶樹精油 15mL", series: "單方精油 15mL" },
     98: {
@@ -1948,6 +1999,75 @@ function normalizeProductForV359(product: Product): Product {
   return updates[product.id] ? { ...product, ...updates[product.id] } : product;
 }
 
+function normalizeProductForV362(product: Product): Product {
+  const updates: Record<number, Partial<Product>> = {
+    33: {
+      category: "保養品",
+      series: "高級養護",
+    },
+    38: {
+      price: "單桶 $ 599",
+      description: "22mL x 35pcs / 桶。水搖滾保濕面膜大容量桶裝；組合優惠請選購「35片面膜自由配」。",
+    },
+    39: {
+      price: "單桶 $ 599",
+      description: "35pcs / 桶。極光白美白面膜大容量桶裝；組合優惠請選購「35片面膜自由配」。",
+    },
+    51: {
+      name: "石墨烯貼布自由配",
+      originalPrice: "原價最高 $ 8,000",
+      price: "任選 4 盒 $ 1,099｜任選 10 盒 $ 2,500",
+      description: "涼感與溫感貼布可自由搭配，先選 4 盒或 10 盒方案，再選各款數量。",
+    },
+    55: {
+      name: "35片面膜自由配",
+      originalPrice: "單桶原價價值 $ 3,000",
+      price: "任選 2 桶 $ 1,100｜任選 5 桶 $ 2,750",
+      description: "水搖滾保濕面膜與極光白美白面膜可自由搭配；任選 5 桶加贈面膜 10 片。",
+    },
+    67: {
+      name: "香氛皂自由配",
+      originalPrice: "原價價值 $ 1,160",
+      price: "任選 4 入 $ 799",
+      image: "/products/bdsoap.png",
+      gallery: ["/products/bdsoap.png"],
+      description: "龍血薰衣草舒緩皂、龍血艾草保庇皂與龍血檸檬馬鞭草皂可自由搭配，共 4 入 $799。",
+    },
+    68: {
+      name: "櫻花美白三件組",
+      price: "組合價 $ 1,780",
+      description: "櫻の雪傳明酸美白化妝水、精華液與乳液各 1 件，一套組合價 $1,780。",
+    },
+    108: {
+      name: "護手霜自由配",
+      price: "買二送一｜3 條 $ 580",
+      description: "薰衣草舒緩、櫻之雪亮澤與茶樹防禦護手霜可自由搭配，共 3 條 $580。",
+    },
+    115: {
+      category: "身體洗護",
+      series: "手工皂",
+      originalPrice: undefined,
+      price: "單入 $ 290",
+      cardSubtitle: "200g±10g・草本香氣",
+      priceNote: "單入 $290；可搭配香氛皂任選 4 入 $799。",
+      description: "200g±10g / 塊。艾草草本香氣，適合日常洗沐；可搭配香氛皂自由配。",
+      notice: "依日常洗沐習慣使用，使用後若有不適請暫停使用。",
+    },
+    116: {
+      category: "身體洗護",
+      series: "手工皂",
+      originalPrice: undefined,
+      price: "單入 $ 290",
+      cardSubtitle: "200g±10g・清新柑橘香",
+      priceNote: "單入 $290；可搭配香氛皂任選 4 入 $799。",
+      description: "200g±10g / 塊。檸檬馬鞭草清新香氣，適合日常洗沐；可搭配香氛皂自由配。",
+      notice: "依日常洗沐習慣使用，使用後若有不適請暫停使用。",
+    },
+  };
+
+  return updates[product.id] ? { ...product, ...updates[product.id] } : product;
+}
+
 function isSevenSequenceOilV354(product: Product) {
   return sevenSequenceOilIdsV354.has(product.id);
 }
@@ -1956,7 +2076,8 @@ const products: Product[] = [...allProducts, ...comingSoonRollerProducts, ...add
   .map(normalizeProductForV31)
   .map(normalizeProductForV354)
   .map(normalizeProductForV359)
-  .filter((product) => ![20, 21, 22, 23, 24, 25, 55].includes(product.id));
+  .map(normalizeProductForV362)
+  .filter((product) => ![20, 21, 22, 23, 24, 25, 52].includes(product.id));
 
 const productContentOverrides: Record<number, Partial<Product>> = {
   1: {
@@ -3457,6 +3578,59 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   }
 };
 
+const productContentOverridesV362: Record<number, Partial<Product>> = {
+  51: {
+    cardName: "石墨烯貼布自由配",
+    cardSubtitle: "涼感／溫感自由搭配",
+    spec: "任選 4 盒或任選 10 盒",
+    intro: "涼感與溫感貼布整合為一張組合卡，先選優惠方案，再選實際搭配。",
+    priceNote: "任選 4 盒 $1,099；任選 10 盒 $2,500。",
+  },
+  55: {
+    cardName: "35片面膜自由配",
+    cardSubtitle: "水搖滾／極光白自由搭配",
+    spec: "任選 2 桶或任選 5 桶",
+    intro: "水搖滾保濕面膜與極光白美白面膜可自由搭配，選定方案後再選各款數量。",
+    features: [
+      "任選 2 桶組合價 $1,100。",
+      "任選 5 桶組合價 $2,750，加贈面膜 10 片。",
+      "兩款可同款重複選，也可以自由混搭。",
+    ],
+    priceNote: "任選 2 桶 $1,100；任選 5 桶 $2,750，加贈面膜 10 片。",
+  },
+  67: {
+    cardName: "香氛皂自由配",
+    cardSubtitle: "薰衣草／艾草／檸檬自由搭配",
+    spec: "200g±10g × 4 入",
+    intro: "三款香氛皂可自由搭配，選滿 4 入後以組合價 $799 加入購物車。",
+    features: [
+      "龍血薰衣草舒緩皂、龍血艾草保庇皂與龍血檸檬馬鞭草皂可選。",
+      "同款可重複選，也可以混搭。",
+      "任選 4 入組合價 $799。",
+    ],
+    priceNote: "香氛皂任選 4 入 $799。",
+  },
+  68: {
+    cardName: "櫻花美白三件組",
+    cardSubtitle: "化妝水＋精華液＋乳液",
+    spec: "化妝水150mL＋精華液30mL＋乳液100mL",
+    intro: "櫻の雪傳明酸美白化妝水、精華液與乳液一次備齊，固定三件組 $1,780。",
+    features: [
+      "櫻の雪傳明酸美白化妝水 1 瓶。",
+      "櫻の雪傳明酸美白精華液 1 瓶。",
+      "櫻の雪傳明酸美白乳液 1 瓶。",
+    ],
+    priceNote: "固定三件組，組合價 $1,780。",
+  },
+  108: {
+    cardName: "護手霜自由配",
+    cardSubtitle: "買二送一・三款自由搭配",
+    spec: "30g × 3 條",
+    intro: "薰衣草舒緩、櫻之雪亮澤與茶樹防禦護手霜可自由搭配，共 3 條 $580。",
+    priceNote: "買二送一，共 3 條 $580。",
+  },
+};
+
 const skinFilters = [
   "全部",
   "乾燥缺水",
@@ -3471,7 +3645,7 @@ const skinFilters = [
 
 type SkinFilter = (typeof skinFilters)[number];
 
-const comboProductIds = new Set<number>([1, 48, 49, 18, 19, 30, 31, 35, 36, 37, 38, 39, 46, 50, 57, 72, 73, 119]);
+const comboProductIds = new Set<number>([1, 51, 54, 55, 67, 68, 108, 119]);
 
 const expiringProductIds = new Set<number>([38, 74]);
 
@@ -3584,6 +3758,7 @@ function Home() {
   const [selectedCategory, setSelectedCategory] =
     useState<MainCategory>("本月優惠");
   const [selectedSeries, setSelectedSeries] = useState("全部");
+  const [selectedOilVolume, setSelectedOilVolume] = useState<"全部" | "10mL" | "15mL" | "30mL">("全部");
   const [selectedSkinFilter, setSelectedSkinFilter] =
     useState<SkinFilter>("全部");
   const [commerceFilter, setCommerceFilter] = useState("");
@@ -3671,9 +3846,9 @@ function Home() {
   const seriesList = categoryConfig[selectedCategory];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
-  const monthlyOfferIdsV316 = new Set([34, 1, 51, 58, 59, 55, 50, 54, 112, 119]);
+  const monthlyOfferIdsV316 = new Set([34, 1, 51, 54, 55, 58, 59, 67, 68, 108, 112, 119]);
   const moisturizingRepairProductIdsV355 = new Set([34, 37, 38, 64]);
-  const premiumCareProductIdsV355 = new Set([11, 12, 13, 14, 111, 8, 61, 62]);
+  const premiumCareProductIdsV355 = new Set([11, 12, 13, 14, 33, 111, 8, 61, 62]);
   const essentialOilProductIdsV359 = new Set([
     26, 27, 28,
     29,
@@ -3684,7 +3859,7 @@ function Home() {
   const singleOil10IdsV359 = new Set([78, 82, 96, 98]);
   const singleOil15IdsV359 = new Set([97]);
   const singleOil30IdsV359 = new Set([74, 75]);
-  const blendedOil10IdsV359 = new Set([79, 81, 85, 86, 87, 88, 89, 90, 91, 92, 93, 99]);
+  const blendedOil10IdsV359 = new Set([79, 81, 85, 86, 99]);
   const blendedOil15IdsV359 = new Set([84]);
   const blendedOil30IdsV359 = new Set([80, 83]);
   const extractOil50IdsV359 = new Set([26, 27, 28]);
@@ -3716,6 +3891,7 @@ function Home() {
     }
 
     if (selectedCategory === "健康補給") {
+      if (product.id === 33) return false;
       return (
         product.category === "保健食品" ||
         ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "營養", "玻尿酸益生菌", "BC-HA", "BC-CA"].some((keyword) => fullText.includes(keyword))
@@ -3748,6 +3924,7 @@ function Home() {
     }
 
     if (alias === "健康補給") {
+      if (product.id === 33) return false;
       return (
         product.category === "保健食品" ||
         ["益生菌", "葉黃素", "晶眸", "膠原", "魚油", "營養", "玻尿酸益生菌", "BC-HA", "BC-CA"].some((keyword) => fullText.includes(keyword))
@@ -3788,6 +3965,26 @@ function Home() {
     if (selectedSeries === "膠原蛋白") return ["膠原", "亮妍"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "魚油") return fullText.includes("魚油");
 
+    // 精油香氛：第一層依類型分類；單方／複方再用第二層容量篩選。
+    if (selectedSeries === "單方精油") {
+      if (selectedOilVolume === "10mL") return singleOil10IdsV359.has(product.id);
+      if (selectedOilVolume === "15mL") return singleOil15IdsV359.has(product.id);
+      if (selectedOilVolume === "30mL") return singleOil30IdsV359.has(product.id);
+      return singleOil10IdsV359.has(product.id) || singleOil15IdsV359.has(product.id) || singleOil30IdsV359.has(product.id);
+    }
+    if (selectedSeries === "複方精油") {
+      if (selectedOilVolume === "10mL") return blendedOil10IdsV359.has(product.id);
+      if (selectedOilVolume === "15mL") return blendedOil15IdsV359.has(product.id);
+      if (selectedOilVolume === "30mL") return blendedOil30IdsV359.has(product.id);
+      return blendedOil10IdsV359.has(product.id) || blendedOil15IdsV359.has(product.id) || blendedOil30IdsV359.has(product.id);
+    }
+    if (selectedSeries === "七序精油") return sevenSequenceOilIdsV354.has(product.id);
+    if (selectedSeries === "精萃油") return extractOil50IdsV359.has(product.id);
+    if (selectedSeries === "精油滾珠" || selectedSeries === "滾珠") return product.series === "精油滾珠";
+    if (selectedSeries === "精油配件") return essentialOilAccessoryIdsV359.has(product.id);
+    if (selectedSeries === "擴香設備") return diffuserDeviceIdsV359.has(product.id);
+
+    // 舊連結相容：舊容量分類仍可直接開啟，但前台主分類不再攤平顯示。
     if (selectedSeries === "單方精油 10mL") return singleOil10IdsV359.has(product.id);
     if (selectedSeries === "單方精油 15mL") return singleOil15IdsV359.has(product.id);
     if (selectedSeries === "單方精油 30mL") return singleOil30IdsV359.has(product.id);
@@ -3795,13 +3992,6 @@ function Home() {
     if (selectedSeries === "複方精油 15mL") return blendedOil15IdsV359.has(product.id);
     if (selectedSeries === "複方精油 30mL") return blendedOil30IdsV359.has(product.id);
     if (selectedSeries === "精萃油 50mL") return extractOil50IdsV359.has(product.id);
-    if (selectedSeries === "精油滾珠" || selectedSeries === "滾珠") return product.series === "精油滾珠";
-    if (selectedSeries === "精油配件") return essentialOilAccessoryIdsV359.has(product.id);
-    if (selectedSeries === "擴香設備") return diffuserDeviceIdsV359.has(product.id);
-
-    // 舊連結相容：舊的單方／複方分類仍可使用，但前台不再顯示。
-    if (selectedSeries === "單方精油") return singleOil10IdsV359.has(product.id) || singleOil15IdsV359.has(product.id) || singleOil30IdsV359.has(product.id);
-    if (selectedSeries === "複方精油") return blendedOil10IdsV359.has(product.id) || blendedOil15IdsV359.has(product.id) || blendedOil30IdsV359.has(product.id);
 
     if (selectedSeries === "潔顏") return ["潔顏", "慕絲", "卸妝"].some((keyword) => fullText.includes(keyword));
     if (selectedSeries === "潔口液") return ["潔口", "潔口液", "牛樟芝"].some((keyword) => fullText.includes(keyword));
@@ -3955,10 +4145,10 @@ function Home() {
   ];
 
   const mallDealProducts = getProductsByIds([34, 1, 51]);
-  const summerWhiteningProducts = getProductsByIds([47, 48, 49, 110]);
-  const mallHotProducts = getProductsByIds([34, 1, 51, 55, 58, 54, 119, 50]);
+  const summerWhiteningProducts = getProductsByIds([68, 47, 48, 49, 110]);
+  const mallHotProducts = getProductsByIds([55, 51, 54, 108, 67, 119, 68, 1]);
   const mallSkincareShelfProducts = getProductsByIds([34, 59, 35, 36, 40, 14]);
-  const mallBodyShelfProducts = getProductsByIds([54, 50, 112, 119, 15, 16]);
+  const mallBodyShelfProducts = getProductsByIds([54, 67, 108, 50, 115, 116, 119, 112]);
   const mallHealthShelfProducts = getProductsByIds([1, 58, 2, 3, 69, 56]);
   const mallAromaShelfProducts = getProductsByIds([85, 74, 79, 82, 75, 76]);
   const mallComingSoonProducts = getProductsByIds([70, 71, 113, 46, 114, 115, 116, 117, 118]);
@@ -4101,6 +4291,7 @@ function Home() {
     setCollectionViewLabel("");
     setSelectedCategory(category);
     setSelectedSeries("全部");
+    setSelectedOilVolume("全部");
     setSelectedSkinFilter("全部");
     setSearchQuery("");
   }
@@ -4110,6 +4301,7 @@ function Home() {
     setCollectionViewLabel("");
     setSelectedCategory(category);
     setSelectedSeries(series);
+    setSelectedOilVolume("全部");
     setSelectedSkinFilter("全部");
     setSearchQuery("");
   }
@@ -4823,6 +5015,7 @@ function Home() {
     setCommerceFilter("");
     setCollectionViewLabel("");
     setSelectedSeries(series);
+    setSelectedOilVolume("全部");
     setSelectedSkinFilter("全部");
     setSearchQuery("");
   }
@@ -5115,7 +5308,10 @@ function Home() {
   }
 
   function productContent(product: Product) {
-    return productContentOverrides[product.id] ?? {};
+    return {
+      ...(productContentOverrides[product.id] ?? {}),
+      ...(productContentOverridesV362[product.id] ?? {}),
+    };
   }
 
   function getCardName(product: Product) {
@@ -5417,7 +5613,6 @@ function Home() {
     const inquiry = hasInquiryPrice(product);
     const badgeLabel = getCommerceBadgeLabel(product);
     const selectableCombo = Boolean(getComboConfig(product.id));
-    const autoMaskPromotionProduct = MASK_BUCKET_PRODUCT_IDS_V361.has(product.id);
 
     return (
       <article
@@ -5469,29 +5664,8 @@ function Home() {
             </p>
           </div>
 
-          {autoMaskPromotionProduct && (
-            <p className="auto-mask-promo-hint-v361">
-              <span>兩款可混搭｜2桶 NT$1,100</span>
-              <span>5桶 NT$2,750＋贈10片</span>
-            </p>
-          )}
 
           <div className="product-card-actions-v358">
-            <button
-              type="button"
-              className="detail-card-button-v358"
-              onClick={(event) => {
-                event.stopPropagation();
-                setIsCartOpen(false);
-                setCartStep(1);
-                setCartReturnProduct(null);
-                openProductDetail(product);
-              }}
-              aria-label={`查看 ${product.name} 商品詳情`}
-            >
-              {selectableCombo ? "查看內容" : "商品詳情"}
-            </button>
-
             <button
               type="button"
               className="add-cart-button compact-add-cart-v350 cart-card-button-v358"
@@ -6781,6 +6955,7 @@ function Home() {
                 className={selectedSeries === "全部" && selectedSkinFilter === "全部" ? "active" : ""}
                 onClick={() => {
                   setSelectedSeries("全部");
+                  setSelectedOilVolume("全部");
                   setSelectedSkinFilter("全部");
                   setSearchQuery("");
                 }}
@@ -6799,6 +6974,24 @@ function Home() {
                 </button>
               ))}
             </div>
+
+            {selectedCategory === "精油香氛" && (selectedSeries === "單方精油" || selectedSeries === "複方精油") && (
+              <div className="collection-chip-row-v22 oil-volume-v363" aria-label={`${selectedSeries}容量篩選`}>
+                {(["全部", "10mL", "15mL", "30mL"] as const).map((volume) => (
+                  <button
+                    type="button"
+                    key={`oil-volume-${volume}`}
+                    className={selectedOilVolume === volume ? "active" : ""}
+                    onClick={() => {
+                      setSelectedOilVolume(volume);
+                      setSearchQuery("");
+                    }}
+                  >
+                    {volume}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {selectedCategory === "臉部保養" && (
               <div className="collection-chip-row-v22 skin">
@@ -6939,13 +7132,10 @@ function Home() {
                 {expandedDrawerGroup === "精油香氛" && (
                   <div className="drawer-sublist-v25">
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "全部")}>全部</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油 10mL")}>單方精油 10mL</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油 15mL")}>單方精油 15mL</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油 30mL")}>單方精油 30mL</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油 10mL")}>複方精油 10mL</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油 15mL")}>複方精油 15mL</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油 30mL")}>複方精油 30mL</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "精萃油 50mL")}>精萃油 50mL</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油")}>單方精油</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油")}>複方精油</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "七序精油")}>七序精油</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "精萃油")}>精萃油</button>
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "精油配件")}>精油配件</button>
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "擴香設備")}>擴香設備</button>
                   </div>
@@ -7037,25 +7227,6 @@ function Home() {
               />
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="mall-brand-section-v26 mall-brand-section-v27 v3-tag-section v313-status-section activity-stream-v330" aria-label="本月活動入口">
-        <div className="mall-section-head-v26 compact section-title-v340">
-          <h2>本月活動</h2>
-        </div>
-
-        <div className="mall-brand-grid-v26 mall-brand-grid-v271">
-          {mallBrandEntries.map((brand, index) => (
-            <button
-              type="button"
-              key={`mall-brand-${brand.title}`}
-              className={`monthly-activity-card-v318 monthly-activity-${index + 1}`}
-              onClick={brand.onClick}
-            >
-              <strong>{brand.title}</strong>
-            </button>
-          ))}
         </div>
       </section>
 
@@ -19882,8 +20053,6 @@ function Home() {
           font-weight: 850 !important;
           line-height: 1.35 !important;
           letter-spacing: -0.02em !important;
-          -webkit-box-orient: vertical !important;
-          -webkit-line-clamp: 2 !important;
         }
 
         .commerce-product-card.shelf-card-v271 .product-info .description {
@@ -21193,8 +21362,6 @@ function Home() {
           line-height: 1.42 !important;
           text-align: center !important;
           word-break: break-word !important;
-          -webkit-box-orient: vertical !important;
-          -webkit-line-clamp: 2 !important;
         }
 
         .compact-price-block-v350 {
@@ -21501,8 +21668,6 @@ function Home() {
           font-size: 14px !important;
           font-weight: 900 !important;
           line-height: 1.35 !important;
-          -webkit-box-orient: vertical !important;
-          -webkit-line-clamp: 2 !important;
         }
 
         .cart-item-copy-v355 > strong {
@@ -21645,8 +21810,6 @@ function Home() {
           color: var(--ink) !important;
           font-size: 12px !important;
           line-height: 1.35 !important;
-          -webkit-box-orient: vertical !important;
-          -webkit-line-clamp: 2 !important;
         }
 
         .cart-upsell-product-v355 em {
@@ -22767,8 +22930,211 @@ function Home() {
         }
 
 
+        /* V3.6.2：商品卡單一主操作、名稱垂直置中、購物車頭部精簡。 */
+        .compact-commerce-card-v350 .product-info {
+          gap: 5px !important;
+          padding: 9px 9px 10px !important;
+        }
+
+        .compact-commerce-card-v350 .product-info > h3,
+        .featured-card.compact-commerce-card-v350 .product-info > h3 {
+          display: grid !important;
+          place-items: center !important;
+          height: 68px !important;
+          min-height: 68px !important;
+          max-height: 68px !important;
+          margin: 0 !important;
+          padding: 8px 2px !important;
+          overflow: hidden !important;
+          color: #4a2e22 !important;
+          font-size: 14px !important;
+          font-weight: 900 !important;
+          line-height: 1.45 !important;
+          text-align: center !important;
+          text-wrap: balance !important;
+          word-break: break-word !important;
+        }
+
+        .compact-commerce-card-v350 .product-info > h3::before {
+          content: "";
+          display: block;
+          height: 0;
+        }
+
+        .compact-commerce-card-v350 .commerce-price-block {
+          margin-top: 0 !important;
+        }
+
+        .product-card-actions-v358 {
+          display: grid !important;
+          grid-template-columns: minmax(0, 1fr) !important;
+          gap: 0 !important;
+          width: 100% !important;
+          margin-top: 2px !important;
+        }
+
+        .product-card-actions-v358 > button,
+        .compact-commerce-card-v350 .cart-card-button-v358 {
+          width: 100% !important;
+          height: 44px !important;
+          min-height: 44px !important;
+          max-height: 44px !important;
+          padding-inline: 12px !important;
+          border-radius: 15px !important;
+          font-size: 12px !important;
+        }
+
+        .detail-card-button-v358 {
+          display: none !important;
+        }
+
+        .cart-panel-v355 {
+          padding: calc(54px + env(safe-area-inset-top)) 10px 92px !important;
+          scroll-padding-top: calc(54px + env(safe-area-inset-top)) !important;
+        }
+
+        .cart-header-v355 {
+          top: 0 !important;
+          min-height: calc(54px + env(safe-area-inset-top)) !important;
+          padding: max(6px, env(safe-area-inset-top)) 10px 6px !important;
+          grid-template-columns: minmax(92px, 1fr) auto minmax(40px, 1fr) !important;
+        }
+
+        .cart-header-v355 h2 {
+          font-size: 17px !important;
+        }
+
+        .cart-return-button-v355 {
+          min-height: 32px !important;
+          padding: 3px 2px !important;
+          font-size: 11px !important;
+        }
+
+        .cart-return-button-v355 span {
+          font-size: 16px !important;
+        }
+
+        .cart-close-v355 {
+          width: 32px !important;
+          height: 32px !important;
+          min-width: 32px !important;
+          min-height: 32px !important;
+          padding: 0 !important;
+          font-size: 25px !important;
+          line-height: 1 !important;
+        }
+
+        .checkout-step-strip-v355 {
+          gap: 3px !important;
+          margin: 5px 0 8px !important;
+          padding: 6px 5px !important;
+          border-radius: 10px !important;
+          box-shadow: none !important;
+        }
+
+        .checkout-step-strip-v355 div {
+          gap: 2px !important;
+        }
+
+        .checkout-step-strip-v355 strong {
+          width: 18px !important;
+          height: 18px !important;
+          font-size: 9px !important;
+        }
+
+        .checkout-step-strip-v355 span {
+          font-size: 8.5px !important;
+          letter-spacing: -0.02em !important;
+        }
+
+        .checkout-step-strip-v355 i {
+          min-width: 5px !important;
+        }
+
+        .cart-products-v355,
+        .shipping-progress-v355,
+        .cart-upsell-v355,
+        .order-form-v355 {
+          margin-bottom: 10px !important;
+          padding: 10px !important;
+          border-radius: 14px !important;
+          box-shadow: 0 5px 14px rgba(77, 55, 38, 0.045) !important;
+        }
+
+        .cart-section-heading-v355 {
+          margin-bottom: 6px !important;
+        }
+
+        .cart-section-heading-v355 h3 {
+          font-size: 17px !important;
+        }
+
+        @media (max-width: 359px) {
+          .compact-commerce-card-v350 .product-info > h3,
+          .featured-card.compact-commerce-card-v350 .product-info > h3 {
+            height: 64px !important;
+            min-height: 64px !important;
+            max-height: 64px !important;
+            font-size: 13px !important;
+          }
+
+          .cart-header-v355 {
+            grid-template-columns: minmax(84px, 1fr) auto 34px !important;
+          }
+
+          .cart-return-button-v355 {
+            font-size: 10px !important;
+          }
+
+          .checkout-step-strip-v355 span {
+            font-size: 8px !important;
+          }
+        }
+
+
+
+        /* V3.6.3：商品圖改為 1:1.06 滿版；精油分類第二層容量篩選。 */
+        .compact-commerce-card-v350 .product-image,
+        .compact-commerce-card-v350 .featured-image {
+          aspect-ratio: 1 / 1.06 !important;
+          background: #fff !important;
+          border-bottom: 0 !important;
+        }
+
+        .compact-commerce-card-v350 .product-image img,
+        .compact-commerce-card-v350 .featured-image img {
+          width: 100% !important;
+          height: 100% !important;
+          max-width: none !important;
+          max-height: none !important;
+          padding: 0 !important;
+          object-fit: cover !important;
+          object-position: center center !important;
+          transform: none !important;
+          filter: none !important;
+          display: block !important;
+        }
+
+        .collection-chip-row-v22.oil-volume-v363 {
+          margin-top: 9px !important;
+          padding-top: 9px !important;
+          border-top: 1px solid rgba(74, 46, 34, 0.09) !important;
+        }
+
+        .collection-chip-row-v22.oil-volume-v363 button {
+          min-width: 62px !important;
+        }
+
+        .seven-sequence-badge-v354 {
+          align-self: center !important;
+          background: linear-gradient(135deg, #6f4b2d, #c89b3c) !important;
+          color: #fffaf1 !important;
+          box-shadow: 0 5px 12px rgba(111, 75, 45, 0.18) !important;
+        }
       `}
-</style>
+
+
+      </style>
     </main>
   );
 }
