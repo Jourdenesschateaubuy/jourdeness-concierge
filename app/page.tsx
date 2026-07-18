@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.6.5 — vertically centered product-name zones and seamless opaque collection overlay below the fixed header.
+// Jourdeness storefront build: V3.6.7 — price cleanup, confirmed 10-sheet mask price, and stale price-note removal.
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -1154,8 +1154,7 @@ const allProducts: Product[] = [
     name: "水搖滾保濕面膜 (10片裝)",
     category: "保養品",
     series: "龍血系列",
-    originalPrice: "原價待補",
-    price: "10片裝售價請洽小幫手",
+    price: "售價 $ 199",
     image: "/products/water 5.jpg",
     gallery: ["/products/water 5.jpg"],
     description: "22mL x 10pcs / 盒。水搖滾保濕面膜，日常補水與集中保養。",
@@ -2432,7 +2431,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "每日建議依產品標示或客服說明食用；兒童每日 1 包、成人每日 1～2 包，餐後補充更適合日常安排。",
     notice: "請依產品標示食用。內含維生素 A 有助於維持在暗處的視覺；若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   3: {
     cardName: "亮妍魚膠原蛋白飲",
@@ -2453,7 +2451,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "每日建議依產品標示食用，一瓶即飲；可依客服說明安排早上或睡前補充。",
     notice: "請依產品標示食用。本產品含有大豆、魚類及其製品，為動物性來源、非素食；不適合對其過敏體質者食用。若有特殊體質或孕哺乳，請先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   4: {
     cardName: "薰衣草肌安舒緩化妝水",
@@ -2471,7 +2468,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   5: {
     cardName: "薰衣草肌安舒緩精華液",
@@ -2489,7 +2485,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "化妝水後取適量均勻塗抹於臉部，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   6: {
     cardName: "薰衣草肌安舒緩保濕乳",
@@ -2507,7 +2502,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   113: {
     cardName: "冷杉酷涼活絡精油滾珠",
@@ -2525,7 +2519,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
+    priceNote: "新品預告・敬請期待。",
   },
   7: {
     cardName: "玫瑰活膚液",
@@ -2543,7 +2537,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   8: {
     cardName: "玫瑰瞬效霜",
@@ -2630,7 +2623,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   12: {
     cardName: "肌光緊緻速妍精華露",
@@ -2651,7 +2643,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "化妝水後取適量塗抹全臉，再依需求搭配乳液或乳霜。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   13: {
     cardName: "肌光緊緻速妍霜",
@@ -2672,7 +2663,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "化妝水與精華後，取適量均勻塗抹於臉部與頸部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   14: {
     cardName: "肌光緊緻速妍面膜",
@@ -2693,7 +2683,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   15: {
     cardName: "龍血求麗頭皮修護洗髮精",
@@ -2774,7 +2763,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "取適量於濕髮或身體肌膚，搓揉清潔後以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   18: {
     cardName: "薰衣草齒齦保健牙膏",
@@ -3071,7 +3059,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "化妝水後取適量點塗於局部出油或面皰瑕疵部位，再依需求搭配乳液。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   33: {
     cardName: "肌可佳膠原蛋白彈潤原液",
@@ -3089,7 +3076,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   34: {
     cardName: "龍血玻尿酸保濕精華液",
@@ -3133,7 +3119,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "保持雙手及臉部乾燥，取適量卸妝油按摩全臉；加少量清水乳化變白後，以清水徹底沖洗。",
     notice: "使用後若有不適，請暫停使用。請避免直接接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   36: {
     cardName: "龍血求麗潔顏慕絲",
@@ -3154,7 +3139,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "每日早晚打濕臉部後，按壓適量慕絲於掌心，均勻塗抹全臉並輕柔按摩，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，若不慎入眼請立即以大量清水沖洗。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   37: {
     cardName: "水搖滾保濕面膜 (10片裝)",
@@ -3175,7 +3159,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "臉部清潔後取出面膜並撕下外層襯膜，均勻敷於臉部約 10–15 分鐘或依標示時間，取下後輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
+    priceNote: "售價 $199。",
   },
   38: {
     cardName: "水搖滾保濕面膜 (35片桶裝)",
@@ -3238,7 +3222,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "化妝水或精華後，取適量均勻塗抹於臉部與頸部，按摩至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   41: {
     cardName: "水光肌能晚霜",
@@ -3259,7 +3242,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "夜間於化妝水、精華或乳液後，取適量塗抹全臉與頸部並按摩至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   42: {
     cardName: "苦杏仁酸溫和煥顏露",
@@ -3277,7 +3259,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "清潔後依日常保養程序使用，實際使用方式可依商品標示或客服建議調整。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   43: {
     cardName: "冰河淨化淨膚露",
@@ -3298,7 +3279,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "清潔後取適量於掌心或化妝棉，輕拍或均勻擦拭於臉部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   44: {
     cardName: "冰河淨化柔膚面膜",
@@ -3319,7 +3299,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "臉部清潔後，避開眼唇均勻塗抹全臉，依標示時間靜置後以清水溫和洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   45: {
     cardName: "鳳梨酵素代謝角質凝露",
@@ -3340,7 +3319,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "卸妝清潔後擦乾臉部，避開眼唇塗抹並輕柔畫圈按摩至出屑，再以清水洗淨；建議每週 1–2 次。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   46: {
     cardName: "櫻の雪淨白潔顏慕絲",
@@ -3377,7 +3355,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部與頸部至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   49: {
     cardName: "櫻の雪傳明酸美白乳液",
@@ -3398,7 +3375,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "化妝水與精華液後，取適量均勻塗抹於臉部與頸部肌膚。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   50: {
     cardName: "龍血薰衣草舒緩皂",
@@ -3525,7 +3501,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "取適量於濕髮或身體肌膚，搓揉清潔後以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   112: {
     cardName: "龍血洗髮精＋阿甘養護液組合",
@@ -3601,7 +3576,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "沐浴後擦乾身體，取適量美體油均勻塗抹並按摩於全身；手肘、膝蓋等乾燥處可加強。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   61: {
     cardName: "24小時賦活液",
@@ -3622,7 +3596,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "每日早晚清潔後，取適量賦活液於掌心，均勻輕拍並按摩於臉部與頸部至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   62: {
     cardName: "24小時黃金璀璨賦活液",
@@ -3643,7 +3616,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "每日早晚清潔後，取適量黃金賦活液塗抹於全臉與頸部，以手掌溫熱按壓幫助吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   63: {
     cardName: "水光苦杏仁酸慕絲",
@@ -3663,7 +3635,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "取適量於掌心，加水搓揉後輕柔按摩臉部，再以清水洗淨。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   64: {
     cardName: "超導水網瞬效面膜",
@@ -3683,7 +3654,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "清潔後取出面膜敷於臉部，依產品標示時間使用後取下，再輕拍吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   65: {
     cardName: "Exo-雙粹秘泌凍晶組",
@@ -3704,7 +3674,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "依產品標示說明，將精華液與凍晶粉按比例混合，每天取適量塗抹於全臉與頸部；開封後請依標示時間使用完畢。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   66: {
     cardName: "奧勒岡小白花美體乳",
@@ -3725,7 +3694,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "每日沐浴清潔後，取適量美體乳均勻塗抹全身，順著肌肉線條按摩至吸收。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   67: {
     cardName: "龍血薰衣草舒緩皂 4入優惠",
@@ -3802,7 +3770,6 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "化妝水後取適量均勻塗抹於臉部與頸部，再搭配同系列美白乳液。",
     notice: "使用後若有不適，請暫停使用。請避免接觸眼睛，並放置於陰涼處保存。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。",
   },
   70: {
     cardName: "龍血求麗甦醒精油滾珠",
