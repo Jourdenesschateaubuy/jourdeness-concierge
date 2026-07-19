@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.7.0 — consolidated flexible-choice cards and measured header-to-collection seamless layout.
+// Jourdeness storefront build: V3.7.2 — desktop now renders the same centered mobile storefront viewport, including fully scrollable drawer and overlays.
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -7155,7 +7155,7 @@ function Home() {
   }
 
   return (
-    <main className="site-shell" data-build="jourdeness-v3.7.0-consolidated-choice">
+    <main className="site-shell" data-build="jourdeness-v3.7.2-true-mobile-desktop">
       <header ref={topHeaderRefV370} className="top-header">
         <button
           className="menu-button"
@@ -24361,6 +24361,285 @@ function Home() {
             width: 100% !important;
           }
         }
+
+
+
+        /* V3.7.1：桌機版沿用手機商城的單一內容流，避免主視覺 100vw 與內容容器互相錯位形成左右分割。 */
+        @media (min-width: 760px) {
+          html,
+          body {
+            overflow-x: clip !important;
+          }
+
+          .site-shell {
+            width: min(100%, 1120px) !important;
+            max-width: 1120px !important;
+            margin-inline: auto !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+            overflow-x: visible !important;
+          }
+
+          /* 主視覺回到內容流中，不再使用 100vw + -50vw 的全螢幕位移。 */
+          .dragon-hero-v330.dragon-hero-v340 {
+            position: relative !important;
+            left: auto !important;
+            width: 100% !important;
+            max-width: 1120px !important;
+            margin: 0 auto !important;
+            overflow: hidden !important;
+          }
+
+          .dragon-hero-picture-v330,
+          .dragon-hero-picture-v340,
+          .dragon-hero-picture-v330 img,
+          .dragon-hero-picture-v340 img {
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+
+          .dragon-hero-picture-v330 img,
+          .dragon-hero-picture-v340 img {
+            height: auto !important;
+            max-height: none !important;
+            aspect-ratio: auto !important;
+            object-fit: contain !important;
+            object-position: center !important;
+          }
+
+          /* 夏日美白副主視覺同樣留在單一內容欄，避免桌機再次切成左右兩個畫面。 */
+          .seasonal-feature-v340.seasonal-feature-v358 {
+            position: relative !important;
+            left: auto !important;
+            width: 100% !important;
+            max-width: 1120px !important;
+            margin: 0 auto 26px !important;
+            padding: 0 0 26px !important;
+          }
+
+          .seasonal-feature-v358 .seasonal-hero-static-v358,
+          .seasonal-feature-v340 .seasonal-hero-button-v340 {
+            position: relative !important;
+            left: auto !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+          }
+
+          .seasonal-hero-picture-v340,
+          .seasonal-hero-picture-v340 img {
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+
+          .seasonal-hero-picture-v340 img {
+            height: auto !important;
+            aspect-ratio: auto !important;
+            object-fit: contain !important;
+          }
+
+          /* 首頁各區維持同一條垂直閱讀動線，不建立左右獨立捲動欄。 */
+          .top-picks-stream-v330,
+          .activity-stream-v330,
+          .category-strip-v330,
+          .home-product-section.mall-shelf-section-v271,
+          .seasonal-feature-v358 .seasonal-product-showcase-v342 {
+            width: 100% !important;
+            max-width: 1120px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+        }
+
+        /* =====================================================
+           V3.7.2：桌機真正沿用手機視窗，不只修圖片
+           - 整個商城固定為手機寬度並置中
+           - Header、搜尋、分類頁、購物車、商品詳情與選品視窗都限制在同一手機視窗
+           - 漢堡側邊選單使用自己的 100dvh 捲動區，桌機也能看到／捲到全部分類
+        ===================================================== */
+        @media (min-width: 760px) {
+          html,
+          body {
+            overflow-x: hidden !important;
+          }
+
+          body {
+            min-width: 0 !important;
+          }
+
+          .site-shell {
+            width: 100% !important;
+            max-width: 520px !important;
+            min-height: 100dvh !important;
+            margin: 0 auto !important;
+            padding-left: 14px !important;
+            padding-right: 14px !important;
+            overflow-x: hidden !important;
+            box-shadow: 0 0 34px rgba(74, 46, 34, 0.10) !important;
+          }
+
+          /* Header 不再橫跨整個桌機螢幕，而是與手機商城同寬。 */
+          .top-header {
+            left: auto !important;
+            right: auto !important;
+            width: calc(100% + 28px) !important;
+            max-width: none !important;
+            margin: 0 -14px 14px !important;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+          }
+
+          /* 首頁主視覺與活動視覺依手機版比例顯示，不再套桌機高度。 */
+          .dragon-hero-v330.dragon-hero-v340,
+          .seasonal-feature-v340.seasonal-feature-v358 {
+            left: auto !important;
+            width: calc(100% + 28px) !important;
+            max-width: none !important;
+            margin-left: -14px !important;
+            margin-right: -14px !important;
+          }
+
+          .dragon-hero-picture-v330 img,
+          .dragon-hero-picture-v340 img {
+            width: 100% !important;
+            height: auto !important;
+            max-height: none !important;
+            aspect-ratio: 5 / 6 !important;
+            object-fit: cover !important;
+            object-position: center !important;
+          }
+
+          .seasonal-hero-picture-v340 img {
+            width: 100% !important;
+            height: auto !important;
+            max-height: none !important;
+            object-fit: cover !important;
+            object-position: center !important;
+          }
+
+          /* 手機版的橫向分類列在桌機仍保持橫向滑動，不改成桌機換行。 */
+          .mobile-category-nav-v322 {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 auto !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
+
+          .mobile-category-scroll-v322 {
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+          }
+
+          .top-picks-stream-v330,
+          .activity-stream-v330,
+          .category-strip-v330,
+          .home-product-section.mall-shelf-section-v271,
+          .seasonal-feature-v358 .seasonal-product-showcase-v342 {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+          }
+
+          .top-picks-stream-v330 .top-pick-slot-grid-v321 {
+            gap: 10px !important;
+          }
+
+          .home-product-grid,
+          .collection-product-grid,
+          .collection-grid-v22 {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+
+          /* 漢堡選單：整個遮罩只覆蓋手機商城寬度，選單本身可獨立捲到底。 */
+          .drawer-backdrop {
+            top: 0 !important;
+            right: auto !important;
+            bottom: 0 !important;
+            left: 50% !important;
+            width: min(100vw, 520px) !important;
+            height: 100dvh !important;
+            transform: translateX(-50%) !important;
+            overflow: hidden !important;
+          }
+
+          .side-drawer {
+            box-sizing: border-box !important;
+            width: min(88%, 430px) !important;
+            height: 100dvh !important;
+            min-height: 0 !important;
+            max-height: 100dvh !important;
+            padding-bottom: calc(44px + env(safe-area-inset-bottom)) !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            overscroll-behavior-y: contain !important;
+            -webkit-overflow-scrolling: touch !important;
+            scrollbar-gutter: stable !important;
+          }
+
+          .drawer-nav,
+          .drawer-accordion-v25 {
+            min-height: min-content !important;
+            overflow: visible !important;
+          }
+
+          /* 搜尋與分類頁也維持手機寬度，不再橫跨桌機。 */
+          .search-panel.search-page-view.search-dropdown-v342 {
+            inset: auto !important;
+            top: var(--collection-top-v370, 68px) !important;
+            right: auto !important;
+            bottom: auto !important;
+            left: 50% !important;
+            width: min(100vw, 520px) !important;
+            max-width: 520px !important;
+            max-height: calc(100dvh - var(--collection-top-v370, 68px)) !important;
+            transform: translateX(-50%) !important;
+          }
+
+          .search-panel.search-page-view.collection-page-v22 {
+            inset: auto !important;
+            top: var(--collection-top-v370, 68px) !important;
+            right: auto !important;
+            bottom: 0 !important;
+            left: 50% !important;
+            width: min(100vw, 520px) !important;
+            max-width: 520px !important;
+            height: calc(100dvh - var(--collection-top-v370, 68px)) !important;
+            max-height: calc(100dvh - var(--collection-top-v370, 68px)) !important;
+            transform: translateX(-50%) !important;
+          }
+
+          /* 所有全螢幕互動層都只在手機商城視窗內呈現。 */
+          .detail-backdrop,
+          .cart-backdrop,
+          .success-backdrop,
+          .profile-modal-backdrop-v321,
+          .combo-picker-backdrop-v360 {
+            top: 0 !important;
+            right: auto !important;
+            bottom: 0 !important;
+            left: 50% !important;
+            width: min(100vw, 520px) !important;
+            max-width: 520px !important;
+            min-height: 100dvh !important;
+            transform: translateX(-50%) !important;
+          }
+
+          .detail-panel,
+          .cart-panel,
+          .profile-modal-v321,
+          .combo-picker-panel-v360 {
+            max-width: 100% !important;
+          }
+
+          .cart-added-toast-v353 {
+            max-width: min(calc(100vw - 32px), 488px) !important;
+          }
+        }
+
 
       `}
 
