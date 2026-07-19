@@ -77,6 +77,8 @@ type ComboConfig = {
   options: ComboOption[];
   plans: ComboPlan[];
   note?: string;
+  singleUnitPrice?: number;
+  singlePriceLabel?: string;
 };
 
 type ComboSelection = {
@@ -183,6 +185,8 @@ const comboConfigsV360: Record<number, ComboConfig> = {
   51: {
     productId: 51,
     unitLabel: "盒",
+    singleUnitPrice: 500,
+    singlePriceLabel: "單盒 $500",
     options: [
       { id: "cool-patch", name: "石墨烯電氣石精油貼布（涼感）" },
       { id: "warm-patch", name: "石墨烯電氣石精油貼布（溫感）" },
@@ -207,6 +211,8 @@ const comboConfigsV360: Record<number, ComboConfig> = {
   54: {
     productId: 54,
     unitLabel: "條",
+    singleUnitPrice: 250,
+    singlePriceLabel: "單條 $250",
     options: [
       { id: "lavender-toothpaste", name: "薰衣草齒齦保健牙膏" },
       { id: "dragon-blood-toothpaste", name: "龍血齒齦保健牙膏" },
@@ -224,6 +230,8 @@ const comboConfigsV360: Record<number, ComboConfig> = {
   55: {
     productId: 55,
     unitLabel: "桶",
+    singleUnitPrice: 599,
+    singlePriceLabel: "單桶 $599",
     options: [
       { id: "water-mask-35", name: "水搖滾保濕面膜 35片" },
       { id: "white-mask-35", name: "極光白美白面膜 35片" },
@@ -249,6 +257,8 @@ const comboConfigsV360: Record<number, ComboConfig> = {
   67: {
     productId: 67,
     unitLabel: "入",
+    singleUnitPrice: 290,
+    singlePriceLabel: "單入 $290",
     options: [
       { id: "lavender-soap", name: "龍血薰衣草舒緩皂" },
       { id: "mugwort-soap", name: "龍血艾草保庇皂" },
@@ -267,6 +277,8 @@ const comboConfigsV360: Record<number, ComboConfig> = {
   108: {
     productId: 108,
     unitLabel: "條",
+    singleUnitPrice: 290,
+    singlePriceLabel: "單條 $290",
     options: [
       { id: "lavender-hand-cream", name: "薰衣草舒緩護手霜" },
       { id: "sakura-hand-cream", name: "櫻之雪亮澤護手霜" },
@@ -285,6 +297,8 @@ const comboConfigsV360: Record<number, ComboConfig> = {
   119: {
     productId: 119,
     unitLabel: "瓶",
+    singleUnitPrice: 590,
+    singlePriceLabel: "單瓶 $590",
     options: [
       { id: "dragon-blood-shampoo", name: "龍血求麗頭皮修護洗髮精" },
       { id: "dragon-blood-body-wash", name: "龍血求麗潤澤修護沐浴乳" },
@@ -303,6 +317,54 @@ const comboConfigsV360: Record<number, ComboConfig> = {
 
 function getComboConfig(productId: number) {
   return comboConfigsV360[productId] ?? null;
+}
+
+type FlexibleComboPricingV369 = {
+  price: number;
+  label: string;
+  priceLabel: string;
+  note?: string;
+};
+
+function calculateFlexibleComboPricingV369(
+  config: ComboConfig,
+  quantity: number
+): FlexibleComboPricingV369 | null {
+  if (!config.singleUnitPrice || quantity <= 0) return null;
+
+  const dp = Array<number>(quantity + 1).fill(Number.POSITIVE_INFINITY);
+  dp[0] = 0;
+
+  for (let count = 1; count <= quantity; count += 1) {
+    dp[count] = dp[count - 1] + config.singleUnitPrice;
+
+    for (const plan of config.plans) {
+      if (plan.requiredQuantity <= count) {
+        dp[count] = Math.min(
+          dp[count],
+          dp[count - plan.requiredQuantity] + plan.price
+        );
+      }
+    }
+  }
+
+  const exactPlan = config.plans.find(
+    (plan) =>
+      plan.requiredQuantity === quantity &&
+      plan.price === dp[quantity]
+  );
+  const label = exactPlan
+    ? exactPlan.label
+    : quantity === 1
+      ? `單買 1 ${config.unitLabel}`
+      : `彈性選購 ${quantity} ${config.unitLabel}`;
+
+  return {
+    price: dp[quantity],
+    label,
+    priceLabel: `$${dp[quantity].toLocaleString("zh-TW")}`,
+    note: exactPlan?.note,
+  };
 }
 
 function buildSimpleCartKey(productId: number) {
@@ -4092,6 +4154,20 @@ function Home() {
     (total, quantity) => total + quantity,
     0
   );
+  const isFlexibleComboV369 = Boolean(activeComboConfig?.singleUnitPrice);
+  const comboMaxQuantityV369 = activeComboConfig
+    ? isFlexibleComboV369
+      ? Math.max(...activeComboConfig.plans.map((plan) => plan.requiredQuantity))
+      : activeComboPlan?.requiredQuantity ?? 0
+    : 0;
+  const flexibleComboPricingV369 =
+    activeComboConfig && isFlexibleComboV369
+      ? calculateFlexibleComboPricingV369(activeComboConfig, comboSelectedCount)
+      : null;
+  const comboCanConfirmV369 = isFlexibleComboV369
+    ? comboSelectedCount > 0
+    : Boolean(activeComboPlan) &&
+      comboSelectedCount === activeComboPlan?.requiredQuantity;
 
   useEffect(() => {
     setDetailGalleryIndex(0);
@@ -6117,7 +6193,7 @@ function Home() {
   }
 
   function updateComboDraftQuantity(optionId: string, delta: number) {
-    if (!activeComboPlan) return;
+    if (!activeComboConfig || !activeComboPlan) return;
 
     setComboDraftSelections((current) => {
       const currentQuantity = current[optionId] ?? 0;
@@ -6125,8 +6201,11 @@ function Home() {
         (total, quantity) => total + quantity,
         0
       );
+      const quantityLimit = isFlexibleComboV369
+        ? comboMaxQuantityV369
+        : activeComboPlan.requiredQuantity;
 
-      if (delta > 0 && currentTotal >= activeComboPlan.requiredQuantity) {
+      if (delta > 0 && currentTotal >= quantityLimit) {
         return current;
       }
 
@@ -6142,7 +6221,7 @@ function Home() {
 
   function confirmComboSelection() {
     if (!comboPickerProduct || !activeComboConfig || !activeComboPlan) return;
-    if (comboSelectedCount !== activeComboPlan.requiredQuantity) return;
+    if (!comboCanConfirmV369) return;
 
     const selections: ComboSelection[] = activeComboConfig.options
       .map((option) => ({
@@ -6151,12 +6230,24 @@ function Home() {
         quantity: comboDraftSelections[option.id] ?? 0,
       }))
       .filter((selection) => selection.quantity > 0);
+    const effectivePlanId = isFlexibleComboV369
+      ? `flex-${comboSelectedCount}-${flexibleComboPricingV369?.price ?? 0}`
+      : activeComboPlan.id;
+    const effectivePlanLabel = isFlexibleComboV369
+      ? flexibleComboPricingV369?.label ?? `彈性選購 ${comboSelectedCount} ${activeComboConfig.unitLabel}`
+      : activeComboPlan.label;
+    const effectivePriceLabel = isFlexibleComboV369
+      ? flexibleComboPricingV369?.priceLabel ?? "$0"
+      : activeComboPlan.priceLabel;
+    const effectivePrice = isFlexibleComboV369
+      ? flexibleComboPricingV369?.price ?? 0
+      : activeComboPlan.price;
     const cartKey = buildComboCartKey(
       comboPickerProduct.id,
-      activeComboPlan.id,
+      effectivePlanId,
       selections
     );
-    const comboPlanLabel = `${activeComboPlan.label} ${activeComboPlan.priceLabel}`;
+    const comboPlanLabel = `${effectivePlanLabel} ${effectivePriceLabel}`;
     const editingKey = comboEditingItemKey;
 
     setCartItems((currentItems) => {
@@ -6169,10 +6260,10 @@ function Home() {
             item.cartKey === editingKey
               ? {
                   ...item,
-                  comboPlanId: activeComboPlan.id,
+                  comboPlanId: effectivePlanId,
                   comboPlanLabel,
                   comboSelections: selections,
-                  comboPrice: activeComboPlan.price,
+                  comboPrice: effectivePrice,
                 }
               : item
           );
@@ -6199,10 +6290,10 @@ function Home() {
             cartKey,
             product: comboPickerProduct,
             quantity: editingItem.quantity,
-            comboPlanId: activeComboPlan.id,
+            comboPlanId: effectivePlanId,
             comboPlanLabel,
             comboSelections: selections,
-            comboPrice: activeComboPlan.price,
+            comboPrice: effectivePrice,
           },
         ];
       }
@@ -6222,10 +6313,10 @@ function Home() {
           cartKey,
           product: comboPickerProduct,
           quantity: 1,
-          comboPlanId: activeComboPlan.id,
+          comboPlanId: effectivePlanId,
           comboPlanLabel,
           comboSelections: selections,
-          comboPrice: activeComboPlan.price,
+          comboPrice: effectivePrice,
         },
       ];
     });
@@ -7129,7 +7220,20 @@ function Home() {
               </button>
             </header>
 
-            {activeComboConfig.plans.length > 1 && (
+            {isFlexibleComboV369 ? (
+              <div className="combo-price-guide-v369" aria-label="單買與組合優惠價格">
+                <div>
+                  <strong>單買</strong>
+                  <span>{activeComboConfig.singlePriceLabel}</span>
+                </div>
+                {activeComboConfig.plans.map((plan) => (
+                  <div key={plan.id}>
+                    <strong>{plan.label}</strong>
+                    <span>{plan.priceLabel}</span>
+                  </div>
+                ))}
+              </div>
+            ) : activeComboConfig.plans.length > 1 ? (
               <div className="combo-plan-grid-v360" aria-label="選擇優惠方案">
                 {activeComboConfig.plans.map((plan) => (
                   <button
@@ -7143,20 +7247,26 @@ function Home() {
                   </button>
                 ))}
               </div>
-            )}
+            ) : null}
 
             <div className="combo-picker-progress-v360">
               <div>
                 <span>已選</span>
                 <strong>
-                  {comboSelectedCount}／{activeComboPlan.requiredQuantity}
+                  {isFlexibleComboV369
+                    ? `${comboSelectedCount}／${comboMaxQuantityV369}`
+                    : `${comboSelectedCount}／${activeComboPlan.requiredQuantity}`}
                 </strong>
                 <span>{activeComboConfig.unitLabel}</span>
               </div>
               <em>
-                {comboSelectedCount === activeComboPlan.requiredQuantity
-                  ? "已選滿，可以加入購物車"
-                  : `還要選 ${activeComboPlan.requiredQuantity - comboSelectedCount} ${activeComboConfig.unitLabel}`}
+                {isFlexibleComboV369
+                  ? comboSelectedCount === 0
+                    ? `至少選 1 ${activeComboConfig.unitLabel}即可購買`
+                    : `${flexibleComboPricingV369?.label ?? "單買"}・${flexibleComboPricingV369?.priceLabel ?? ""}`
+                  : comboSelectedCount === activeComboPlan.requiredQuantity
+                    ? "已選滿，可以加入購物車"
+                    : `還要選 ${activeComboPlan.requiredQuantity - comboSelectedCount} ${activeComboConfig.unitLabel}`}
               </em>
             </div>
 
@@ -7164,7 +7274,10 @@ function Home() {
               {activeComboConfig.options.map((option) => {
                 const quantity = comboDraftSelections[option.id] ?? 0;
                 const reachedLimit =
-                  comboSelectedCount >= activeComboPlan.requiredQuantity;
+                  comboSelectedCount >=
+                  (isFlexibleComboV369
+                    ? comboMaxQuantityV369
+                    : activeComboPlan.requiredQuantity);
 
                 return (
                   <article key={option.id} className="combo-option-row-v360">
@@ -7196,22 +7309,41 @@ function Home() {
               })}
             </div>
 
-            {(activeComboConfig.note || activeComboPlan.note) && (
+            {(activeComboConfig.note ||
+              (isFlexibleComboV369
+                ? flexibleComboPricingV369?.note
+                : activeComboPlan.note)) && (
               <div className="combo-picker-note-v360">
                 {activeComboConfig.note && <p>{activeComboConfig.note}</p>}
-                {activeComboPlan.note && <strong>{activeComboPlan.note}</strong>}
+                {(isFlexibleComboV369
+                  ? flexibleComboPricingV369?.note
+                  : activeComboPlan.note) && (
+                  <strong>
+                    {isFlexibleComboV369
+                      ? flexibleComboPricingV369?.note
+                      : activeComboPlan.note}
+                  </strong>
+                )}
               </div>
             )}
 
             <footer className="combo-picker-footer-v360">
               <div>
-                <span>{activeComboPlan.label}</span>
-                <strong>{activeComboPlan.priceLabel}</strong>
+                <span>
+                  {isFlexibleComboV369
+                    ? flexibleComboPricingV369?.label ?? "請選擇商品"
+                    : activeComboPlan.label}
+                </span>
+                <strong>
+                  {isFlexibleComboV369
+                    ? flexibleComboPricingV369?.priceLabel ?? "$0"
+                    : activeComboPlan.priceLabel}
+                </strong>
               </div>
               <button
                 type="button"
                 className="combo-picker-confirm-v360"
-                disabled={comboSelectedCount !== activeComboPlan.requiredQuantity}
+                disabled={!comboCanConfirmV369}
                 onClick={confirmComboSelection}
               >
                 {comboEditingItemKey ? "儲存修改" : "加入購物車"}
@@ -23067,6 +23199,40 @@ function Home() {
           color: #4a2e22;
           font-size: 27px;
           line-height: 1;
+        }
+
+        .combo-price-guide-v369 {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+          padding: 14px 16px 4px;
+        }
+
+        .combo-price-guide-v369 > div {
+          display: flex;
+          min-width: 0;
+          min-height: 62px;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          padding: 9px 6px;
+          border: 1px solid rgba(74, 46, 34, 0.14);
+          border-radius: 14px;
+          background: #fffaf4;
+          color: #6a4a3a;
+          text-align: center;
+        }
+
+        .combo-price-guide-v369 strong {
+          font-size: 12px;
+          line-height: 1.2;
+        }
+
+        .combo-price-guide-v369 span {
+          color: #9a3042;
+          font-size: 13px;
+          font-weight: 950;
         }
 
         .combo-plan-grid-v360 {
