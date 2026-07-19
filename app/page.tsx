@@ -1,7 +1,7 @@
 "use client";
 
-// Jourdeness storefront build: V3.6.7 — price cleanup, confirmed 10-sheet mask price, and stale price-note removal.
-import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
+// Jourdeness storefront build: V3.7.0 — consolidated flexible-choice cards and measured header-to-collection seamless layout.
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
   本月優惠: ["全部", "組合優惠", "買一送一", "任選優惠"],
@@ -2389,22 +2389,27 @@ function normalizeProductForV362(product: Product): Product {
     51: {
       name: "石墨烯貼布自由配",
       originalPrice: "原價最高 $ 8,000",
-      price: "任選 4 盒 $ 1,099｜任選 10 盒 $ 2,500",
-      description: "涼感與溫感貼布可自由搭配，先選 4 盒或 10 盒方案，再選各款數量。",
+      price: "單盒 $ 500｜任選 4 盒 $ 1,099｜任選 10 盒 $ 2,500",
+      description: "涼感與溫感貼布整合在同一張商品卡，可單盒購買；選滿 4 盒或 10 盒時自動採用對應優惠價。",
+    },
+    54: {
+      name: "齒齦保健牙膏自由配",
+      price: "單條 $ 250｜任選 3 條 $ 500",
+      description: "薰衣草舒緩與龍血修護牙膏整合在同一張商品卡，可單條購買；選滿 3 條時自動採用 $500 優惠價。",
     },
     55: {
       name: "35片面膜自由配",
       originalPrice: "單桶原價價值 $ 3,000",
-      price: "任選 2 桶 $ 1,100｜任選 5 桶 $ 2,750",
-      description: "水搖滾保濕面膜與極光白美白面膜可自由搭配；任選 5 桶加贈面膜 10 片。",
+      price: "單桶 $ 599｜任選 2 桶 $ 1,100｜任選 5 桶 $ 2,750",
+      description: "水搖滾保濕面膜與極光白美白面膜整合在同一張商品卡，可單桶購買；選滿 2 桶或 5 桶時自動採用優惠價，5 桶加贈面膜 10 片。",
     },
     67: {
       name: "香氛皂自由配",
       originalPrice: "原價價值 $ 1,160",
-      price: "任選 4 入 $ 799",
+      price: "單入 $ 290｜任選 4 入 $ 799",
       image: "/products/bdsoap.png",
       gallery: ["/products/bdsoap.png"],
-      description: "龍血薰衣草舒緩皂、龍血艾草保庇皂與龍血檸檬馬鞭草皂可自由搭配，共 4 入 $799。",
+      description: "龍血薰衣草舒緩皂、龍血艾草保庇皂與龍血檸檬馬鞭草皂整合在同一張商品卡，可單入購買；選滿 4 入時自動採用 $799 優惠價。",
     },
     68: {
       name: "櫻花美白三件組",
@@ -2413,8 +2418,13 @@ function normalizeProductForV362(product: Product): Product {
     },
     108: {
       name: "護手霜自由配",
-      price: "買二送一｜3 條 $ 580",
-      description: "薰衣草舒緩、櫻之雪亮澤與茶樹防禦護手霜可自由搭配，共 3 條 $580。",
+      price: "單條 $ 290｜買二送一・3 條 $ 580",
+      description: "薰衣草舒緩、櫻之雪亮澤與茶樹防禦護手霜整合在同一張商品卡，可單條購買；選滿 3 條時自動採用買二送一 $580 優惠價。",
+    },
+    119: {
+      name: "龍血洗髮精／沐浴乳自由配",
+      price: "單瓶 $ 590｜任選 3 瓶 $ 1,100",
+      description: "龍血求麗頭皮修護洗髮精與龍血求麗潤澤修護沐浴乳整合在同一張商品卡，可單瓶購買；選滿 3 瓶時自動採用 $1,100 優惠價。",
     },
     115: {
       category: "身體洗護",
@@ -4121,6 +4131,8 @@ function Home() {
   const [cartStep, setCartStep] = useState<1 | 2>(1);
   const [detailGalleryIndex, setDetailGalleryIndex] = useState(0);
   const detailGalleryRef = useRef<HTMLDivElement | null>(null);
+  const topHeaderRefV370 = useRef<HTMLElement | null>(null);
+  const [collectionTopV370, setCollectionTopV370] = useState(68);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
   const [cartNotice, setCartNotice] = useState("");
@@ -4198,10 +4210,49 @@ function Home() {
     };
   }, [comboPickerProduct]);
 
+  // V3.7.0：以 Header 實際底部位置決定分類頁起點，避免不同手機寬度造成露底縫隙。
+  useEffect(() => {
+    const header = topHeaderRefV370.current;
+    if (!header) return;
+
+    const updateCollectionTop = () => {
+      const nextTop = Math.max(0, Math.ceil(header.getBoundingClientRect().bottom));
+      setCollectionTopV370(nextTop);
+    };
+
+    updateCollectionTop();
+    window.addEventListener("resize", updateCollectionTop);
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(updateCollectionTop)
+        : null;
+    resizeObserver?.observe(header);
+
+    return () => {
+      window.removeEventListener("resize", updateCollectionTop);
+      resizeObserver?.disconnect();
+    };
+  }, []);
+
   const seriesList = categoryConfig[selectedCategory];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
   const monthlyOfferIdsV316 = new Set([34, 1, 51, 54, 55, 58, 59, 67, 68, 108, 112, 119]);
+
+  // V3.7.0：這些單品仍保留在資料層與既有購物車相容邏輯中，
+  // 但前台商品卡統一由對應「自由配」商品承接，避免同一商品重複出現兩張卡。
+  const consolidatedChoiceOptionProductIdsV370 = new Set([
+    15, 16,       // 龍血洗髮精／沐浴乳 -> 119
+    18, 19,       // 牙膏 -> 54
+    30, 31,       // 石墨烯貼布 -> 51
+    38, 39,       // 35片面膜 -> 55
+    50, 115, 116, // 已上架香氛皂 -> 67
+  ]);
+
+  function isConsolidatedChoiceOptionProductV370(product: Product) {
+    return consolidatedChoiceOptionProductIdsV370.has(product.id);
+  }
 
   // V3.6.8：漢堡分類改採固定商品歸屬，不再用「龍血／薰衣草／茶樹」等模糊關鍵字判斷主分類。
   // 本月優惠是額外活動入口；每個在售商品仍會落在一個用途主分類，確保可由漢堡選單找到。
@@ -4352,6 +4403,7 @@ function Home() {
       index,
       searchScore: getProductSearchScore(product, normalizedSearchQuery),
     }))
+    .filter(({ product }) => !isConsolidatedChoiceOptionProductV370(product))
     .filter(({ product, searchScore }) => {
       if (normalizedSearchQuery) return searchScore !== null;
 
@@ -4377,28 +4429,28 @@ function Home() {
   const searchPreviewProducts = normalizedSearchQuery ? filteredProducts : [];
   const searchRemainingCount = 0;
 
-  const featuredProductIds = [34, 1, 51, 58, 59, 55, 50, 54, 119, 2, 3, 56];
+  const featuredProductIds = [34, 1, 51, 58, 59, 55, 67, 54, 119, 2, 3, 56];
   const featuredProducts = featuredProductIds
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([34, 58, 59, 55, 50, 54, 119, 56]);
+  const homeComboProducts = getProductsByIds([34, 58, 59, 55, 67, 54, 119, 56]);
   const homeClearanceProducts: Product[] = [];
   const homeDragonBloodProducts = getProductsByIds([34, 59, 67]);
   const homeWaterGlowProducts = getProductsByIds([40, 41, 63]);
   const homeTeaControlProducts = getProductsByIds([32, 42, 45]);
-  const homeBrighteningProducts = getProductsByIds([68, 48, 49, 39]);
+  const homeBrighteningProducts = getProductsByIds([68, 48, 49]);
   const homeFirmingProducts = getProductsByIds([11, 12, 13, 14, 61, 65]);
-  const homeMaskProducts = getProductsByIds([55, 38, 39]);
+  const homeMaskProducts = getProductsByIds([55]);
   const homeHealthProducts = getProductsByIds([58, 1]);
-  const homeDailyLifeProducts = getProductsByIds([50, 54, 70, 71, 113]);
+  const homeDailyLifeProducts = getProductsByIds([67, 54, 70, 71, 113]);
 
   const campaignHeroProducts = getProductsByIds([34, 58, 51]);
-  const campaignSpotlightProducts = getProductsByIds([34, 58, 59, 55, 50]);
+  const campaignSpotlightProducts = getProductsByIds([34, 58, 59, 55, 67]);
 
   const heroTopProduct = products.find((product) => product.id === 34);
-  const heroSecondaryProducts = getProductsByIds([58, 50]);
-  const heroComboProducts = getProductsByIds([34, 58, 59, 55, 50]);
+  const heroSecondaryProducts = getProductsByIds([58, 67]);
+  const heroComboProducts = getProductsByIds([34, 58, 59, 55, 67]);
   const heroSeriesEntries: {
     title: string;
     text: string;
@@ -4489,7 +4541,7 @@ function Home() {
   const summerWhiteningProducts = getProductsByIds([68, 47, 48, 49, 110]);
   const mallHotProducts = getProductsByIds([55, 51, 54, 108, 67, 119, 68, 1]);
   const mallSkincareShelfProducts = getProductsByIds([34, 59, 35, 36, 40, 14]);
-  const mallBodyShelfProducts = getProductsByIds([54, 67, 108, 50, 115, 116, 119, 112]);
+  const mallBodyShelfProducts = getProductsByIds([54, 67, 108, 119, 112]);
   const mallHealthShelfProducts = getProductsByIds([1, 58, 2, 3, 69, 56]);
   const mallAromaShelfProducts = getProductsByIds([85, 74, 79, 82, 75, 76]);
   const mallComingSoonProducts = getProductsByIds([70, 71, 113, 46, 114, 117, 118]);
@@ -4539,7 +4591,7 @@ function Home() {
 
   const collectionSeriesChips = seriesList.filter((series) => series !== "全部").slice(0, 14);
 
-  const hotCollectionProductIds = [34, 1, 58, 59, 55, 50, 54, 119, 2, 3, 53, 56, 69, 112, 15, 16, 57, 18, 19, 38, 39, 67, 35, 36, 9, 10, 68, 48, 49, 46, 47, 40, 41, 32, 70, 71, 113, 74, 79, 85, 30, 31];
+  const hotCollectionProductIds = [34, 1, 58, 59, 55, 67, 54, 119, 2, 3, 53, 56, 69, 112, 57, 35, 36, 9, 10, 68, 48, 49, 46, 47, 40, 41, 32, 70, 71, 113, 74, 79, 85, 51, 108];
 
   const collectionProducts = normalizedSearchQuery
     ? filteredProducts
@@ -6040,6 +6092,7 @@ function Home() {
     const seen = new Set<number>();
     return [...manual, ...comboMatches, ...sameSeries, ...sameCategory]
       .filter((item) => {
+        if (isConsolidatedChoiceOptionProductV370(item)) return false;
         if (seen.has(item.id)) return false;
         seen.add(item.id);
         return true;
@@ -7102,8 +7155,8 @@ function Home() {
   }
 
   return (
-    <main className="site-shell" data-build="jourdeness-v3.5.8-visual">
-      <header className="top-header">
+    <main className="site-shell" data-build="jourdeness-v3.7.0-consolidated-choice">
+      <header ref={topHeaderRefV370} className="top-header">
         <button
           className="menu-button"
           onClick={() => setIsMenuOpen(true)}
@@ -7549,7 +7602,11 @@ function Home() {
       )}
 
       {isCollectionOpen && (
-        <section className="search-panel search-page-view collection-page-view collection-page-v22" aria-label="分類商品頁面">
+        <section
+          className="search-panel search-page-view collection-page-view collection-page-v22"
+          aria-label="分類商品頁面"
+          style={{ "--collection-top-v370": `${collectionTopV370}px` } as CSSProperties}
+        >
           <div className="search-page-head collection-page-head collection-head-v22">
             <button
               type="button"
@@ -24093,6 +24150,36 @@ function Home() {
           box-shadow: 0 -40px 0 #fbf6ef !important;
         }
 
+        /* =====================================================
+           V3.7.0：分類頁以 Header 實際高度貼齊，完全移除露底縫隙
+        ===================================================== */
+        .search-panel.search-page-view.collection-page-v22 {
+          inset: var(--collection-top-v370, 68px) 0 0 !important;
+          top: var(--collection-top-v370, 68px) !important;
+          height: calc(100dvh - var(--collection-top-v370, 68px)) !important;
+          max-height: calc(100dvh - var(--collection-top-v370, 68px)) !important;
+          padding-top: 0 !important;
+          box-shadow: none !important;
+          background: #f6ebdd !important;
+        }
+
+        .search-panel.search-page-view.collection-page-v22 .collection-head-v22 {
+          top: 0 !important;
+          margin: 0 -14px 12px !important;
+          border-radius: 0 !important;
+          background: #fbf6ef !important;
+        }
+
+        @media (max-width: 359px) {
+          .search-panel.search-page-view.collection-page-v22 {
+            inset: var(--collection-top-v370, 64px) 0 0 !important;
+            top: var(--collection-top-v370, 64px) !important;
+            height: calc(100dvh - var(--collection-top-v370, 64px)) !important;
+            max-height: calc(100dvh - var(--collection-top-v370, 64px)) !important;
+          }
+        }
+
+        /* V3.7.0：任選／自由配只保留一張整合商品卡；單品選項由同一視窗完成單買與門檻優惠。 */
         /* =====================================================
            V3.6.6：購物車組合優惠偵測與手動套用
         ===================================================== */
