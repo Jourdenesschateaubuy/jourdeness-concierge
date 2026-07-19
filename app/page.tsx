@@ -60,6 +60,8 @@ type Product = {
 type ComboOption = {
   id: string;
   name: string;
+  singleUnitPrice?: number;
+  singlePriceLabel?: string;
 };
 
 type ComboPlan = {
@@ -168,9 +170,20 @@ const comboConfigsV360: Record<number, ComboConfig> = {
   1: {
     productId: 1,
     unitLabel: "盒",
+    singlePriceLabel: "高鈣單盒 $800｜蔓越莓單盒 $990",
     options: [
-      { id: "cranberry-probiotic", name: "蔓越莓益生菌" },
-      { id: "calcium-probiotic", name: "高鈣益生菌" },
+      {
+        id: "cranberry-probiotic",
+        name: "蔓越莓益生菌",
+        singleUnitPrice: 990,
+        singlePriceLabel: "單盒 $990",
+      },
+      {
+        id: "calcium-probiotic",
+        name: "高鈣益生菌",
+        singleUnitPrice: 800,
+        singlePriceLabel: "單盒 $800",
+      },
     ],
     plans: [
       {
@@ -326,43 +339,85 @@ type FlexibleComboPricingV369 = {
   note?: string;
 };
 
+function hasFlexibleSinglePricingV373(config: ComboConfig) {
+  return Boolean(
+    config.singleUnitPrice ||
+      config.options.some((option) => option.singleUnitPrice)
+  );
+}
+
 function calculateFlexibleComboPricingV369(
   config: ComboConfig,
-  quantity: number
+  selections: Record<string, number>
 ): FlexibleComboPricingV369 | null {
-  if (!config.singleUnitPrice || quantity <= 0) return null;
+  const selectedUnitPrices: number[] = [];
 
-  const dp = Array<number>(quantity + 1).fill(Number.POSITIVE_INFINITY);
-  dp[0] = 0;
+  for (const option of config.options) {
+    const quantity = selections[option.id] ?? 0;
+    const unitPrice = option.singleUnitPrice ?? config.singleUnitPrice;
 
-  for (let count = 1; count <= quantity; count += 1) {
-    dp[count] = dp[count - 1] + config.singleUnitPrice;
+    if (quantity <= 0) continue;
+    if (!unitPrice) return null;
 
+    for (let index = 0; index < quantity; index += 1) {
+      selectedUnitPrices.push(unitPrice);
+    }
+  }
+
+  const quantity = selectedUnitPrices.length;
+  if (quantity <= 0) return null;
+
+  // 優惠組合可以由任意品項搭配；未被組合價涵蓋的品項則以各自單價計算。
+  // 將較便宜的品項留作單買，可得到固定選擇內容下的最低應付金額。
+  selectedUnitPrices.sort((a, b) => a - b);
+  const prefixSingleCost = Array<number>(quantity + 1).fill(0);
+  for (let index = 0; index < quantity; index += 1) {
+    prefixSingleCost[index + 1] = prefixSingleCost[index] + selectedUnitPrices[index];
+  }
+
+  const planDp = Array<number>(quantity + 1).fill(Number.POSITIVE_INFINITY);
+  planDp[0] = 0;
+
+  for (let bundledCount = 1; bundledCount <= quantity; bundledCount += 1) {
     for (const plan of config.plans) {
-      if (plan.requiredQuantity <= count) {
-        dp[count] = Math.min(
-          dp[count],
-          dp[count - plan.requiredQuantity] + plan.price
+      if (plan.requiredQuantity <= bundledCount) {
+        planDp[bundledCount] = Math.min(
+          planDp[bundledCount],
+          planDp[bundledCount - plan.requiredQuantity] + plan.price
         );
       }
+    }
+  }
+
+  let bestPrice = prefixSingleCost[quantity];
+  let bestBundledQuantity = 0;
+
+  for (let bundledCount = 1; bundledCount <= quantity; bundledCount += 1) {
+    if (!Number.isFinite(planDp[bundledCount])) continue;
+    const singleCount = quantity - bundledCount;
+    const candidatePrice = planDp[bundledCount] + prefixSingleCost[singleCount];
+
+    if (candidatePrice < bestPrice) {
+      bestPrice = candidatePrice;
+      bestBundledQuantity = bundledCount;
     }
   }
 
   const exactPlan = config.plans.find(
     (plan) =>
       plan.requiredQuantity === quantity &&
-      plan.price === dp[quantity]
+      plan.price === bestPrice
   );
   const label = exactPlan
     ? exactPlan.label
-    : quantity === 1
-      ? `單買 1 ${config.unitLabel}`
+    : bestBundledQuantity === 0
+      ? `單買 ${quantity} ${config.unitLabel}`
       : `彈性選購 ${quantity} ${config.unitLabel}`;
 
   return {
-    price: dp[quantity],
+    price: bestPrice,
     label,
-    priceLabel: `$${dp[quantity].toLocaleString("zh-TW")}`,
+    priceLabel: `$${bestPrice.toLocaleString("zh-TW")}`,
     note: exactPlan?.note,
   };
 }
@@ -2176,12 +2231,12 @@ function normalizeProductForV31(product: Product): Product {
       name: "蔓越莓／補鈣益生菌",
       category: "健康補給",
       series: "益生菌系列",
-      originalPrice: "單盒參考價見商品資訊",
-      price: "任選 3 盒 $ 1,600",
+      originalPrice: "高鈣單盒 $ 800｜蔓越莓單盒 $ 990",
+      price: "單盒 $ 800 起｜任選 3 盒 $ 1,600",
       image: "/products/top-pick-2.jpg",
       gallery: ["/products/top-pick-2.jpg"],
-      description: "蔓越莓益生菌與高鈣益生菌可任選搭配，共 3 盒 $1,600。",
-      priceNote: "高鈣益生菌與蔓越莓益生菌可任選搭配，共 3 盒 $1,600；實際庫存由 LINE 小幫手確認。",
+      description: "蔓越莓益生菌與高鈣益生菌皆可單盒購買；高鈣單盒 $800、蔓越莓單盒 $990，任選搭配共 3 盒優惠價 $1,600。",
+      priceNote: "高鈣益生菌單盒 $800；蔓越莓益生菌單盒 $990；任選搭配共 3 盒 $1,600。實際庫存依 LINE 小幫手確認。",
     };
   }
 
@@ -2466,12 +2521,12 @@ const productContentOverrides: Record<number, Partial<Product>> = {
   1: {
     cardName: "蔓越莓／補鈣益生菌",
     cardSubtitle: "蔓越莓與補鈣益生菌自由搭配",
-    spec: "3g x 30包 / 盒，共 3 盒",
-    intro: "蔓越莓益生菌與高鈣益生菌整合成任選 3 盒方案，適合依日常需求自由搭配補給。",
+    spec: "3g x 30包 / 盒，可單盒購買或任選 3 盒",
+    intro: "蔓越莓益生菌與高鈣益生菌可依需求單盒購買，也可自由搭配任選 3 盒享組合優惠。",
     features: [
-      "蔓越莓益生菌與高鈣益生菌可任選搭配。",
-      "共 3 盒組合價 $1,600，任選搭配更彈性。",
-      "可依日常需求搭配蔓越莓或高鈣益生菌。",
+      "高鈣益生菌單盒 $800；蔓越莓益生菌單盒 $990。",
+      "任選 3 盒組合價 $1,600，可自由搭配兩款益生菌。",
+      "可依日常需求選擇單買或組合優惠。",
     ],
     suitableFor: [
       "益生菌補給",
@@ -2482,7 +2537,7 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     usage: "每日 1～3 包，餐前餐後均可食用；請依各商品標示或客服說明補充。",
     notice: "可搭配品項與庫存依 LINE 小幫手確認為準。若有特殊體質、孕哺乳或正在接受醫囑，建議先洽詢專業人員。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "蔓越莓益生菌 / 高鈣益生菌任選 3 盒 $1,600。",
+    priceNote: "高鈣益生菌單盒 $800；蔓越莓益生菌單盒 $990；任選 3 盒 $1,600。",
   },
   2: {
     cardName: "EC晶眸葉黃素",
@@ -4166,7 +4221,9 @@ function Home() {
     (total, quantity) => total + quantity,
     0
   );
-  const isFlexibleComboV369 = Boolean(activeComboConfig?.singleUnitPrice);
+  const isFlexibleComboV369 = Boolean(
+    activeComboConfig && hasFlexibleSinglePricingV373(activeComboConfig)
+  );
   const comboMaxQuantityV369 = activeComboConfig
     ? isFlexibleComboV369
       ? Math.max(...activeComboConfig.plans.map((plan) => plan.requiredQuantity))
@@ -4174,7 +4231,7 @@ function Home() {
     : 0;
   const flexibleComboPricingV369 =
     activeComboConfig && isFlexibleComboV369
-      ? calculateFlexibleComboPricingV369(activeComboConfig, comboSelectedCount)
+      ? calculateFlexibleComboPricingV369(activeComboConfig, comboDraftSelections)
       : null;
   const comboCanConfirmV369 = isFlexibleComboV369
     ? comboSelectedCount > 0
@@ -7277,7 +7334,7 @@ function Home() {
               <div className="combo-price-guide-v369" aria-label="單買與組合優惠價格">
                 <div>
                   <strong>單買</strong>
-                  <span>{activeComboConfig.singlePriceLabel}</span>
+                  <span>{activeComboConfig.singlePriceLabel ?? "依品項單價"}</span>
                 </div>
                 {activeComboConfig.plans.map((plan) => (
                   <div key={plan.id}>
@@ -7336,7 +7393,7 @@ function Home() {
                   <article key={option.id} className="combo-option-row-v360">
                     <div>
                       <h3>{option.name}</h3>
-                      <p>選擇數量</p>
+                      <p>{option.singlePriceLabel ?? "選擇數量"}</p>
                     </div>
                     <div className="combo-option-quantity-v360">
                       <button
