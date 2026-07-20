@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.8.0 — 首頁本月優惠方案卡、依肌膚需求選保養。
+// Jourdeness storefront build: V3.8.2 — TOP 排行榜資訊區壓縮、價格強化、TOP4 改固定組合價。
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -2231,15 +2231,14 @@ const additionalProductsV359: Product[] = [
 const additionalProductsV378: Product[] = [
   {
     id: 120,
-    name: "龍血求麗精華液",
-    category: "保養品",
+    name: "龍血求麗精華液＋肌可佳膠原蛋白彈潤原液",
+    category: "組合價",
     series: "龍血系列",
-    originalPrice: "原價 $ 1,290",
-    price: "售價 $ 695",
+    price: "組合價 $ 1,290",
     image: "/products/db-2.jpg",
-    gallery: ["/products/db-2.jpg"],
-    description: "30mL / 瓶。龍血系列集中型精華，適合日常加強保濕、柔嫩與修護感保養。",
-    expiryNote: "效期：2026年12月；實際日期依商品包裝或 LINE 小幫手確認為準。",
+    gallery: ["/products/db-2.jpg", "/products/collagen 1.jpg"],
+    description: "龍血求麗精華液 30mL ＋ 肌可佳膠原蛋白彈潤原液 30mL，限定組合價 $1,290。龍血求麗精華液目前不提供單買。",
+    expiryNote: "龍血求麗精華液效期：2026年12月；實際日期依商品包裝或 LINE 小幫手確認為準。",
   },
 ];
 
@@ -4546,20 +4545,20 @@ const productContentOverridesV376: Record<number, Partial<Product>> = {
     suitableFor: ["乾燥缺水", "高級養護", "滋養光澤"],
   },
   120: {
-    cardName: "龍血求麗精華液",
-    cardSubtitle: "30mL・龍血系列集中精華",
-    spec: "30mL / 瓶",
-    intro: "龍血系列集中型精華，結合秘魯龍血樹脂萃取、藻紅素與尤加利、快樂鼠尾草等植萃香氣，適合日常加強保濕與柔嫩修護感保養。",
+    cardName: "龍血求麗精華液＋肌可佳膠原蛋白彈潤原液",
+    cardSubtitle: "30mL＋30mL・限定雙精華組合",
+    spec: "龍血求麗精華液 30mL ＋ 肌可佳膠原蛋白彈潤原液 30mL",
+    intro: "龍血求麗精華液搭配肌可佳膠原蛋白彈潤原液的限定雙精華組合，適合日常加強保濕、柔嫩與彈潤感保養。",
     features: [
-      "秘魯龍血樹脂萃取搭配藻紅素，作為龍血系列集中保養。",
-      "尤加利與快樂鼠尾草帶來清新草本保養感。",
-      "不含酒精、香精、色素與 Paraben，適合日常精華步驟使用。",
+      "龍血求麗精華液 30mL，作為龍血系列集中型精華保養。",
+      "肌可佳膠原蛋白彈潤原液 30mL，適合加強澎潤、保濕與肌膚彈性感。",
+      "兩款精華固定搭配，組合價 $1,290；龍血求麗精華液目前不提供單買。",
     ],
-    suitableFor: ["龍血系列", "乾燥缺水", "日常修護", "集中保養"],
-    usage: "化妝水後取適量均勻塗抹於臉部與頸部，再銜接乳液或乳霜。",
-    notice: "使用後若有不適請停止使用；避免接觸眼睛與黏膜。",
-    expiryNote: "效期：2026年12月；實際日期依商品包裝或 LINE 小幫手確認為準。",
-    priceNote: "售價 $695；庫存與實際效期依賣場顯示或 LINE 小幫手確認。",
+    suitableFor: ["龍血系列", "乾燥缺水", "彈潤保養", "限定組合"],
+    usage: "可依個人保養習慣分別使用；化妝水後取適量精華均勻塗抹於臉部與頸部，再銜接乳液或乳霜。",
+    notice: "使用後若有不適請停止使用；避免接觸眼睛與黏膜。實際庫存與效期依賣場顯示或 LINE 小幫手確認為準。",
+    expiryNote: "龍血求麗精華液效期：2026年12月；實際日期依商品包裝或 LINE 小幫手確認為準。",
+    priceNote: "限定組合價 $1,290。龍血求麗精華液目前不提供單買，需搭配肌可佳膠原蛋白彈潤原液 30mL。",
   },
 };
 
@@ -4960,7 +4959,7 @@ function Home() {
   const seriesList = categoryConfig[selectedCategory];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
-  const monthlyOfferIdsV316 = new Set([34, 1, 51, 54, 55, 58, 59, 67, 68, 108, 112, 119]);
+  const monthlyOfferIdsV316 = new Set([34, 1, 51, 54, 55, 58, 59, 67, 68, 108, 112, 119, 120]);
 
   // V3.7.0：這些單品仍保留在資料層與既有購物車相容邏輯中，
   // 但前台商品卡統一由對應「自由配」商品承接，避免同一商品重複出現兩張卡。
@@ -5330,7 +5329,9 @@ function Home() {
       image: "/products/TOP1.png",
       title: "龍血玻尿酸保濕精華液",
       subtitle: "300mL・人氣保濕明星商品",
-      priceLine: "$1,980｜買一送一",
+      priceLine: "$1,980",
+      promoLine: "買一送一",
+      buttonLabel: "查看商品",
       layout: "wide",
       imageSpec: "750 × 500 px",
     },
@@ -5341,8 +5342,10 @@ function Home() {
       action: "combo",
       image: "/products/TOP2.png",
       title: "龍血求麗頭皮修護洗髮精",
-      subtitle: "500mL・與沐浴乳自由搭配",
-      priceLine: "單瓶 $590｜任選 3 瓶 $1,100",
+      subtitle: "500mL・頭皮清潔修護",
+      priceLine: "單瓶 $590",
+      promoLine: "任選 3 瓶 $1,100",
+      buttonLabel: "選擇搭配",
       layout: "portrait",
       imageSpec: "640 × 800 px",
     },
@@ -5353,8 +5356,10 @@ function Home() {
       action: "combo",
       image: "/products/TOP3.png",
       title: "龍血求麗潤澤修護沐浴乳",
-      subtitle: "500mL・與洗髮精自由搭配",
-      priceLine: "單瓶 $590｜任選 3 瓶 $1,100",
+      subtitle: "500mL・潤澤潔淨肌膚",
+      priceLine: "單瓶 $590",
+      promoLine: "任選 3 瓶 $1,100",
+      buttonLabel: "選擇搭配",
       layout: "portrait",
       imageSpec: "640 × 800 px",
     },
@@ -5365,8 +5370,10 @@ function Home() {
       action: "detail",
       image: "/products/TOP4.png",
       title: "龍血求麗精華液",
-      subtitle: "30mL・人氣龍血集中精華",
-      priceLine: "$695",
+      subtitle: "30mL＋肌可佳膠原蛋白彈潤原液 30mL",
+      priceLine: "限定組合",
+      promoLine: "$1,290",
+      buttonLabel: "查看組合",
       layout: "wide-compact",
       imageSpec: "750 × 420 px",
     },
@@ -5377,8 +5384,10 @@ function Home() {
       action: "combo",
       image: "/products/TOP5.png",
       title: "人氣面膜雙選",
-      subtitle: "水搖滾保濕 × 極光白透亮",
-      priceLine: "單桶 $599｜任選 2 桶 $1,100｜任選 5 桶 $2,750",
+      subtitle: "爆水保濕 × 美白透亮",
+      priceLine: "單桶 $599",
+      promoLine: "任選 2 桶 $1,100｜任選 5 桶 $2,750",
+      buttonLabel: "選擇搭配",
       layout: "portrait",
       imageSpec: "640 × 800 px",
     },
@@ -5390,7 +5399,9 @@ function Home() {
       image: "/products/TOP6.png",
       title: "人氣益生菌雙選",
       subtitle: "BC-CA 加鈣 × 蔓越莓益生菌",
-      priceLine: "加鈣 $800｜蔓越莓 $990｜任選 3 盒 $1,600",
+      priceLine: "加鈣 $800｜蔓越莓 $990",
+      promoLine: "任選 3 盒 $1,600",
+      buttonLabel: "選擇搭配",
       layout: "portrait",
       imageSpec: "640 × 800 px",
     },
@@ -8290,21 +8301,28 @@ function Home() {
             />
           </div>
         </button>
+
         <div className="top-ranking-meta-v378">
           <span className="top-ranking-rank-v378">TOP {item.rank}</span>
           <strong>{item.title}</strong>
           <small>{item.subtitle}</small>
-          <p className="top-ranking-price-v381">{item.priceLine}</p>
-          <button type="button" onClick={handleAction}>
-            {item.action === "combo" ? "選擇搭配" : "查看商品"}
-          </button>
+
+          <div className="top-ranking-purchase-row-v382">
+            <div className="top-ranking-price-block-v382">
+              <p className="top-ranking-price-v382">{item.priceLine}</p>
+              <p className="top-ranking-promo-v382">{item.promoLine}</p>
+            </div>
+            <button type="button" onClick={handleAction}>
+              {item.buttonLabel}
+            </button>
+          </div>
         </div>
       </article>
     );
   }
 
   return (
-    <main className="site-shell" data-build="jourdeness-v3.8.1-home-images-prices">
+    <main className="site-shell" data-build="jourdeness-v3.8.2-top-ranking-combo-compact">
       <header ref={topHeaderRefV370} className="top-header">
         <button
           className="menu-button"
@@ -26693,8 +26711,8 @@ function Home() {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: 7px;
-          padding: 14px 15px 16px;
+          gap: 5px;
+          padding: 11px 15px 12px;
         }
 
         .top-ranking-rank-v378 {
@@ -26708,37 +26726,58 @@ function Home() {
           color: #44352d;
           font-size: 18px;
           font-weight: 950;
-          line-height: 1.28;
+          line-height: 1.24;
           letter-spacing: -0.035em;
         }
 
-        .top-ranking-meta-v378 > small,
-        .top-ranking-meta-v378 > p {
+        .top-ranking-meta-v378 > small {
           margin: 0;
           color: #7b6d64;
           font-size: 12px;
           font-weight: 650;
-          line-height: 1.5;
+          line-height: 1.4;
         }
 
-        .top-ranking-meta-v378 > p {
-          color: #8f2632;
-          font-weight: 850;
+        .top-ranking-purchase-row-v382 {
+          display: flex;
+          width: 100%;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 12px;
+          margin-top: 3px;
         }
 
-        .top-ranking-meta-v378 > p.top-ranking-price-v381 {
+        .top-ranking-price-block-v382 {
+          display: flex;
+          min-width: 0;
+          flex: 1;
+          flex-direction: column;
+          gap: 1px;
+        }
+
+        .top-ranking-price-block-v382 > p {
           margin: 0;
-          color: #9b2738;
-          font-size: 14px;
-          font-weight: 950;
-          line-height: 1.45;
-          letter-spacing: -0.015em;
         }
 
-        .top-ranking-meta-v378 > button {
-          min-height: 38px;
-          margin-top: 2px;
-          padding: 0 16px;
+        .top-ranking-price-v382 {
+          color: #7d4d43;
+          font-size: 15px;
+          font-weight: 850;
+          line-height: 1.35;
+        }
+
+        .top-ranking-promo-v382 {
+          color: #a12436;
+          font-size: 20px;
+          font-weight: 950;
+          line-height: 1.22;
+          letter-spacing: -0.025em;
+        }
+
+        .top-ranking-purchase-row-v382 > button {
+          min-height: 36px;
+          flex: 0 0 auto;
+          padding: 0 15px;
           border: 0;
           border-radius: 999px;
           background: #8f2632;
@@ -26749,27 +26788,47 @@ function Home() {
           box-shadow: 0 8px 18px rgba(143, 38, 50, 0.18);
         }
 
+        /* TOP 1 / TOP 4：價格與按鈕同一列，縮短白色資訊區高度。 */
+        .top-ranking-card-v378.wide .top-ranking-meta-v378,
+        .top-ranking-card-v378.wide-compact .top-ranking-meta-v378 {
+          padding-top: 10px;
+          padding-bottom: 11px;
+        }
 
+        /* TOP 2 / 3 / 5 / 6：雙欄卡維持直式，但把資訊區壓縮並放大優惠價。 */
         .top-ranking-pair-v378 .top-ranking-card-v378 .top-ranking-meta-v378 {
-          padding: 12px 11px 13px;
+          gap: 4px;
+          padding: 10px 11px 11px;
         }
 
         .top-ranking-pair-v378 .top-ranking-meta-v378 > strong {
           font-size: clamp(15px, 3.6vw, 18px);
+          line-height: 1.22;
         }
 
-        .top-ranking-pair-v378 .top-ranking-meta-v378 > small,
-        .top-ranking-pair-v378 .top-ranking-meta-v378 > p {
+        .top-ranking-pair-v378 .top-ranking-meta-v378 > small {
           font-size: 11px;
+          line-height: 1.35;
         }
 
-        .top-ranking-pair-v378 .top-ranking-meta-v378 > p.top-ranking-price-v381 {
-          font-size: 11px;
-          font-weight: 950;
+        .top-ranking-pair-v378 .top-ranking-purchase-row-v382 {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 7px;
+          margin-top: 3px;
         }
 
-        .top-ranking-pair-v378 .top-ranking-meta-v378 > button {
-          min-height: 36px;
+        .top-ranking-pair-v378 .top-ranking-price-v382 {
+          font-size: 12px;
+        }
+
+        .top-ranking-pair-v378 .top-ranking-promo-v382 {
+          font-size: 15px;
+          line-height: 1.3;
+        }
+
+        .top-ranking-pair-v378 .top-ranking-purchase-row-v382 > button {
+          min-height: 34px;
           padding-inline: 13px;
           font-size: 11px;
         }
@@ -26784,18 +26843,36 @@ function Home() {
           }
 
           .top-ranking-meta-v378 {
-            padding: 11px 10px 12px;
+            padding: 10px 10px 11px;
+          }
+
+          .top-ranking-meta-v378 > strong {
+            font-size: 16px;
+          }
+
+          .top-ranking-meta-v378 > small {
+            font-size: 10px;
+          }
+
+          .top-ranking-promo-v382 {
+            font-size: 18px;
           }
 
           .top-ranking-pair-v378 .top-ranking-meta-v378 > strong {
             font-size: 14px;
           }
 
-          .top-ranking-pair-v378 .top-ranking-meta-v378 > small,
-          .top-ranking-pair-v378 .top-ranking-meta-v378 > p {
-            font-size: 10px;
+          .top-ranking-pair-v378 .top-ranking-price-v382 {
+            font-size: 11px;
           }
 
+          .top-ranking-pair-v378 .top-ranking-promo-v382 {
+            font-size: 13px;
+          }
+
+          .top-ranking-pair-v378 .top-ranking-purchase-row-v382 {
+            gap: 6px;
+          }
         }
 
 
