@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.8.3 — TOP 排行榜卡片重排、龍血修護霜正式商品化、修護乳補買一送一。
+// Jourdeness storefront build: V3.8.4 — 漢堡分類補強、美體精油保養雙入口、護唇膏移入新品預告。
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -8,8 +8,8 @@ const categoryConfig = {
   臉部保養: ["全部", "龍血系列", "保濕修護", "亮白保養", "舒緩敏感", "面膜", "高級養護"],
   身體洗護: ["全部", "口腔護理", "手工皂", "洗髮沐浴", "身體保養", "身體舒壓"],
   健康補給: ["全部", "益生菌", "葉黃素", "膠原蛋白", "魚油"],
-  精油香氛: ["全部", "單方精油", "複方精油", "七序精油", "精萃油", "精油配件", "擴香設備"],
-  新品預告: ["全部", "潔顏", "精油滾珠", "香氛皂", "護手霜", "魚油", "潔口液"],
+  精油香氛: ["全部", "單方精油", "複方精油", "七序精油", "精萃油", "美體精油保養", "精油配件", "擴香設備"],
+  新品預告: ["全部"],
 
   // 以下舊分類保留為資料型別相容與內部搜尋用，不再顯示為前台主分類。
   本月精選: ["全部", "回購主打", "組合優惠", "高級養護"],
@@ -20,7 +20,7 @@ const categoryConfig = {
   保養品: ["全部", "冷杉系列", "薰衣草系列", "龍血系列", "INSK乳酸平衡系列", "水光肌能系列", "晶淬雪系列", "玫瑰超微晶萃系列", "肌光緊緻速妍系列", "冰河淨化系列", "櫻の雪傳明酸美白系列", "茶樹控油系列", "杏仁酸系列", "膠原蛋白系列", "鳳梨酵素系列", "防曬", "特殊護理", "頂級養護", "面膜"],
   保健食品: ["全部", "益生菌系列", "晶眸保健系列", "美妍飲品系列"],
   洗沐: ["全部", "洗沐系列", "阿甘綠柔護髮系列"],
-  精油: ["全部", "單方精油", "複方精油", "七序精油", "精萃油", "精油配件", "擴香設備"],
+  精油: ["全部", "單方精油", "複方精油", "七序精油", "精萃油", "美體精油保養", "精油配件", "擴香設備"],
   牙膏: ["全部", "牙膏"],
   肥皂: ["全部", "肥皂"],
   護唇膏: ["全部", "護唇膏"],
@@ -1528,8 +1528,8 @@ const allProducts: Product[] = [
     series: "特殊護理系列",
     originalPrice: "原價 $ 2,280",
     price: "產地價 $ 1,710",
-    image: "/products/Ceramide Body Oil (C+E).jpg",
-    gallery: ["/products/Ceramide Body Oil (C+E).jpg"],
+    image: "/products/Ceramide Body Oil.jpg",
+    gallery: ["/products/Ceramide Body Oil.jpg"],
     description: "200mL / 瓶。賽洛美潤膚美體油(C+E)，沐浴後滋潤乾燥粗糙肌膚。",
   },
 {
@@ -2581,10 +2581,18 @@ function normalizeProductForV376(product: Product): Product {
       description: "50g / 瓶。水光肌能晚霜，夜間加強補水、鎖水與潤澤，維持柔嫩澎潤感。",
     },
     72: {
-      description: "3.3g / 支。溫感變色護唇膏，依唇溫與唇部狀態呈現自然氣色，同時提供日常滋潤。",
+      category: "新品預告",
+      series: "護唇膏",
+      price: "新品預告",
+      priceNote: "新品預告・敬請期待。",
+      description: "3.3g / 支。絕美溫感變色護唇膏列入新品預告，正式上架後再開放購買。",
     },
     73: {
-      description: "3.3g / 支。日常保濕護唇膏，適合白天補擦或夜間厚敷滋潤乾燥雙唇。",
+      category: "新品預告",
+      series: "護唇膏",
+      price: "新品預告",
+      priceNote: "新品預告・敬請期待。",
+      description: "3.3g / 支。絕美保濕護唇膏列入新品預告，正式上架後再開放購買。",
     },
     110: {
       name: "超防禦清透隔離乳 SPF50+ 30mL",
@@ -4324,19 +4332,21 @@ const productContentOverridesV376: Record<number, Partial<Product>> = {
   },
   72: {
     cardName: "絕美溫感變色護唇膏",
-    cardSubtitle: "3.3g・保濕＋自然氣色",
+    cardSubtitle: "3.3g・新品預告",
     spec: "3.3g / 支",
     intro: "以野芒果脂、蘭花萃取、向日葵油、天然維他命 E 與橄欖油滋潤雙唇，依唇溫與唇部狀態呈現自然色澤。",
     features: ["兼具日常滋潤與自然氣色修飾。", "質地滑順不厚重，適合隨身補擦。", "磁吸外殼設計，日常攜帶方便。"],
     suitableFor: ["乾燥雙唇", "自然氣色", "日常護唇"],
+    priceNote: "新品預告・敬請期待。",
   },
   73: {
     cardName: "絕美保濕護唇膏",
-    cardSubtitle: "3.3g・純保濕護唇",
+    cardSubtitle: "3.3g・新品預告",
     spec: "3.3g / 支",
     intro: "以乳油木果脂、植物保濕因子、維他命 E 與植物滋養油提供日常潤澤，適合白天補擦與夜間厚敷。",
     features: ["不變色，專注日常保濕滋潤。", "可於妝前打底或睡前加強厚敷。", "維持柔嫩膚觸並改善乾燥緊繃感。"],
     suitableFor: ["乾燥雙唇", "夜間厚敷", "妝前護唇"],
+    priceNote: "新品預告・敬請期待。",
   },
   74: {
     cardName: "甜橙單方精油",
@@ -5041,6 +5051,7 @@ function Home() {
   const essentialOilProductIdsV359 = new Set([
     26, 27, 28,
     29,
+    60, 66, // 美體精油保養：美體油／美體乳，同時保留在身體洗護 → 身體保養
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86,
     87, 88, 89, 90, 91, 92, 93,
     94, 95, 96, 97, 98, 99, 100,
@@ -5052,6 +5063,7 @@ function Home() {
   const blendedOil15IdsV359 = new Set([84]);
   const blendedOil30IdsV359 = new Set([80, 83]);
   const extractOil50IdsV359 = new Set([26, 27, 28]);
+  const bodyEssentialCareProductIdsV384 = new Set([60, 66]);
   const essentialOilAccessoryIdsV359 = new Set([76, 77, 100]);
   const diffuserDeviceIdsV359 = new Set([29, 94, 95]);
 
@@ -5076,6 +5088,7 @@ function Home() {
 
   const oilBoutiqueSeriesOptionsV375 = [
     { id: "精萃油", icon: "◐", note: "含基底油，可依商品標示直接用於身體滋養與按摩" },
+    { id: "美體精油保養", icon: "✧", note: "美體油與香氛美體乳，日常身體滋潤與香氣保養" },
     { id: "單方精油", icon: "◌", note: "100% 單方純精油，感受單一植物最純粹的香氣個性" },
     { id: "複方精油", icon: "✦", note: "多種純精油調和，更有層次的香氛體驗" },
     { id: "七序精油", icon: "⑦", note: "七款專屬香氣，依情境探索不同的香氛個性" },
@@ -5170,6 +5183,7 @@ function Home() {
     }
     if (selectedSeries === "七序精油") return sevenSequenceOilIdsV354.has(product.id);
     if (selectedSeries === "精萃油") return extractOil50IdsV359.has(product.id);
+    if (selectedSeries === "美體精油保養") return bodyEssentialCareProductIdsV384.has(product.id);
     if (selectedSeries === "精油滾珠" || selectedSeries === "滾珠") return product.series === "精油滾珠";
     if (selectedSeries === "精油配件") return essentialOilAccessoryIdsV359.has(product.id);
     if (selectedSeries === "擴香設備") return diffuserDeviceIdsV359.has(product.id);
@@ -6561,7 +6575,7 @@ const sevenSequenceGuideV377 = [
     }
 
     if (selectedCategory === "精油香氛") {
-      return "精萃油、單方純精油、複方純精油、七序精油、精油配件與擴香設備集中查看。";
+      return "精萃油、單方純精油、複方純精油、七序精油、美體精油保養、精油配件與擴香設備集中查看。";
     }
 
     if (selectedCategory === "新品預告") {
@@ -8366,7 +8380,7 @@ const sevenSequenceGuideV377 = [
   }
 
   return (
-    <main className="site-shell" data-build="jourdeness-v3.8.3-top-cards-repair-cream">
+    <main className="site-shell" data-build="jourdeness-v3.8.4-hamburger-body-oil-preview">
       <header ref={topHeaderRefV370} className="top-header">
         <button
           className="menu-button"
@@ -8972,7 +8986,7 @@ const sevenSequenceGuideV377 = [
             </section>
           )}
 
-          {!showOilBoutiqueV375 && (
+          {!showOilBoutiqueV375 && selectedCategory !== "新品預告" && (
           <section className="collection-filter-panel-v22">
             <div className="collection-filter-title-v22">
               <strong>快速篩選</strong>
@@ -9202,6 +9216,7 @@ const sevenSequenceGuideV377 = [
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油")}>複方精油</button>
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "七序精油")}>七序精油</button>
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "精萃油")}>精萃油</button>
+                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "美體精油保養")}>美體精油保養</button>
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "精油配件")}>精油配件</button>
                     <button type="button" onClick={() => handleDrawerCategory("精油香氛", "擴香設備")}>擴香設備</button>
                   </div>
