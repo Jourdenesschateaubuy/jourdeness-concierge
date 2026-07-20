@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.7.2 — desktop now renders the same centered mobile storefront viewport, including fully scrollable drawer and overlays.
+// Jourdeness storefront build: V3.8.0 — 首頁本月優惠方案卡、依肌膚需求選保養。
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -55,6 +55,10 @@ type Product = {
   usage?: string;
   notice?: string;
   gallery?: string[];
+  expandedInfo?: Array<{
+    title: string;
+    content: string;
+  }>;
 };
 
 type ComboOption = {
@@ -233,7 +237,7 @@ const comboConfigsV360: Record<number, ComboConfig> = {
     plans: [
       {
         id: "three-tubes",
-        label: "任選 3 條",
+        label: "買二送一・共 3 條",
         requiredQuantity: 3,
         price: 500,
         priceLabel: "$500",
@@ -1064,7 +1068,7 @@ const allProducts: Product[] = [
     category: "牙膏",
     series: "牙膏",
     originalPrice: "原價 $ 250",
-    price: "任選3條 $ 500",
+    price: "單條 $ 250｜買二送一 $ 500",
     image: "/products/Lavender toothpaste.jpg",
     gallery: ["/products/Lavender toothpaste.jpg"],
     description: "120g / 支。薰衣草草本香氣，溫和潔牙並維持口氣清新。",
@@ -1075,7 +1079,7 @@ const allProducts: Product[] = [
     category: "牙膏",
     series: "牙膏",
     originalPrice: "原價 $ 250",
-    price: "任選3條 $ 500",
+    price: "單條 $ 250｜買二送一 $ 500",
     image: "/products/bd-washtoothpaste.jpg",
     gallery: ["/products/bd-washtoothpaste.jpg"],
     description: "120g / 支。龍血齒齦保健牙膏，溫和清潔牙齒與齒齦邊緣。",
@@ -2224,6 +2228,21 @@ const additionalProductsV359: Product[] = [
   },
 ];
 
+const additionalProductsV378: Product[] = [
+  {
+    id: 120,
+    name: "龍血求麗精華液",
+    category: "保養品",
+    series: "龍血系列",
+    originalPrice: "原價 $ 1,290",
+    price: "售價 $ 695",
+    image: "/products/db-2.jpg",
+    gallery: ["/products/db-2.jpg"],
+    description: "30mL / 瓶。龍血系列集中型精華，適合日常加強保濕、柔嫩與修護感保養。",
+    expiryNote: "效期：2026年12月；實際日期依商品包裝或 LINE 小幫手確認為準。",
+  },
+];
+
 function normalizeProductForV31(product: Product): Product {
   if (product.id === 1) {
     return {
@@ -2449,8 +2468,8 @@ function normalizeProductForV362(product: Product): Product {
     },
     54: {
       name: "齒齦保健牙膏自由配",
-      price: "單條 $ 250｜任選 3 條 $ 500",
-      description: "薰衣草舒緩與龍血修護牙膏整合在同一張商品卡，可單條購買；選滿 3 條時自動採用 $500 優惠價。",
+      price: "單條 $ 250｜買二送一 $ 500",
+      description: "薰衣草舒緩與龍血修護牙膏整合在同一張商品卡，可單條購買；買 2 條送 1 條，共 3 條 $500，可自由搭配或同款重複選。",
     },
     55: {
       name: "35片面膜自由配",
@@ -2506,15 +2525,81 @@ function normalizeProductForV362(product: Product): Product {
   return updates[product.id] ? { ...product, ...updates[product.id] } : product;
 }
 
+
+function normalizeProductForV376(product: Product): Product {
+  const updates: Record<number, Partial<Product>> = {
+    3: {
+      description: "50mL x 10瓶 / 盒。玫瑰風味魚膠原蛋白飲，每瓶含 10,000mg 膠原蛋白，適合作為日常美容營養補給。",
+    },
+    8: {
+      description: "50g / 瓶。玫瑰超微晶萃瞬效霜，滋潤型保養最後一步，幫助維持柔嫩潤澤。",
+    },
+    9: {
+      description: "120mL / 瓶。龍血求麗化妝水，清爽前導補水，適合日常保濕與膚況調理。",
+    },
+    12: {
+      description: "35mL / 瓶。肌光緊緻速妍精華露，適合熟齡、乾燥與疲憊膚況的集中型保養。",
+    },
+    13: {
+      description: "50g / 瓶。肌光緊緻速妍霜，滋潤不厚重，適合作為保養最後一步加強鎖水與彈潤感。",
+    },
+    14: {
+      description: "23mL x 10入 / 盒。肌光緊緻速妍面膜，適合熬夜後、重要場合前或需要集中加強保養時使用。",
+    },
+    34: {
+      originalPrice: undefined,
+      price: "買一送一 $ 1,980",
+      description: "300mL / 瓶。大容量龍血玻尿酸保濕精華液，臉部、頸部與身體皆可依需求使用；活動價 $1,980 買一送一。",
+    },
+    41: {
+      description: "50g / 瓶。水光肌能晚霜，夜間加強補水、鎖水與潤澤，維持柔嫩澎潤感。",
+    },
+    72: {
+      description: "3.3g / 支。溫感變色護唇膏，依唇溫與唇部狀態呈現自然氣色，同時提供日常滋潤。",
+    },
+    73: {
+      description: "3.3g / 支。日常保濕護唇膏，適合白天補擦或夜間厚敷滋潤乾燥雙唇。",
+    },
+    110: {
+      name: "超防禦清透隔離乳 SPF50+ 30mL",
+      description: "30mL。SPF50+ 清透隔離乳，適合日常外出前作為防曬隔離與底妝前打底使用。",
+    },
+    111: {
+      name: "玫瑰超微晶萃精華油 30mL",
+      description: "30mL。玫瑰超微晶萃精華油，適合乾燥、缺水或想加強滋養光澤的日常保養。",
+    },
+  };
+
+  return updates[product.id] ? { ...product, ...updates[product.id] } : product;
+}
+
+const sevenSequenceOilOrderV377 = [87, 91, 93, 92, 90, 88, 89] as const;
+
+function normalizeProductForV377(product: Product): Product {
+  const updates: Record<number, Partial<Product>> = {
+    87: { name: "佐登妮絲 七序精油－智慧之冠精油", series: "七序精油" },
+    91: { name: "佐登妮絲 七序精油－亮采精油", series: "七序精油" },
+    93: { name: "佐登妮絲 七序精油－呼暢護隨精油", series: "七序精油" },
+    92: { name: "佐登妮絲 七序精油－心之綻放精油", series: "七序精油" },
+    90: { name: "佐登妮絲 七序精油－順暢平衡精油", series: "七序精油" },
+    88: { name: "佐登妮絲 七序精油－魔力輕盈精油", series: "七序精油" },
+    89: { name: "佐登妮絲 七序精油－能量之源精油", series: "七序精油" },
+  };
+
+  return updates[product.id] ? { ...product, ...updates[product.id] } : product;
+}
+
 function isSevenSequenceOilV354(product: Product) {
   return sevenSequenceOilIdsV354.has(product.id);
 }
 
-const products: Product[] = [...allProducts, ...comingSoonRollerProducts, ...additionalProductsV359]
+const products: Product[] = [...allProducts, ...comingSoonRollerProducts, ...additionalProductsV359, ...additionalProductsV378]
   .map(normalizeProductForV31)
   .map(normalizeProductForV354)
   .map(normalizeProductForV359)
   .map(normalizeProductForV362)
+  .map(normalizeProductForV376)
+  .map(normalizeProductForV377)
   .filter((product) => ![20, 21, 22, 23, 24, 25, 52].includes(product.id));
 
 const productContentOverrides: Record<number, Partial<Product>> = {
@@ -3575,22 +3660,24 @@ const productContentOverrides: Record<number, Partial<Product>> = {
     priceNote: "3罐潔口液贈薰衣草牙膏1條，組合價 $1,500；庫存與效期依 LINE 小幫手確認為準。",
   },
   54: {
-    cardName: "牙膏任選3條",
-    cardSubtitle: "口腔清新補貨組",
-    spec: "薰衣草舒緩 / 龍血修護可混搭，共3條",
-    intro: "齒齦保健牙膏任選3條，薰衣草舒緩與龍血修護可混搭，是日常口腔清潔補貨的實用組合。",
+    cardName: "齒齦保健牙膏買二送一",
+    cardSubtitle: "薰衣草舒緩／龍血修護自由搭配",
+    spec: "120g / 支，買 2 送 1，共 3 支",
+    intro: "薰衣草舒緩與龍血修護兩款齒齦保健牙膏可自由搭配或同款重複選；買 2 支送 1 支，共 3 支 $500。",
     features: [
-      "回購群優惠組合，適合一次補齊常用品項。",
-      "組合內容與優惠依當日公告及客服確認為準。",
-      "送出資料後，客服會協助確認最適合的優惠方案。",
+      "薰衣草舒緩與龍血修護兩款可自由搭配。",
+      "可同款重複選，買 2 送 1，共 3 支 $500。",
+      "適合日常口腔清潔與家庭補貨。",
     ],
     suitableFor: [
-      "組合優惠",
+      "買二送一",
+      "口腔清潔",
+      "自由搭配",
     ],
     usage: "每天至少刷牙兩次，每次 2–3 分鐘；取適量牙膏刷洗牙齒各面後徹底漱口吐出。",
     notice: "商品規格、使用方式與注意事項請依商品標示或客服說明為準。",
     expiryNote: "效期依商品標示或 LINE 小幫手確認為準。",
-    priceNote: "組合優惠、庫存與最終金額依 LINE 小幫手確認為準。",
+    priceNote: "買 2 送 1，共 3 支 $500；兩款可自由搭配或同款重複選。",
   },
   55: {
     cardName: "水搖滾 / 極光白美白面膜桶裝任選組",
@@ -4037,6 +4124,582 @@ const productContentOverridesV362: Record<number, Partial<Product>> = {
   },
 };
 
+
+const productContentOverridesV376: Record<number, Partial<Product>> = {
+  2: {
+    cardName: "EC晶眸葉黃素",
+    cardSubtitle: "精華凍＋精華飲・雙劑型同配方",
+    spec: "精華凍 20g x 10入＋精華飲 20mL x 10入 / 盒",
+    intro: "精華凍與精華飲採用相同核心配方，依個人喜好選擇 Q 彈或飲用劑型，作為日常晶亮營養補給。",
+    features: [
+      "核心營養包含游離型葉黃素、玉米黃素、消旋玉米黃素、C3G 花青素與維生素 A。",
+      "精華凍與精華飲成分配方相同，雙劑型更方便依日常情境補充。",
+      "適合長時間使用 3C、學生與上班族作為日常營養補給。",
+    ],
+    suitableFor: ["3C 使用族群", "學生與上班族", "晶亮營養補給"],
+    notice: "請依產品標示食用；若有特殊體質、孕哺乳或正在接受醫囑，建議先諮詢專業人員。",
+  },
+  3: {
+    cardName: "亮妍魚膠原蛋白飲",
+    cardSubtitle: "玫瑰風味・50mL x 10瓶",
+    spec: "50mL x 10瓶 / 盒",
+    intro: "玫瑰風味魚膠原蛋白飲，搭配小分子魚膠原蛋白肽與深海彈力相關營養成分，作為日常美容營養補給。",
+    features: [
+      "每瓶 50mL，每盒 10 瓶。",
+      "每瓶含 10,000mg 膠原蛋白。",
+      "玫瑰風味、減糖設計，方便日常補充。",
+    ],
+    suitableFor: ["美容營養補給", "膠原蛋白補充", "日常保養族群"],
+  },
+  9: {
+    cardName: "龍血求麗化妝水",
+    cardSubtitle: "120mL・龍血系列前導保濕",
+    spec: "120mL / 瓶",
+    intro: "以秘魯龍血樹脂萃取、玻尿酸與大馬士革玫瑰花水打造清爽前導保濕，適合乾燥、缺水或環境變化下的日常保養。",
+    features: [
+      "秘魯龍血樹脂萃取搭配玻尿酸，補充肌膚所需水分。",
+      "大馬士革玫瑰花水帶來柔和保養感。",
+      "清爽水感質地，不含酒精、香精與色素。",
+    ],
+    suitableFor: ["乾燥缺水", "日常前導保濕", "膚況調理"],
+    usage: "清潔後取適量於掌心或化妝棉，輕拍或擦拭於臉部與頸部，再銜接後續精華與乳液。",
+  },
+  10: {
+    cardName: "龍血求麗修護乳",
+    cardSubtitle: "80mL・清爽鎖水修護・買一送一",
+    spec: "80mL / 瓶",
+    intro: "以秘魯龍血樹脂萃取、角鯊烷與多重鎖水因子打造清爽好吸收的日常保濕乳液。",
+    features: [
+      "角鯊烷與多重鎖水因子協助維持油水平衡。",
+      "質地清爽好推勻，適合台灣氣候下的日常保濕。",
+      "幫助改善乾燥造成的粗糙與細紋外觀，維持柔滑膚觸。",
+    ],
+    suitableFor: ["乾燥缺水", "換季保養", "日常修護"],
+  },
+  11: {
+    cardName: "肌光緊緻速妍雪膚液",
+    cardSubtitle: "130mL・緊緻前導保養",
+    spec: "130mL / 瓶",
+    intro: "結合 LAC-J 嘉寶果精華、七胜肽與益菌平衡概念的高階前導保養，幫助維持細緻、彈潤與水嫩膚感。",
+    features: ["LAC-J 嘉寶果精華搭配胜肽保養。", "作為肌光系列第一步前導，提升後續保養的完整度。", "適合熟齡、乾燥與疲憊膚況日常使用。"],
+    suitableFor: ["抗皺緊緻", "熟齡保養", "乾燥疲憊肌"],
+  },
+  12: {
+    cardName: "肌光緊緻速妍精華露",
+    cardSubtitle: "35mL・高機能緊緻精華",
+    spec: "35mL / 瓶",
+    intro: "以 LAC-J 嘉寶果精華、複合胜肽與植物微囊概念打造的集中型精華，維持飽滿、彈潤與細緻膚感。",
+    features: ["輕盈精華露質地，適合日常集中保養。", "搭配多重胜肽與植萃保養概念。", "針對乾燥細紋與鬆弛感外觀加強保養。"],
+    suitableFor: ["抗皺緊緻", "熟齡保養", "熬夜疲憊肌"],
+  },
+  13: {
+    cardName: "肌光緊緻速妍霜",
+    cardSubtitle: "50g・滋潤緊緻封存保養",
+    spec: "50g / 瓶",
+    intro: "以 LAC-J 嘉寶果精華、神經醯胺與植物果油打造滋潤不厚重的最後一道保養，幫助維持柔嫩、彈潤與光澤。",
+    features: ["神經醯胺與植物果油加強滋潤。", "適合作為晚間或乾燥季節的保養最後一步。", "維持細緻彈潤與柔嫩膚觸。"],
+    suitableFor: ["抗皺緊緻", "乾燥缺水", "高級養護"],
+  },
+  14: {
+    cardName: "肌光緊緻速妍面膜",
+    cardSubtitle: "23mL x 10入・集中型面膜保養",
+    spec: "23mL x 10入 / 盒",
+    intro: "肌光系列集中型面膜，適合熬夜後、重要場合前或想快速加強保濕彈潤感時使用。",
+    features: ["每盒 10 入，每片 23mL。", "特殊服貼膜布承載精華，集中補充水分與潤澤。", "適合重要場合前與疲憊膚況加強保養。"],
+    suitableFor: ["面膜保養", "抗皺緊緻", "重要場合前保養"],
+    notice: "僅供一般肌膚保養使用；肌膚正處於醫療處置後或有傷口、不適時，請依專業醫療人員建議使用。",
+  },
+  26: {
+    cardName: "青春密碼維 E 精萃油",
+    cardSubtitle: "50mL・含基底油・可直接身體保養",
+    spec: "50mL / 瓶",
+    intro: "含基底植萃油的身體精萃油，結合維他命 E、神經醯胺Ⅲ與黃耆萃取，適合夜間滋養與全身按摩。",
+    features: [
+      "複方植萃油搭配維他命 E 與神經醯胺Ⅲ，提升乾燥肌膚的潤澤感。",
+      "葡萄柚、佛手柑、快樂鼠尾草與天竺葵香氣，營造放鬆的夜間保養時光。",
+      "適合胸部、腹部與全身按摩保養，使用方式依商品標示。",
+    ],
+    suitableFor: ["乾燥肌膚", "夜間滋養", "身體按摩"],
+    usage: "取適量直接塗抹於身體肌膚並輕柔按摩至吸收；實際用量與部位請依商品標示。",
+    notice: "本品為含基底油的身體精萃油，並非單方純精油。避免接觸眼睛與黏膜；使用後若有不適請停止使用。",
+  },
+  27: {
+    cardName: "防護盾牌維 C 精萃油",
+    cardSubtitle: "50mL・含基底油・透亮滋養",
+    spec: "50mL / 瓶",
+    intro: "含基底植萃油的身體精萃油，結合維他命 C、神經醯胺Ⅲ與黃耆萃取，適合粗糙乾燥肌膚的日常滋養。",
+    features: [
+      "複方植萃油搭配維他命 C 與神經醯胺Ⅲ，維持柔嫩與透亮膚感。",
+      "檸檬、甜橙、迷迭香、羅文莎葉、茶樹與薄荷形成清新柑橘草本香氣。",
+      "適合全身按摩與日常身體保養。",
+    ],
+    suitableFor: ["粗糙乾燥", "身體滋養", "透亮保養"],
+    usage: "取適量直接塗抹於身體肌膚並輕柔按摩至吸收；實際用量與部位請依商品標示。",
+    notice: "本品為含基底油的身體精萃油。含柑橘類精油成分，肌膚使用後請依商品標示留意日曬；使用後若有不適請停止使用。",
+  },
+  28: {
+    cardName: "晚安無瑕維 A 精萃油",
+    cardSubtitle: "50mL・含基底油・夜間細緻保養",
+    spec: "50mL / 瓶",
+    intro: "含基底植萃油的夜間身體精萃油，結合維他命 A、神經醯胺Ⅲ與黃耆萃取，適合熟齡與乾燥粗糙肌膚加強滋養。",
+    features: ["維他命 A 搭配神經醯胺Ⅲ，作為夜間身體保養。", "複方植萃油提升滋潤度，維持細緻柔滑膚觸。", "舒壓香氣適合睡前按摩與 Me Time。"],
+    suitableFor: ["夜間保養", "熟齡身體肌", "乾燥粗糙"],
+    usage: "建議於晚間取適量塗抹身體肌膚並按摩至吸收；實際使用頻率請依商品標示。",
+    notice: "本品含維他命 A 類成分；孕哺乳或有特殊使用需求者，建議先依商品標示或諮詢專業人員。使用後若有不適請停止使用。",
+  },
+  30: {
+    cardName: "石墨烯電氣石精油貼布（涼感）",
+    cardSubtitle: "10片 / 盒・清爽涼感",
+    spec: "10片 / 盒",
+    intro: "以石墨烯、電氣石、薄荷葉萃取、茶樹精油與一條根萃取物打造的涼感貼布，適合運動後或久坐久站時局部舒適保養。",
+    features: ["清爽微涼感，適合肩頸、腰背與腿部等局部使用。", "大尺寸設計可依需求裁切。", "適合日常放鬆與運動後舒適保養。"],
+    suitableFor: ["久坐久站", "運動後", "局部舒適保養"],
+  },
+  31: {
+    cardName: "石墨烯電氣石精油貼布（溫感）",
+    cardSubtitle: "10片 / 盒・溫熱舒適",
+    spec: "10片 / 盒",
+    intro: "以石墨烯、電氣石、左手香精油與辣椒萃取打造的溫感貼布，適合冷氣房、家事勞動後或久坐久站時局部舒適保養。",
+    features: ["穩定溫熱感，適合腰背、肩頸與四肢局部使用。", "大尺寸設計可依需求裁切。", "適合日常放鬆與溫熱舒適保養。"],
+    suitableFor: ["冷氣房", "久坐久站", "溫熱舒適保養"],
+  },
+  34: {
+    cardName: "龍血玻尿酸保濕精華液",
+    cardSubtitle: "300mL・大容量國民保濕精華・買一送一",
+    spec: "300mL / 瓶",
+    intro: "結合日本高純度玻尿酸、小分子玻尿酸、小核菌膠與祕魯龍血樹脂萃取的大容量保濕精華，臉部到身體皆可依需求使用。",
+    features: ["大小分子玻尿酸提供多層次補水與鎖水概念。", "小核菌膠搭配龍血樹脂萃取，維持柔嫩與潤澤膚感。", "300mL 大容量，適合全身乾燥部位日常保濕。"],
+    suitableFor: ["乾燥缺水", "全身保濕", "疲憊粗糙肌"],
+    priceNote: "300mL，$1,980 買一送一；不顯示原價。實際活動與庫存依賣場顯示為準。",
+  },
+  35: {
+    cardName: "龍血求麗卸妝油",
+    cardSubtitle: "150mL・快速乳化卸妝",
+    spec: "150mL / 瓶",
+    intro: "結合秘魯龍血樹脂、多重植物油基底與快樂鼠尾草、尤加利等香氣的卸妝油，幫助卸除彩妝與防曬。",
+    features: ["遇水快速乳化，減少洗後油悶殘留感。", "適合日常彩妝與防曬卸除。", "植物油基底在清潔同時維持柔潤膚感。"],
+    suitableFor: ["清潔卸妝", "日常彩妝", "防曬卸除"],
+  },
+  36: {
+    cardName: "龍血求麗潔顏慕絲",
+    cardSubtitle: "150mL・胺基酸系綿密泡沫",
+    spec: "150mL / 瓶",
+    intro: "以秘魯龍血樹脂萃取、胺基酸潔顏因子與尤加利、快樂鼠尾草香氣打造的綿密潔顏慕絲。",
+    features: ["直接按壓出綿密泡沫，減少清潔時的摩擦。", "胺基酸系潔顏概念，洗後維持舒適不緊繃。", "適合作為早晚日常臉部清潔。"],
+    suitableFor: ["清潔卸妝", "日常潔顏", "乾燥缺水"],
+  },
+  41: {
+    cardName: "水光肌能晚霜",
+    cardSubtitle: "50g・夜間密集保濕",
+    spec: "50g / 瓶",
+    intro: "結合復活草保濕複合物、神經醯胺、三色堇萃取與膠原相關保養概念，適合夜間加強補水與鎖水。",
+    features: ["夜間集中滋潤，維持柔嫩澎潤。", "神經醯胺搭配復活草保濕概念，加強乾燥肌膚保養。", "適合作為晚間保養最後一道。"],
+    suitableFor: ["乾燥缺水", "夜間保養", "抗皺緊緻"],
+  },
+  72: {
+    cardName: "絕美溫感變色護唇膏",
+    cardSubtitle: "3.3g・保濕＋自然氣色",
+    spec: "3.3g / 支",
+    intro: "以野芒果脂、蘭花萃取、向日葵油、天然維他命 E 與橄欖油滋潤雙唇，依唇溫與唇部狀態呈現自然色澤。",
+    features: ["兼具日常滋潤與自然氣色修飾。", "質地滑順不厚重，適合隨身補擦。", "磁吸外殼設計，日常攜帶方便。"],
+    suitableFor: ["乾燥雙唇", "自然氣色", "日常護唇"],
+  },
+  73: {
+    cardName: "絕美保濕護唇膏",
+    cardSubtitle: "3.3g・純保濕護唇",
+    spec: "3.3g / 支",
+    intro: "以乳油木果脂、植物保濕因子、維他命 E 與植物滋養油提供日常潤澤，適合白天補擦與夜間厚敷。",
+    features: ["不變色，專注日常保濕滋潤。", "可於妝前打底或睡前加強厚敷。", "維持柔嫩膚觸並改善乾燥緊繃感。"],
+    suitableFor: ["乾燥雙唇", "夜間厚敷", "妝前護唇"],
+  },
+  74: {
+    cardName: "甜橙單方精油",
+    cardSubtitle: "30mL・100% 單方純精油・柑橘果香",
+    spec: "30mL / 瓶",
+    intro: "100% 甜橙單方純精油，帶有溫暖明亮的甜橙果香，適合客廳、工作空間與日常居家擴香。",
+    features: ["單一植物來源的甜橙純精油。", "香氣甜美明亮，適合營造愉悅、放鬆的空間氛圍。", "可依產品標示搭配擴香設備，肌膚使用前需以適合的基底油稀釋。"],
+    suitableFor: ["柑橘果香", "白天清新", "擴香入門"],
+    usage: "建議依產品標示用於擴香；肌膚使用前需先以適合的基底油充分稀釋。",
+    notice: "本品為單方純精油，不可直接大面積塗抹肌膚。避免接觸眼睛與黏膜；使用後若有不適請停止使用。",
+  },
+  75: {
+    cardName: "尤加利單方精油",
+    cardSubtitle: "30mL・100% 單方純精油・草本清新",
+    spec: "30mL / 瓶",
+    intro: "100% 尤加利單方純精油，帶有清新通透的木質草本香氣，適合居家與工作空間擴香。",
+    features: ["單一植物來源的尤加利純精油。", "清爽具穿透力的草本香氣，提升空間清新感。", "可依產品標示搭配擴香設備，肌膚使用前需以適合的基底油稀釋。"],
+    suitableFor: ["草本清新", "白天清新", "居家擴香"],
+    usage: "建議依產品標示用於擴香；如需製作環境噴霧或其他用途，請依產品標示與安全比例使用。",
+    notice: "本品為單方純精油，不可直接大面積塗抹肌膚。避免接觸眼睛與黏膜；使用後若有不適請停止使用。",
+  },
+  78: {
+    cardName: "薰衣草單方精油",
+    cardSubtitle: "10mL・100% 單方純精油・柔和花草香",
+    spec: "10mL / 瓶",
+    intro: "100% 真正薰衣草單方純精油，帶有柔和草本花香，適合睡前與居家放鬆時的香氛儀式。",
+    features: ["單一植物來源的真正薰衣草純精油。", "柔和花草香氣，營造沉靜放鬆的空間氛圍。", "可依產品標示搭配擴香，或以基底油充分稀釋後用於身體按摩。"],
+    suitableFor: ["花香柔和", "居家放鬆", "睡前香氛"],
+    usage: "建議依產品標示用於擴香；肌膚使用前需先以適合的基底油充分稀釋。",
+    notice: "本品為單方純精油，不可直接大面積塗抹肌膚。避免接觸眼睛與黏膜。",
+  },
+  79: {
+    cardName: "佐登妮絲五號精油",
+    cardSubtitle: "10mL・複方純精油・柔美女性香調",
+    spec: "10mL / 瓶",
+    intro: "以快樂鼠尾草、天竺葵、依蘭依蘭與絲柏調和的複方純精油，呈現濃郁柔美的花草木質香氣。",
+    features: ["四款經典植物精油調和，香氣柔美有層次。", "適合擴香營造放鬆氛圍。", "身體按摩使用時需先以適合的基底油充分稀釋。"],
+    suitableFor: ["花香柔和", "居家放鬆", "身體按摩香氛"],
+    usage: "可依產品標示用於擴香；身體按摩前需以適合的基底油稀釋。",
+    notice: "本品為複方純精油，不可直接大面積塗抹肌膚。",
+  },
+  80: {
+    cardName: "呼暢護隨精油",
+    cardSubtitle: "30mL・複方純精油・草本柑橘清新",
+    spec: "30mL / 瓶",
+    intro: "以天竺葵、檸檬與尤加利調和的複方純精油，草本與柑橘香氣交織，適合日常空間擴香與清新香氛。",
+    features: ["天竺葵、檸檬與尤加利三種香氣調和。", "適合擴香石、擴香設備與隨身香氛配件使用。", "相關產學合作與期刊研究資訊待佐證資料確認後再於公開頁面呈現。"],
+    suitableFor: ["草本清新", "白天清新", "空間香氛"],
+    usage: "建議依產品標示用於擴香或香氛配件；其他用途請依產品標示與安全比例使用。",
+    notice: "本品為複方純精油，不可直接大面積塗抹肌膚。含柑橘類精油成分，肌膚使用時請依產品標示留意日曬。",
+  },
+  81: {
+    cardName: "佐登妮絲十二號複方精油（OMA律動精油）",
+    cardSubtitle: "10mL・複方純精油・溫暖草本木質",
+    spec: "10mL / 瓶",
+    intro: "以葡萄柚、馬喬蘭、尤加利、薑、廣藿香與迷迭香調和，呈現溫暖草本木質香氣。",
+    features: ["加入薑精油，香氣溫暖厚實。", "適合擴香營造舒適、沉靜的空間氛圍。", "身體按摩使用時需先以適合的基底油充分稀釋。"],
+    suitableFor: ["溫暖香調", "居家放鬆", "草本木質"],
+    usage: "可依產品標示用於擴香；身體按摩前需以適合的基底油稀釋。",
+    notice: "本品為複方純精油，不可直接大面積塗抹肌膚。",
+  },
+  82: {
+    cardName: "快樂鼠尾草單方精油",
+    cardSubtitle: "10mL・100% 單方純精油・沉靜草本",
+    spec: "10mL / 瓶",
+    intro: "100% 快樂鼠尾草單方純精油，帶有微甜、堅果與藥草氣息，適合打造沉靜放鬆的 Me Time。",
+    features: ["單一植物來源的快樂鼠尾草純精油。", "香氣溫暖沉穩，適合夜間與個人放鬆時光。", "可依產品標示用於擴香，或稀釋後搭配身體按摩。"],
+    suitableFor: ["居家放鬆", "沉靜香氣", "Me Time"],
+    usage: "建議依產品標示用於擴香；肌膚使用前需先以適合的基底油充分稀釋。",
+    notice: "本品為單方純精油，不可直接大面積塗抹肌膚。孕哺乳或有特殊使用需求者請依產品標示並先諮詢專業人員。",
+  },
+  83: {
+    cardName: "魔力輕盈精油",
+    cardSubtitle: "30mL・複方純精油・清爽木質草本",
+    spec: "30mL / 瓶",
+    intro: "以杜松莓、葡萄柚、絲柏與迷迭香調和的複方純精油，清爽微帶木質感，適合搭配身體按摩香氛。",
+    features: ["杜松莓、葡萄柚、絲柏與迷迭香四種香氣調和。", "適合洗澡後搭配基底油稀釋，用於四肢與身體按摩。", "也可依產品標示用於擴香。"],
+    suitableFor: ["身體按摩香氛", "清爽木質", "久坐久站後放鬆"],
+    usage: "身體按摩前需先以適合的基底油充分稀釋；亦可依產品標示用於擴香。",
+    notice: "本品為複方純精油，不可直接大面積塗抹肌膚。含葡萄柚精油，肌膚使用時請依產品標示留意日曬。",
+  },
+  84: {
+    cardName: "柚見快樂精油",
+    cardSubtitle: "15mL・複方純精油・明亮柑橘果香",
+    spec: "15mL / 瓶",
+    intro: "以葡萄柚、甜橙與山雞椒調和的複方純精油，帶來明亮多汁的柑橘香氣。",
+    features: ["葡萄柚與甜橙形成甜美果香。", "山雞椒增添清新檸檬調，讓香氣更有層次。", "適合客廳、工作空間與白天擴香。"],
+    suitableFor: ["柑橘果香", "白天清新", "愉悅空間香氛"],
+    usage: "建議依產品標示用於擴香；肌膚使用前需以適合的基底油充分稀釋。",
+    notice: "本品為複方純精油，不可直接大面積塗抹肌膚。含柑橘類精油成分，肌膚使用時請依產品標示留意日曬。",
+  },
+  85: {
+    cardName: "佐登妮絲四號複方精油",
+    cardSubtitle: "10mL・複方純精油・清新提振",
+    spec: "10mL / 瓶",
+    intro: "以迷迭香、薄荷與檸檬等精油調和，呈現清新有穿透力的草本柑橘香氣。",
+    features: ["迷迭香、薄荷與檸檬形成清爽醒目的香氣層次。", "適合工作、閱讀或需要轉換空間氣氛時擴香。", "肌膚使用前需以適合的基底油充分稀釋。"],
+    suitableFor: ["白天清新", "工作閱讀", "草本柑橘"],
+    usage: "建議依產品標示用於擴香；肌膚使用前需先以適合的基底油充分稀釋。",
+    notice: "本品為複方純精油，不可直接大面積塗抹肌膚。含柑橘類精油成分，肌膚使用時請依產品標示留意日曬。",
+  },
+  86: {
+    cardName: "佐登妮絲一號複方精油",
+    cardSubtitle: "10mL・複方純精油・經典放鬆",
+    spec: "10mL / 瓶",
+    intro: "以佛手柑、羅文莎葉、薰衣草與尤加利調和的經典複方純精油，適合營造柔和、沉靜的放鬆氛圍。",
+    features: ["佛手柑與薰衣草帶來柔和香氣。", "羅文莎葉與尤加利增添清新草本層次。", "適合居家與 SPA 香氛儀式使用。"],
+    suitableFor: ["居家放鬆", "沉靜香氣", "SPA 香氛"],
+    usage: "建議依產品標示用於擴香；肌膚使用前需先以適合的基底油充分稀釋。",
+    notice: "本品為複方純精油，不可直接大面積塗抹肌膚。含佛手柑等柑橘類精油成分，肌膚使用時請依產品標示留意日曬。",
+  },
+  96: {
+    cardName: "檸檬單方精油",
+    cardSubtitle: "10mL・100% 單方純精油・明亮果香",
+    spec: "10mL / 瓶",
+    intro: "100% 檸檬單方純精油，帶有如現切檸檬般的明亮清新果香，適合工作空間與居家擴香。",
+    features: ["單一植物來源的檸檬純精油。", "果香清新明亮，適合提升空間清爽感。", "可依產品標示用於擴香或居家香氛。"],
+    suitableFor: ["柑橘果香", "白天清新", "工作閱讀"],
+    usage: "建議依產品標示用於擴香；肌膚使用前需先以適合的基底油充分稀釋。",
+    notice: "本品為單方純精油，不可直接大面積塗抹肌膚。含柑橘類精油成分，肌膚使用時請依產品標示留意日曬。",
+  },
+  97: {
+    cardName: "茶樹單方精油",
+    cardSubtitle: "15mL・100% 單方純精油・清新潔淨感",
+    spec: "15mL / 瓶",
+    intro: "100% 澳洲茶樹單方純精油，氣味清新略帶辛香，適合居家空間香氛與清新潔淨感的日常使用。",
+    features: ["單一植物來源的澳洲茶樹純精油。", "清新草本辛香，適合居家擴香與空間香氛。", "如需加入洗沐或其他產品，請依商品標示與安全比例使用。"],
+    suitableFor: ["草本清新", "居家香氛", "潔淨感"],
+    usage: "建議依產品標示用於擴香；其他用途需依產品標示與安全比例使用。",
+    notice: "本品為單方純精油，不可直接大面積塗抹肌膚。避免接觸眼睛、黏膜與敏感部位。",
+  },
+  98: {
+    cardName: "天竺葵芳香精油",
+    cardSubtitle: "10mL・100% 單方純精油・玫瑰草本香",
+    spec: "10mL / 瓶",
+    intro: "100% 天竺葵單方純精油，帶有草本與玫瑰般甜美香氣，適合居家放鬆與女性偏好的柔和花香氛圍。",
+    features: ["單一植物來源的天竺葵純精油。", "草本與玫瑰調交織，香氣柔美有層次。", "可依產品標示用於擴香，或充分稀釋後搭配身體保養。"],
+    suitableFor: ["花香柔和", "居家放鬆", "女性香氛"],
+    usage: "建議依產品標示用於擴香；肌膚使用前需先以適合的基底油充分稀釋。",
+    notice: "本品為單方純精油，不可直接大面積塗抹肌膚。",
+  },
+  99: {
+    cardName: "佐登妮絲六號複方精油（橙花複方）",
+    cardSubtitle: "10mL・複方純精油・橙花高階香調",
+    spec: "10mL / 瓶",
+    intro: "以橙花、苦橙葉、甜橙與佛手柑調和，呈現細緻花香與果香交織的高階複方香氣。",
+    features: ["橙花與苦橙葉帶來細緻花香與綠意。", "甜橙與佛手柑增加明亮柔和的果香層次。", "適合晚間、個人獨處與居家放鬆時擴香。"],
+    suitableFor: ["花香柔和", "柑橘果香", "居家放鬆"],
+    usage: "建議依產品標示用於擴香；肌膚使用前需先以適合的基底油充分稀釋。",
+    notice: "本品為複方純精油，不可直接大面積塗抹肌膚。含柑橘類精油成分，肌膚使用時請依產品標示留意日曬。",
+  },
+  101: {
+    cardName: "刮痧板 2入",
+    cardSubtitle: "居家按摩輔助工具・2入",
+    spec: "2入組",
+    intro: "圓潤多弧度設計的居家按摩輔助工具，可搭配身體保養油使用，適合臉部輪廓、下巴與四肢等部位輕柔按摩。",
+    features: ["圓滑厚實邊緣，便於握持與操作。", "多弧度設計可貼合不同身體曲線。", "適合搭配按摩油或身體保養油使用。"],
+    notice: "請避免於傷口、發炎或明顯不適部位使用；按摩力道以舒適為原則。",
+  },
+  102: {
+    cardName: "溫灸棒－特大",
+    cardSubtitle: "大尺寸・全身溫熱舒適保養",
+    spec: "特大尺寸 / 1支",
+    intro: "大尺寸溫灸輔助工具，適合腰背、腹部與大面積身體部位的居家溫熱舒適保養。",
+    features: ["導熱材質搭配大號艾草條使用。", "滾動式設計便於大面積移動操作。", "適合居家放鬆與溫熱保養。"],
+    notice: "使用時請依商品標示控制溫度與距離，避免燙傷；孕期、特殊體質或對熱敏感者請先諮詢專業人員。",
+  },
+  103: {
+    cardName: "溫灸棒－小",
+    cardSubtitle: "小尺寸・局部溫熱舒適保養",
+    spec: "小尺寸 / 1支",
+    intro: "小巧便攜的溫灸輔助工具，適合肩頸、四肢關節周邊等較小部位的居家溫熱舒適保養。",
+    features: ["小巧好握，便於局部操作。", "可搭配小規格艾草條使用。", "適合需要較精準位置的日常溫熱保養。"],
+    notice: "使用時請依商品標示控制溫度與距離，避免燙傷；臉部與眼周等敏感區域不建議自行高溫使用。",
+  },
+  104: {
+    cardName: "艾草條－小",
+    cardSubtitle: "搭配小號溫灸棒",
+    spec: "小規格艾草條",
+    intro: "以艾絨為主要原料的小規格艾草條，適合搭配小號溫灸棒使用。",
+    features: ["小規格設計，搭配對應溫灸棒。", "燃燒時間與熱感依實際使用環境而異。", "適合居家溫熱舒適保養。"],
+    notice: "燃燒使用時請保持通風並遠離易燃物；使用後確認完全熄滅。請放置於孩童與寵物不易取得處。",
+    expiryNote: "",
+  },
+  105: {
+    cardName: "艾草條－特大",
+    cardSubtitle: "搭配特大號溫灸棒",
+    spec: "特大規格艾草條",
+    intro: "大直徑艾草條，適合搭配特大號溫灸棒使用，提供較長時間的大面積溫熱舒適保養。",
+    features: ["大規格設計，搭配對應特大號溫灸棒。", "燃燒時間較長，適合大面積身體部位。", "適合居家溫熱舒適保養。"],
+    notice: "燃燒使用時請保持通風並遠離易燃物；使用後確認完全熄滅。請放置於孩童與寵物不易取得處。",
+    expiryNote: "",
+  },
+  106: {
+    cardName: "如意棒",
+    cardSubtitle: "多功能按摩舒壓工具",
+    spec: "1支",
+    intro: "流線型多功能按摩工具，圓珠與弧面設計便於日常按壓、刮拭與身體放鬆保養。",
+    features: ["多弧度結構可配合不同部位使用。", "圓潤接觸面便於控制力道。", "適合搭配身體保養油進行居家按摩。"],
+    notice: "請避免於傷口、發炎或明顯不適部位使用；按摩力道以舒適為原則。",
+  },
+  107: {
+    cardName: "升級版柔筋棒（小）",
+    cardSubtitle: "小尺寸・局部按摩放鬆",
+    spec: "小尺寸 / 1支",
+    intro: "小尺寸按摩棒，圓潤頭部設計便於肩頸、手足與四肢等局部位置進行日常按壓放鬆。",
+    features: ["握感好控制，方便居家使用。", "圓潤接觸面便於局部施力。", "適合久坐久站後的日常按摩放鬆。"],
+    notice: "請避免於傷口、發炎或明顯不適部位使用；若有持續疼痛或不適，請尋求專業評估。",
+  },
+  109: {
+    cardName: "EC晶眸葉黃素精華凍 20包",
+    cardSubtitle: "20包・與精華飲同核心配方",
+    spec: "20包 / 盒",
+    intro: "葉黃素精華凍以游離型葉黃素、玉米黃素、消旋玉米黃素、C3G 花青素與維生素 A 等作為核心營養，配方方向與精華飲相同。",
+    features: ["Q 彈精華凍劑型，方便攜帶。", "與 EC 晶眸精華飲採用相同核心成分配方。", "適合作為日常晶亮營養補給。"],
+    suitableFor: ["3C 使用族群", "學生與上班族", "晶亮營養補給"],
+  },
+  110: {
+    cardName: "超防禦清透隔離乳 SPF50+",
+    cardSubtitle: "30mL・SPF50+・清透防曬隔離",
+    spec: "30mL / 瓶",
+    intro: "油感較低的清透隔離乳，結合防曬與自然修飾概念，適合日常外出與底妝前使用。",
+    features: ["SPF50+ 日常防曬。", "清透質地，適合妝前打底。", "搭配自然修飾膚色的隔離概念。"],
+    suitableFor: ["防曬隔離", "妝前打底", "日常外出"],
+    notice: "防曬效果與補擦頻率請依商品標示；長時間戶外活動建議搭配遮陽並適時補擦。",
+  },
+  111: {
+    cardName: "玫瑰超微晶萃精華油",
+    cardSubtitle: "30mL・高階滋養精華油",
+    spec: "30mL / 瓶",
+    intro: "玫瑰超微晶萃系列滋養型精華油，結合玫瑰相關植萃與滋養油相，適合乾燥、缺水與想提升柔嫩光澤感的膚況。",
+    features: ["滋養油相質地，加強乾燥肌膚潤澤。", "適合晚間或乾燥季節加強保養。", "可依膚況搭配同系列活膚液與瞬效霜。"],
+    suitableFor: ["乾燥缺水", "高級養護", "滋養光澤"],
+  },
+  120: {
+    cardName: "龍血求麗精華液",
+    cardSubtitle: "30mL・龍血系列集中精華",
+    spec: "30mL / 瓶",
+    intro: "龍血系列集中型精華，結合秘魯龍血樹脂萃取、藻紅素與尤加利、快樂鼠尾草等植萃香氣，適合日常加強保濕與柔嫩修護感保養。",
+    features: [
+      "秘魯龍血樹脂萃取搭配藻紅素，作為龍血系列集中保養。",
+      "尤加利與快樂鼠尾草帶來清新草本保養感。",
+      "不含酒精、香精、色素與 Paraben，適合日常精華步驟使用。",
+    ],
+    suitableFor: ["龍血系列", "乾燥缺水", "日常修護", "集中保養"],
+    usage: "化妝水後取適量均勻塗抹於臉部與頸部，再銜接乳液或乳霜。",
+    notice: "使用後若有不適請停止使用；避免接觸眼睛與黏膜。",
+    expiryNote: "效期：2026年12月；實際日期依商品包裝或 LINE 小幫手確認為準。",
+    priceNote: "售價 $695；庫存與實際效期依賣場顯示或 LINE 小幫手確認。",
+  },
+};
+
+const productContentOverridesV377: Record<number, Partial<Product>> = {
+  87: {
+    cardName: "七序精油－智慧之冠",
+    cardSubtitle: "靜心沉澱｜清晰思緒｜專注香氛",
+    spec: "10mL / 瓶",
+    intro: "七序精油系列中偏沉靜專注的香氣，適合需要安靜整理思緒、閱讀工作或靜心時作為空間擴香。",
+    features: [
+      "以沉澱思緒、澄淨心靈與專注感為香氛主題。",
+      "適合靜心冥想、閱讀工作或高壓決策前後的空間擴香。",
+      "在思緒繁雜時，以沉靜香氣協助切換到更平穩的生活節奏。",
+    ],
+    suitableFor: ["靜心冥想", "工作專注", "閱讀時光", "思緒沉澱"],
+    usage: "建議依產品標示搭配擴香設備或擴香配件使用；如需接觸肌膚，請先以適合的基底油充分稀釋。",
+    notice: "本品為純精油，不可直接大面積塗抹肌膚。避免接觸眼睛、黏膜與敏感部位。",
+    expandedInfo: [
+      { title: "產品特色", content: "沉澱思緒、澄淨心靈，以深度專注與清晰感為香氛概念。" },
+      { title: "推薦情境", content: "適合靜心冥想、高壓決策、閱讀工作，或思緒較為雜亂時作為空間擴香使用。" },
+      { title: "香氛定位", content: "沉靜、清晰、專注，是需要安靜切換節奏時的七序香氣選擇。" },
+    ],
+  },
+  91: {
+    cardName: "七序精油－亮采",
+    cardSubtitle: "靈感覺察｜清新思緒｜明亮香氛",
+    spec: "10mL / 瓶",
+    intro: "七序精油系列中偏明亮清新的香氣，適合長時間工作、使用 3C 或需要創作靈感時擴香，營造有精神的空間氛圍。",
+    features: [
+      "以靈感、覺察與清新思緒為香氛主題。",
+      "適合長時間使用 3C、挑燈工作或創作卡關時使用。",
+      "明亮清新的香氛定位，幫助空間轉換為更有精神的工作節奏。",
+    ],
+    suitableFor: ["工作創作", "3C 使用族群", "清新思緒", "靈感時光"],
+    usage: "建議依產品標示搭配擴香設備或擴香配件使用；如需接觸肌膚，請先以適合的基底油充分稀釋。",
+    notice: "本品為純精油，不可直接大面積塗抹肌膚。避免接觸眼睛、黏膜與敏感部位。",
+    expandedInfo: [
+      { title: "產品特色", content: "以激發工作與創作靈感、舒展疲憊感與提升覺察力為香氛概念。" },
+      { title: "推薦情境", content: "適合長時間使用 3C、夜間工作、讀書或創作遇到瓶頸時薰香，營造清新有精神的空間氛圍。" },
+      { title: "香氛定位", content: "明亮、清新、有精神，適合工作桌、書房與創作空間。" },
+    ],
+  },
+  93: {
+    cardName: "七序精油－呼暢護隨",
+    cardSubtitle: "草本清新｜空間香氛｜明星人氣款",
+    spec: "10mL / 瓶",
+    intro: "七序精油系列中的明星人氣香氣，以清新具有穿透感的草本氣息為特色，適合日常空間擴香與清新香氛。",
+    features: [
+      "草本與柑橘香氣交織，呈現清新、開闊的香氛感受。",
+      "適合居家、工作空間與車內擴香。",
+      "依品牌提供資料，本系列呼暢護隨配方曾與國立中興大學進行產學合作研究。",
+    ],
+    suitableFor: ["草本清新", "空間香氛", "居家擴香", "明星人氣款"],
+    usage: "建議依產品標示搭配擴香設備、擴香石或香氛配件使用；如需接觸肌膚，請先以適合的基底油充分稀釋。",
+    notice: "本品為純精油，不可直接大面積塗抹肌膚。避免直接接觸眼睛、黏膜與敏感部位。具體獎項資訊待正式佐證資料確認後再於公開頁面標示。",
+    expandedInfo: [
+      { title: "產品特色", content: "清新具有穿透感的草本香氣，以開闊、清爽與日常空間香氛為核心，是七序系列中的明星人氣香氣。" },
+      { title: "中興大學產學合作", content: "依品牌提供資料，呼暢護隨精油曾與國立中興大學進行產學合作；中興大學森林系團隊從約 60 種植物素材中進行研究與篩選，發展草本香氛配方。" },
+      { title: "配方香氣亮點", content: "品牌資料提及天竺葵、檸檬與尤加利等植物精油，呈現草本與柑橘交織的清新香氣。" },
+      { title: "推薦情境", content: "適合居家、工作空間、車內或隨身香氛配件使用，營造清新舒適的空間感。" },
+    ],
+  },
+  92: {
+    cardName: "七序精油－心之綻放",
+    cardSubtitle: "溫暖花香｜情緒沉澱｜睡前放鬆",
+    spec: "10mL / 瓶",
+    intro: "以溫暖花香與和諧木質調為核心，適合壓力較大、想安靜沉澱或睡前放鬆時擴香，營造柔和有包覆感的空間氣息。",
+    features: [
+      "溫暖花香與木質調交織，營造柔和、有包覆感的空間氣息。",
+      "適合忙碌後獨處、睡前或需要切換情緒節奏時使用。",
+      "以和緩、溫柔與身心放鬆為主要香氛定位。",
+    ],
+    suitableFor: ["花香木質", "居家放鬆", "睡前香氛", "獨處時光"],
+    usage: "建議依產品標示搭配擴香設備或擴香配件使用；如需接觸肌膚，請先以適合的基底油充分稀釋。",
+    notice: "本品為純精油，不可直接大面積塗抹肌膚。避免接觸眼睛、黏膜與敏感部位。",
+    expandedInfo: [
+      { title: "產品特色", content: "以和緩情緒起伏與身心和諧為香氛概念，帶有溫暖花香與和諧木質調。" },
+      { title: "推薦情境", content: "適合感到壓力、想沉澱獨處或睡前使用，讓空間多一點柔和與被包覆的氛圍。" },
+      { title: "香氛定位", content: "溫暖、柔和、安靜，適合晚間與居家休息時使用。" },
+    ],
+  },
+  90: {
+    cardName: "七序精油－順暢平衡",
+    cardSubtitle: "清新舒展｜日常薰香｜身心平衡",
+    spec: "10mL / 瓶",
+    intro: "以清新舒展與身心平衡為核心，適合生活步調緊湊或久坐後想切換節奏時使用，作為日常環境薰香選擇。",
+    features: [
+      "香氣層次清新，營造舒展、放鬆的空間感受。",
+      "適合日常環境薰香，陪伴久坐工作與忙碌生活後的轉場時刻。",
+      "品牌資料提及杜松子、馬鬱蘭、迷迭香與薄荷等植物香氣。",
+    ],
+    suitableFor: ["日常薰香", "清新舒展", "忙碌生活", "久坐工作"],
+    usage: "建議依產品標示搭配擴香設備或擴香配件使用；如需接觸肌膚，請先以適合的基底油充分稀釋。",
+    notice: "本品為純精油，不可直接大面積塗抹肌膚。避免接觸眼睛、黏膜與敏感部位。",
+    expandedInfo: [
+      { title: "產品特色", content: "專為生活步調緊湊與久坐族群打造的清新香氛概念，以舒展與身心平衡為主軸。" },
+      { title: "主要香氣", content: "品牌資料提及杜松子、馬鬱蘭、迷迭香與薄荷，呈現清新、有層次的草本調。" },
+      { title: "推薦情境", content: "適合日常環境薰香、久坐工作後或需要重新整理生活節奏時使用。" },
+    ],
+  },
+  88: {
+    cardName: "七序精油－魔力輕盈",
+    cardSubtitle: "輕盈香氛｜活力調性｜稀釋按摩",
+    spec: "10mL / 瓶",
+    intro: "以輕盈、活力與身體線條保養為品牌概念，適合久坐久站後搭配香氛或充分稀釋後按摩使用。",
+    features: [
+      "品牌配方概念以杜松莓、葡萄柚等明星植物香氣為特色。",
+      "適合久坐久站後的放鬆時刻，營造清爽有活力的香氛氛圍。",
+      "身體按摩使用前需先以適合的基底油充分稀釋。",
+    ],
+    suitableFor: ["輕盈香氛", "久坐久站後放鬆", "身體按摩香氛", "活力調性"],
+    usage: "可依產品標示用於擴香；身體按摩前需先以適合的基底油充分稀釋。",
+    notice: "本品為純精油，不可直接大面積塗抹肌膚。含柑橘類精油成分時，肌膚使用請依商品標示留意日曬。",
+    expandedInfo: [
+      { title: "產品特色", content: "品牌以揮別沉重水悶感、注入活力與身體線條保養作為產品概念。" },
+      { title: "香氣亮點", content: "品牌資料提及杜松莓、葡萄柚等明星植物香氣，呈現清爽、有活力的調性。" },
+      { title: "推薦情境", content: "適合久坐或久站後，以擴香營造輕盈氛圍；身體按摩時請先以基底油充分稀釋。" },
+    ],
+  },
+  89: {
+    cardName: "七序精油－能量之源",
+    cardSubtitle: "木質大地｜沉穩安定｜溫暖香氣",
+    spec: "10mL / 瓶",
+    intro: "以厚實木質與大地調營造沉穩、溫暖與踏實感，適合疲憊、晚間放鬆或想讓生活節奏慢下來時使用。",
+    features: [
+      "醇厚木質大地香調，營造溫暖而穩定的空間氣息。",
+      "適合忙碌一天後、感到疲憊或想讓身心慢下來時擴香。",
+      "以沉穩、踏實與包覆感作為主要香氛定位。",
+    ],
+    suitableFor: ["木質大地", "溫暖沉穩", "晚間放鬆", "安靜時光"],
+    usage: "建議依產品標示搭配擴香設備或擴香配件使用；如需接觸肌膚，請先以適合的基底油充分稀釋。",
+    notice: "本品為純精油，不可直接大面積塗抹肌膚。避免接觸眼睛、黏膜與敏感部位。",
+    expandedInfo: [
+      { title: "產品特色", content: "以溫暖、沉穩與內在安定感為香氛概念，帶有醇厚穩定的木質大地調。" },
+      { title: "推薦情境", content: "適合忙碌或疲憊後、夜間放鬆與想營造溫暖安定空間氛圍時使用。" },
+      { title: "香氛定位", content: "厚實木質、大地氣息與溫暖包覆感，適合晚間使用。" },
+    ],
+  },
+};
+
 const skinFilters = [
   "全部",
   "乾燥缺水",
@@ -4165,8 +4828,10 @@ function Home() {
     useState<MainCategory>("本月優惠");
   const [selectedSeries, setSelectedSeries] = useState("全部");
   const [selectedOilVolume, setSelectedOilVolume] = useState<"全部" | "10mL" | "15mL" | "30mL">("全部");
+  const [oilBoutiqueFilterV375, setOilBoutiqueFilterV375] = useState("全部");
   const [selectedSkinFilter, setSelectedSkinFilter] =
     useState<SkinFilter>("全部");
+  const [selectedHomeSkincareNeedV380, setSelectedHomeSkincareNeedV380] = useState("乾燥缺水");
   const [commerceFilter, setCommerceFilter] = useState("");
   const [collectionViewLabel, setCollectionViewLabel] = useState("");
   const [expandedDrawerGroup, setExpandedDrawerGroup] = useState<string | null>("本月優惠");
@@ -4316,7 +4981,7 @@ function Home() {
   const faceCareProductIdsV368 = new Set([
     4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
     32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45,
-    47, 48, 49, 55, 59, 61, 62, 63, 64, 65, 68, 110, 111,
+    47, 48, 49, 55, 59, 61, 62, 63, 64, 65, 68, 110, 111, 120,
   ]);
   const bodyCareProductIdsV368 = new Set([
     15, 16, 17, 18, 19, 30, 31, 50, 51, 54, 57, 60, 66, 67,
@@ -4347,6 +5012,40 @@ function Home() {
   const extractOil50IdsV359 = new Set([26, 27, 28]);
   const essentialOilAccessoryIdsV359 = new Set([76, 77, 100]);
   const diffuserDeviceIdsV359 = new Set([29, 94, 95]);
+
+
+  // V3.7.5：精油香氛專櫃以固定商品白名單做「香氣／情境」導購，避免用名稱關鍵字誤判。
+  const oilBoutiqueFilterProductIdsV375: Record<string, Set<number>> = {
+    柑橘果香: new Set([27, 74, 84, 85, 96, 99]),
+    花香柔和: new Set([26, 78, 79, 82, 98, 99]),
+    草本清新: new Set([27, 75, 80, 81, 83, 85, 86, 97]),
+    放鬆舒緩: new Set([26, 28, 78, 79, 81, 82, 86, 99]),
+    白天清新: new Set([27, 74, 75, 84, 85, 96, 97]),
+    居家放鬆: new Set([26, 28, 78, 79, 82, 86, 99]),
+    擴香入門: new Set([29, 74, 75, 78, 84, 94, 95, 96]),
+  };
+
+  const oilBoutiqueScentOptionsV375 = [
+    { id: "柑橘果香", icon: "🍊", note: "明亮清新的自然果香" },
+    { id: "花香柔和", icon: "🌸", note: "細緻柔和的花草氣息" },
+    { id: "草本清新", icon: "🌿", note: "清爽自然的植物香氣" },
+    { id: "放鬆舒緩", icon: "🌙", note: "柔和沉靜的居家氛圍" },
+  ];
+
+  const oilBoutiqueSeriesOptionsV375 = [
+    { id: "精萃油", icon: "◐", note: "含基底油，可依商品標示直接用於身體滋養與按摩" },
+    { id: "單方精油", icon: "◌", note: "100% 單方純精油，感受單一植物最純粹的香氣個性" },
+    { id: "複方精油", icon: "✦", note: "多種純精油調和，更有層次的香氛體驗" },
+    { id: "七序精油", icon: "⑦", note: "七款專屬香氣，依情境探索不同的香氛個性" },
+    { id: "精油配件", icon: "◇", note: "木盒、擴香木與香氛配件，整理你的香氣日常" },
+    { id: "擴香設備", icon: "⌁", note: "水氧機與霧化設備，把香氣帶進生活空間" },
+  ];
+
+  const oilBoutiqueScenarioOptionsV375 = [
+    { id: "白天清新", icon: "☀️", title: "白天清新", note: "讓空間多一點明亮、清爽的香氣" },
+    { id: "居家放鬆", icon: "🏠", title: "居家放鬆", note: "回到家，讓香氣替生活切換節奏" },
+    { id: "擴香入門", icon: "💧", title: "擴香入門", note: "第一次使用精油，也能輕鬆開始" },
+  ];
 
   function isFeaturedProductV31(product: Product) {
     return monthlyOfferIdsV316.has(product.id) || product.series.includes("本月主打");
@@ -4475,13 +5174,41 @@ function Home() {
       const matchSkinFilter =
         selectedSkinFilter === "全部" || productTags.includes(selectedSkinFilter);
 
-      return matchCategory && matchSeries && matchSkinFilter;
+      const matchOilBoutiqueFilterV375 =
+        selectedCategory !== "精油香氛" ||
+        oilBoutiqueFilterV375 === "全部" ||
+        Boolean(oilBoutiqueFilterProductIdsV375[oilBoutiqueFilterV375]?.has(product.id));
+
+      return matchCategory && matchSeries && matchSkinFilter && matchOilBoutiqueFilterV375;
     })
     .sort((a, b) => {
+      if (!normalizedSearchQuery && selectedCategory === "精油香氛" && selectedSeries === "七序精油") {
+        const aOrder = sevenSequenceOilOrderV377.indexOf(a.product.id as (typeof sevenSequenceOilOrderV377)[number]);
+        const bOrder = sevenSequenceOilOrderV377.indexOf(b.product.id as (typeof sevenSequenceOilOrderV377)[number]);
+        if (aOrder !== -1 || bOrder !== -1) {
+          return (aOrder === -1 ? 999 : aOrder) - (bOrder === -1 ? 999 : bOrder);
+        }
+      }
       if (!normalizedSearchQuery) return a.index - b.index;
       return (a.searchScore ?? 9999) - (b.searchScore ?? 9999) || a.index - b.index;
     })
     .map(({ product }) => product);
+
+  const oilBoutiqueHeroProductsV375 = getProductsByIds([26, 74, 86]).filter((product) => hasRealImage(product));
+  const oilBoutiqueFeaturedProductsV375 = getProductsByIds([26, 74, 78, 86]);
+  const sevenSequenceGuideV377 = [
+    { id: 87, order: "01", name: "智慧之冠", note: "靜心沉澱・清晰思緒・專注香氛" },
+    { id: 91, order: "02", name: "亮采", note: "靈感覺察・明亮清新・工作創作" },
+    { id: 93, order: "03", name: "呼暢護隨", note: "草本清新・空間香氛・明星人氣" },
+    { id: 92, order: "04", name: "心之綻放", note: "溫暖花香・情緒沉澱・睡前放鬆" },
+    { id: 90, order: "05", name: "順暢平衡", note: "清新舒展・日常薰香・身心平衡" },
+    { id: 88, order: "06", name: "魔力輕盈", note: "輕盈香氛・活力調性・稀釋按摩" },
+    { id: 89, order: "07", name: "能量之源", note: "木質大地・沉穩安定・溫暖香氣" },
+  ];
+  const showOilBoutiqueV375 =
+    selectedCategory === "精油香氛" && selectedSeries === "全部" && !commerceFilter;
+  const showSevenSequenceGuideV377 =
+    selectedCategory === "精油香氛" && selectedSeries === "七序精油" && !commerceFilter;
 
   const searchPreviewProducts = normalizedSearchQuery ? filteredProducts : [];
   const searchRemainingCount = 0;
@@ -4493,7 +5220,7 @@ function Home() {
 
   const homeComboProducts = getProductsByIds([34, 58, 59, 55, 67, 54, 119, 56]);
   const homeClearanceProducts: Product[] = [];
-  const homeDragonBloodProducts = getProductsByIds([34, 59, 67]);
+  const homeDragonBloodProducts = getProductsByIds([34, 120, 59, 67]);
   const homeWaterGlowProducts = getProductsByIds([40, 41, 63]);
   const homeTeaControlProducts = getProductsByIds([32, 42, 45]);
   const homeBrighteningProducts = getProductsByIds([68, 48, 49]);
@@ -4594,10 +5321,176 @@ function Home() {
     },
   ];
 
-  const mallDealProducts = getProductsByIds([34, 1, 51]);
+  const topRankingItemsV378 = [
+    {
+      rank: 1,
+      displayProductId: 34,
+      actionProductId: 34,
+      action: "detail",
+      image: "/products/TOP1.png",
+      title: "龍血玻尿酸保濕精華液",
+      subtitle: "300mL・人氣保濕明星商品",
+      priceLine: "$1,980｜買一送一",
+      layout: "wide",
+      imageSpec: "750 × 500 px",
+    },
+    {
+      rank: 2,
+      displayProductId: 15,
+      actionProductId: 119,
+      action: "combo",
+      image: "/products/TOP2.png",
+      title: "龍血求麗頭皮修護洗髮精",
+      subtitle: "500mL・與沐浴乳自由搭配",
+      priceLine: "單瓶 $590｜任選 3 瓶 $1,100",
+      layout: "portrait",
+      imageSpec: "640 × 800 px",
+    },
+    {
+      rank: 3,
+      displayProductId: 16,
+      actionProductId: 119,
+      action: "combo",
+      image: "/products/TOP3.png",
+      title: "龍血求麗潤澤修護沐浴乳",
+      subtitle: "500mL・與洗髮精自由搭配",
+      priceLine: "單瓶 $590｜任選 3 瓶 $1,100",
+      layout: "portrait",
+      imageSpec: "640 × 800 px",
+    },
+    {
+      rank: 4,
+      displayProductId: 120,
+      actionProductId: 120,
+      action: "detail",
+      image: "/products/TOP4.png",
+      title: "龍血求麗精華液",
+      subtitle: "30mL・人氣龍血集中精華",
+      priceLine: "$695",
+      layout: "wide-compact",
+      imageSpec: "750 × 420 px",
+    },
+    {
+      rank: 5,
+      displayProductId: 55,
+      actionProductId: 55,
+      action: "combo",
+      image: "/products/TOP5.png",
+      title: "人氣面膜雙選",
+      subtitle: "水搖滾保濕 × 極光白透亮",
+      priceLine: "單桶 $599｜任選 2 桶 $1,100｜任選 5 桶 $2,750",
+      layout: "portrait",
+      imageSpec: "640 × 800 px",
+    },
+    {
+      rank: 6,
+      displayProductId: 1,
+      actionProductId: 1,
+      action: "combo",
+      image: "/products/TOP6.png",
+      title: "人氣益生菌雙選",
+      subtitle: "BC-CA 加鈣 × 蔓越莓益生菌",
+      priceLine: "加鈣 $800｜蔓越莓 $990｜任選 3 盒 $1,600",
+      layout: "portrait",
+      imageSpec: "640 × 800 px",
+    },
+  ] as const;
   const summerWhiteningProducts = getProductsByIds([68, 47, 48, 49, 110]);
-  const mallHotProducts = getProductsByIds([55, 51, 54, 108, 67, 119, 68, 1]);
-  const mallSkincareShelfProducts = getProductsByIds([34, 59, 35, 36, 40, 14]);
+
+  // V3.8.0：首頁「本月優惠・活動方案」改為方案導向，不再重複 TOP 排行榜商品。
+  const monthlyOfferCardsV380 = [
+    {
+      badge: "潔顏組合",
+      title: "龍血潔顏慕絲＋卸妝油",
+      description: "潔顏 × 卸妝一次補齊",
+      price: "1＋1 $1,080",
+      productId: 59 as number | null,
+    },
+    {
+      badge: "頭皮髮品",
+      title: "龍血洗髮精＋阿甘甦醒髮根養護液",
+      description: "洗髮 × 髮根養護日常組合",
+      price: "1＋1 $1,500",
+      productId: 112 as number | null,
+    },
+    {
+      badge: "亮白保養",
+      title: "櫻の雪傳明酸美白三件組",
+      description: "精華液30mL＋乳液100mL，贈化妝水150mL",
+      price: "組合價 $1,780",
+      productId: 68 as number | null,
+    },
+    {
+      badge: "口腔護理",
+      title: "齒齦保健牙膏",
+      description: "薰衣草舒緩／龍血修護自由搭配",
+      price: "買二送一・共3支 $500",
+      productId: 54 as number | null,
+    },
+    {
+      badge: "手部保養",
+      title: "護手霜三款自由配",
+      description: "薰衣草／櫻之雪／茶樹自由搭配",
+      price: "買二送一・共3支 $580",
+      productId: 108 as number | null,
+    },
+    {
+      badge: "洗沐香氛",
+      title: "龍血香氛皂自由配",
+      description: "日常洗沐香氣自由搭配",
+      price: "單入 $290｜任選4入 $799",
+      productId: 67 as number | null,
+    },
+    {
+      badge: "身體舒壓",
+      title: "石墨烯電氣石精油貼布",
+      description: "涼感／溫感自由搭配",
+      price: "單盒 $500｜任選4盒 $1,099｜任選10盒 $2,500",
+      productId: 51 as number | null,
+    },
+    {
+      badge: "龍血修護",
+      title: "龍血求麗修護霜",
+      description: "單瓶 $1,190；第二件享5折",
+      price: "2瓶 $1,785",
+      productId: null as number | null,
+    },
+  ];
+
+  // V3.8.0：臉部保養改為「依肌膚需求選保養」，每次只呈現一組 4 款，避免首頁過長。
+  const homeSkincareNeedGroupsV380 = [
+    {
+      key: "乾燥缺水",
+      description: "日常補水、鎖水與滋潤，適合乾燥、缺水與粗糙膚況。",
+      productIds: [61, 40, 41, 8],
+    },
+    {
+      key: "透亮勻膚",
+      description: "從化妝水、精華、乳液到日間防護，建立完整透亮保養流程。",
+      productIds: [47, 48, 49, 110],
+    },
+    {
+      key: "緊緻熟齡",
+      description: "以緊緻、澎潤與高級養護為主，適合想加強熟齡保養的人。",
+      productIds: [11, 12, 13, 62],
+    },
+    {
+      key: "清潔煥膚",
+      description: "卸妝、潔顏與角質調理一次整理，讓日常清潔流程更完整。",
+      productIds: [35, 36, 42, 45],
+    },
+    {
+      key: "密集修護",
+      description: "集中型修護與高級養護，適合需要加強保濕與膚況調理時使用。",
+      productIds: [33, 65, 10, 64],
+    },
+  ] as const;
+
+  const activeHomeSkincareNeedV380 =
+    homeSkincareNeedGroupsV380.find((group) => group.key === selectedHomeSkincareNeedV380) ??
+    homeSkincareNeedGroupsV380[0];
+  const activeHomeSkincareProductsV380 = getProductsByIds([...activeHomeSkincareNeedV380.productIds]);
+
   const mallBodyShelfProducts = getProductsByIds([54, 67, 108, 119, 112]);
   const mallHealthShelfProducts = getProductsByIds([1, 58, 2, 3, 69, 56]);
   const mallAromaShelfProducts = getProductsByIds([85, 74, 79, 82, 75, 76]);
@@ -4820,6 +5713,7 @@ function Home() {
   }
 
   function handleCategoryChange(category: MainCategory) {
+    setOilBoutiqueFilterV375("全部");
     setCommerceFilter("");
     setCollectionViewLabel("");
     setSelectedCategory(category);
@@ -4830,6 +5724,7 @@ function Home() {
   }
 
   function jumpToCategory(category: MainCategory, series = "全部") {
+    setOilBoutiqueFilterV375("全部");
     setCommerceFilter("");
     setCollectionViewLabel("");
     setSelectedCategory(category);
@@ -5568,12 +6463,24 @@ function Home() {
   }
 
   function selectCollectionSeries(series: string) {
+    setOilBoutiqueFilterV375("全部");
     setCommerceFilter("");
     setCollectionViewLabel("");
     setSelectedSeries(series);
     setSelectedOilVolume("全部");
     setSelectedSkinFilter("全部");
     setSearchQuery("");
+  }
+
+  function selectOilBoutiqueFilterV375(filter: string) {
+    setCommerceFilter("");
+    setCollectionViewLabel("");
+    setSelectedCategory("精油香氛");
+    setSelectedSeries("全部");
+    setSelectedOilVolume("全部");
+    setSelectedSkinFilter("全部");
+    setSearchQuery("");
+    setOilBoutiqueFilterV375((current) => current === filter ? "全部" : filter);
   }
 
   function getCollectionSubtitle() {
@@ -5598,7 +6505,7 @@ function Home() {
     }
 
     if (selectedCategory === "精油香氛") {
-      return "單方、複方、精油配件與香氛設備集中查看。";
+      return "精萃油、單方純精油、複方純精油、七序精油、精油配件與擴香設備集中查看。";
     }
 
     if (selectedCategory === "新品預告") {
@@ -5838,6 +6745,138 @@ function Home() {
     );
   }
 
+  function handleMonthlyOfferClickV380(item: (typeof monthlyOfferCardsV380)[number]) {
+    if (item.productId) {
+      const product = products.find((candidate) => candidate.id === item.productId);
+      if (product) {
+        if (getComboConfig(product.id)) {
+          openComboPicker(product);
+        } else {
+          openProductDetail(product);
+        }
+        return;
+      }
+    }
+
+    // 龍血求麗修護霜目前在這份來源檔沒有獨立商品 ID，先導向本月優惠總覽，避免建立假商品。
+    openCategoryTab("本月優惠", "全部");
+  }
+
+  function MonthlyOffersSectionV380() {
+    return (
+      <section className="home-product-section monthly-offers-section-v380" id="home-hot-products-v380">
+        <div className="section-heading compact monthly-offers-heading-v380">
+          <span>MONTHLY PICKS</span>
+          <h2>本月優惠・活動方案</h2>
+          <p>排行榜看熱銷；這裡直接告訴你現在怎麼買更划算。</p>
+        </div>
+
+        <div className="monthly-offer-grid-v380">
+          {monthlyOfferCardsV380.map((item) => {
+            const product = item.productId
+              ? products.find((candidate) => candidate.id === item.productId)
+              : null;
+            const isFlexibleCombo = Boolean(product && getComboConfig(product.id));
+
+            const offerImage = product?.image ?? null;
+
+            return (
+              <article className="monthly-offer-card-v380" key={`${item.badge}-${item.title}`}>
+                <button
+                  type="button"
+                  className="monthly-offer-image-button-v381"
+                  onClick={() => handleMonthlyOfferClickV380(item)}
+                  aria-label={`查看優惠：${item.title}`}
+                >
+                  <div className="monthly-offer-image-v381">
+                    {offerImage ? (
+                      <img
+                        src={offerImage}
+                        alt={item.title}
+                        loading="lazy"
+                        onError={(event) => {
+                          event.currentTarget.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <span>商品圖片待補</span>
+                    )}
+                  </div>
+                </button>
+                <div className="monthly-offer-content-v381">
+                  <span className="monthly-offer-badge-v380">{item.badge}</span>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+                <strong>{item.price}</strong>
+                <button type="button" onClick={() => handleMonthlyOfferClickV380(item)}>
+                  {isFlexibleCombo ? "選擇搭配" : "查看優惠"}
+                </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          className="home-more-button monthly-offers-more-v380"
+          onClick={() => openCategoryTab("本月優惠", "全部")}
+        >
+          看全部本月優惠
+        </button>
+      </section>
+    );
+  }
+
+  function SkincareNeedSectionV380() {
+    return (
+      <section className="home-product-section skincare-needs-section-v380" id="home-skincare-needs-v380">
+        <div className="section-heading compact skincare-needs-heading-v380">
+          <span>SKIN CARE GUIDE</span>
+          <h2>依肌膚需求選保養</h2>
+          <p>先選需求，再看適合的日常保養組合，找商品更快。</p>
+        </div>
+
+        <div className="skincare-need-tabs-v380" role="tablist" aria-label="依肌膚需求選保養">
+          {homeSkincareNeedGroupsV380.map((group) => {
+            const isActive = group.key === activeHomeSkincareNeedV380.key;
+            return (
+              <button
+                type="button"
+                key={group.key}
+                className={isActive ? "active" : ""}
+                aria-selected={isActive}
+                role="tab"
+                onClick={() => setSelectedHomeSkincareNeedV380(group.key)}
+              >
+                {group.key}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="skincare-need-summary-v380">
+          <strong>{activeHomeSkincareNeedV380.key}</strong>
+          <p>{activeHomeSkincareNeedV380.description}</p>
+        </div>
+
+        <div className="home-product-grid skincare-need-product-grid-v380">
+          {activeHomeSkincareProductsV380.map((product) => (
+            <ProductCard product={product} key={`home-skin-need-${activeHomeSkincareNeedV380.key}-${product.id}`} />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className="home-more-button"
+          onClick={() => jumpToCategory("臉部保養", "全部")}
+        >
+          進入全部臉部保養
+        </button>
+      </section>
+    );
+  }
+
   function ProductVisual({
     product,
     variant = "normal",
@@ -5867,6 +6906,8 @@ function Home() {
     return {
       ...(productContentOverrides[product.id] ?? {}),
       ...(productContentOverridesV362[product.id] ?? {}),
+      ...(productContentOverridesV376[product.id] ?? {}),
+      ...(productContentOverridesV377[product.id] ?? {}),
     };
   }
 
@@ -5956,6 +6997,8 @@ function Home() {
   }
 
   function shouldShowExpiryInfo(product: Product) {
+    if ([50, 67, 114, 115, 116, 117, 118, 101, 102, 103, 104, 105, 106, 107].includes(product.id)) return false;
+
     const expirableCategories: MainCategory[] = [
       "組合價",
       "保養品",
@@ -7211,8 +8254,57 @@ function Home() {
     }
   }
 
+  function renderTopRankingCardV378(item: (typeof topRankingItemsV378)[number]) {
+    const actionProduct = products.find((product) => product.id === item.actionProductId);
+    if (!actionProduct) return null;
+
+    const handleAction = () => {
+      if (item.action === "combo") {
+        openComboPicker(actionProduct);
+        return;
+      }
+      openProductDetail(actionProduct);
+    };
+
+    return (
+      <article
+        className={`top-ranking-card-v378 top-ranking-${item.rank}-v378 ${item.layout}`}
+        key={`top-ranking-${item.rank}`}
+      >
+        <button
+          type="button"
+          className="top-ranking-image-button-v378"
+          onClick={handleAction}
+          aria-label={`查看 TOP ${item.rank}：${item.title}`}
+        >
+          <div className="top-ranking-image-v378">
+            <span className="top-ranking-image-placeholder-v378">
+              TOP {item.rank} 圖片｜{item.imageSpec}
+            </span>
+            <img
+              src={item.image}
+              alt={`TOP ${item.rank} ${item.title}`}
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+              }}
+            />
+          </div>
+        </button>
+        <div className="top-ranking-meta-v378">
+          <span className="top-ranking-rank-v378">TOP {item.rank}</span>
+          <strong>{item.title}</strong>
+          <small>{item.subtitle}</small>
+          <p className="top-ranking-price-v381">{item.priceLine}</p>
+          <button type="button" onClick={handleAction}>
+            {item.action === "combo" ? "選擇搭配" : "查看商品"}
+          </button>
+        </div>
+      </article>
+    );
+  }
+
   return (
-    <main className="site-shell" data-build="jourdeness-v3.7.2-true-mobile-desktop">
+    <main className="site-shell" data-build="jourdeness-v3.8.1-home-images-prices">
       <header ref={topHeaderRefV370} className="top-header">
         <button
           className="menu-button"
@@ -7678,7 +8770,175 @@ function Home() {
             </div>
           </div>
 
+          {showOilBoutiqueV375 && (
+            <section className="oil-boutique-v375" aria-label="精油香氛專櫃">
+              <div className="oil-boutique-hero-v375">
+                <div className="oil-boutique-hero-copy-v375">
+                  <span className="oil-boutique-eyebrow-v375">ESSENTIAL OIL BOUTIQUE</span>
+                  <h3>精油香氛專櫃</h3>
+                  <p>從可直接用於身體保養的精萃油，到單方純精油、複方純精油與擴香設備，依照香氣與使用情境找到適合你的日常香氣。</p>
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById("oil-boutique-scent-v375")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                  >
+                    開始選香
+                  </button>
+                </div>
+                <div className="oil-boutique-hero-products-v375" aria-hidden="true">
+                  {oilBoutiqueHeroProductsV375.map((product, index) => (
+                    <div className={`oil-boutique-hero-product-v375 item-${index + 1}`} key={`oil-boutique-hero-${product.id}`}>
+                      <img src={getPrimaryImage(product)} alt="" />
+                    </div>
+                  ))}
+                </div>
+              </div>
 
+              <div className="oil-boutique-block-v375" id="oil-boutique-scent-v375">
+                <div className="oil-boutique-heading-v375">
+                  <span>SCENT FINDER</span>
+                  <h3>今天想找什麼香氣？</h3>
+                  <p>不用懂精油，也可以從喜歡的味道開始。</p>
+                </div>
+                <div className="oil-boutique-scent-grid-v375">
+                  {oilBoutiqueScentOptionsV375.map((item) => (
+                    <button
+                      type="button"
+                      key={`oil-scent-${item.id}`}
+                      className={oilBoutiqueFilterV375 === item.id ? "active" : ""}
+                      onClick={() => selectOilBoutiqueFilterV375(item.id)}
+                    >
+                      <span>{item.icon}</span>
+                      <strong>{item.id}</strong>
+                      <small>{item.note}</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="oil-boutique-block-v375">
+                <div className="oil-boutique-heading-v375">
+                  <span>EXPLORE</span>
+                  <h3>探索精油系列</h3>
+                </div>
+                <div className="oil-boutique-series-grid-v375">
+                  {oilBoutiqueSeriesOptionsV375.map((item) => (
+                    <button
+                      type="button"
+                      key={`oil-series-${item.id}`}
+                      onClick={() => selectCollectionSeries(item.id)}
+                    >
+                      <i>{item.icon}</i>
+                      <strong>{item.id}</strong>
+                      <small>{item.note}</small>
+                      <span>探索系列 →</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="oil-boutique-block-v375">
+                <div className="oil-boutique-heading-v375">
+                  <span>EDITOR'S PICKS</span>
+                  <h3>人氣香氣推薦</h3>
+                  <p>第一次挑精油，可以從這些人氣香氣開始。</p>
+                </div>
+                <div className="oil-boutique-featured-grid-v375">
+                  {oilBoutiqueFeaturedProductsV375.map((product) => (
+                    <button
+                      type="button"
+                      key={`oil-featured-${product.id}`}
+                      onClick={() => openProductDetail(product)}
+                    >
+                      <div>
+                        {hasRealImage(product) ? (
+                          <img src={getPrimaryImage(product)} alt={product.name} />
+                        ) : (
+                          <span className="oil-boutique-image-placeholder-v375">香氛選品</span>
+                        )}
+                      </div>
+                      <strong>{getCardName(product)}</strong>
+                      <small>查看商品</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="oil-boutique-block-v375">
+                <div className="oil-boutique-heading-v375">
+                  <span>BY MOMENT</span>
+                  <h3>今天，想要什麼樣的香氣陪伴？</h3>
+                </div>
+                <div className="oil-boutique-scenario-row-v375">
+                  {oilBoutiqueScenarioOptionsV375.map((item) => (
+                    <button
+                      type="button"
+                      key={`oil-scenario-${item.id}`}
+                      className={oilBoutiqueFilterV375 === item.id ? "active" : ""}
+                      onClick={() => selectOilBoutiqueFilterV375(item.id)}
+                    >
+                      <span>{item.icon}</span>
+                      <strong>{item.title}</strong>
+                      <small>{item.note}</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="oil-boutique-guide-v375">
+                <div>
+                  <span>FIRST SCENT GUIDE</span>
+                  <h3>第一次買精油？從這裡開始</h3>
+                </div>
+                <p><strong>喜歡水果清香</strong> → 從柑橘果香開始</p>
+                <p><strong>喜歡柔和香氣</strong> → 從花香與放鬆系開始</p>
+                <p><strong>喜歡清爽植物味</strong> → 從草本清新開始</p>
+                <p><strong>想直接按摩身體</strong> → 選擇含基底油的精萃油</p>
+                <p><strong>單方／複方純精油</strong> → 擴香使用，肌膚使用前需先以基底油稀釋</p>
+                <small>香氣感受會因個人喜好與使用方式而有所不同；精萃油與純精油使用方式不同，請依商品標示操作。</small>
+              </div>
+
+              <div className="oil-boutique-all-heading-v375">
+                <div>
+                  <span>{oilBoutiqueFilterV375 === "全部" ? "ALL COLLECTION" : "CURATED SELECTION"}</span>
+                  <h3>{oilBoutiqueFilterV375 === "全部" ? "全部精油香氛商品" : `${oilBoutiqueFilterV375}精選`}</h3>
+                </div>
+                {oilBoutiqueFilterV375 !== "全部" && (
+                  <button type="button" onClick={() => setOilBoutiqueFilterV375("全部")}>查看全部</button>
+                )}
+              </div>
+            </section>
+          )}
+
+          {showSevenSequenceGuideV377 && (
+            <section className="seven-sequence-guide-v377" aria-label="七序精油香氣導覽">
+              <div className="seven-sequence-guide-heading-v377">
+                <span>SEVEN SCENT JOURNEY</span>
+                <h3>七序精油・七款香氣旅程</h3>
+                <p>依照當下想要的香氣感受，探索七款不同個性的精油；點選商品即可查看完整特色、使用情境與更多資訊。</p>
+              </div>
+              <div className="seven-sequence-guide-grid-v377">
+                {sevenSequenceGuideV377.map((item) => {
+                  const product = products.find((candidate) => candidate.id === item.id);
+                  if (!product) return null;
+                  return (
+                    <button
+                      type="button"
+                      key={`seven-sequence-guide-${item.id}`}
+                      onClick={() => openProductDetail(product)}
+                    >
+                      <span className="seven-sequence-order-v377">{item.order}</span>
+                      <strong>{item.name}</strong>
+                      <em>{item.note}</em>
+                      <i>了解更多 ↓</i>
+                    </button>
+                  );
+                })}
+              </div>
+              <small className="seven-sequence-guide-note-v377">七序精油為純精油系列，擴香請依商品標示使用；如需接觸肌膚，請先以適合的基底油充分稀釋。</small>
+            </section>
+          )}
+
+          {!showOilBoutiqueV375 && (
           <section className="collection-filter-panel-v22">
             <div className="collection-filter-title-v22">
               <strong>快速篩選</strong>
@@ -7702,6 +8962,7 @@ function Home() {
                     type="button"
                     className={selectedSeries === "全部" && selectedSkinFilter === "全部" ? "active" : ""}
                     onClick={() => {
+                      setOilBoutiqueFilterV375("全部");
                       setSelectedSeries("全部");
                       setSelectedOilVolume("全部");
                       setSelectedSkinFilter("全部");
@@ -7762,8 +9023,9 @@ function Home() {
               </div>
             )}
           </section>
+          )}
 
-          {collectionFeaturedProducts.length > 0 && (
+          {collectionFeaturedProducts.length > 0 && !showOilBoutiqueV375 && (
             <section className="collection-featured-strip-v22">
               <div>
                 <h3>精選商品</h3>
@@ -7949,28 +9211,27 @@ function Home() {
         </span>
       </section>
 
-      <section className="mall-deal-wall-v26 mall-deal-wall-v27 top-picks-stream-v330" aria-label="本月優惠">
-        <div className="mall-section-head-v26 compact top-picks-heading-v316 section-title-v340">
-          <h2>本月回購主打</h2>
+      {/* V3.7.9：排行榜移除 TOP2＋TOP3 額外優惠橫幅；TOP2／TOP3 點擊直接開同一個洗沐自由配選擇器。 */}
+      <section className="top-ranking-section-v378" aria-label="熱銷排行榜">
+        <div className="top-ranking-heading-v378">
+          <h2>熱銷排行榜</h2>
         </div>
 
-        <div className="mall-deal-grid-v26 top-pick-slot-grid-v321">
-          {mallDealProducts.map((product, index) => (
-            <button
-              type="button"
-              className={`mall-deal-card-v26 top-pick-card-v316 top-pick-slot-card-v321 top-pick-${index + 1} ${index === 0 ? "feature" : ""}`}
-              key={`mall-deal-slot-${product.id}`}
-              onClick={() => openProductDetail(product)}
-              aria-label={`查看 TOP ${index + 1}：${product.name}`}
-            >
-              <div
-                className="top-pick-image-slot-v321"
-                role="img"
-                aria-label={`TOP ${index + 1} 活動圖`}
-                style={{ backgroundImage: `url("/products/top-pick-${index + 1}.jpg")` }}
-              />
-            </button>
-          ))}
+        <div className="top-ranking-stack-v378">
+          <div className="top-ranking-wide-row-v378">
+            {topRankingItemsV378.slice(0, 1).map((item) => renderTopRankingCardV378(item))}
+          </div>
+
+          <div className="top-ranking-pair-v378">
+            {topRankingItemsV378.slice(1, 3).map((item) => renderTopRankingCardV378(item))}
+          </div>
+          <div className="top-ranking-wide-row-v378">
+            {topRankingItemsV378.slice(3, 4).map((item) => renderTopRankingCardV378(item))}
+          </div>
+
+          <div className="top-ranking-pair-v378">
+            {topRankingItemsV378.slice(4, 6).map((item) => renderTopRankingCardV378(item))}
+          </div>
         </div>
       </section>
 
@@ -8000,25 +9261,9 @@ function Home() {
         </div>
       </section>
 
-      <HomeProductSection
-        id="home-hot-products-v26"
-        eyebrow="Monthly Picks"
-        title="本月優惠・活動方案"
-        subtitle="人氣組合、任選優惠與回購價，一次看齊。"
-        products={mallHotProducts}
-        actionLabel="看本月優惠"
-        onAction={() => openCategoryTab("本月優惠", "全部")}
-      />
+      <MonthlyOffersSectionV380 />
 
-      <HomeProductSection
-        id="home-skincare-hall-v271"
-        eyebrow="Skin Care Hall"
-        title="臉部保養精選"
-        subtitle="龍血、水光、玫瑰等人氣保養，依需求快速選購。"
-        products={mallSkincareShelfProducts}
-        actionLabel="進入臉部保養"
-        onAction={() => jumpToCategory("臉部保養", "全部")}
-      />
+      <SkincareNeedSectionV380 />
 
 
       <HomeProductSection
@@ -8603,14 +9848,16 @@ function Home() {
                 </div>
 
                 <div className="detail-price-actions-v273">
-                  <button
-                    type="button"
-                    className="primary"
-                    disabled={isCartDisabled(selectedDetailProduct)}
-                    onClick={() => addToCart(selectedDetailProduct)}
-                  >
-                    {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : getComboConfig(selectedDetailProduct.id) ? "選擇搭配" : "加入購物車"}
-                  </button>
+                  {!getComboConfig(selectedDetailProduct.id) && (
+                    <button
+                      type="button"
+                      className="primary"
+                      disabled={isCartDisabled(selectedDetailProduct)}
+                      onClick={() => addToCart(selectedDetailProduct)}
+                    >
+                      {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : "加入購物車"}
+                    </button>
+                  )}
                   <button type="button" onClick={openCartFromDetail}>
                     購物車 {cartTotalQuantity}
                   </button>
@@ -8667,6 +9914,23 @@ function Home() {
                   <p key={bullet}>・{bullet}</p>
                 ))}
               </section>
+
+              {productContent(selectedDetailProduct).expandedInfo?.length ? (
+                <details className="detail-more-v377">
+                  <summary>
+                    <span>了解更多</span>
+                    <small>展開完整產品資訊</small>
+                  </summary>
+                  <div className="detail-more-content-v377">
+                    {productContent(selectedDetailProduct).expandedInfo?.map((item) => (
+                      <section key={`${selectedDetailProduct.id}-${item.title}`}>
+                        <h4>{item.title}</h4>
+                        <p>{item.content}</p>
+                      </section>
+                    ))}
+                  </div>
+                </details>
+              ) : null}
 
               <section className="detail-info-block">
                 <h3>適合需求</h3>
@@ -24696,6 +25960,1075 @@ function Home() {
             max-width: min(calc(100vw - 32px), 488px) !important;
           }
         }
+
+        /* V3.7.5：精油香氛特別櫃位 */
+        .oil-boutique-v375 {
+          display: grid;
+          gap: 18px;
+          padding: 14px 12px 8px;
+          background:
+            radial-gradient(circle at 85% 4%, rgba(194, 207, 181, 0.26), transparent 28%),
+            linear-gradient(180deg, #fbf8f2 0%, #f8f4ed 100%);
+        }
+
+        .oil-boutique-hero-v375 {
+          position: relative;
+          min-height: 250px;
+          overflow: hidden;
+          border: 1px solid rgba(84, 91, 70, 0.13);
+          border-radius: 28px;
+          padding: 26px 20px;
+          background:
+            radial-gradient(circle at 84% 22%, rgba(255, 255, 255, 0.92), transparent 28%),
+            linear-gradient(145deg, #efe7da 0%, #e7ebdf 58%, #dce4d5 100%);
+          box-shadow: 0 18px 34px rgba(84, 74, 58, 0.10);
+        }
+
+        .oil-boutique-hero-v375::after {
+          content: "";
+          position: absolute;
+          right: -48px;
+          bottom: -74px;
+          width: 210px;
+          height: 210px;
+          border-radius: 50%;
+          border: 1px solid rgba(79, 95, 72, 0.18);
+        }
+
+        .oil-boutique-hero-copy-v375 {
+          position: relative;
+          z-index: 3;
+          width: 63%;
+        }
+
+        .oil-boutique-eyebrow-v375,
+        .oil-boutique-heading-v375 > span,
+        .oil-boutique-guide-v375 > div > span,
+        .oil-boutique-all-heading-v375 span {
+          display: block;
+          margin-bottom: 7px;
+          color: #7d6f5c;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.16em;
+        }
+
+        .oil-boutique-hero-copy-v375 h3 {
+          margin: 0;
+          color: #39382f;
+          font-size: 28px;
+          line-height: 1.15;
+          letter-spacing: 0.02em;
+        }
+
+        .oil-boutique-hero-copy-v375 p {
+          margin: 12px 0 17px;
+          color: #686457;
+          font-size: 13px;
+          line-height: 1.7;
+        }
+
+        .oil-boutique-hero-copy-v375 button {
+          min-height: 38px;
+          border: 0;
+          border-radius: 999px;
+          padding: 0 16px;
+          background: #4f5a46;
+          color: #fff;
+          font-size: 12px;
+          font-weight: 800;
+          box-shadow: 0 8px 18px rgba(68, 83, 60, 0.18);
+        }
+
+        .oil-boutique-hero-products-v375 {
+          position: absolute;
+          z-index: 2;
+          right: 8px;
+          bottom: 13px;
+          width: 44%;
+          height: 86%;
+        }
+
+        .oil-boutique-hero-product-v375 {
+          position: absolute;
+          display: grid;
+          place-items: center;
+          overflow: hidden;
+          width: 86px;
+          height: 128px;
+          border: 1px solid rgba(255, 255, 255, 0.74);
+          border-radius: 22px;
+          background: rgba(255, 255, 255, 0.62);
+          box-shadow: 0 14px 24px rgba(77, 71, 58, 0.12);
+          backdrop-filter: blur(9px);
+        }
+
+        .oil-boutique-hero-product-v375 img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 7px;
+        }
+
+        .oil-boutique-hero-product-v375.item-1 {
+          right: 68px;
+          bottom: 16px;
+          transform: rotate(-6deg);
+        }
+
+        .oil-boutique-hero-product-v375.item-2 {
+          right: 3px;
+          bottom: 38px;
+          transform: rotate(6deg);
+        }
+
+        .oil-boutique-hero-product-v375.item-3 {
+          right: 41px;
+          bottom: 108px;
+          width: 70px;
+          height: 104px;
+          transform: rotate(2deg);
+        }
+
+        .oil-boutique-block-v375 {
+          display: grid;
+          gap: 11px;
+          padding: 17px 15px;
+          border: 1px solid rgba(94, 88, 74, 0.10);
+          border-radius: 24px;
+          background: rgba(255, 255, 255, 0.82);
+          box-shadow: 0 12px 28px rgba(77, 70, 58, 0.055);
+          scroll-margin-top: 16px;
+        }
+
+        .oil-boutique-heading-v375 h3,
+        .oil-boutique-guide-v375 h3,
+        .oil-boutique-all-heading-v375 h3 {
+          margin: 0;
+          color: #403e36;
+          font-size: 19px;
+          line-height: 1.3;
+        }
+
+        .oil-boutique-heading-v375 p {
+          margin: 5px 0 0;
+          color: #8a8276;
+          font-size: 12px;
+          line-height: 1.55;
+        }
+
+        .oil-boutique-scent-grid-v375,
+        .oil-boutique-series-grid-v375,
+        .oil-boutique-featured-grid-v375 {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 9px;
+        }
+
+        .oil-boutique-scent-grid-v375 button {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          grid-template-areas:
+            "icon title"
+            "icon note";
+          column-gap: 9px;
+          align-items: center;
+          min-height: 76px;
+          border: 1px solid #e7e0d4;
+          border-radius: 18px;
+          padding: 11px 10px;
+          background: #fbfaf7;
+          text-align: left;
+          transition: 0.18s ease;
+        }
+
+        .oil-boutique-scent-grid-v375 button.active {
+          border-color: #6f7d65;
+          background: #eef2ea;
+          box-shadow: inset 0 0 0 1px rgba(93, 112, 83, 0.12);
+        }
+
+        .oil-boutique-scent-grid-v375 button > span {
+          grid-area: icon;
+          font-size: 23px;
+        }
+
+        .oil-boutique-scent-grid-v375 strong {
+          grid-area: title;
+          color: #4a493f;
+          font-size: 13px;
+        }
+
+        .oil-boutique-scent-grid-v375 small {
+          grid-area: note;
+          color: #918a7f;
+          font-size: 10px;
+          line-height: 1.35;
+        }
+
+        .oil-boutique-series-grid-v375 button {
+          display: grid;
+          min-height: 142px;
+          border: 1px solid #e8e1d6;
+          border-radius: 20px;
+          padding: 14px;
+          background: linear-gradient(145deg, #faf7f1, #f4f2eb);
+          text-align: left;
+        }
+
+        .oil-boutique-series-grid-v375 i {
+          display: grid;
+          place-items: center;
+          width: 34px;
+          height: 34px;
+          margin-bottom: 10px;
+          border-radius: 50%;
+          background: #e4eadf;
+          color: #596652;
+          font-size: 17px;
+          font-style: normal;
+          font-weight: 800;
+        }
+
+        .oil-boutique-series-grid-v375 strong {
+          color: #434239;
+          font-size: 14px;
+        }
+
+        .oil-boutique-series-grid-v375 small {
+          margin-top: 6px;
+          color: #8a8378;
+          font-size: 10px;
+          line-height: 1.45;
+        }
+
+        .oil-boutique-series-grid-v375 button > span {
+          align-self: end;
+          margin-top: 10px;
+          color: #65715d;
+          font-size: 10px;
+          font-weight: 800;
+        }
+
+        .oil-boutique-featured-grid-v375 button {
+          overflow: hidden;
+          border: 1px solid #e8e1d7;
+          border-radius: 18px;
+          padding: 0 0 11px;
+          background: #fff;
+          text-align: left;
+        }
+
+        .oil-boutique-featured-grid-v375 button > div {
+          display: grid;
+          place-items: center;
+          height: 132px;
+          margin-bottom: 10px;
+          background: #f7f4ee;
+        }
+
+        .oil-boutique-featured-grid-v375 img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 8px;
+        }
+
+        .oil-boutique-image-placeholder-v375 {
+          color: #9b9387;
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .oil-boutique-featured-grid-v375 strong,
+        .oil-boutique-featured-grid-v375 small {
+          display: block;
+          padding: 0 11px;
+        }
+
+        .oil-boutique-featured-grid-v375 strong {
+          color: #49473f;
+          font-size: 12px;
+          line-height: 1.45;
+        }
+
+        .oil-boutique-featured-grid-v375 small {
+          margin-top: 5px;
+          color: #8b8479;
+          font-size: 10px;
+        }
+
+        .oil-boutique-scenario-row-v375 {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .oil-boutique-scenario-row-v375 button {
+          display: grid;
+          align-content: start;
+          min-height: 132px;
+          border: 1px solid #e5dfd4;
+          border-radius: 18px;
+          padding: 12px 10px;
+          background: #fbfaf7;
+          text-align: left;
+        }
+
+        .oil-boutique-scenario-row-v375 button.active {
+          border-color: #6f7d65;
+          background: #edf1e9;
+        }
+
+        .oil-boutique-scenario-row-v375 button > span {
+          margin-bottom: 9px;
+          font-size: 21px;
+        }
+
+        .oil-boutique-scenario-row-v375 strong {
+          color: #49483f;
+          font-size: 12px;
+        }
+
+        .oil-boutique-scenario-row-v375 small {
+          margin-top: 6px;
+          color: #918a80;
+          font-size: 9px;
+          line-height: 1.45;
+        }
+
+        .oil-boutique-guide-v375 {
+          padding: 19px 17px;
+          border-radius: 24px;
+          background: #455044;
+          color: #fff;
+          box-shadow: 0 15px 28px rgba(55, 67, 53, 0.13);
+        }
+
+        .oil-boutique-guide-v375 > div > span {
+          color: #cdd7c6;
+        }
+
+        .oil-boutique-guide-v375 h3 {
+          color: #fff;
+          margin-bottom: 14px;
+        }
+
+        .oil-boutique-guide-v375 p {
+          margin: 7px 0;
+          color: #f0f3ed;
+          font-size: 12px;
+          line-height: 1.55;
+        }
+
+        .oil-boutique-guide-v375 small {
+          display: block;
+          margin-top: 15px;
+          padding-top: 13px;
+          border-top: 1px solid rgba(255, 255, 255, 0.14);
+          color: #cbd1c6;
+          font-size: 9px;
+          line-height: 1.5;
+        }
+
+        .oil-boutique-all-heading-v375 {
+          display: flex;
+          align-items: end;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 4px 3px 0;
+        }
+
+        .oil-boutique-all-heading-v375 button {
+          flex: 0 0 auto;
+          min-height: 34px;
+          border: 1px solid #d9d2c6;
+          border-radius: 999px;
+          padding: 0 13px;
+          background: #fff;
+          color: #645f56;
+          font-size: 10px;
+          font-weight: 800;
+        }
+
+        .seven-sequence-guide-v377 {
+          margin: 14px 14px 18px;
+          padding: 20px 16px 16px;
+          border: 1px solid #e8e0d6;
+          border-radius: 22px;
+          background: linear-gradient(180deg, #fffdfb 0%, #f8f3ed 100%);
+          box-shadow: 0 14px 34px rgba(75, 61, 44, 0.08);
+        }
+
+        .seven-sequence-guide-heading-v377 span {
+          display: block;
+          margin-bottom: 5px;
+          color: #9b7b58;
+          font-size: 9px;
+          font-weight: 900;
+          letter-spacing: 0.15em;
+        }
+
+        .seven-sequence-guide-heading-v377 h3 {
+          margin: 0;
+          color: #332b25;
+          font-size: 20px;
+          line-height: 1.25;
+        }
+
+        .seven-sequence-guide-heading-v377 p {
+          margin: 8px 0 0;
+          color: #766d63;
+          font-size: 11px;
+          line-height: 1.65;
+        }
+
+        .seven-sequence-guide-grid-v377 {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+          margin-top: 16px;
+        }
+
+        .seven-sequence-guide-grid-v377 button {
+          position: relative;
+          min-height: 142px;
+          border: 1px solid rgba(157, 128, 96, 0.2);
+          border-radius: 18px;
+          padding: 14px 12px 12px;
+          background: rgba(255, 255, 255, 0.88);
+          text-align: left;
+          box-shadow: 0 8px 22px rgba(70, 54, 38, 0.05);
+        }
+
+        .seven-sequence-order-v377 {
+          position: absolute;
+          top: 10px;
+          right: 11px;
+          color: #c2aa8f;
+          font-size: 19px;
+          font-weight: 900;
+          letter-spacing: -0.04em;
+        }
+
+        .seven-sequence-guide-grid-v377 small {
+          display: block;
+          max-width: calc(100% - 30px);
+          color: #9d7655;
+          font-size: 9px;
+          font-weight: 800;
+        }
+
+        .seven-sequence-guide-grid-v377 strong {
+          display: block;
+          margin-top: 9px;
+          color: #2f2924;
+          font-size: 15px;
+          line-height: 1.3;
+        }
+
+        .seven-sequence-guide-grid-v377 em {
+          display: block;
+          margin-top: 5px;
+          color: #756d66;
+          font-size: 10px;
+          font-style: normal;
+          line-height: 1.45;
+        }
+
+        .seven-sequence-guide-grid-v377 i {
+          display: block;
+          margin-top: 12px;
+          color: #7e5d42;
+          font-size: 10px;
+          font-style: normal;
+          font-weight: 900;
+        }
+
+        .seven-sequence-guide-note-v377 {
+          display: block;
+          margin-top: 14px;
+          padding-top: 12px;
+          border-top: 1px solid #e7ddd1;
+          color: #847a70;
+          font-size: 9px;
+          line-height: 1.6;
+        }
+
+        .detail-more-v377 {
+          margin: 0 16px 16px;
+          border: 1px solid #e7ded4;
+          border-radius: 18px;
+          background: #fffdfb;
+          overflow: hidden;
+        }
+
+        .detail-more-v377 summary {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          min-height: 56px;
+          padding: 0 42px 0 16px;
+          cursor: pointer;
+          list-style: none;
+          color: #3f352d;
+        }
+
+        .detail-more-v377 summary::-webkit-details-marker {
+          display: none;
+        }
+
+        .detail-more-v377 summary::after {
+          content: "⌄";
+          position: absolute;
+          right: 16px;
+          top: 50%;
+          transform: translateY(-52%);
+          color: #9b7657;
+          font-size: 18px;
+          font-weight: 900;
+          transition: transform 0.2s ease;
+        }
+
+        .detail-more-v377[open] summary::after {
+          transform: translateY(-48%) rotate(180deg);
+        }
+
+        .detail-more-v377 summary span {
+          font-size: 14px;
+          font-weight: 900;
+        }
+
+        .detail-more-v377 summary small {
+          color: #988f86;
+          font-size: 9px;
+        }
+
+        .detail-more-content-v377 {
+          padding: 0 16px 16px;
+          border-top: 1px solid #eee5dc;
+        }
+
+
+        .detail-more-content-v377 section {
+          padding: 13px 0;
+          border-bottom: 1px solid #efe8e1;
+        }
+
+        .detail-more-content-v377 section:last-child {
+          border-bottom: 0;
+          padding-bottom: 0;
+        }
+
+        .detail-more-content-v377 h4 {
+          margin: 0 0 6px;
+          color: #4c3c30;
+          font-size: 11px;
+        }
+
+        .detail-more-content-v377 section p {
+          margin: 0;
+          color: #6f675f;
+          font-size: 10px;
+          line-height: 1.7;
+        }
+
+        @media (max-width: 420px) {
+          .oil-boutique-hero-v375 {
+            min-height: 238px;
+            padding: 23px 17px;
+          }
+
+          .oil-boutique-hero-copy-v375 {
+            width: 66%;
+          }
+
+          .oil-boutique-hero-copy-v375 h3 {
+            font-size: 25px;
+          }
+
+          .oil-boutique-hero-products-v375 {
+            right: -7px;
+            width: 43%;
+          }
+
+          .oil-boutique-hero-product-v375 {
+            width: 72px;
+            height: 110px;
+          }
+
+          .oil-boutique-hero-product-v375.item-1 {
+            right: 55px;
+          }
+
+          .oil-boutique-hero-product-v375.item-3 {
+            right: 32px;
+            bottom: 98px;
+            width: 60px;
+            height: 88px;
+          }
+        }
+
+        /* V3.7.8：首頁熱銷排行榜 TOP 6。橫 → 雙直 → 橫 → 雙直。 */
+        .top-ranking-section-v378 {
+          padding: 28px 0 30px;
+          background: linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(250, 245, 239, 0.96));
+          overflow: hidden;
+        }
+
+        .top-ranking-heading-v378 {
+          padding: 0 16px 18px;
+        }
+
+        .top-ranking-heading-v378 > span {
+          display: block;
+          margin-bottom: 6px;
+          color: #9a3046;
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.16em;
+        }
+
+        .top-ranking-heading-v378 h2 {
+          margin: 0;
+          color: #3f3028;
+          font-size: clamp(28px, 6vw, 36px);
+          font-weight: 950;
+          line-height: 1.12;
+          letter-spacing: -0.05em;
+        }
+
+        .top-ranking-heading-v378 p {
+          margin: 8px 0 0;
+          color: #7a6d64;
+          font-size: 13px;
+          font-weight: 650;
+          line-height: 1.55;
+        }
+
+        .top-ranking-stack-v378 {
+          display: grid;
+          gap: 16px;
+          padding: 0 14px;
+        }
+
+        .top-ranking-wide-row-v378,
+        .top-ranking-pair-v378 {
+          display: grid;
+          gap: 12px;
+          min-width: 0;
+        }
+
+        .top-ranking-wide-row-v378 {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .top-ranking-pair-v378 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .top-ranking-card-v378 {
+          min-width: 0;
+          overflow: hidden;
+          border: 1px solid rgba(112, 79, 58, 0.11);
+          border-radius: 22px;
+          background: rgba(255, 255, 255, 0.96);
+          box-shadow: 0 14px 34px rgba(74, 49, 34, 0.08);
+        }
+
+        .top-ranking-image-button-v378 {
+          display: block;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          cursor: pointer;
+        }
+
+        .top-ranking-image-v378 {
+          position: relative;
+          width: 100%;
+          overflow: hidden;
+          background: linear-gradient(145deg, #f5eee6, #fffaf5);
+        }
+
+        .top-ranking-card-v378.wide .top-ranking-image-v378 {
+          aspect-ratio: 750 / 500;
+        }
+
+        .top-ranking-card-v378.wide-compact .top-ranking-image-v378 {
+          aspect-ratio: 750 / 420;
+        }
+
+        .top-ranking-card-v378.portrait .top-ranking-image-v378 {
+          aspect-ratio: 640 / 800;
+        }
+
+        .top-ranking-image-v378 img {
+          position: relative;
+          z-index: 2;
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .top-ranking-image-placeholder-v378 {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          display: grid;
+          place-items: center;
+          padding: 18px;
+          color: #a28f82;
+          font-size: 11px;
+          font-weight: 800;
+          text-align: center;
+        }
+
+        .top-ranking-meta-v378 {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 7px;
+          padding: 14px 15px 16px;
+        }
+
+        .top-ranking-rank-v378 {
+          color: #9b3047;
+          font-size: 11px;
+          font-weight: 950;
+          letter-spacing: 0.08em;
+        }
+
+        .top-ranking-meta-v378 > strong {
+          color: #44352d;
+          font-size: 18px;
+          font-weight: 950;
+          line-height: 1.28;
+          letter-spacing: -0.035em;
+        }
+
+        .top-ranking-meta-v378 > small,
+        .top-ranking-meta-v378 > p {
+          margin: 0;
+          color: #7b6d64;
+          font-size: 12px;
+          font-weight: 650;
+          line-height: 1.5;
+        }
+
+        .top-ranking-meta-v378 > p {
+          color: #8f2632;
+          font-weight: 850;
+        }
+
+        .top-ranking-meta-v378 > p.top-ranking-price-v381 {
+          margin: 0;
+          color: #9b2738;
+          font-size: 14px;
+          font-weight: 950;
+          line-height: 1.45;
+          letter-spacing: -0.015em;
+        }
+
+        .top-ranking-meta-v378 > button {
+          min-height: 38px;
+          margin-top: 2px;
+          padding: 0 16px;
+          border: 0;
+          border-radius: 999px;
+          background: #8f2632;
+          color: #fff;
+          font-size: 12px;
+          font-weight: 900;
+          cursor: pointer;
+          box-shadow: 0 8px 18px rgba(143, 38, 50, 0.18);
+        }
+
+
+        .top-ranking-pair-v378 .top-ranking-card-v378 .top-ranking-meta-v378 {
+          padding: 12px 11px 13px;
+        }
+
+        .top-ranking-pair-v378 .top-ranking-meta-v378 > strong {
+          font-size: clamp(15px, 3.6vw, 18px);
+        }
+
+        .top-ranking-pair-v378 .top-ranking-meta-v378 > small,
+        .top-ranking-pair-v378 .top-ranking-meta-v378 > p {
+          font-size: 11px;
+        }
+
+        .top-ranking-pair-v378 .top-ranking-meta-v378 > p.top-ranking-price-v381 {
+          font-size: 11px;
+          font-weight: 950;
+        }
+
+        .top-ranking-pair-v378 .top-ranking-meta-v378 > button {
+          min-height: 36px;
+          padding-inline: 13px;
+          font-size: 11px;
+        }
+
+        @media (max-width: 390px) {
+          .top-ranking-stack-v378 {
+            padding-inline: 10px;
+          }
+
+          .top-ranking-pair-v378 {
+            gap: 9px;
+          }
+
+          .top-ranking-meta-v378 {
+            padding: 11px 10px 12px;
+          }
+
+          .top-ranking-pair-v378 .top-ranking-meta-v378 > strong {
+            font-size: 14px;
+          }
+
+          .top-ranking-pair-v378 .top-ranking-meta-v378 > small,
+          .top-ranking-pair-v378 .top-ranking-meta-v378 > p {
+            font-size: 10px;
+          }
+
+        }
+
+
+        /* V3.8.0：首頁本月優惠改為方案卡，不與熱銷排行榜重複。 */
+        .monthly-offers-section-v380,
+        .skincare-needs-section-v380 {
+          padding-top: 28px;
+        }
+
+        .monthly-offers-heading-v380,
+        .skincare-needs-heading-v380 {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 6px;
+        }
+
+        .monthly-offers-heading-v380 > span,
+        .skincare-needs-heading-v380 > span {
+          color: #9b3047;
+          font-size: 11px;
+          font-weight: 950;
+          letter-spacing: 0.12em;
+        }
+
+        .monthly-offers-heading-v380 > p,
+        .skincare-needs-heading-v380 > p {
+          margin: 0;
+          color: #7c6c62;
+          font-size: 13px;
+          font-weight: 650;
+          line-height: 1.55;
+        }
+
+        .monthly-offer-grid-v380 {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 12px;
+          margin-top: 16px;
+        }
+
+        .monthly-offer-card-v380 {
+          min-width: 0;
+          padding: 0;
+          overflow: hidden;
+          border: 1px solid rgba(134, 92, 72, 0.12);
+          border-radius: 20px;
+          background: linear-gradient(145deg, #fffdfb, #fff7f1);
+          box-shadow: 0 10px 28px rgba(94, 61, 44, 0.08);
+          display: flex;
+          flex-direction: column;
+        }
+
+        .monthly-offer-image-button-v381 {
+          display: block;
+          width: 100%;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          cursor: pointer;
+        }
+
+        .monthly-offer-image-v381 {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 1 / 0.82;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(145deg, #fbf6f1, #f2e7dd);
+          border-bottom: 1px solid rgba(134, 92, 72, 0.08);
+        }
+
+        .monthly-offer-image-v381 img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 10px;
+        }
+
+        .monthly-offer-image-v381 span {
+          color: #aa9688;
+          font-size: 11px;
+          font-weight: 800;
+        }
+
+        .monthly-offer-content-v381 {
+          flex: 1;
+          min-width: 0;
+          padding: 14px 14px 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+
+        .monthly-offer-badge-v380 {
+          display: inline-flex;
+          min-height: 24px;
+          align-items: center;
+          padding: 0 9px;
+          border-radius: 999px;
+          background: rgba(155, 48, 71, 0.09);
+          color: #9b3047;
+          font-size: 10px;
+          font-weight: 900;
+        }
+
+        .monthly-offer-card-v380 h3 {
+          margin: 0;
+          color: #42352e;
+          font-size: 15px;
+          font-weight: 950;
+          line-height: 1.38;
+          letter-spacing: -0.025em;
+        }
+
+        .monthly-offer-card-v380 p {
+          margin: 0;
+          color: #7b6e66;
+          font-size: 11px;
+          font-weight: 650;
+          line-height: 1.5;
+        }
+
+        .monthly-offer-card-v380 strong {
+          margin-top: auto;
+          color: #8f2632;
+          font-size: 13px;
+          font-weight: 950;
+          line-height: 1.45;
+        }
+
+        .monthly-offer-card-v380 button {
+          width: 100%;
+          min-height: 36px;
+          margin-top: 2px;
+          border: 0;
+          border-radius: 999px;
+          background: #8f2632;
+          color: #fff;
+          font-size: 11px;
+          font-weight: 900;
+          cursor: pointer;
+        }
+
+        .monthly-offers-more-v380 {
+          margin-top: 16px;
+        }
+
+        /* V3.8.0：臉部保養用需求分頁切換，一次只顯示四款。 */
+        .skincare-need-tabs-v380 {
+          display: flex;
+          gap: 8px;
+          margin: 16px -2px 0;
+          padding: 2px 2px 7px;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+
+        .skincare-need-tabs-v380::-webkit-scrollbar {
+          display: none;
+        }
+
+        .skincare-need-tabs-v380 button {
+          flex: 0 0 auto;
+          min-height: 38px;
+          padding: 0 15px;
+          border: 1px solid rgba(126, 95, 78, 0.16);
+          border-radius: 999px;
+          background: #fff;
+          color: #6f625b;
+          font-size: 12px;
+          font-weight: 850;
+          cursor: pointer;
+        }
+
+        .skincare-need-tabs-v380 button.active {
+          border-color: #8f2632;
+          background: #8f2632;
+          color: #fff;
+          box-shadow: 0 8px 18px rgba(143, 38, 50, 0.16);
+        }
+
+        .skincare-need-summary-v380 {
+          margin: 8px 0 14px;
+          padding: 13px 14px;
+          border-radius: 16px;
+          background: #faf6f2;
+        }
+
+        .skincare-need-summary-v380 strong {
+          display: block;
+          color: #5b463a;
+          font-size: 14px;
+          font-weight: 950;
+        }
+
+        .skincare-need-summary-v380 p {
+          margin: 4px 0 0;
+          color: #7d6f66;
+          font-size: 11px;
+          font-weight: 650;
+          line-height: 1.55;
+        }
+
+        @media (max-width: 390px) {
+          .monthly-offer-grid-v380 {
+            gap: 9px;
+          }
+
+          .monthly-offer-card-v380 {
+            border-radius: 17px;
+          }
+
+          .monthly-offer-content-v381 {
+            padding: 12px 11px 13px;
+          }
+
+          .monthly-offer-image-v381 img {
+            padding: 7px;
+          }
+
+          .monthly-offer-card-v380 h3 {
+            font-size: 13px;
+          }
+
+          .monthly-offer-card-v380 strong {
+            font-size: 12px;
+          }
+        }
+
 
 
       `}
