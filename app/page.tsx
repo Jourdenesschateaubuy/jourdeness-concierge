@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.8.5 — 龍血玫瑰皂正式上架、香氛皂四款自由配、精油與皂品效期更新。
+// Jourdeness storefront build: V3.8.6 — 龍血玫瑰皂改為自由配選項，不再單獨顯示商品卡。
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -5054,11 +5054,11 @@ function Home() {
   // V3.7.0：這些單品仍保留在資料層與既有購物車相容邏輯中，
   // 但前台商品卡統一由對應「自由配」商品承接，避免同一商品重複出現兩張卡。
   const consolidatedChoiceOptionProductIdsV370 = new Set([
-    15, 16,       // 龍血洗髮精／沐浴乳 -> 119
-    18, 19,       // 牙膏 -> 54
-    30, 31,       // 石墨烯貼布 -> 51
-    38, 39,       // 35片面膜 -> 55
-    50, 115, 116, // 已上架香氛皂 -> 67
+    15, 16,            // 龍血洗髮精／沐浴乳 -> 119
+    18, 19,            // 牙膏 -> 54
+    30, 31,            // 石墨烯貼布 -> 51
+    38, 39,            // 35片面膜 -> 55
+    50, 114, 115, 116, // 四款香氛皂皆由「龍血香氛皂自由配」ID 67 承接
   ]);
 
   function isConsolidatedChoiceOptionProductV370(product: Product) {
@@ -8417,7 +8417,7 @@ const sevenSequenceGuideV377 = [
   }
 
   return (
-    <main className="site-shell" data-build="jourdeness-v3.8.5-rose-soap-expiry">
+    <main className="site-shell" data-build="jourdeness-v3.8.6-rose-soap-combo-only">
       <header ref={topHeaderRefV370} className="top-header">
         <button
           className="menu-button"
