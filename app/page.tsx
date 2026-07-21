@@ -1,6 +1,6 @@
 "use client";
 
-// Jourdeness storefront build: V3.8.4 — 漢堡分類補強、美體精油保養雙入口、護唇膏移入新品預告。
+// Jourdeness storefront build: V3.8.5 — 龍血玫瑰皂正式上架、香氛皂四款自由配、精油與皂品效期更新。
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 
 const categoryConfig = {
@@ -50,6 +50,7 @@ type Product = {
   intro?: string;
   priceNote?: string;
   expiryNote?: string;
+  internalExpiryDate?: string; // 內部庫存管理用；前台可不顯示
   features?: string[];
   suitableFor?: string[];
   usage?: string;
@@ -278,6 +279,7 @@ const comboConfigsV360: Record<number, ComboConfig> = {
     singlePriceLabel: "單入 $290",
     options: [
       { id: "lavender-soap", name: "龍血薰衣草舒緩皂" },
+      { id: "rose-soap", name: "龍血玫瑰美膚皂" },
       { id: "mugwort-soap", name: "龍血艾草保庇皂" },
       { id: "lemon-soap", name: "龍血檸檬馬鞭草皂" },
     ],
@@ -657,6 +659,12 @@ function buildCartPromotionSuggestionsV366(
       optionName: "龍血薰衣草舒緩皂",
     },
     {
+      productId: 114,
+      unitPrice: 290,
+      optionId: "rose-soap",
+      optionName: "龍血玫瑰美膚皂",
+    },
+    {
       productId: 115,
       unitPrice: 290,
       optionId: "mugwort-soap",
@@ -678,7 +686,7 @@ function buildCartPromotionSuggestionsV366(
     pushFlexibleSuggestion({
       id: "soap-4",
       title: "香氛皂任選 4 入",
-      detail: "薰衣草、艾草、檸檬馬鞭草可自由搭配，共 4 入",
+      detail: "薰衣草、玫瑰、艾草、檸檬馬鞭草可自由搭配，共 4 入",
       comboProductId: 67,
       comboPlanId: "four-soaps",
       candidates: soapCandidates,
@@ -2504,7 +2512,7 @@ function normalizeProductForV362(product: Product): Product {
       price: "單入 $ 290｜任選 4 入 $ 799",
       image: "/products/bdsoap.png",
       gallery: ["/products/bdsoap.png"],
-      description: "龍血薰衣草舒緩皂、龍血艾草保庇皂與龍血檸檬馬鞭草皂整合在同一張商品卡，可單入購買；選滿 4 入時自動採用 $799 優惠價。",
+      description: "龍血薰衣草舒緩皂、龍血玫瑰美膚皂、龍血艾草保庇皂與龍血檸檬馬鞭草皂整合在同一張商品卡，可單入購買；選滿 4 入時自動採用 $799 優惠價。",
     },
     68: {
       name: "櫻花美白三件組",
@@ -2516,6 +2524,22 @@ function normalizeProductForV362(product: Product): Product {
       price: "單條 $ 290｜買二送一・3 條 $ 580",
       description: "薰衣草舒緩、櫻之雪亮澤與茶樹防禦護手霜整合在同一張商品卡，可單條購買；選滿 3 條時自動採用買二送一 $580 優惠價。",
     },
+    50: {
+      internalExpiryDate: "2029-05-26",
+      expiryNote: "",
+    },
+    114: {
+      category: "身體洗護",
+      series: "手工皂",
+      originalPrice: undefined,
+      price: "單入 $ 290",
+      cardSubtitle: "200g±10g・柔和玫瑰花香",
+      priceNote: "單入 $290；可搭配香氛皂任選 4 入 $799。",
+      description: "200g±10g / 塊。柔和玫瑰花香，適合日常洗沐；可搭配香氛皂自由配。",
+      notice: "依日常洗沐習慣使用，使用後若有不適請暫停使用。",
+      internalExpiryDate: "2028-10-16",
+      expiryNote: "",
+    },
     119: {
       name: "龍血洗髮精／沐浴乳自由配",
       price: "單瓶 $ 590｜任選 3 瓶 $ 1,100",
@@ -2524,6 +2548,8 @@ function normalizeProductForV362(product: Product): Product {
     115: {
       category: "身體洗護",
       series: "手工皂",
+      internalExpiryDate: "2029-05-26",
+      expiryNote: "",
       originalPrice: undefined,
       price: "單入 $ 290",
       cardSubtitle: "200g±10g・草本香氣",
@@ -2534,6 +2560,8 @@ function normalizeProductForV362(product: Product): Product {
     116: {
       category: "身體洗護",
       series: "手工皂",
+      internalExpiryDate: "2029-05-26",
+      expiryNote: "",
       originalPrice: undefined,
       price: "單入 $ 290",
       cardSubtitle: "200g±10g・清新柑橘香",
@@ -4127,11 +4155,11 @@ const productContentOverridesV362: Record<number, Partial<Product>> = {
   },
   67: {
     cardName: "香氛皂自由配",
-    cardSubtitle: "薰衣草／艾草／檸檬自由搭配",
+    cardSubtitle: "薰衣草／玫瑰／艾草／檸檬自由搭配",
     spec: "200g±10g × 4 入",
-    intro: "三款香氛皂可自由搭配，選滿 4 入後以組合價 $799 加入購物車。",
+    intro: "四款香氛皂可自由搭配，選滿 4 入後以組合價 $799 加入購物車。",
     features: [
-      "龍血薰衣草舒緩皂、龍血艾草保庇皂與龍血檸檬馬鞭草皂可選。",
+      "龍血薰衣草舒緩皂、龍血玫瑰美膚皂、龍血艾草保庇皂與龍血檸檬馬鞭草皂可選。",
       "同款可重複選，也可以混搭。",
       "任選 4 入組合價 $799。",
     ],
@@ -4816,6 +4844,9 @@ const expiryNotesV315: Record<number, string> = {
   45: "效期：2028.11.09。實際效期以商品包裝標示為準。",
   47: "效期：2029.02.03。實際效期以商品包裝標示為準。",
   50: "效期：2029.05.26。實際效期以商品包裝標示為準。",
+  114: "效期：2028.10.16。實際效期以商品包裝標示為準。",
+  115: "效期：2029.05.26。實際效期以商品包裝標示為準。",
+  116: "效期：2029.05.26。實際效期以商品包裝標示為準。",
   51: "涼感 / 溫感貼布效期：2031.04.26。實際效期以商品包裝標示為準。",
   52: "涼感 / 溫感貼布效期：2031.04.26。實際效期以商品包裝標示為準。",
   54: "龍血牙膏效期：2028.07.17；薰衣草牙膏效期：2029.04.22。實際效期以商品包裝標示為準。",
@@ -4838,12 +4869,17 @@ const expiryNotesV315: Record<number, string> = {
   78: "效期：2028.03.03。實際效期以商品包裝標示為準。",
   79: "效期：2027.09.11。實際效期以商品包裝標示為準。",
   80: "效期：2031.03.16。實際效期以商品包裝標示為準。",
+  81: "效期：2031.01.17。實際效期以商品包裝標示為準。",
+  82: "效期：2028.03.17。實際效期以商品包裝標示為準。",
+  83: "效期：2028.10.01。實際效期以商品包裝標示為準。",
+  84: "效期：2028.09.21。實際效期以商品包裝標示為準。",
   85: "效期：2030.06.18。實際效期以商品包裝標示為準。",
   86: "效期：2028.11.04。實際效期以商品包裝標示為準。",
   87: "效期：2029.05.21。實際效期以商品包裝標示為準。",
   88: "效期：2029.04.05。實際效期以商品包裝標示為準。",
   89: "效期：2029.04.05。實際效期以商品包裝標示為準。",
   90: "效期：2029.05.21。實際效期以商品包裝標示為準。",
+  91: "效期：2029.05.04。實際效期以商品包裝標示為準。",
   92: "效期：2029.04.05。實際效期以商品包裝標示為準。",
   93: "效期：2029.04.05。實際效期以商品包裝標示為準。"
 };
@@ -4868,6 +4904,7 @@ const productImageFallbacks: Record<number, string[]> = {
     "/products/tooth500.png",
   ],
   50: ["/products/soap lav.png", "/products/bdsoap.png"],
+  114: ["/products/soap rose.png", "/products/bdsoap.png"],
   70: ["/products/dragon roller.png", "/products/龍血求麗甦醒精油滾珠.jpg", "/products/龍血求麗甦醒精油滾珠.png"],
   71: ["/products/lavender roller.png", "/products/薰衣草萬用精油滾珠.jpg", "/products/薰衣草萬用精油滾珠.png"],
   72: ["/products/lip tint.jpg", "/products/lip tint.png", "/products/lip combo.jpg"],
@@ -5037,12 +5074,12 @@ function Home() {
   ]);
   const bodyCareProductIdsV368 = new Set([
     15, 16, 17, 18, 19, 30, 31, 50, 51, 54, 57, 60, 66, 67,
-    72, 73, 101, 102, 103, 104, 105, 106, 107, 108, 112, 115, 116, 119,
+    72, 73, 101, 102, 103, 104, 105, 106, 107, 108, 112, 114, 115, 116, 119,
   ]);
   const healthProductIdsV368 = new Set([1, 2, 3, 58, 69, 109]);
 
   const oralCareProductIdsV368 = new Set([18, 19, 54]);
-  const handmadeSoapProductIdsV368 = new Set([50, 67, 115, 116]);
+  const handmadeSoapProductIdsV368 = new Set([50, 67, 114, 115, 116]);
   const hairBodyWashProductIdsV368 = new Set([15, 16, 17, 57, 112, 119]);
   const bodyMoistureProductIdsV368 = new Set([60, 66, 72, 73, 108]);
   const bodyRelaxProductIdsV368 = new Set([30, 31, 51, 101, 102, 103, 104, 105, 106, 107]);
@@ -8380,7 +8417,7 @@ const sevenSequenceGuideV377 = [
   }
 
   return (
-    <main className="site-shell" data-build="jourdeness-v3.8.4-hamburger-body-oil-preview">
+    <main className="site-shell" data-build="jourdeness-v3.8.5-rose-soap-expiry">
       <header ref={topHeaderRefV370} className="top-header">
         <button
           className="menu-button"
