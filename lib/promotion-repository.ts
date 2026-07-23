@@ -20,6 +20,9 @@ export type Promotion = {
   status: PromotionStatus;
   description?: string;
 
+  storefrontProductId?: number;
+  unitLabel: string;
+
   requiredQuantity?: number;
   bundlePrice?: number;
   allowSameProduct: boolean;
@@ -44,6 +47,9 @@ export type PromotionWriteInput = {
   type: PromotionType;
   status: PromotionStatus;
   description?: string;
+
+  storefrontProductId?: number;
+  unitLabel: string;
 
   requiredQuantity?: number;
   bundlePrice?: number;
@@ -70,6 +76,8 @@ type PromotionRow = {
   type: PromotionType;
   status: PromotionStatus;
   description: string | null;
+  storefront_product_id: number | null;
+  unit_label: string;
   required_quantity: number | null;
   bundle_price: number | null;
   allow_same_product: boolean;
@@ -140,6 +148,9 @@ async function attachProducts(rows: PromotionRow[]) {
     status: row.status,
     description: row.description ?? undefined,
 
+    storefrontProductId: row.storefront_product_id ?? undefined,
+    unitLabel: row.unit_label || "件",
+
     requiredQuantity: row.required_quantity ?? undefined,
     bundlePrice: row.bundle_price ?? undefined,
     allowSameProduct: row.allow_same_product,
@@ -193,6 +204,12 @@ function validateInput(input: PromotionWriteInput) {
   if (!input.name.trim()) throw new Error("優惠名稱不能空白");
 
   if (input.type === "mix_match") {
+    if (!input.storefrontProductId || input.storefrontProductId <= 0) {
+      throw new Error("任搭組合必須設定前台入口商品");
+    }
+    if (!input.unitLabel.trim()) {
+      throw new Error("任搭組合必須設定單位");
+    }
     if (!input.requiredQuantity || input.requiredQuantity <= 0) {
       throw new Error("任搭組合必須設定需要選幾件");
     }
@@ -282,6 +299,8 @@ export async function createPromotion(input: PromotionWriteInput) {
             type,
             status,
             description,
+            storefront_product_id,
+            unit_label,
             required_quantity,
             bundle_price,
             allow_same_product,
@@ -296,7 +315,7 @@ export async function createPromotion(input: PromotionWriteInput) {
             updated_at
           )
           VALUES (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,NOW()
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,NOW()
           )
           RETURNING id
         `,
@@ -305,6 +324,8 @@ export async function createPromotion(input: PromotionWriteInput) {
           input.type,
           input.status,
           input.description || null,
+          input.type === "mix_match" ? input.storefrontProductId ?? null : null,
+          input.unitLabel || "件",
           input.type === "mix_match" ? input.requiredQuantity ?? null : null,
           input.type === "mix_match" ? input.bundlePrice ?? null : null,
           input.allowSameProduct,
@@ -350,17 +371,19 @@ export async function updatePromotion(
             type = $3,
             status = $4,
             description = $5,
-            required_quantity = $6,
-            bundle_price = $7,
-            allow_same_product = $8,
-            buy_quantity = $9,
-            gift_quantity = $10,
-            gift_mode = $11,
-            repeatable = $12,
-            priority = $13,
-            stackable = $14,
-            starts_at = $15,
-            ends_at = $16,
+            storefront_product_id = $6,
+            unit_label = $7,
+            required_quantity = $8,
+            bundle_price = $9,
+            allow_same_product = $10,
+            buy_quantity = $11,
+            gift_quantity = $12,
+            gift_mode = $13,
+            repeatable = $14,
+            priority = $15,
+            stackable = $16,
+            starts_at = $17,
+            ends_at = $18,
             updated_at = NOW()
           WHERE id = $1
           RETURNING id
@@ -371,6 +394,8 @@ export async function updatePromotion(
           input.type,
           input.status,
           input.description || null,
+          input.type === "mix_match" ? input.storefrontProductId ?? null : null,
+          input.unitLabel || "件",
           input.type === "mix_match" ? input.requiredQuantity ?? null : null,
           input.type === "mix_match" ? input.bundlePrice ?? null : null,
           input.allowSameProduct,

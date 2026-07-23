@@ -21,7 +21,7 @@ import {
   comboProductIds,
   expiringProductIds,
   expiryNotesV315,
-  getComboConfig,
+  getComboConfig as getFallbackComboConfig,
   getMaskBucketQuantityV361,
   getMaskPromotionNoticeV361,
   getSimpleCartQuantityV366,
@@ -60,6 +60,21 @@ type StorefrontProduct = Product & {
   sortOrder?: number;
   sku?: string;
 };
+
+let databaseComboConfigsV3B: Record<number, ComboConfig> = {};
+let databaseManagedComboProductIdsV3B = new Set<number>();
+let databasePromotionSyncReadyV3B = false;
+
+function getComboConfig(productId: number) {
+  if (
+    databasePromotionSyncReadyV3B &&
+    databaseManagedComboProductIdsV3B.has(productId)
+  ) {
+    return databaseComboConfigsV3B[productId] ?? null;
+  }
+
+  return getFallbackComboConfig(productId);
+}
 
 function Home() {
   const [products, setProducts] = useState<StorefrontProduct[]>(
@@ -148,6 +163,57 @@ function Home() {
     }
 
     void loadStorefrontProducts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const [, setPromotionRevisionV3B] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadStorefrontPromotionsV3B() {
+      try {
+        const response = await fetch("/api/storefront/promotions", {
+          cache: "no-store",
+        });
+
+        if (!response.ok) return;
+
+        const payload = (await response.json()) as {
+          comboConfigs?: Record<string, ComboConfig>;
+          managedProductIds?: number[];
+        };
+
+        if (cancelled) return;
+
+        const nextConfigs: Record<number, ComboConfig> = {};
+        for (const [key, config] of Object.entries(payload.comboConfigs ?? {})) {
+          const productId = Number(key);
+          if (Number.isInteger(productId) && productId > 0) {
+            nextConfigs[productId] = config;
+          }
+        }
+
+        databaseComboConfigsV3B = nextConfigs;
+        databaseManagedComboProductIdsV3B = new Set(
+          (payload.managedProductIds ?? []).filter(
+            (productId) => Number.isInteger(productId) && productId > 0
+          )
+        );
+        databasePromotionSyncReadyV3B = true;
+        setPromotionRevisionV3B((current) => current + 1);
+      } catch (error) {
+        console.error(
+          "[Jourdeness] 優惠資料同步失敗，保留 storefront hardcoded fallback。",
+          error
+        );
+      }
+    }
+
+    void loadStorefrontPromotionsV3B();
 
     return () => {
       cancelled = true;
@@ -1442,7 +1508,7 @@ const sevenSequenceGuideV377 = [
   }
 
   function hasComboPrice(product: Product) {
-    return comboProductIds.has(product.id) || product.category === "組合價";
+    return Boolean(getComboConfig(product.id)) || comboProductIds.has(product.id) || product.category === "組合價";
   }
 
   function isExpiringDeal(product: Product) {
@@ -2659,6 +2725,17 @@ const sevenSequenceGuideV377 = [
       const quantityLimit = isFlexibleComboV369
         ? comboMaxQuantityV369
         : activeComboPlan.requiredQuantity;
+
+      const allowSameProductV3B =
+        (
+          activeComboConfig as ComboConfig & {
+            allowSameProduct?: boolean;
+          }
+        ).allowSameProduct ?? true;
+
+      if (delta > 0 && !allowSameProductV3B && currentQuantity >= 1) {
+        return current;
+      }
 
       if (delta > 0 && currentTotal >= quantityLimit) {
         return current;

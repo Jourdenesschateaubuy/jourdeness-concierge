@@ -174,6 +174,33 @@ export default function PromotionForm({
 
           <div className={styles.grid}>
             <label>
+              <span>前台任選入口商品 *</span>
+              <select
+                name="storefrontProductId"
+                required
+                defaultValue={promotion?.storefrontProductId ?? ""}
+              >
+                <option value="">請選擇前台商品</option>
+                {activeProducts.map((product) => (
+                  <option key={`storefront-${product.id}`} value={product.id}>
+                    #{product.id} · {product.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              <span>選擇單位 *</span>
+              <input
+                name="unitLabel"
+                required
+                maxLength={8}
+                defaultValue={promotion?.unitLabel ?? "件"}
+                placeholder="件／盒／瓶／桶"
+              />
+            </label>
+
+            <label>
               <span>需選件數 *</span>
               <input
                 name="requiredQuantity"

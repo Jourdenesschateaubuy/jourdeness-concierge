@@ -56,6 +56,9 @@ function parseInput(formData: FormData): PromotionWriteInput {
     status: status === "inactive" ? "inactive" : "active",
     description: text(formData, "description") || undefined,
 
+    storefrontProductId: numberValue(formData, "storefrontProductId"),
+    unitLabel: text(formData, "unitLabel") || "件",
+
     requiredQuantity: numberValue(formData, "requiredQuantity"),
     bundlePrice: numberValue(formData, "bundlePrice"),
     allowSameProduct: bool(formData, "allowSameProduct"),
