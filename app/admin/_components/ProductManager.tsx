@@ -1,16 +1,26 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Product } from "../../../lib/storefront-core";
+import type {
+  DatabaseProduct,
+  ProductStatus,
+} from "../../../lib/product-repository";
 import styles from "../admin.module.css";
 
-type AdminProduct = Product & {
+type AdminProduct = DatabaseProduct & {
   isCombo: boolean;
 };
 
 function normalize(value: string) {
   return value.trim().toLocaleLowerCase("zh-TW");
 }
+
+const statusLabel: Record<ProductStatus, string> = {
+  active: "上架中",
+  inactive: "下架",
+  coming_soon: "新品預告",
+  sold_out: "售罄",
+};
 
 export default function ProductManager({
   products,
@@ -19,6 +29,7 @@ export default function ProductManager({
 }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("全部");
+  const [status, setStatus] = useState("全部");
   const [comboOnly, setComboOnly] = useState(false);
 
   const categories = useMemo(
@@ -34,7 +45,9 @@ export default function ProductManager({
 
     return products.filter((product) => {
       if (category !== "全部" && product.category !== category) return false;
+      if (status !== "全部" && product.status !== status) return false;
       if (comboOnly && !product.isCombo) return false;
+
       if (!keyword) return true;
 
       const haystack = normalize(
@@ -46,12 +59,13 @@ export default function ProductManager({
           product.series,
           product.spec ?? "",
           product.price,
+          product.status,
         ].join(" ")
       );
 
       return haystack.includes(keyword);
     });
-  }, [category, comboOnly, products, query]);
+  }, [category, comboOnly, products, query, status]);
 
   return (
     <section className={styles.panel}>
@@ -81,6 +95,20 @@ export default function ProductManager({
           </select>
         </label>
 
+        <label className={styles.selectBox}>
+          <span>狀態</span>
+          <select
+            value={status}
+            onChange={(event) => setStatus(event.target.value)}
+          >
+            <option value="全部">全部狀態</option>
+            <option value="active">上架中</option>
+            <option value="inactive">下架</option>
+            <option value="coming_soon">新品預告</option>
+            <option value="sold_out">售罄</option>
+          </select>
+        </label>
+
         <label className={styles.toggleBox}>
           <input
             type="checkbox"
@@ -94,6 +122,7 @@ export default function ProductManager({
       <div className={styles.resultBar}>
         <strong>{filteredProducts.length}</strong>
         <span> / {products.length} 筆商品</span>
+        <span style={{ marginLeft: 10 }}>來源：Neon PostgreSQL</span>
       </div>
 
       <div className={styles.tableWrap}>
@@ -107,6 +136,7 @@ export default function ProductManager({
               <th>價格</th>
               <th>優惠</th>
               <th>狀態</th>
+              <th>排序</th>
             </tr>
           </thead>
           <tbody>
@@ -136,7 +166,9 @@ export default function ProductManager({
                 <td>{product.series}</td>
                 <td>
                   <div className={styles.priceCell}>
-                    {product.originalPrice && <small>{product.originalPrice}</small>}
+                    {product.originalPrice && (
+                      <small>{product.originalPrice}</small>
+                    )}
                     <strong>{product.price}</strong>
                   </div>
                 </td>
@@ -150,14 +182,17 @@ export default function ProductManager({
                 <td>
                   <span
                     className={
-                      product.category === "新品預告"
-                        ? styles.comingSoonBadge
-                        : styles.activeBadge
+                      product.status === "active"
+                        ? styles.activeBadge
+                        : product.status === "coming_soon"
+                          ? styles.comingSoonBadge
+                          : styles.statusBadge
                     }
                   >
-                    {product.category === "新品預告" ? "新品預告" : "前台使用中"}
+                    {statusLabel[product.status]}
                   </span>
                 </td>
+                <td>{product.sortOrder}</td>
               </tr>
             ))}
           </tbody>
@@ -166,7 +201,7 @@ export default function ProductManager({
         {filteredProducts.length === 0 && (
           <div className={styles.emptyState}>
             <strong>找不到符合條件的商品</strong>
-            <p>換一個名稱或清除分類條件再試一次。</p>
+            <p>換一個名稱或清除篩選條件再試一次。</p>
           </div>
         )}
       </div>

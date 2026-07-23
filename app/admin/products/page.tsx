@@ -1,9 +1,16 @@
-import { comboProductIds, products } from "../../../lib/storefront-core";
+import { comboProductIds } from "../../../lib/storefront-core";
+import { listDatabaseProducts } from "../../../lib/product-repository";
 import ProductManager from "../_components/ProductManager";
 import styles from "../admin.module.css";
 
-export default function AdminProductsPage() {
-  const adminProducts = products.map((product) => ({
+export const dynamic = "force-dynamic";
+
+export default async function AdminProductsPage() {
+  const databaseProducts = await listDatabaseProducts({
+    includeInactive: true,
+  });
+
+  const adminProducts = databaseProducts.map((product) => ({
     ...product,
     isCombo: comboProductIds.has(product.id),
   }));
@@ -12,13 +19,14 @@ export default function AdminProductsPage() {
     <div className={styles.page}>
       <header className={styles.pageHeader}>
         <div>
-          <p className={styles.eyebrow}>PRODUCTS</p>
+          <p className={styles.eyebrow}>PRODUCTS · NEON POSTGRES</p>
           <h1>商品管理</h1>
           <p>
-            目前直接讀取正式商城的商品主資料。這一版先確認搜尋、分類與資料顯示。
+            目前商品資料已直接讀取 Neon PostgreSQL。這一版先確認資料庫讀取、
+            搜尋、分類與狀態顯示都正常。
           </p>
         </div>
-        <span className={styles.statusBadge}>唯讀模式</span>
+        <span className={styles.statusBadge}>資料庫唯讀</span>
       </header>
 
       <ProductManager products={adminProducts} />
