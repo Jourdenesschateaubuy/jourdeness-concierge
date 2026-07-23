@@ -1,0 +1,19 @@
+.logoutForm {
+  margin-top: 2px;
+}
+
+.logoutButton {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 10px;
+  background: transparent;
+  color: #dbcdd0;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.logoutButton:hover {
+  background: rgba(255,255,255,.07);
+  color: white;
+}

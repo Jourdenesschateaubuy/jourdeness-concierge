@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { hasValidAdminSession } from "../../lib/admin-auth";
 import styles from "./admin.module.css";
+import authStyles from "./auth.module.css";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Jourdeness 後台",
@@ -10,11 +15,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (!(await hasValidAdminSession())) {
+    redirect("/admin-login");
+  }
+
   return (
     <div className={styles.adminRoot}>
       <aside className={styles.sidebar}>
@@ -40,7 +49,14 @@ export default function AdminLayout({
           <Link href="/" target="_blank">
             開啟正式商城 ↗
           </Link>
-          <small>Admin Phase 2A</small>
+
+          <form method="post" action="/api/admin/logout" className={authStyles.logoutForm}>
+            <button className={authStyles.logoutButton} type="submit">
+              登出
+            </button>
+          </form>
+
+          <small>Admin</small>
         </div>
       </aside>
 
