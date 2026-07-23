@@ -86,6 +86,7 @@ export async function createProductAction(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/");
   redirect(`/admin/products/${product.id}/edit?saved=created`);
 }
 
@@ -108,6 +109,7 @@ export async function updateProductAction(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/");
   revalidatePath(`/admin/products/${id}/edit`);
   redirect(`/admin/products/${id}/edit?saved=updated`);
 }
@@ -123,6 +125,7 @@ export async function changeProductStatusAction(formData: FormData) {
   await updateProductStatus(id, status);
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/");
 }
 
 export async function deleteProductAction(formData: FormData) {
@@ -134,4 +137,5 @@ export async function deleteProductAction(formData: FormData) {
   await deleteDatabaseProduct(id);
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/");
 }

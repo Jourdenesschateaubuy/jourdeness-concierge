@@ -32,7 +32,7 @@ import {
   productContentOverridesV376,
   productContentOverridesV377,
   productImageFallbacks,
-  products,
+  products as fallbackProducts,
   sevenSequenceOilIdsV354,
   sevenSequenceOilOrderV377,
   skinFilters,
@@ -49,7 +49,22 @@ import type {
   SkinFilter,
 } from "../lib/storefront-core";
 
+type StorefrontProductStatus =
+  | "active"
+  | "inactive"
+  | "coming_soon"
+  | "sold_out";
+
+type StorefrontProduct = Product & {
+  status?: StorefrontProductStatus;
+  sortOrder?: number;
+  sku?: string;
+};
+
 function Home() {
+  const [products, setProducts] = useState<StorefrontProduct[]>(
+    () => fallbackProducts as StorefrontProduct[]
+  );
   const [selectedCategory, setSelectedCategory] =
     useState<MainCategory>("本月優惠");
   const [selectedSeries, setSelectedSeries] = useState("全部");
@@ -100,6 +115,44 @@ function Home() {
   const [comboPlanId, setComboPlanId] = useState("");
   const [comboDraftSelections, setComboDraftSelections] = useState<Record<string, number>>({});
   const [comboEditingItemKey, setComboEditingItemKey] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadStorefrontProducts() {
+      try {
+        const response = await fetch("/api/storefront/products", {
+          cache: "no-store",
+        });
+
+        if (!response.ok) return;
+
+        const payload = (await response.json()) as {
+          products?: StorefrontProduct[];
+        };
+
+        if (
+          !cancelled &&
+          Array.isArray(payload.products) &&
+          payload.products.length > 0
+        ) {
+          setProducts(payload.products);
+        }
+      } catch (error) {
+        console.error(
+          "[Jourdeness] 商品資料同步失敗，保留 storefront fallback。",
+          error
+        );
+      }
+    }
+
+    void loadStorefrontProducts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const activeComboConfig = comboPickerProduct
     ? getComboConfig(comboPickerProduct.id)
@@ -1295,11 +1348,17 @@ const sevenSequenceGuideV377 = [
     return product.price;
   }
 
+  function getStorefrontStatus(product: Product) {
+    return (product as StorefrontProduct).status;
+  }
+
   function isComingSoon(product: Product) {
+    if (getStorefrontStatus(product) === "coming_soon") return true;
     return product.price.includes("新品預告") || productContent(product).priceNote?.includes("新品預告") || false;
   }
 
   function isSoldOut(product: Product) {
+    if (getStorefrontStatus(product) === "sold_out") return true;
     return product.price.includes("缺貨");
   }
 
