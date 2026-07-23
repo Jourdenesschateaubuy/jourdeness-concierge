@@ -1,6 +1,6 @@
 import { comboProductIds } from "../../../lib/storefront-core";
 import { listDatabaseProducts } from "../../../lib/product-repository";
-import ProductManager from "../_components/ProductManager";
+import ProductManager from "./_components/ProductManager";
 import styles from "../admin.module.css";
 
 export const dynamic = "force-dynamic";
@@ -22,11 +22,10 @@ export default async function AdminProductsPage() {
           <p className={styles.eyebrow}>PRODUCTS · NEON POSTGRES</p>
           <h1>商品管理</h1>
           <p>
-            目前商品資料已直接讀取 Neon PostgreSQL。這一版先確認資料庫讀取、
-            搜尋、分類與狀態顯示都正常。
+            商品資料已連接 Neon PostgreSQL，可新增、編輯、切換狀態與刪除。
           </p>
         </div>
-        <span className={styles.statusBadge}>資料庫唯讀</span>
+        <span className={styles.statusBadge}>可編輯</span>
       </header>
 
       <ProductManager products={adminProducts} />
