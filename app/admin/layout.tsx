@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -38,11 +39,19 @@ export default async function AdminLayout({
         <nav className={styles.nav} aria-label="後台導覽">
           <Link href="/admin">總覽</Link>
           <Link href="/admin/products">商品管理</Link>
-          <span className={styles.navDisabled}>分類管理 <em>下一階段</em></span>
-          <span className={styles.navDisabled}>優惠管理 <em>下一階段</em></span>
-          <span className={styles.navDisabled}>首頁管理 <em>下一階段</em></span>
-          <span className={styles.navDisabled}>訂單管理 <em>下一階段</em></span>
-          <span className={styles.navDisabled}>客戶管理 <em>下一階段</em></span>
+          <span className={styles.navDisabled}>
+            分類管理 <em>下一階段</em>
+          </span>
+          <Link href="/admin/promotions">優惠管理</Link>
+          <span className={styles.navDisabled}>
+            首頁管理 <em>下一階段</em>
+          </span>
+          <span className={styles.navDisabled}>
+            訂單管理 <em>下一階段</em>
+          </span>
+          <span className={styles.navDisabled}>
+            客戶管理 <em>下一階段</em>
+          </span>
         </nav>
 
         <div className={styles.sidebarFooter}>
@@ -50,7 +59,11 @@ export default async function AdminLayout({
             開啟正式商城 ↗
           </Link>
 
-          <form method="post" action="/api/admin/logout" className={authStyles.logoutForm}>
+          <form
+            method="post"
+            action="/api/admin/logout"
+            className={authStyles.logoutForm}
+          >
             <button className={authStyles.logoutButton} type="submit">
               登出
             </button>
