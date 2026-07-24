@@ -1081,6 +1081,37 @@ const sevenSequenceGuideV377 = [
     return item.comboPlanLabel ?? displayPrice(item.product);
   }
 
+
+  function getBuyGetGiftQuantityV3C1B(item: CartItem) {
+    const config = getBuyGetConfigV3C1A(item.product.id);
+
+    if (!config) return 0;
+    if (config.giftMode !== "same_product") return 0;
+    if (item.comboSelections) return 0;
+    if (getComboConfig(item.product.id)) return 0;
+    if (config.buyQuantity <= 0 || config.giftQuantity <= 0) return 0;
+
+    const qualifyingSets = config.repeatable
+      ? Math.floor(item.quantity / config.buyQuantity)
+      : item.quantity >= config.buyQuantity
+        ? 1
+        : 0;
+
+    return qualifyingSets * config.giftQuantity;
+  }
+
+  function getBuyGetLabelV3C1B(item: CartItem) {
+    const config = getBuyGetConfigV3C1A(item.product.id);
+    if (!config) return "";
+
+    return `買${config.buyQuantity}送${config.giftQuantity}`;
+  }
+
+  const cartBuyGetGiftTotalV3C1B = cartItems.reduce(
+    (total, item) => total + getBuyGetGiftQuantityV3C1B(item),
+    0
+  );
+
   const cartRegularSubtotalV361 = cartItems.reduce(
     (total, item) => total + getCartItemUnitPrice(item) * item.quantity,
     0
@@ -3404,6 +3435,7 @@ const sevenSequenceGuideV377 = [
         cartItems.map((item) => ({
           id: item.product.id,
           quantity: item.quantity,
+        buyGetGiftQuantity: getBuyGetGiftQuantityV3C1B(item),
           cartKey: item.cartKey,
           comboPlanId: item.comboPlanId,
           comboPlanLabel: item.comboPlanLabel,
@@ -3556,9 +3588,16 @@ const sevenSequenceGuideV377 = [
           )
           .join("\n");
 
+        const buyGetGiftQuantityV3C1B =
+          getBuyGetGiftQuantityV3C1B(item);
+        const buyGetGiftTextV3C1B =
+          buyGetGiftQuantityV3C1B > 0
+            ? `🎁【${getBuyGetLabelV3C1B(item)}】免費贈送 ${item.product.name} × ${buyGetGiftQuantityV3C1B}`
+            : "";
+
         return `${item.product.name} × ${item.quantity}｜${getCartItemDisplayPrice(item)}${
           comboDetails ? `\n${comboDetails}` : ""
-        }`;
+        }${buyGetGiftTextV3C1B ? `\n${buyGetGiftTextV3C1B}` : ""}`;
       })
       .join("\n");
     const maskPromotionOrderText = maskBucketQuantityV361 > 0
@@ -4880,6 +4919,42 @@ const sevenSequenceGuideV377 = [
                               <h3>{getCardName(item.product)}</h3>
                               <strong>{getCartItemDisplayPrice(item)}</strong>
 
+                              {getBuyGetGiftQuantityV3C1B(item) > 0 && (
+                                <div
+                                  className="cart-buyget-gift-v3c1b"
+                                  style={{
+                                    marginTop: 8,
+                                    padding: "9px 10px",
+                                    borderRadius: 10,
+                                    background: "#f8eee5",
+                                    border: "1px solid rgba(154, 48, 66, 0.16)",
+                                    display: "grid",
+                                    gap: 3,
+                                  }}
+                                >
+                                  <b
+                                    style={{
+                                      color: "#9a3042",
+                                      fontSize: 12,
+                                      fontWeight: 900,
+                                    }}
+                                  >
+                                    {getBuyGetLabelV3C1B(item)}
+                                  </b>
+                                  <span
+                                    style={{
+                                      color: "#6a4a3a",
+                                      fontSize: 11,
+                                      fontWeight: 800,
+                                      lineHeight: 1.45,
+                                    }}
+                                  >
+                                    🎁 免費贈送 {item.product.name} ×{" "}
+                                    {getBuyGetGiftQuantityV3C1B(item)}
+                                  </span>
+                                </div>
+                              )}
+
                               {MASK_BUCKET_PRODUCT_IDS_V361.has(item.product.id) &&
                                 maskPromotionV361.savings > 0 && (
                                   <span className="mask-promo-line-tag-v361">已納入面膜自動優惠</span>
@@ -4999,7 +5074,11 @@ const sevenSequenceGuideV377 = [
 
                     <div className="cart-bottom-bar-v355">
                       <div>
-                        <span>共 {cartTotalQuantity} 件</span>
+                        <span>
+                          共 {cartTotalQuantity} 件
+                          {cartBuyGetGiftTotalV3C1B > 0 &&
+                            ` ＋ 贈${cartBuyGetGiftTotalV3C1B}件`}
+                        </span>
                         <strong>預估小計 NT${cartEstimatedSubtotal.toLocaleString("zh-TW")}</strong>
                       </div>
                       <button
