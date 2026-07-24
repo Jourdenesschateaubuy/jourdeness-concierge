@@ -194,6 +194,7 @@ function Home() {
   }, []);
 
   const [, setPromotionRevisionV3B] = useState(0);
+  const [buyGetConfigsStateV3C, setBuyGetConfigsStateV3C] = useState<Record<number, StorefrontBuyGetConfigV3C1A>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -245,6 +246,7 @@ function Home() {
         }
 
         databaseBuyGetConfigsV3C1A = nextBuyGetConfigsV3C1A;
+        setBuyGetConfigsStateV3C(nextBuyGetConfigsV3C1A);
         databaseManagedBuyGetProductIdsV3C1A = new Set(
           (payload.managedBuyGetProductIds ?? []).filter(
             (productId) => Number.isInteger(productId) && productId > 0
@@ -1083,7 +1085,7 @@ const sevenSequenceGuideV377 = [
 
 
   function getBuyGetGiftQuantityV3C1B(item: CartItem) {
-    const config = getBuyGetConfigV3C1A(item.product.id);
+    const config = buyGetConfigsStateV3C[item.product.id] ?? null;
 
     if (!config) return 0;
     if (config.giftMode !== "same_product") return 0;
@@ -1100,7 +1102,7 @@ const sevenSequenceGuideV377 = [
   }
 
   function getBuyGetLabelV3C1B(item: CartItem) {
-    const config = getBuyGetConfigV3C1A(item.product.id);
+    const config = buyGetConfigsStateV3C[item.product.id] ?? null;
     if (!config) return "";
 
     return `買${config.buyQuantity}送${config.giftQuantity}`;
