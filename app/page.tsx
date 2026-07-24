@@ -1088,7 +1088,6 @@ const sevenSequenceGuideV377 = [
     if (!config) return 0;
     if (config.giftMode !== "same_product") return 0;
     if (item.comboSelections) return 0;
-    if (getComboConfig(item.product.id)) return 0;
     if (config.buyQuantity <= 0 || config.giftQuantity <= 0) return 0;
 
     const qualifyingSets = config.repeatable
