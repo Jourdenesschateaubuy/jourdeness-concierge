@@ -65,6 +65,30 @@ let databaseComboConfigsV3B: Record<number, ComboConfig> = {};
 let databaseManagedComboProductIdsV3B = new Set<number>();
 let databasePromotionSyncReadyV3B = false;
 
+type StorefrontBuyGetConfigV3C1A = {
+  promotionId: number;
+  name: string;
+  buyProductId: number;
+  buyQuantity: number;
+  giftQuantity: number;
+  giftMode: "same_product" | "fixed_product" | "gift_pool";
+  repeatable: boolean;
+  priority: number;
+  giftProductIds: number[];
+  note?: string;
+};
+
+let databaseBuyGetConfigsV3C1A: Record<
+  number,
+  StorefrontBuyGetConfigV3C1A
+> = {};
+let databaseManagedBuyGetProductIdsV3C1A = new Set<number>();
+
+function getBuyGetConfigV3C1A(productId: number) {
+  return databaseBuyGetConfigsV3C1A[productId] ?? null;
+}
+
+
 function getComboConfig(productId: number) {
   if (
     databasePromotionSyncReadyV3B &&
@@ -185,6 +209,8 @@ function Home() {
         const payload = (await response.json()) as {
           comboConfigs?: Record<string, ComboConfig>;
           managedProductIds?: number[];
+          buyGetConfigs?: Record<string, StorefrontBuyGetConfigV3C1A>;
+          managedBuyGetProductIds?: number[];
         };
 
         if (cancelled) return;
@@ -203,6 +229,28 @@ function Home() {
             (productId) => Number.isInteger(productId) && productId > 0
           )
         );
+
+        const nextBuyGetConfigsV3C1A: Record<
+          number,
+          StorefrontBuyGetConfigV3C1A
+        > = {};
+
+        for (const [key, config] of Object.entries(
+          payload.buyGetConfigs ?? {}
+        )) {
+          const productId = Number(key);
+          if (Number.isInteger(productId) && productId > 0) {
+            nextBuyGetConfigsV3C1A[productId] = config;
+          }
+        }
+
+        databaseBuyGetConfigsV3C1A = nextBuyGetConfigsV3C1A;
+        databaseManagedBuyGetProductIdsV3C1A = new Set(
+          (payload.managedBuyGetProductIds ?? []).filter(
+            (productId) => Number.isInteger(productId) && productId > 0
+          )
+        );
+
         databasePromotionSyncReadyV3B = true;
         setPromotionRevisionV3B((current) => current + 1);
       } catch (error) {
