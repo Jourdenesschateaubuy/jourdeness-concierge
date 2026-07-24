@@ -1779,8 +1779,20 @@ const sevenSequenceGuideV377 = [
     return "";
   }
 
+  function getBuyGetBadgeLabelV3C(product: Product) {
+    const config = buyGetConfigsStateV3C[product.id];
+
+    if (!config) return "";
+    if (config.buyQuantity <= 0 || config.giftQuantity <= 0) return "";
+
+    return `買${config.buyQuantity}送${config.giftQuantity}`;
+  }
+
   function displayTags(product: Product) {
     const tags: string[] = [];
+
+    const buyGetBadgeV3C = getBuyGetBadgeLabelV3C(product);
+    if (buyGetBadgeV3C) tags.push(buyGetBadgeV3C);
     const promoText = `${product.price} ${product.originalPrice ?? ""} ${productContent(product).priceNote ?? ""}`;
 
     if (isComingSoon(product)) {
@@ -1809,6 +1821,8 @@ const sevenSequenceGuideV377 = [
 
 
   function getCommerceBadgeLabel(product: Product) {
+    const buyGetBadgeV3C = getBuyGetBadgeLabelV3C(product);
+    if (buyGetBadgeV3C) return buyGetBadgeV3C;
     const topBadge = getTopPickBadge(product);
     if (topBadge) return topBadge;
 
