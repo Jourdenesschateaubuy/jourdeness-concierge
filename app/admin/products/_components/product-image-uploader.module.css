@@ -1,0 +1,110 @@
+﻿.wrapper {
+  display: grid;
+  gap: 12px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadButton {
+  width: 100%;
+  min-height: 160px;
+  border: 2px dashed #d8c9cc;
+  border-radius: 16px;
+  background: #fffafb;
+  color: #5f4e51;
+  display: grid;
+  place-content: center;
+  gap: 7px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.uploadButton strong {
+  font-size: 17px;
+  color: #7d2638;
+}
+
+.uploadButton span {
+  font-size: 13px;
+  color: #8c7d80;
+}
+
+.uploadButton:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.previewCard {
+  overflow: hidden;
+  border: 1px solid #e7dedf;
+  border-radius: 16px;
+  background: white;
+}
+
+.preview {
+  display: block;
+  width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+  background: #fffdf9;
+}
+
+.previewActions {
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.previewActions span {
+  margin-right: auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #f7ecef;
+  color: #7d2638;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.previewActions button {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #ded4d5;
+  border-radius: 9px;
+  background: white;
+  color: #5f4e51;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status,
+.error {
+  margin: 0;
+  font-size: 12px;
+}
+
+.status {
+  color: #7d2638;
+}
+
+.error {
+  color: #b42318;
+}
+
+@media (max-width: 760px) {
+  .uploadButton {
+    min-height: 180px;
+  }
+
+  .previewActions {
+    flex-wrap: wrap;
+  }
+
+  .previewActions button {
+    flex: 1;
+    min-width: 110px;
+  }
+}

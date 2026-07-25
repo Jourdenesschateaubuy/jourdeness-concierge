@@ -2,6 +2,7 @@ import Link from "next/link";
 import { categoryConfig } from "../../../../lib/storefront-core";
 import type { DatabaseProduct } from "../../../../lib/product-repository";
 import styles from "./product-form.module.css";
+import ProductImageUploader from "./ProductImageUploader";
 
 type ProductFormProps = {
   product?: DatabaseProduct;
@@ -122,15 +123,12 @@ export default function ProductForm({
         </div>
 
         <div className={styles.grid}>
-          <label className={styles.span2}>
-            <span>商品圖片路徑 *</span>
-            <input
-              name="image"
-              required
-              defaultValue={product?.image ?? ""}
-              placeholder="/products/example.jpg"
+          <div className={`${styles.span2} ${styles.imageField}`}>
+            <span>商品圖片 *</span>
+            <ProductImageUploader
+              initialImage={product?.image ?? ""}
             />
-          </label>
+          </div>
 
           <label>
             <span>商品卡名稱</span>

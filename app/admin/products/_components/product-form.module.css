@@ -144,3 +144,15 @@
     grid-column: auto;
   }
 }
+
+
+.imageField {
+  display: grid;
+  gap: 7px;
+}
+
+.imageField > span {
+  color: #6f6264;
+  font-size: 12px;
+  font-weight: 700;
+}
