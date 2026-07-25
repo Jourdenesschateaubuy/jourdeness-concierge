@@ -21,7 +21,7 @@ import {
   comboProductIds,
   expiringProductIds,
   expiryNotesV315,
-  getComboConfig as getFallbackComboConfig,
+  getComboConfig,
   getMaskBucketQuantityV361,
   getMaskPromotionNoticeV361,
   getSimpleCartQuantityV366,
@@ -60,45 +60,6 @@ type StorefrontProduct = Product & {
   sortOrder?: number;
   sku?: string;
 };
-
-let databaseComboConfigsV3B: Record<number, ComboConfig> = {};
-let databaseManagedComboProductIdsV3B = new Set<number>();
-let databasePromotionSyncReadyV3B = false;
-
-type StorefrontBuyGetConfigV3C1A = {
-  promotionId: number;
-  name: string;
-  buyProductId: number;
-  buyQuantity: number;
-  giftQuantity: number;
-  giftMode: "same_product" | "fixed_product" | "gift_pool";
-  repeatable: boolean;
-  priority: number;
-  giftProductIds: number[];
-  note?: string;
-};
-
-let databaseBuyGetConfigsV3C1A: Record<
-  number,
-  StorefrontBuyGetConfigV3C1A
-> = {};
-let databaseManagedBuyGetProductIdsV3C1A = new Set<number>();
-
-function getBuyGetConfigV3C1A(productId: number) {
-  return databaseBuyGetConfigsV3C1A[productId] ?? null;
-}
-
-
-function getComboConfig(productId: number) {
-  if (
-    databasePromotionSyncReadyV3B &&
-    databaseManagedComboProductIdsV3B.has(productId)
-  ) {
-    return databaseComboConfigsV3B[productId] ?? null;
-  }
-
-  return getFallbackComboConfig(productId);
-}
 
 function Home() {
   const [products, setProducts] = useState<StorefrontProduct[]>(
@@ -187,83 +148,6 @@ function Home() {
     }
 
     void loadStorefrontProducts();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const [, setPromotionRevisionV3B] = useState(0);
-  const [buyGetConfigsStateV3C, setBuyGetConfigsStateV3C] = useState<Record<number, StorefrontBuyGetConfigV3C1A>>({});
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadStorefrontPromotionsV3B() {
-      try {
-        const response = await fetch("/api/storefront/promotions", {
-          cache: "no-store",
-        });
-
-        if (!response.ok) return;
-
-        const payload = (await response.json()) as {
-          comboConfigs?: Record<string, ComboConfig>;
-          managedProductIds?: number[];
-          buyGetConfigs?: Record<string, StorefrontBuyGetConfigV3C1A>;
-          managedBuyGetProductIds?: number[];
-        };
-
-        if (cancelled) return;
-
-        const nextConfigs: Record<number, ComboConfig> = {};
-        for (const [key, config] of Object.entries(payload.comboConfigs ?? {})) {
-          const productId = Number(key);
-          if (Number.isInteger(productId) && productId > 0) {
-            nextConfigs[productId] = config;
-          }
-        }
-
-        databaseComboConfigsV3B = nextConfigs;
-        databaseManagedComboProductIdsV3B = new Set(
-          (payload.managedProductIds ?? []).filter(
-            (productId) => Number.isInteger(productId) && productId > 0
-          )
-        );
-
-        const nextBuyGetConfigsV3C1A: Record<
-          number,
-          StorefrontBuyGetConfigV3C1A
-        > = {};
-
-        for (const [key, config] of Object.entries(
-          payload.buyGetConfigs ?? {}
-        )) {
-          const productId = Number(key);
-          if (Number.isInteger(productId) && productId > 0) {
-            nextBuyGetConfigsV3C1A[productId] = config;
-          }
-        }
-
-        databaseBuyGetConfigsV3C1A = nextBuyGetConfigsV3C1A;
-        setBuyGetConfigsStateV3C(nextBuyGetConfigsV3C1A);
-        databaseManagedBuyGetProductIdsV3C1A = new Set(
-          (payload.managedBuyGetProductIds ?? []).filter(
-            (productId) => Number.isInteger(productId) && productId > 0
-          )
-        );
-
-        databasePromotionSyncReadyV3B = true;
-        setPromotionRevisionV3B((current) => current + 1);
-      } catch (error) {
-        console.error(
-          "[Jourdeness] 優惠資料同步失敗，保留 storefront hardcoded fallback。",
-          error
-        );
-      }
-    }
-
-    void loadStorefrontPromotionsV3B();
 
     return () => {
       cancelled = true;
@@ -1083,36 +967,6 @@ const sevenSequenceGuideV377 = [
     return item.comboPlanLabel ?? displayPrice(item.product);
   }
 
-
-  function getBuyGetGiftQuantityV3C1B(item: CartItem) {
-    const config = buyGetConfigsStateV3C[item.product.id] ?? null;
-
-    if (!config) return 0;
-    if (config.giftMode !== "same_product") return 0;
-    if (item.comboSelections) return 0;
-    if (config.buyQuantity <= 0 || config.giftQuantity <= 0) return 0;
-
-    const qualifyingSets = config.repeatable
-      ? Math.floor(item.quantity / config.buyQuantity)
-      : item.quantity >= config.buyQuantity
-        ? 1
-        : 0;
-
-    return qualifyingSets * config.giftQuantity;
-  }
-
-  function getBuyGetLabelV3C1B(item: CartItem) {
-    const config = buyGetConfigsStateV3C[item.product.id] ?? null;
-    if (!config) return "";
-
-    return `買${config.buyQuantity}送${config.giftQuantity}`;
-  }
-
-  const cartBuyGetGiftTotalV3C1B = cartItems.reduce(
-    (total, item) => total + getBuyGetGiftQuantityV3C1B(item),
-    0
-  );
-
   const cartRegularSubtotalV361 = cartItems.reduce(
     (total, item) => total + getCartItemUnitPrice(item) * item.quantity,
     0
@@ -1588,7 +1442,7 @@ const sevenSequenceGuideV377 = [
   }
 
   function hasComboPrice(product: Product) {
-    return Boolean(getComboConfig(product.id)) || comboProductIds.has(product.id) || product.category === "組合價";
+    return comboProductIds.has(product.id) || product.category === "組合價";
   }
 
   function isExpiringDeal(product: Product) {
@@ -1779,20 +1633,8 @@ const sevenSequenceGuideV377 = [
     return "";
   }
 
-  function getBuyGetBadgeLabelV3C(product: Product) {
-    const config = buyGetConfigsStateV3C[product.id];
-
-    if (!config) return "";
-    if (config.buyQuantity <= 0 || config.giftQuantity <= 0) return "";
-
-    return `買${config.buyQuantity}送${config.giftQuantity}`;
-  }
-
   function displayTags(product: Product) {
     const tags: string[] = [];
-
-    const buyGetBadgeV3C = getBuyGetBadgeLabelV3C(product);
-    if (buyGetBadgeV3C) tags.push(buyGetBadgeV3C);
     const promoText = `${product.price} ${product.originalPrice ?? ""} ${productContent(product).priceNote ?? ""}`;
 
     if (isComingSoon(product)) {
@@ -1821,8 +1663,6 @@ const sevenSequenceGuideV377 = [
 
 
   function getCommerceBadgeLabel(product: Product) {
-    const buyGetBadgeV3C = getBuyGetBadgeLabelV3C(product);
-    if (buyGetBadgeV3C) return buyGetBadgeV3C;
     const topBadge = getTopPickBadge(product);
     if (topBadge) return topBadge;
 
@@ -2820,17 +2660,6 @@ const sevenSequenceGuideV377 = [
         ? comboMaxQuantityV369
         : activeComboPlan.requiredQuantity;
 
-      const allowSameProductV3B =
-        (
-          activeComboConfig as ComboConfig & {
-            allowSameProduct?: boolean;
-          }
-        ).allowSameProduct ?? true;
-
-      if (delta > 0 && !allowSameProductV3B && currentQuantity >= 1) {
-        return current;
-      }
-
       if (delta > 0 && currentTotal >= quantityLimit) {
         return current;
       }
@@ -3450,7 +3279,6 @@ const sevenSequenceGuideV377 = [
         cartItems.map((item) => ({
           id: item.product.id,
           quantity: item.quantity,
-        buyGetGiftQuantity: getBuyGetGiftQuantityV3C1B(item),
           cartKey: item.cartKey,
           comboPlanId: item.comboPlanId,
           comboPlanLabel: item.comboPlanLabel,
@@ -3603,16 +3431,9 @@ const sevenSequenceGuideV377 = [
           )
           .join("\n");
 
-        const buyGetGiftQuantityV3C1B =
-          getBuyGetGiftQuantityV3C1B(item);
-        const buyGetGiftTextV3C1B =
-          buyGetGiftQuantityV3C1B > 0
-            ? `🎁【${getBuyGetLabelV3C1B(item)}】免費贈送 ${item.product.name} × ${buyGetGiftQuantityV3C1B}`
-            : "";
-
         return `${item.product.name} × ${item.quantity}｜${getCartItemDisplayPrice(item)}${
           comboDetails ? `\n${comboDetails}` : ""
-        }${buyGetGiftTextV3C1B ? `\n${buyGetGiftTextV3C1B}` : ""}`;
+        }`;
       })
       .join("\n");
     const maskPromotionOrderText = maskBucketQuantityV361 > 0
@@ -4934,42 +4755,6 @@ const sevenSequenceGuideV377 = [
                               <h3>{getCardName(item.product)}</h3>
                               <strong>{getCartItemDisplayPrice(item)}</strong>
 
-                              {getBuyGetGiftQuantityV3C1B(item) > 0 && (
-                                <div
-                                  className="cart-buyget-gift-v3c1b"
-                                  style={{
-                                    marginTop: 8,
-                                    padding: "9px 10px",
-                                    borderRadius: 10,
-                                    background: "#f8eee5",
-                                    border: "1px solid rgba(154, 48, 66, 0.16)",
-                                    display: "grid",
-                                    gap: 3,
-                                  }}
-                                >
-                                  <b
-                                    style={{
-                                      color: "#9a3042",
-                                      fontSize: 12,
-                                      fontWeight: 900,
-                                    }}
-                                  >
-                                    {getBuyGetLabelV3C1B(item)}
-                                  </b>
-                                  <span
-                                    style={{
-                                      color: "#6a4a3a",
-                                      fontSize: 11,
-                                      fontWeight: 800,
-                                      lineHeight: 1.45,
-                                    }}
-                                  >
-                                    🎁 免費贈送 {item.product.name} ×{" "}
-                                    {getBuyGetGiftQuantityV3C1B(item)}
-                                  </span>
-                                </div>
-                              )}
-
                               {MASK_BUCKET_PRODUCT_IDS_V361.has(item.product.id) &&
                                 maskPromotionV361.savings > 0 && (
                                   <span className="mask-promo-line-tag-v361">已納入面膜自動優惠</span>
@@ -5089,11 +4874,7 @@ const sevenSequenceGuideV377 = [
 
                     <div className="cart-bottom-bar-v355">
                       <div>
-                        <span>
-                          共 {cartTotalQuantity} 件
-                          {cartBuyGetGiftTotalV3C1B > 0 &&
-                            ` ＋ 贈${cartBuyGetGiftTotalV3C1B}件`}
-                        </span>
+                        <span>共 {cartTotalQuantity} 件</span>
                         <strong>預估小計 NT${cartEstimatedSubtotal.toLocaleString("zh-TW")}</strong>
                       </div>
                       <button
