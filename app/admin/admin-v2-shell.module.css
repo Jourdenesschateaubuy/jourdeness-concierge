@@ -1,0 +1,174 @@
+﻿.shell {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  color: #38282b;
+  font-family: Arial, "Noto Sans TC", sans-serif;
+}
+
+.manageBar {
+  flex: 0 0 auto;
+  min-height: 58px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eaded8;
+  background: #fffaf7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.manageTitle {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.manageTitle > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.manageTitle strong {
+  color: #5f1f2d;
+  font-size: 14px;
+}
+
+.manageTitle small {
+  color: #8b7974;
+  font-size: 10px;
+}
+
+.manageBadge {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #7d2638;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.previewButton {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 11px;
+  background: #302623;
+  color: #fff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.manageHint {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #eadfd5;
+  background: #fff7ed;
+  color: #816e67;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.storefrontFrame {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  background: #fff;
+}
+
+.previewShell {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #fff;
+}
+
+.previewFrame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
+.returnManageButton {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 100;
+  min-height: 46px;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 999px;
+  background: #7d2638;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+@media (max-width: 640px) {
+  .manageBar {
+    min-height: 54px;
+    padding: 7px 8px;
+  }
+
+  .manageTitle small {
+    display: none;
+  }
+}
+
+
+/* Admin V2：點選式修改模式 */
+.manageActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editModeButton {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(125, 38, 56, 0.22);
+  border-radius: 12px;
+  background: #fff;
+  color: #7d2638;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.editModeButtonActive {
+  border-color: #7d2638;
+  background: #7d2638;
+  color: #fff;
+  box-shadow: 0 7px 18px rgba(125, 38, 56, 0.2);
+}
+
+@media (max-width: 560px) {
+  .manageActions {
+    gap: 6px;
+  }
+
+  .editModeButton {
+    min-height: 40px;
+    padding: 0 11px;
+    font-size: 11px;
+  }
+}

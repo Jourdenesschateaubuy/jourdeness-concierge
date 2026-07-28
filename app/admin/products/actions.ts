@@ -34,6 +34,30 @@ function optionalString(formData: FormData, name: string) {
   return value || undefined;
 }
 
+function stringValues(formData: FormData, name: string) {
+  return formData
+    .getAll(name)
+    .map((value) => String(value).trim())
+    .filter(Boolean);
+}
+
+function expandedInfoValues(formData: FormData) {
+  const titles = formData
+    .getAll("expandedInfoTitle")
+    .map((value) => String(value).trim());
+
+  const contents = formData
+    .getAll("expandedInfoContent")
+    .map((value) => String(value).trim());
+
+  const length = Math.max(titles.length, contents.length);
+
+  return Array.from({ length }, (_, index) => ({
+    title: titles[index] ?? "",
+    content: contents[index] ?? "",
+  })).filter((item) => item.title && item.content);
+}
+
 function parseStatus(value: string): ProductStatus {
   return VALID_STATUSES.includes(value as ProductStatus)
     ? (value as ProductStatus)
@@ -43,6 +67,31 @@ function parseStatus(value: string): ProductStatus {
 function parseSortOrder(value: string) {
   const number = Number.parseInt(value, 10);
   return Number.isFinite(number) ? number : 0;
+}
+
+function parseComboConfig(
+  formData: FormData
+): ProductWriteInput["comboConfig"] {
+  const raw = stringValue(formData, "comboConfig");
+  if (!raw) return undefined;
+
+  try {
+    const parsed = JSON.parse(raw) as ProductWriteInput["comboConfig"];
+
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      !parsed.unitLabel ||
+      !Array.isArray(parsed.options) ||
+      !Array.isArray(parsed.plans)
+    ) {
+      throw new Error("invalid combo config");
+    }
+
+    return parsed;
+  } catch {
+    throw new Error("組合價設定格式無效");
+  }
 }
 
 function productInputFromForm(formData: FormData): ProductWriteInput {
@@ -72,6 +121,13 @@ function productInputFromForm(formData: FormData): ProductWriteInput {
     priceNote: optionalString(formData, "priceNote"),
     expiryNote: optionalString(formData, "expiryNote"),
     internalExpiryDate: optionalString(formData, "internalExpiryDate"),
+    features: stringValues(formData, "features"),
+    suitableFor: stringValues(formData, "suitableFor"),
+    usage: optionalString(formData, "usage"),
+    notice: optionalString(formData, "notice"),
+    gallery: stringValues(formData, "gallery"),
+    expandedInfo: expandedInfoValues(formData),
+    comboConfig: parseComboConfig(formData),
     status: parseStatus(stringValue(formData, "status")),
     sortOrder: parseSortOrder(stringValue(formData, "sortOrder")),
   };

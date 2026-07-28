@@ -1,4 +1,4 @@
-import type { MainCategory, Product } from "./storefront-core";
+import type { ComboConfig, MainCategory, Product } from "./storefront-core";
 import { dbQuery, withDbClient } from "./db";
 
 export type ProductStatus =
@@ -31,6 +31,13 @@ export type ProductWriteInput = {
   priceNote?: string;
   expiryNote?: string;
   internalExpiryDate?: string;
+  features: string[];
+  suitableFor: string[];
+  usage?: string;
+  notice?: string;
+  gallery: string[];
+  expandedInfo: NonNullable<Product["expandedInfo"]>;
+  comboConfig?: ComboConfig;
   status: ProductStatus;
   sortOrder: number;
 };
@@ -58,6 +65,7 @@ type ProductRow = {
   notice: string | null;
   gallery: string[] | null;
   expanded_info: Product["expandedInfo"] | null;
+  combo_config: ComboConfig | null;
   status: ProductStatus;
   sort_order: number;
   created_at: Date | string;
@@ -92,6 +100,12 @@ function rowToProduct(row: ProductRow): DatabaseProduct {
     notice: optional(row.notice),
     gallery: row.gallery ?? [],
     expandedInfo: row.expanded_info ?? [],
+    comboConfig: row.combo_config
+      ? {
+          ...row.combo_config,
+          productId: row.id,
+        }
+      : undefined,
     status: row.status,
     sortOrder: row.sort_order,
     createdAt: new Date(row.created_at).toISOString(),
@@ -142,10 +156,13 @@ export async function createDatabaseProduct(input: ProductWriteInput) {
           INSERT INTO products (
             id, sku, name, category, series, original_price, price, image,
             description, card_name, card_subtitle, spec, intro, price_note,
-            expiry_note, internal_expiry_date, status, sort_order, updated_at
+            expiry_note, internal_expiry_date,
+            features, suitable_for, usage, notice, gallery, expanded_info, combo_config,
+            status, sort_order, updated_at
           )
           VALUES (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,NOW()
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,
+            $17::jsonb,$18::jsonb,$19,$20,$21::jsonb,$22::jsonb,$23::jsonb,$24,$25,NOW()
           )
           RETURNING *
         `,
@@ -166,6 +183,13 @@ export async function createDatabaseProduct(input: ProductWriteInput) {
           input.priceNote || null,
           input.expiryNote || null,
           input.internalExpiryDate || null,
+          JSON.stringify(input.features ?? []),
+          JSON.stringify(input.suitableFor ?? []),
+          input.usage || null,
+          input.notice || null,
+          JSON.stringify(input.gallery ?? []),
+          JSON.stringify(input.expandedInfo ?? []),
+          input.comboConfig ? JSON.stringify(input.comboConfig) : null,
           input.status,
           input.sortOrder,
         ]
@@ -203,8 +227,15 @@ export async function updateDatabaseProduct(
         price_note = $14,
         expiry_note = $15,
         internal_expiry_date = $16,
-        status = $17,
-        sort_order = $18,
+        features = $17::jsonb,
+        suitable_for = $18::jsonb,
+        usage = $19,
+        notice = $20,
+        gallery = $21::jsonb,
+        expanded_info = $22::jsonb,
+        combo_config = COALESCE($23::jsonb, combo_config),
+        status = $24,
+        sort_order = $25,
         updated_at = NOW()
       WHERE id = $1
       RETURNING *
@@ -226,6 +257,13 @@ export async function updateDatabaseProduct(
       input.priceNote || null,
       input.expiryNote || null,
       input.internalExpiryDate || null,
+      JSON.stringify(input.features ?? []),
+      JSON.stringify(input.suitableFor ?? []),
+      input.usage || null,
+      input.notice || null,
+      JSON.stringify(input.gallery ?? []),
+      JSON.stringify(input.expandedInfo ?? []),
+      input.comboConfig ? JSON.stringify(input.comboConfig) : null,
       input.status,
       input.sortOrder,
     ]
