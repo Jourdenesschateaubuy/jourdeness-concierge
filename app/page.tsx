@@ -2,6 +2,7 @@
 
 // Jourdeness storefront build: V3.8.6 — 龍血玫瑰皂改為自由配選項，不再單獨顯示商品卡。
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
+import { createPortal } from "react-dom";
 
 import {
   CART_STORAGE_KEY,
@@ -21,7 +22,7 @@ import {
   comboProductIds,
   expiringProductIds,
   expiryNotesV315,
-  getComboConfig,
+  getComboConfig as getFallbackComboConfig,
   getMaskBucketQuantityV361,
   getMaskPromotionNoticeV361,
   getSimpleCartQuantityV366,
@@ -65,6 +66,13 @@ function Home() {
   const [products, setProducts] = useState<StorefrontProduct[]>(
     () => fallbackProducts as StorefrontProduct[]
   );
+
+  function getComboConfig(productId: number): ComboConfig | null {
+    const databaseConfig =
+      products.find((product) => product.id === productId)?.comboConfig;
+
+    return databaseConfig ?? getFallbackComboConfig(productId);
+  }
   const [selectedCategory, setSelectedCategory] =
     useState<MainCategory>("本月優惠");
   const [selectedSeries, setSelectedSeries] = useState("全部");
@@ -115,7 +123,57 @@ function Home() {
   const [comboPlanId, setComboPlanId] = useState("");
   const [comboDraftSelections, setComboDraftSelections] = useState<Record<string, number>>({});
   const [comboEditingItemKey, setComboEditingItemKey] = useState<string | null>(null);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [isAdminEditMode, setIsAdminEditMode] = useState(false);
+  const [managedProductId, setManagedProductId] = useState<number | null>(null);
 
+  const adminPressTimerRef =
+    useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const adminPressStartRef =
+    useRef<{ x: number; y: number } | null>(null);
+
+  const suppressAdminProductClickRef = useRef(false);
+
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setIsAdminMode(params.get("admin") === "1");
+    setIsAdminEditMode(params.get("edit") === "1");
+
+    function handleAdminMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return;
+
+      const data = event.data as
+        | {
+            type?: string;
+            enabled?: boolean;
+          }
+        | undefined;
+
+      if (data?.type !== "jourdeness-admin-edit-mode") {
+        return;
+      }
+
+      const enabled = Boolean(data.enabled);
+
+      setIsAdminEditMode(enabled);
+
+      if (!enabled) {
+        setManagedProductId(null);
+      }
+    }
+
+    window.addEventListener("message", handleAdminMessage);
+
+    return () => {
+      window.removeEventListener("message", handleAdminMessage);
+
+      if (adminPressTimerRef.current) {
+        clearTimeout(adminPressTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -1453,7 +1511,10 @@ const sevenSequenceGuideV377 = [
     const tags = new Set<string>();
     const name = product.name;
     const series = product.series;
-    const configuredTags = productContent(product).suitableFor ?? product.suitableFor ?? [];
+    const configuredTags =
+      product.suitableFor?.length
+        ? product.suitableFor
+        : productContent(product).suitableFor ?? [];
 
     for (const item of configuredTags) {
       if (item.includes("缺水") || item.includes("保濕") || item.includes("乾燥")) tags.add("乾燥缺水");
@@ -2052,11 +2113,12 @@ const sevenSequenceGuideV377 = [
     if (item.productId) {
       const product = products.find((candidate) => candidate.id === item.productId);
       if (product) {
-        if (getComboConfig(product.id)) {
-          openComboPicker(product);
-        } else {
-          openProductDetail(product);
+        if (isAdminMode && isAdminEditMode) {
+          setManagedProductId(product.id);
+          return;
         }
+
+        openProductDetail(product);
         return;
       }
     }
@@ -2083,7 +2145,14 @@ const sevenSequenceGuideV377 = [
             const offerImage = product?.image ?? null;
 
             return (
-              <article className="monthly-offer-card-v380" key={`${item.badge}-${item.title}`}>
+              <article
+                className={`monthly-offer-card-v380 ${
+                  product && managedProductId === product.id
+                    ? "admin-v2-product-selected"
+                    : ""
+                }`}
+                key={`${item.badge}-${item.title}`}
+              >
                 <button
                   type="button"
                   className="monthly-offer-image-button-v381"
@@ -2214,7 +2283,7 @@ const sevenSequenceGuideV377 = [
   }
 
   function getCardName(product: Product) {
-    return productContent(product).cardName ?? product.cardName ?? product.name;
+    return product.cardName ?? productContent(product).cardName ?? product.name;
   }
 
   function compactCardText(text: string) {
@@ -2244,8 +2313,8 @@ const sevenSequenceGuideV377 = [
     if (salesSubtitle) return shortCardText(salesSubtitle, 22);
 
     const content = productContent(product);
-    const customSubtitle = content.cardSubtitle ?? product.cardSubtitle;
-    const intro = content.intro ?? product.intro;
+    const customSubtitle = product.cardSubtitle ?? content.cardSubtitle;
+    const intro = product.intro ?? content.intro;
 
     if (customSubtitle && !isSpecOnlySubtitle(customSubtitle)) {
       return shortCardText(customSubtitle);
@@ -2259,18 +2328,18 @@ const sevenSequenceGuideV377 = [
   }
 
   function getDetailName(product: Product) {
-    return productContent(product).name ?? product.name;
+    return product.name || productContent(product).name || "";
   }
 
   function getSpecLine(product: Product) {
-    const spec = productContent(product).spec ?? product.spec;
+    const spec = product.spec ?? productContent(product).spec;
     if (spec) return `${spec}・${product.series}。`;
     return product.description;
   }
 
   function getPriceNote(product: Product) {
-    if (productContent(product).priceNote || product.priceNote) {
-      return productContent(product).priceNote ?? product.priceNote ?? "";
+    if (product.priceNote || productContent(product).priceNote) {
+      return product.priceNote ?? productContent(product).priceNote ?? "";
     }
 
     if (isExpiringDeal(product)) {
@@ -2289,11 +2358,11 @@ const sevenSequenceGuideV377 = [
   }
 
   function getIntroText(product: Product) {
-    return productContent(product).intro ?? product.intro ?? "";
+    return product.intro ?? productContent(product).intro ?? "";
   }
 
   function getSpecText(product: Product) {
-    const spec = productContent(product).spec ?? product.spec;
+    const spec = product.spec ?? productContent(product).spec;
     if (spec) return spec;
     return product.description.split("。")[0] || "依商品標示";
   }
@@ -2330,9 +2399,11 @@ const sevenSequenceGuideV377 = [
   }
 
   function getExpiryNote(product: Product) {
-    if (!shouldShowExpiryInfo(product)) return "";
+    if (product.expiryNote !== undefined) {
+      return product.expiryNote;
+    }
 
-    if (product.expiryNote !== undefined) return product.expiryNote;
+    if (!shouldShowExpiryInfo(product)) return "";
     if (expiryNotesV315[product.id]) return expiryNotesV315[product.id];
     const override = productContent(product);
     if ("expiryNote" in override) return override.expiryNote ?? "";
@@ -2362,11 +2433,27 @@ const sevenSequenceGuideV377 = [
   }
 
   function getNoticeText(product: Product) {
-    return productContent(product).notice ?? product.notice ?? "";
+    return (
+      product.notice ??
+      productContent(product).notice ??
+      "滿 NT$3,000 享免運，僅提供宅配。\n送出資料後，請至 LINE 與小幫手確認庫存、效期、金額、付款方式與宅配資訊。"
+    );
+  }
+
+  function getExpandedInfo(product: Product) {
+    if (product.expandedInfo?.length) {
+      return product.expandedInfo;
+    }
+
+    return productContent(product).expandedInfo ?? [];
   }
 
   function getSuitableItems(product: Product) {
-    const customItems = productContent(product).suitableFor ?? product.suitableFor;
+    const customItems =
+      product.suitableFor?.length
+        ? product.suitableFor
+        : productContent(product).suitableFor;
+
     if (customItems?.length) return customItems;
 
     const tags = getProductTags(product);
@@ -2376,7 +2463,9 @@ const sevenSequenceGuideV377 = [
   }
 
   function getUsageText(product: Product) {
-    const customUsage = productContent(product).usage ?? product.usage;
+    const customUsage =
+      product.usage || productContent(product).usage;
+
     if (customUsage) return customUsage;
 
     const tags = getProductTags(product);
@@ -2412,8 +2501,12 @@ const sevenSequenceGuideV377 = [
   }
 
   function getDetailBullets(product: Product) {
-    const customFeatures = productContent(product).features ?? product.features;
-    if (customFeatures?.length) return customFeatures.slice(0, 5);
+    const customFeatures =
+      product.features?.length
+        ? product.features
+        : productContent(product).features;
+
+    if (customFeatures?.length) return customFeatures;
 
     const tags = getProductTags(product);
     const bullets: string[] = [];
@@ -2502,6 +2595,68 @@ const sevenSequenceGuideV377 = [
       .slice(0, 6);
   }
 
+  function clearAdminProductPress() {
+    if (adminPressTimerRef.current) {
+      clearTimeout(adminPressTimerRef.current);
+      adminPressTimerRef.current = null;
+    }
+  }
+
+  function startAdminProductPress(
+    productId: number,
+    x: number,
+    y: number,
+    target: EventTarget | null
+  ) {
+    if (!isAdminMode || !isAdminEditMode) return;
+
+    if (
+      target instanceof Element &&
+      target.closest("button, a, input, select, textarea")
+    ) {
+      return;
+    }
+
+    clearAdminProductPress();
+
+    suppressAdminProductClickRef.current = false;
+    adminPressStartRef.current = { x, y };
+
+    adminPressTimerRef.current = setTimeout(() => {
+      suppressAdminProductClickRef.current = true;
+      setManagedProductId(productId);
+
+      if (
+        typeof navigator !== "undefined" &&
+        "vibrate" in navigator
+      ) {
+        navigator.vibrate(25);
+      }
+
+      adminPressTimerRef.current = null;
+    }, 550);
+  }
+
+  function moveAdminProductPress(x: number, y: number) {
+    const start = adminPressStartRef.current;
+    if (!start) return;
+
+    const distance = Math.hypot(
+      x - start.x,
+      y - start.y
+    );
+
+    if (distance > 12) {
+      clearAdminProductPress();
+      adminPressStartRef.current = null;
+    }
+  }
+
+  function finishAdminProductPress() {
+    clearAdminProductPress();
+    adminPressStartRef.current = null;
+  }
+
   function ProductCard({
     product,
     featured = false,
@@ -2517,11 +2672,54 @@ const sevenSequenceGuideV377 = [
 
     return (
       <article
-        className={`${featured ? "featured-card" : "product-card"} commerce-product-card clickable-product-card-v246 shelf-card-v271 compact-commerce-card-v350`}
+        className={`${featured ? "featured-card" : "product-card"} commerce-product-card clickable-product-card-v246 shelf-card-v271 compact-commerce-card-v350 ${isAdminMode && isAdminEditMode ? "admin-v2-manageable-product" : ""} ${managedProductId === product.id ? "admin-v2-product-selected" : ""}`}
         key={featured ? `featured-${product.id}` : product.id}
+        data-admin-product-id={
+          isAdminMode && isAdminEditMode ? product.id : undefined
+        }
+        onPointerDown={(event) =>
+          startAdminProductPress(
+            product.id,
+            event.clientX,
+            event.clientY,
+            event.target
+          )
+        }
+        onPointerMove={(event) =>
+          moveAdminProductPress(
+            event.clientX,
+            event.clientY
+          )
+        }
+        onPointerUp={finishAdminProductPress}
+        onPointerCancel={finishAdminProductPress}
+        onPointerLeave={finishAdminProductPress}
+        onContextMenu={(event) => {
+          if (isAdminMode && isAdminEditMode) {
+            event.preventDefault();
+          }
+        }}
         role="button"
         tabIndex={0}
-        onClick={() => {
+        onClick={(event) => {
+          if (isAdminMode && isAdminEditMode) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            suppressAdminProductClickRef.current = false;
+            setManagedProductId(product.id);
+            return;
+          }
+
+          if (
+            isAdminMode &&
+            suppressAdminProductClickRef.current
+          ) {
+            event.preventDefault();
+            suppressAdminProductClickRef.current = false;
+            return;
+          }
+
                                   setIsCartOpen(false);
                                   setCartStep(1);
                                   setCartReturnProduct(null);
@@ -2530,10 +2728,22 @@ const sevenSequenceGuideV377 = [
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
+
+            if (isAdminMode && isAdminEditMode) {
+              setManagedProductId(product.id);
+              return;
+            }
+
             openProductDetail(product);
           }
         }}
       >
+        {isAdminMode && managedProductId === product.id && (
+          <span className="admin-v2-selected-badge">
+            已選取
+          </span>
+        )}
+
         <ProductVisual product={product} variant={featured ? "featured" : "normal"} />
 
         <div className={featured ? "featured-info product-info" : "product-info"}>
@@ -2571,7 +2781,19 @@ const sevenSequenceGuideV377 = [
               type="button"
               className="add-cart-button compact-add-cart-v350 cart-card-button-v358"
               onClick={(event) => {
+                event.preventDefault();
                 event.stopPropagation();
+
+                if (isAdminMode && isAdminEditMode) {
+                  setManagedProductId(product.id);
+                  return;
+                }
+
+                if (selectableCombo) {
+                  openProductDetail(product);
+                  return;
+                }
+
                 addToCart(product);
               }}
               disabled={unavailable}
@@ -2579,7 +2801,7 @@ const sevenSequenceGuideV377 = [
                 unavailable
                   ? `${product.name}目前無法加入購物車`
                   : selectableCombo
-                    ? `選擇 ${product.name} 的搭配內容`
+                    ? `查看 ${product.name} 商品詳情`
                     : `將 ${product.name} 加入購物車`
               }
             >
@@ -2596,7 +2818,7 @@ const sevenSequenceGuideV377 = [
                   : soldOut
                     ? "缺貨中"
                     : selectableCombo
-                      ? "選擇搭配"
+                      ? "查看詳情"
                       : "加入"}
               </span>
             </button>
@@ -2611,6 +2833,11 @@ const sevenSequenceGuideV377 = [
   }
 
   function openComboPicker(product: Product, editingItem?: CartItem) {
+    if (isAdminMode && isAdminEditMode && !editingItem) {
+      setManagedProductId(product.id);
+      return;
+    }
+
     const config = getComboConfig(product.id);
     if (!config) return;
 
@@ -2781,6 +3008,11 @@ const sevenSequenceGuideV377 = [
   }
 
   function addToCart(product: Product) {
+    if (isAdminMode && isAdminEditMode) {
+      setManagedProductId(product.id);
+      return;
+    }
+
     if (isCartDisabled(product)) return;
 
     if (getComboConfig(product.id)) {
@@ -3614,6 +3846,182 @@ const sevenSequenceGuideV377 = [
 
   return (
     <main className="site-shell" data-build="jourdeness-v3.8.6-rose-soap-combo-only">
+      {isAdminMode && (
+        <>
+          <style>{`
+            .admin-v2-manageable-product {
+              position: relative !important;
+              user-select: none;
+              -webkit-user-select: none;
+              -webkit-touch-callout: none;
+              touch-action: pan-y;
+              outline: 1px dashed rgba(125, 38, 56, .20);
+              outline-offset: 1px;
+              cursor: pointer;
+            }
+
+            .admin-v2-manageable-product button,
+            .admin-v2-manageable-product a,
+            .admin-v2-manageable-product input,
+            .admin-v2-manageable-product select,
+            .admin-v2-manageable-product textarea {
+              pointer-events: none !important;
+            }
+
+            .admin-v2-product-selected {
+              position: relative !important;
+              outline: none !important;
+              border-color: #7d2638 !important;
+              box-shadow:
+                inset 0 0 0 4px #7d2638,
+                0 0 0 2px rgba(125, 38, 56, .16),
+                0 10px 28px rgba(125, 38, 56, .28) !important;
+              z-index: 20 !important;
+            }
+
+            .monthly-offer-card-v380.admin-v2-product-selected {
+              position: relative !important;
+              border-color: #7d2638 !important;
+              box-shadow:
+                inset 0 0 0 4px #7d2638,
+                0 0 0 2px rgba(125, 38, 56, .16),
+                0 10px 28px rgba(125, 38, 56, .28) !important;
+            }
+
+            .admin-v2-selected-badge {
+              position: absolute;
+              top: 8px;
+              right: 8px;
+              z-index: 60;
+              min-height: 25px;
+              padding: 0 9px;
+              border-radius: 999px;
+              background: #7d2638;
+              color: #fff;
+              display: inline-flex;
+              align-items: center;
+              font-size: 10px;
+              font-weight: 900;
+              pointer-events: none;
+              box-shadow: 0 6px 16px rgba(72, 30, 39, .22);
+            }
+
+            .admin-v2-product-management-bar {
+              position: fixed;
+              left: 10px;
+              right: 10px;
+              bottom: calc(10px + env(safe-area-inset-bottom));
+              z-index: 2147483647;
+              min-height: 68px;
+              padding: 10px 11px;
+              border: 1px solid rgba(125, 38, 56, .18);
+              border-radius: 17px;
+              background: rgba(255, 252, 248, .98);
+              box-shadow: 0 12px 34px rgba(65, 34, 39, .22);
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 10px;
+              backdrop-filter: blur(12px);
+            }
+
+            .admin-v2-product-management-copy {
+              min-width: 0;
+              display: grid;
+              gap: 3px;
+            }
+
+            .admin-v2-product-management-copy small {
+              color: #9a6a73;
+              font-size: 10px;
+              font-weight: 850;
+            }
+
+            .admin-v2-product-management-copy strong {
+              overflow: hidden;
+              color: #442f33;
+              font-size: 13px;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+
+            .admin-v2-product-management-actions {
+              flex: 0 0 auto;
+              display: flex;
+              gap: 7px;
+            }
+
+            .admin-v2-product-management-actions button {
+              min-height: 42px;
+              padding: 0 14px;
+              border-radius: 11px;
+              font: inherit;
+              font-size: 11px;
+              font-weight: 900;
+              cursor: pointer;
+            }
+
+            .admin-v2-product-edit-button {
+              border: 0;
+              background: #7d2638;
+              color: #fff;
+            }
+
+            .admin-v2-product-done-button {
+              border: 1px solid #ddd2ce;
+              background: #fff;
+              color: #665451;
+            }
+          `}</style>
+
+          {managedProductId !== null &&
+            typeof document !== "undefined" &&
+            createPortal(
+              <div
+                className="admin-v2-product-management-bar"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="admin-v2-product-management-copy">
+                  <small>已選取商品</small>
+                  <strong>
+                    {products.find(
+                      (item) => item.id === managedProductId
+                    )?.name ?? "商品"}
+                  </strong>
+                </div>
+
+                <div className="admin-v2-product-management-actions">
+                  <button
+                    type="button"
+                    className="admin-v2-product-edit-button"
+                    onClick={() => {
+                      const url =
+                        `/admin/products/${managedProductId}/edit`;
+
+                      if (window.parent !== window) {
+                        window.parent.location.href = url;
+                      } else {
+                        window.location.href = url;
+                      }
+                    }}
+                  >
+                    修改
+                  </button>
+
+                  <button
+                    type="button"
+                    className="admin-v2-product-done-button"
+                    onClick={() => setManagedProductId(null)}
+                  >
+                    取消選取
+                  </button>
+                </div>
+              </div>,
+              document.body
+            )}
+        </>
+      )}
+
       <header ref={topHeaderRefV370} className="top-header">
         <button
           className="menu-button"
@@ -5130,16 +5538,20 @@ const sevenSequenceGuideV377 = [
                 </div>
 
                 <div className="detail-price-actions-v273">
-                  {!getComboConfig(selectedDetailProduct.id) && (
-                    <button
-                      type="button"
-                      className="primary"
-                      disabled={isCartDisabled(selectedDetailProduct)}
-                      onClick={() => addToCart(selectedDetailProduct)}
-                    >
-                      {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : "加入購物車"}
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    className="primary"
+                    disabled={isCartDisabled(selectedDetailProduct)}
+                    onClick={() => addToCart(selectedDetailProduct)}
+                  >
+                    {isComingSoon(selectedDetailProduct)
+                      ? "新品預告"
+                      : isSoldOut(selectedDetailProduct)
+                        ? "缺貨中"
+                        : getComboConfig(selectedDetailProduct.id)
+                          ? "選擇搭配"
+                          : "加入購物車"}
+                  </button>
                   <button type="button" onClick={openCartFromDetail}>
                     購物車 {cartTotalQuantity}
                   </button>
@@ -5197,14 +5609,14 @@ const sevenSequenceGuideV377 = [
                 ))}
               </section>
 
-              {productContent(selectedDetailProduct).expandedInfo?.length ? (
+              {getExpandedInfo(selectedDetailProduct).length ? (
                 <details className="detail-more-v377">
                   <summary>
                     <span>了解更多</span>
                     <small>展開完整產品資訊</small>
                   </summary>
                   <div className="detail-more-content-v377">
-                    {productContent(selectedDetailProduct).expandedInfo?.map((item) => (
+                    {getExpandedInfo(selectedDetailProduct).map((item) => (
                       <section key={`${selectedDetailProduct.id}-${item.title}`}>
                         <h4>{item.title}</h4>
                         <p>{item.content}</p>
@@ -5230,31 +5642,18 @@ const sevenSequenceGuideV377 = [
                 </section>
               )}
 
-              <section className="detail-buybox-v21">
-                <div>
-                  <p>回購群專屬價</p>
-                  {hasKnownOriginalPrice(selectedDetailProduct) && (
-                    <span className="original-price">{selectedDetailProduct.originalPrice}</span>
-                  )}
-                  <strong className={`price ${hasInquiryPrice(selectedDetailProduct) ? "inquiry" : ""}`}>
-                    {displayPrice(selectedDetailProduct)}
-                  </strong>
-                  <em>{getPriceNote(selectedDetailProduct)}</em>
-                </div>
-
-                <button
-                  className="detail-add-button detail-buybox-button-v21"
-                  disabled={isCartDisabled(selectedDetailProduct)}
-                  onClick={() => addToCart(selectedDetailProduct)}
-                >
-                  {isComingSoon(selectedDetailProduct) ? "新品預告" : isSoldOut(selectedDetailProduct) ? "缺貨中" : getComboConfig(selectedDetailProduct.id) ? "選擇搭配" : "加入購物車"}
-                </button>
-              </section>
 
               <section className="detail-info-block soft">
                 <h3>配送提醒</h3>
-                <p>滿 NT$3,000 享免運，僅提供宅配。</p>
-                <p>送出資料後，請至 LINE 與小幫手確認庫存、效期、金額、付款方式與宅配資訊。</p>
+                {getNoticeText(selectedDetailProduct)
+                  .split(/\n+/)
+                  .map((line) => line.trim())
+                  .filter(Boolean)
+                  .map((line, index) => (
+                    <p key={`notice-${selectedDetailProduct.id}-${index}`}>
+                      {line}
+                    </p>
+                  ))}
               </section>
 
               <section className="detail-info-block">

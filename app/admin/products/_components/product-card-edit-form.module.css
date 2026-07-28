@@ -1,0 +1,467 @@
+﻿.form {
+  width: min(100%, 620px);
+  margin: 0 auto;
+  padding-bottom: 110px;
+  color: #49363a;
+}
+
+.tabs {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  margin-bottom: 14px;
+  padding: 6px;
+  border: 1px solid #eadde0;
+  border-radius: 16px;
+  background: rgba(255, 252, 251, .96);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  backdrop-filter: blur(12px);
+}
+
+.tabs button {
+  min-height: 46px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #8b797d;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.tabs .activeTab {
+  background: #8f2632;
+  color: white;
+  box-shadow: 0 6px 16px rgba(143, 38, 50, .18);
+}
+
+.panel {
+  display: grid;
+  gap: 14px;
+}
+
+.panelHeading {
+  padding: 2px 4px;
+}
+
+.panelHeading span {
+  color: #8f2632;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.panelHeading h2 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  color: #3e2d31;
+}
+
+.imageSection,
+.detailSection,
+.fields,
+.cardPreview {
+  padding: 16px;
+  border: 1px solid #eadde0;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.imageHeading {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.imageHeading > div {
+  display: grid;
+  gap: 3px;
+}
+
+.imageHeading strong {
+  font-size: 14px;
+}
+
+.imageHeading span {
+  color: #958589;
+  font-size: 10px;
+}
+
+.imageHeading small {
+  padding: 7px 9px;
+  border-radius: 10px;
+  background: #f7edef;
+  color: #8f2632;
+  font-size: 9px;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.fields,
+.detailSection {
+  display: grid;
+  gap: 14px;
+}
+
+.fields label,
+.detailSection label {
+  display: grid;
+  gap: 7px;
+}
+
+.fields label > span,
+.detailSection label > span {
+  color: #78676b;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.fields input,
+.fields select,
+.detailSection input,
+.detailSection select,
+.detailSection textarea,
+.repeatItem input,
+.expandedItem input,
+.expandedItem textarea {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #e4d5d9;
+  border-radius: 13px;
+  outline: 0;
+  background: #fff;
+  color: #3f3033;
+  font: inherit;
+}
+
+.fields input,
+.fields select,
+.detailSection input,
+.detailSection select,
+.repeatItem input,
+.expandedItem input {
+  min-height: 49px;
+  padding: 0 13px;
+}
+
+.detailSection textarea,
+.expandedItem textarea {
+  padding: 12px 13px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.fields input:focus,
+.fields select:focus,
+.detailSection input:focus,
+.detailSection select:focus,
+.detailSection textarea:focus,
+.repeatItem input:focus,
+.expandedItem input:focus,
+.expandedItem textarea:focus {
+  border-color: #8f2632;
+  box-shadow: 0 0 0 3px rgba(143, 38, 50, .07);
+}
+
+.twoColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.cardPreview {
+  position: relative;
+  text-align: center;
+  display: grid;
+  gap: 7px;
+}
+
+.cardPreview small {
+  color: #9b8b8f;
+  font-size: 10px;
+}
+
+.cardPreview > strong {
+  font-size: 15px;
+}
+
+.cardPreview del {
+  color: #a99a9d;
+  font-size: 11px;
+}
+
+.cardPreview b {
+  color: #a52f3b;
+  font-size: 20px;
+}
+
+.cardPreview > button {
+  min-height: 43px;
+  border: 0;
+  border-radius: 12px;
+  background: #8f2632;
+  color: #fff;
+  font: inherit;
+  font-weight: 900;
+  opacity: 1;
+}
+
+.previewBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #8f2632;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.detailSection h3 {
+  margin: 0;
+  color: #4a3439;
+  font-size: 16px;
+}
+
+.sectionTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sectionTitleRow button {
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid #dfcdd2;
+  border-radius: 10px;
+  background: #fff7f8;
+  color: #8f2632;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.repeatList {
+  display: grid;
+  gap: 10px;
+}
+
+.repeatItem,
+.expandedItem {
+  padding: 10px;
+  border: 1px solid #eee2e5;
+  border-radius: 14px;
+  background: #fffafa;
+  display: grid;
+  gap: 8px;
+}
+
+.itemActions {
+  display: grid;
+  grid-template-columns: 42px 42px 1fr;
+  gap: 6px;
+}
+
+.itemActions button,
+.deleteWide {
+  min-height: 36px;
+  border: 1px solid #e4d5d9;
+  border-radius: 9px;
+  background: #fff;
+  color: #76666a;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.itemActions button:last-child,
+.deleteWide {
+  color: #a33b46;
+}
+
+.emptyText {
+  margin: 0;
+  color: #9a898d;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.actions {
+  position: sticky;
+  bottom: 10px;
+  z-index: 50;
+  margin-top: 18px;
+  padding: 9px;
+  border: 1px solid #e4d7da;
+  border-radius: 17px;
+  background: rgba(255, 252, 251, .97);
+  box-shadow: 0 12px 32px rgba(70, 39, 48, .15);
+  backdrop-filter: blur(12px);
+  display: grid;
+  grid-template-columns: .8fr 1.2fr;
+  gap: 8px;
+}
+
+.actions a,
+.actions button {
+  min-height: 49px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.actions a {
+  border: 1px solid #dfd3d6;
+  background: #fff;
+  color: #756568;
+}
+
+.actions button {
+  border: 0;
+  background: #8f2632;
+  color: #fff;
+}
+
+@media (max-width: 560px) {
+  .form {
+    width: 100%;
+  }
+
+  .twoColumns {
+    grid-template-columns: 1fr;
+  }
+
+  .imageHeading {
+    display: grid;
+  }
+
+  .imageHeading small {
+    justify-self: start;
+  }
+
+  .imageSection,
+  .detailSection,
+  .fields,
+  .cardPreview {
+    padding: 13px;
+    border-radius: 17px;
+  }
+}
+
+
+/* Admin V2：商品資訊與前台對照式編輯 */
+.frontOrderNote {
+  margin: 5px 0 0;
+  color: #9a8589;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.frontSectionHeading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.frontSectionHeading > span {
+  flex: 0 0 auto;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #f8e9ec;
+  color: #932a39;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 950;
+}
+
+.frontSectionHeading > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.frontSectionHeading h3 {
+  margin: 0;
+}
+
+.frontSectionHeading small {
+  color: #a18c90;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.servicePreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.servicePreviewCard {
+  min-height: 82px;
+  padding: 12px 8px;
+  border: 1px solid #ead6d9;
+  border-radius: 16px;
+  background: #fffdfa;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+
+.servicePreviewCard strong {
+  color: #50373b;
+  font-size: 11px;
+}
+
+.servicePreviewCard span {
+  color: #a1867f;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.sectionHelp {
+  margin: 0;
+  color: #a08e91;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.managementSection {
+  border-style: dashed;
+  background: #faf8f7;
+}
+
+@media (max-width: 560px) {
+  .servicePreviewGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .servicePreviewCard {
+    min-height: 76px;
+    padding: 9px 5px;
+  }
+
+  .servicePreviewCard strong {
+    font-size: 10px;
+  }
+
+  .servicePreviewCard span {
+    font-size: 8px;
+  }
+}

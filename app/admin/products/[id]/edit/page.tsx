@@ -1,9 +1,8 @@
-import { notFound } from "next/navigation";
+﻿import { notFound } from "next/navigation";
 import { getDatabaseProduct } from "../../../../../lib/product-repository";
-import { updateProductAction } from "../../../products/actions";
-import ProductForm from "../../../products/_components/ProductForm";
+import { updateProductAction } from "../../actions";
+import ProductCardEditForm from "../../_components/ProductCardEditForm";
 import styles from "../../../admin.module.css";
-import formStyles from "../../../products/_components/product-form.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +24,7 @@ export default async function EditProductPage({
   }
 
   const product = await getDatabaseProduct(id);
+
   if (!product) {
     notFound();
   }
@@ -33,24 +33,31 @@ export default async function EditProductPage({
     <div className={styles.page}>
       <header className={styles.pageHeader}>
         <div>
-          <p className={styles.eyebrow}>EDIT PRODUCT</p>
-          <h1>編輯商品</h1>
-          <p>{product.name}</p>
+          <p className={styles.eyebrow}>PRODUCT CARD</p>
+          <h1>編輯商品卡</h1>
+          <p>只留下客人會在商品卡上看到的內容。</p>
         </div>
       </header>
 
       {saved ? (
-        <div className={formStyles.section} style={{ padding: 14 }}>
-          <strong style={{ color: "#286242" }}>
-            ✓ {saved === "created" ? "商品已建立" : "商品變更已儲存"}
-          </strong>
+        <div
+          style={{
+            marginBottom: 14,
+            padding: 12,
+            borderRadius: 14,
+            background: "#f7eef0",
+            color: "#862642",
+            fontWeight: 800,
+            fontSize: 13,
+          }}
+        >
+          ✓ 商品卡變更已儲存
         </div>
       ) : null}
 
-      <ProductForm
+      <ProductCardEditForm
         product={product}
         action={updateProductAction}
-        submitLabel="儲存變更"
       />
     </div>
   );

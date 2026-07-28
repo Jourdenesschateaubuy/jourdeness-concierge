@@ -57,27 +57,38 @@ export type Product = {
     title: string;
     content: string;
   }>;
+  comboConfig?: ComboConfig;
 };
 
-type ComboOption = {
+export type ComboOption = {
   id: string;
   name: string;
+  productId?: number;
   singleUnitPrice?: number;
   singlePriceLabel?: string;
 };
 
-type ComboPlan = {
+export type ComboPlan = {
   id: string;
   label: string;
   requiredQuantity: number;
   price: number;
   priceLabel: string;
   note?: string;
+  buyQuantity?: number;
+  freeQuantity?: number;
+  bonusGift?: {
+    name: string;
+    quantity: number;
+    unitLabel?: string;
+  };
 };
 
 export type ComboConfig = {
   productId: number;
+  type?: "mix_match" | "buy_get";
   unitLabel: string;
+  allowSameProduct?: boolean;
   options: ComboOption[];
   plans: ComboPlan[];
   note?: string;
