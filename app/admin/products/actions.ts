@@ -137,8 +137,14 @@ function productInputFromForm(formData: FormData): ProductWriteInput {
 export async function createProductAction(formData: FormData) {
   await requireAdmin();
 
+  const productType =
+    stringValue(formData, "productType") === "combo"
+      ? "combo"
+      : "product";
+
   const product = await createDatabaseProduct(
-    productInputFromForm(formData)
+    productInputFromForm(formData),
+    productType
   );
 
   revalidatePath("/admin");

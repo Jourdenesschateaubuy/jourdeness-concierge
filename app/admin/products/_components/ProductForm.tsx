@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { categoryConfig } from "../../../../lib/storefront-core";
 import type { DatabaseProduct } from "../../../../lib/product-repository";
@@ -8,17 +11,45 @@ type ProductFormProps = {
   product?: DatabaseProduct;
   action: (formData: FormData) => void | Promise<void>;
   submitLabel: string;
+  productType?: "product" | "combo";
 };
 
 const categories = Object.keys(categoryConfig);
+
+function normalizeOriginalPriceInput(value: string) {
+  const match = value.trim().match(/^原價\s*\$\s*([\d,]+)$/);
+  return match ? match[1].replace(/,/g, "") : value;
+}
+
+function normalizeSellingPriceInput(value: string) {
+  const match = value.trim().match(/^產地價\s*\$\s*([\d,]+)$/);
+  return match ? match[1].replace(/,/g, "") : value;
+}
 
 export default function ProductForm({
   product,
   action,
   submitLabel,
+  productType = "product",
 }: ProductFormProps) {
+  const initialOriginalPrice = normalizeOriginalPriceInput(
+    product?.originalPrice ?? ""
+  );
+  const [showOriginalPrice, setShowOriginalPrice] = useState(
+    Boolean(initialOriginalPrice.trim())
+  );
+  const [originalPrice, setOriginalPrice] = useState(
+    initialOriginalPrice
+  );
+
   return (
     <form action={action} className={styles.form}>
+      <input
+        type="hidden"
+        name="productType"
+        value={productType}
+      />
+
       {product ? <input type="hidden" name="id" value={product.id} /> : null}
 
       <section className={styles.section}>
@@ -40,14 +71,16 @@ export default function ProductForm({
             />
           </label>
 
-          <label>
-            <span>貨號</span>
-            <input
-              name="sku"
-              defaultValue={product?.sku ?? ""}
-              placeholder="可留空"
-            />
-          </label>
+          {product ? (
+            <label>
+              <span>貨號</span>
+              <input
+                name="sku"
+                defaultValue={product.sku ?? ""}
+                placeholder="可留空"
+              />
+            </label>
+          ) : null}
 
           <label>
             <span>系列</span>
@@ -69,10 +102,12 @@ export default function ProductForm({
             </select>
           </label>
 
-          <label>
-            <span>規格</span>
-            <input name="spec" defaultValue={product?.spec ?? ""} />
-          </label>
+          {product ? (
+            <label>
+              <span>規格</span>
+              <input name="spec" defaultValue={product.spec ?? ""} />
+            </label>
+          ) : null}
         </div>
       </section>
 
@@ -85,32 +120,64 @@ export default function ProductForm({
         </div>
 
         <div className={styles.grid}>
-          <label>
-            <span>原價</span>
-            <input
-              name="originalPrice"
-              defaultValue={product?.originalPrice ?? ""}
-              placeholder="例如：原價 $ 1,290"
-            />
+          <label className={styles.priceToggle}>
+              <span>
+                <input
+                  className={styles.priceToggleBox}
+                  type="checkbox"
+                  checked={showOriginalPrice}
+                onChange={(event) => {
+                  const checked = event.target.checked;
+                  setShowOriginalPrice(checked);
+
+                  if (!checked) {
+                    setOriginalPrice("");
+                  }
+                }}
+              />
+              顯示原價
+            </span>
           </label>
 
           <label>
-            <span>目前售價／活動價 *</span>
+            <span>原價（NT$）</span>
+            <input
+              name="originalPrice"
+              value={showOriginalPrice ? originalPrice : ""}
+              disabled={!showOriginalPrice}
+              inputMode="numeric"
+              onChange={(event) =>
+                setOriginalPrice(event.target.value)
+              }
+              placeholder="例如：2980"
+            />
+            {!showOriginalPrice ? (
+              <input type="hidden" name="originalPrice" value="" />
+            ) : null}
+          </label>
+
+          <label>
+            <span>售價（NT$）*</span>
             <input
               name="price"
               required
-              defaultValue={product?.price ?? ""}
-              placeholder="例如：產地價 $ 890"
+              inputMode="numeric"
+              defaultValue={normalizeSellingPriceInput(
+                product?.price ?? ""
+              )}
+              placeholder="例如：2160"
             />
           </label>
 
-          <label>
-            <span>價格補充</span>
-            <input
-              name="priceNote"
-              defaultValue={product?.priceNote ?? ""}
-            />
-          </label>
+          {product ? (
+            <label>
+              <span>價格補充</span>
+              <input
+                name="priceNote"
+                defaultValue={product.priceNote ?? ""}
+              />
+            </label>
+          ) : null}
         </div>
       </section>
 
@@ -130,21 +197,25 @@ export default function ProductForm({
             />
           </div>
 
-          <label>
-            <span>商品卡名稱</span>
-            <input
-              name="cardName"
-              defaultValue={product?.cardName ?? ""}
-            />
-          </label>
+          {product ? (
+            <>
+              <label>
+                <span>商品卡名稱</span>
+                <input
+                  name="cardName"
+                  defaultValue={product.cardName ?? ""}
+                />
+              </label>
 
-          <label>
-            <span>商品卡副標</span>
-            <input
-              name="cardSubtitle"
-              defaultValue={product?.cardSubtitle ?? ""}
-            />
-          </label>
+              <label>
+                <span>商品卡副標</span>
+                <input
+                  name="cardSubtitle"
+                  defaultValue={product.cardSubtitle ?? ""}
+                />
+              </label>
+            </>
+          ) : null}
 
           <label className={styles.span2}>
             <span>商品簡介</span>
@@ -155,31 +226,35 @@ export default function ProductForm({
             />
           </label>
 
-          <label className={styles.span2}>
-            <span>商品資訊頁介紹</span>
-            <textarea
-              name="intro"
-              rows={4}
-              defaultValue={product?.intro ?? ""}
-            />
-          </label>
+          {product ? (
+            <>
+              <label className={styles.span2}>
+                <span>商品資訊頁介紹</span>
+                <textarea
+                  name="intro"
+                  rows={4}
+                  defaultValue={product.intro ?? ""}
+                />
+              </label>
 
-          <label>
-            <span>效期顯示文字</span>
-            <input
-              name="expiryNote"
-              defaultValue={product?.expiryNote ?? ""}
-            />
-          </label>
+              <label>
+                <span>效期顯示文字</span>
+                <input
+                  name="expiryNote"
+                  defaultValue={product.expiryNote ?? ""}
+                />
+              </label>
 
-          <label>
-            <span>內部效期日期</span>
-            <input
-              name="internalExpiryDate"
-              type="date"
-              defaultValue={product?.internalExpiryDate ?? ""}
-            />
-          </label>
+              <label>
+                <span>內部效期日期</span>
+                <input
+                  name="internalExpiryDate"
+                  type="date"
+                  defaultValue={product.internalExpiryDate ?? ""}
+                />
+              </label>
+            </>
+          ) : null}
         </div>
       </section>
 
@@ -205,15 +280,19 @@ export default function ProductForm({
             </select>
           </label>
 
-          <label>
-            <span>排序</span>
-            <input
-              name="sortOrder"
-              type="number"
-              step="1"
-              defaultValue={product?.sortOrder ?? 0}
-            />
-          </label>
+          {product ? (
+            <label>
+              <span>排序</span>
+              <input
+                name="sortOrder"
+                type="number"
+                step="1"
+                defaultValue={product.sortOrder}
+              />
+            </label>
+          ) : (
+            <input type="hidden" name="sortOrder" value="0" />
+          )}
         </div>
       </section>
 

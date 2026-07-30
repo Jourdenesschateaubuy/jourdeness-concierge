@@ -142,7 +142,10 @@ export async function getDatabaseProduct(id: number) {
   return result.rows[0] ? rowToProduct(result.rows[0]) : null;
 }
 
-export async function createDatabaseProduct(input: ProductWriteInput) {
+export async function createDatabaseProduct(
+  input: ProductWriteInput,
+  productType: "product" | "combo" = "product"
+) {
   return withDbClient(async (client) => {
     await client.query("BEGIN");
 
@@ -153,6 +156,19 @@ export async function createDatabaseProduct(input: ProductWriteInput) {
         `SELECT COALESCE(MAX(id), 0) + 1 AS id FROM products`
       );
       const id = Number(idResult.rows[0]?.id ?? 1);
+
+      const comboConfig =
+        input.comboConfig ??
+        (productType === "combo"
+          ? {
+              productId: id,
+              type: "mix_match" as const,
+              unitLabel: "件",
+              allowSameProduct: true,
+              options: [],
+              plans: [],
+            }
+          : undefined);
 
       const result = await client.query<ProductRow>(
         `
@@ -193,7 +209,7 @@ export async function createDatabaseProduct(input: ProductWriteInput) {
           input.notice || null,
           JSON.stringify(input.gallery ?? []),
           JSON.stringify(input.expandedInfo ?? []),
-          input.comboConfig ? JSON.stringify(input.comboConfig) : null,
+          comboConfig ? JSON.stringify(comboConfig) : null,
           input.status,
           input.sortOrder,
         ]

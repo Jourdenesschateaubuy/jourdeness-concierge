@@ -25,6 +25,47 @@ type ExpandedItem = {
 
 const categories = Object.keys(categoryConfig);
 
+function normalizeOriginalPriceInput(value: string) {
+  const match = value.trim().match(/^原價\s*\$\s*([\d,]+)$/);
+  return match ? match[1].replace(/,/g, "") : value;
+}
+
+function normalizeSellingPriceInput(value: string) {
+  const match = value.trim().match(/^產地價\s*\$\s*([\d,]+)$/);
+  return match ? match[1].replace(/,/g, "") : value;
+}
+
+function formatMoney(value: string) {
+  const normalized = value.trim().replace(/,/g, "");
+
+  if (!/^\d+$/.test(normalized)) return null;
+
+  return Number(normalized).toLocaleString("en-US");
+}
+
+function formatOriginalPricePreview(value: string) {
+  const formatted = formatMoney(value);
+  return formatted ? `原價 $ ${formatted}` : value;
+}
+
+function formatSellingPricePreview(
+  value: string,
+  category: string
+) {
+  const formatted = formatMoney(value);
+
+  if (!formatted) return value;
+
+  const label =
+    category === "外部廠商"
+      ? "售價"
+      : category === "組合價"
+        ? "活動價"
+        : "產地價";
+
+  return `${label} $ ${formatted}`;
+}
+
 const statusLabels: Record<ProductStatus, string> = {
   active: "上架中",
   inactive: "下架",
@@ -112,9 +153,14 @@ export default function ProductCardEditForm({
 
   const [name, setName] = useState(product.name ?? "");
   const [originalPrice, setOriginalPrice] = useState(
-    product.originalPrice ?? ""
+    normalizeOriginalPriceInput(product.originalPrice ?? "")
   );
-  const [price, setPrice] = useState(product.price ?? "");
+  const [showOriginalPrice, setShowOriginalPrice] = useState(
+    Boolean((product.originalPrice ?? "").trim())
+  );
+  const [price, setPrice] = useState(
+    normalizeSellingPriceInput(product.price ?? "")
+  );
   const [status, setStatus] = useState<ProductStatus>(
     product.status ?? "active"
   );
@@ -268,29 +314,58 @@ export default function ProductCardEditForm({
               />
             </label>
 
+            <label className={styles.priceToggle}>
+              <span>
+                <input
+                  className={styles.priceToggleBox}
+                  type="checkbox"
+                  checked={showOriginalPrice}
+                  onChange={(event) => {
+                    const checked = event.target.checked;
+                    setShowOriginalPrice(checked);
+
+                    if (!checked) {
+                      setOriginalPrice("");
+                    }
+                  }}
+                />
+                顯示原價
+              </span>
+            </label>
+
             <div className={styles.twoColumns}>
               <label>
-                <span>原價</span>
+                <span>原價（NT$）</span>
                 <input
                   name="originalPrice"
-                  value={originalPrice}
+                  value={showOriginalPrice ? originalPrice : ""}
+                  disabled={!showOriginalPrice}
+                  inputMode="numeric"
                   onChange={(event) =>
                     setOriginalPrice(event.target.value)
                   }
-                  placeholder="例如：原價 $2,980"
+                  placeholder="例如：2980"
                 />
+                {!showOriginalPrice ? (
+                  <input
+                    type="hidden"
+                    name="originalPrice"
+                    value=""
+                  />
+                ) : null}
               </label>
 
               <label>
-                <span>售價／活動價</span>
+                <span>售價（NT$）</span>
                 <input
                   name="price"
                   required
+                  inputMode="numeric"
                   value={price}
                   onChange={(event) =>
                     setPrice(event.target.value)
                   }
-                  placeholder="例如：產地價 $2,160"
+                  placeholder="例如：2160"
                 />
               </label>
             </div>
@@ -338,9 +413,15 @@ export default function ProductCardEditForm({
 
             <strong>{name || "商品名稱"}</strong>
 
-            {originalPrice && <del>{originalPrice}</del>}
+            {originalPrice && (
+              <del>{formatOriginalPricePreview(originalPrice)}</del>
+            )}
 
-            <b>{price || "尚未設定售價"}</b>
+            <b>
+              {price
+                ? formatSellingPricePreview(price, category)
+                : "尚未設定售價"}
+            </b>
 
             <button type="button" disabled>
               加入

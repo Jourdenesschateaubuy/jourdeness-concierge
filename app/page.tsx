@@ -128,7 +128,7 @@ function Home() {
   const [isAdminEditMode, setIsAdminEditMode] = useState(false);
   const [managedProductId, setManagedProductId] = useState<number | null>(null);
   const [isAdminCreateMenuOpen, setIsAdminCreateMenuOpen] = useState(false);
-  const [adminCreateView, setAdminCreateView] = useState<"menu" | "series">("menu");
+  const [adminCreateView, setAdminCreateView] = useState<"menu" | "product" | "series">("menu");
   const [adminCatalogCategories, setAdminCatalogCategories] = useState<
     Array<{ id: number; name: string }>
   >([]);
@@ -1547,6 +1547,26 @@ const sevenSequenceGuideV377 = [
     openProductDetail(product);
   }
 
+  function formatMoneyValue(value: string) {
+    const normalized = value.trim().replace(/,/g, "");
+
+    if (!/^\d+$/.test(normalized)) return null;
+
+    return Number(normalized).toLocaleString("en-US");
+  }
+
+  function displayOriginalPrice(product: Product) {
+    const value = product.originalPrice?.trim() ?? "";
+    const legacyMatch = value.match(
+      /^原價\s*\$\s*([\d,]+)$/
+    );
+    const formatted = formatMoneyValue(
+      legacyMatch?.[1] ?? value
+    );
+
+    return formatted ? `原價 $ ${formatted}` : value;
+  }
+
   function hasKnownOriginalPrice(product: Product) {
     if (!product.originalPrice) return false;
     return !(
@@ -1562,7 +1582,25 @@ const sevenSequenceGuideV377 = [
 
   function displayPrice(product: Product) {
     if (hasInquiryPrice(product)) return "售價請洽小幫手";
-    return product.price;
+
+    const value = product.price.trim();
+    const legacyMatch = value.match(
+      /^產地價\s*\$\s*([\d,]+)$/
+    );
+    const formatted = formatMoneyValue(
+      legacyMatch?.[1] ?? value
+    );
+
+    if (!formatted) return value;
+
+    const label =
+      product.category === "外部廠商"
+        ? "售價"
+        : product.category === "組合價"
+          ? "活動價"
+          : "產地價";
+
+    return `${label} $ ${formatted}`;
   }
 
   function getStorefrontStatus(product: Product) {
@@ -2926,7 +2964,7 @@ const sevenSequenceGuideV377 = [
 
           <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
             {hasKnownOriginalPrice(product) && (
-              <p className="original-price">{product.originalPrice}</p>
+              <p className="original-price">{displayOriginalPrice(product)}</p>
             )}
 
             <p className={`price ${inquiry ? "inquiry" : ""}`}>
@@ -4508,7 +4546,9 @@ const sevenSequenceGuideV377 = [
 
                         <div className="search-result-price">
                           <strong>{displayPrice(product)}</strong>
-                          {hasKnownOriginalPrice(product) && <span>{product.originalPrice}</span>}
+                          {hasKnownOriginalPrice(product) && (
+                            <span>{displayOriginalPrice(product)}</span>
+                          )}
                         </div>
 
                         <div className="search-result-actions">
@@ -5082,10 +5122,10 @@ const sevenSequenceGuideV377 = [
               <div className="admin-v2-create-header">
                 <div>
                   <span className="admin-v2-create-kicker">
-                    {adminCreateView === "series" ? "系列" : "新增"}
+                    {adminCreateView === "series" ? "系列" : adminCreateView === "product" ? "商品" : "新增"}
                   </span>
                   <h2 id="admin-v2-create-title">
-                    {adminCreateView === "series" ? "新增系列" : "新增內容"}
+                    {adminCreateView === "series" ? "新增系列" : adminCreateView === "product" ? "新增商品" : "新增內容"}
                   </h2>
                 </div>
 
@@ -5102,7 +5142,10 @@ const sevenSequenceGuideV377 = [
               {adminCreateView === "menu" ? (
                 <>
                   <div className="admin-v2-create-options">
-                    <button type="button" disabled>
+                    <button
+                      type="button"
+                      onClick={() => setAdminCreateView("product")}
+                    >
                       <span className="admin-v2-create-option-icon">+</span>
                       <span>
                         <strong>商品</strong>
@@ -5131,7 +5174,7 @@ const sevenSequenceGuideV377 = [
                   </div>
 
                   <p className="admin-v2-create-preview-note">
-                    商品與分類功能將陸續開放
+                    分類功能將陸續開放
                   </p>
 
                   <button
@@ -5140,6 +5183,46 @@ const sevenSequenceGuideV377 = [
                     onClick={() => setIsAdminCreateMenuOpen(false)}
                   >
                     取消
+                  </button>
+                </>
+              ) : adminCreateView === "product" ? (
+                <>
+                  <div className="admin-v2-create-options">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.location.href =
+                          "/admin/products/new?type=product";
+                      }}
+                    >
+                      <span className="admin-v2-create-option-icon">+</span>
+                      <span>
+                        <strong>一般商品</strong>
+                        <small>建立單一品項商品</small>
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.location.href =
+                          "/admin/products/new?type=combo";
+                      }}
+                    >
+                      <span className="admin-v2-create-option-icon">+</span>
+                      <span>
+                        <strong>組合商品</strong>
+                        <small>建立可選方案或多品項組合</small>
+                      </span>
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="admin-v2-create-cancel"
+                    onClick={() => setAdminCreateView("menu")}
+                  >
+                    返回
                   </button>
                 </>
               ) : (
@@ -5885,7 +5968,9 @@ const sevenSequenceGuideV377 = [
                 <div>
                   <p>{getPriceModeLabel(selectedDetailProduct)}</p>
                   {hasKnownOriginalPrice(selectedDetailProduct) && (
-                    <span className="original-price">{selectedDetailProduct.originalPrice}</span>
+                    <span className="original-price">
+                      {displayOriginalPrice(selectedDetailProduct)}
+                    </span>
                   )}
                   <strong className={`price ${hasInquiryPrice(selectedDetailProduct) ? "inquiry" : ""}`}>
                     {displayPrice(selectedDetailProduct)}
