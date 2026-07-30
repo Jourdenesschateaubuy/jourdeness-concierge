@@ -20,6 +20,7 @@ export type ProductWriteInput = {
   name: string;
   category: string;
   series: string;
+  storefrontCategory?: string;
   originalPrice?: string;
   price: string;
   image: string;
@@ -48,6 +49,7 @@ type ProductRow = {
   name: string;
   category: string;
   series: string;
+  storefront_category: string | null;
   original_price: string | null;
   price: string;
   image: string;
@@ -83,6 +85,7 @@ function rowToProduct(row: ProductRow): DatabaseProduct {
     name: row.name,
     category: row.category as MainCategory,
     series: row.series,
+    storefrontCategory: optional(row.storefront_category) as MainCategory | undefined,
     originalPrice: optional(row.original_price),
     price: row.price,
     image: row.image,
@@ -154,15 +157,15 @@ export async function createDatabaseProduct(input: ProductWriteInput) {
       const result = await client.query<ProductRow>(
         `
           INSERT INTO products (
-            id, sku, name, category, series, original_price, price, image,
+            id, sku, name, category, series, storefront_category, original_price, price, image,
             description, card_name, card_subtitle, spec, intro, price_note,
             expiry_note, internal_expiry_date,
             features, suitable_for, usage, notice, gallery, expanded_info, combo_config,
             status, sort_order, updated_at
           )
           VALUES (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,
-            $17::jsonb,$18::jsonb,$19,$20,$21::jsonb,$22::jsonb,$23::jsonb,$24,$25,NOW()
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,
+            $18::jsonb,$19::jsonb,$20,$21,$22::jsonb,$23::jsonb,$24::jsonb,$25,$26,NOW()
           )
           RETURNING *
         `,
@@ -172,6 +175,7 @@ export async function createDatabaseProduct(input: ProductWriteInput) {
           input.name,
           input.category,
           input.series,
+          input.storefrontCategory || null,
           input.originalPrice || null,
           input.price,
           input.image,
@@ -216,26 +220,27 @@ export async function updateDatabaseProduct(
         name = $3,
         category = $4,
         series = $5,
-        original_price = $6,
-        price = $7,
-        image = $8,
-        description = $9,
-        card_name = $10,
-        card_subtitle = $11,
-        spec = $12,
-        intro = $13,
-        price_note = $14,
-        expiry_note = $15,
-        internal_expiry_date = $16,
-        features = $17::jsonb,
-        suitable_for = $18::jsonb,
-        usage = $19,
-        notice = $20,
-        gallery = $21::jsonb,
-        expanded_info = $22::jsonb,
-        combo_config = COALESCE($23::jsonb, combo_config),
-        status = $24,
-        sort_order = $25,
+        storefront_category = COALESCE($6, storefront_category),
+        original_price = $7,
+        price = $8,
+        image = $9,
+        description = $10,
+        card_name = $11,
+        card_subtitle = $12,
+        spec = $13,
+        intro = $14,
+        price_note = $15,
+        expiry_note = $16,
+        internal_expiry_date = $17,
+        features = $18::jsonb,
+        suitable_for = $19::jsonb,
+        usage = $20,
+        notice = $21,
+        gallery = $22::jsonb,
+        expanded_info = $23::jsonb,
+        combo_config = COALESCE($24::jsonb, combo_config),
+        status = $25,
+        sort_order = $26,
         updated_at = NOW()
       WHERE id = $1
       RETURNING *
@@ -246,6 +251,7 @@ export async function updateDatabaseProduct(
       input.name,
       input.category,
       input.series,
+      input.storefrontCategory || null,
       input.originalPrice || null,
       input.price,
       input.image,

@@ -1,5 +1,6 @@
 "use client";
 
+
 // Jourdeness storefront build: V3.8.6 — 龍血玫瑰皂改為自由配選項，不再單獨顯示商品卡。
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
 import { createPortal } from "react-dom";
@@ -126,6 +127,17 @@ function Home() {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [isAdminEditMode, setIsAdminEditMode] = useState(false);
   const [managedProductId, setManagedProductId] = useState<number | null>(null);
+  const [isAdminCreateMenuOpen, setIsAdminCreateMenuOpen] = useState(false);
+  const [adminCreateView, setAdminCreateView] = useState<"menu" | "series">("menu");
+  const [adminCatalogCategories, setAdminCatalogCategories] = useState<
+    Array<{ id: number; name: string }>
+  >([]);
+  const [adminSeriesName, setAdminSeriesName] = useState("");
+  const [adminSeriesCategoryId, setAdminSeriesCategoryId] = useState("");
+  const [adminSeriesLoading, setAdminSeriesLoading] = useState(false);
+  const [adminSeriesSaving, setAdminSeriesSaving] = useState(false);
+  const [adminSeriesMessage, setAdminSeriesMessage] = useState("");
+  const [adminSeriesError, setAdminSeriesError] = useState("");
 
   const adminPressTimerRef =
     useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -161,6 +173,7 @@ function Home() {
 
       if (!enabled) {
         setManagedProductId(null);
+        setIsAdminCreateMenuOpen(false);
       }
     }
 
@@ -400,10 +413,29 @@ function Home() {
     if (selectedCategory === "新品預告") return isComingSoon(product);
     if (isComingSoon(product)) return false;
 
-    if (selectedCategory === "臉部保養") return faceCareProductIdsV368.has(product.id);
-    if (selectedCategory === "身體洗護") return bodyCareProductIdsV368.has(product.id);
-    if (selectedCategory === "健康補給") return healthProductIdsV368.has(product.id);
-    if (selectedCategory === "精油香氛") return essentialOilProductIdsV359.has(product.id);
+    if (selectedCategory === "臉部保養") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "臉部保養"
+        : faceCareProductIdsV368.has(product.id);
+    }
+
+    if (selectedCategory === "身體洗護") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "身體洗護"
+        : bodyCareProductIdsV368.has(product.id);
+    }
+
+    if (selectedCategory === "健康補給") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "健康補給"
+        : healthProductIdsV368.has(product.id);
+    }
+
+    if (selectedCategory === "精油香氛") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "精油香氛"
+        : essentialOilProductIdsV359.has(product.id);
+    }
 
     // 舊分類相容：避免內部跳轉或搜尋仍使用舊分類名稱時失效。
     if (selectedCategory === "本月精選") return isFeaturedProductV31(product) && !isComingSoon(product);
@@ -415,10 +447,29 @@ function Home() {
 
   function matchesMainCategoryAlias(product: Product, alias: MainCategory) {
     if (isComingSoon(product)) return false;
-    if (alias === "臉部保養") return faceCareProductIdsV368.has(product.id);
-    if (alias === "身體洗護") return bodyCareProductIdsV368.has(product.id);
-    if (alias === "健康補給") return healthProductIdsV368.has(product.id);
-    if (alias === "精油香氛") return essentialOilProductIdsV359.has(product.id);
+    if (alias === "臉部保養") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "臉部保養"
+        : faceCareProductIdsV368.has(product.id);
+    }
+
+    if (alias === "身體洗護") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "身體洗護"
+        : bodyCareProductIdsV368.has(product.id);
+    }
+
+    if (alias === "健康補給") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "健康補給"
+        : healthProductIdsV368.has(product.id);
+    }
+
+    if (alias === "精油香氛") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "精油香氛"
+        : essentialOilProductIdsV359.has(product.id);
+    }
     return false;
   }
 
@@ -1336,6 +1387,114 @@ const sevenSequenceGuideV377 = [
       window.setTimeout(() => {
         window.scrollTo({ top: collectionReturnScrollY, behavior: "auto" });
       }, 0);
+    }
+  }
+
+  async function openAdminCreateSeries() {
+    setAdminCreateView("series");
+    setAdminSeriesMessage("");
+    setAdminSeriesError("");
+
+    if (adminCatalogCategories.length > 0) {
+      if (!adminSeriesCategoryId) {
+        setAdminSeriesCategoryId(String(adminCatalogCategories[0].id));
+      }
+      return;
+    }
+
+    setAdminSeriesLoading(true);
+
+    try {
+      const response = await fetch("/api/admin/catalog/series", {
+        cache: "no-store",
+      });
+
+      const payload = (await response.json()) as {
+        categories?: Array<{ id: number; name: string }>;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(payload.error || "讀取分類失敗");
+      }
+
+      const categories = Array.isArray(payload.categories)
+        ? payload.categories
+        : [];
+
+      setAdminCatalogCategories(categories);
+
+      if (categories.length > 0) {
+        setAdminSeriesCategoryId(String(categories[0].id));
+      }
+    } catch (error) {
+      setAdminSeriesError(
+        error instanceof Error ? error.message : "讀取分類失敗"
+      );
+    } finally {
+      setAdminSeriesLoading(false);
+    }
+  }
+
+  async function handleAdminSeriesSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    const name = adminSeriesName.trim();
+    const categoryId = Number(adminSeriesCategoryId);
+
+    setAdminSeriesMessage("");
+    setAdminSeriesError("");
+
+    if (!name) {
+      setAdminSeriesError("請輸入系列名稱");
+      return;
+    }
+
+    if (!Number.isInteger(categoryId) || categoryId <= 0) {
+      setAdminSeriesError("請選擇所屬分類");
+      return;
+    }
+
+    setAdminSeriesSaving(true);
+
+    try {
+      const response = await fetch("/api/admin/catalog/series", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          categoryId,
+          name,
+        }),
+      });
+
+      const payload = (await response.json()) as {
+        success?: boolean;
+        series?: {
+          id: number;
+          name: string;
+          categoryName: string;
+        };
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(payload.error || "新增系列失敗");
+      }
+
+      setAdminSeriesMessage(
+        "已建立「" + (payload.series?.name || name) + "」"
+      );
+      setAdminSeriesName("");
+    } catch (error) {
+      setAdminSeriesError(
+        error instanceof Error ? error.message : "新增系列失敗"
+      );
+    } finally {
+      setAdminSeriesSaving(false);
     }
   }
 
@@ -4871,6 +5030,22 @@ const sevenSequenceGuideV377 = [
               </div>
             </nav>
 
+            {isAdminMode && isAdminEditMode && (
+              <button
+                type="button"
+                className="admin-v2-create-entry-button"
+                onClick={() => {
+                  setAdminCreateView("menu");
+                  setAdminSeriesMessage("");
+                  setAdminSeriesError("");
+                  setIsAdminCreateMenuOpen(true);
+                }}
+              >
+                <span className="admin-v2-create-entry-plus">+</span>
+                <span>新增內容</span>
+              </button>
+            )}
+
             <button
               type="button"
               className="drawer-line-button"
@@ -4884,6 +5059,187 @@ const sevenSequenceGuideV377 = [
           </aside>
         </section>
       )}
+
+      {isAdminMode &&
+        isAdminEditMode &&
+        isAdminCreateMenuOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="admin-v2-create-backdrop"
+            role="presentation"
+            onClick={() => setIsAdminCreateMenuOpen(false)}
+          >
+            <section
+              className="admin-v2-create-sheet"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="admin-v2-create-title"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="admin-v2-create-handle" aria-hidden="true" />
+
+              <div className="admin-v2-create-header">
+                <div>
+                  <span className="admin-v2-create-kicker">
+                    {adminCreateView === "series" ? "系列" : "新增"}
+                  </span>
+                  <h2 id="admin-v2-create-title">
+                    {adminCreateView === "series" ? "新增系列" : "新增內容"}
+                  </h2>
+                </div>
+
+                <button
+                  type="button"
+                  className="admin-v2-create-close"
+                  aria-label="關閉新增內容"
+                  onClick={() => setIsAdminCreateMenuOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              {adminCreateView === "menu" ? (
+                <>
+                  <div className="admin-v2-create-options">
+                    <button type="button" disabled>
+                      <span className="admin-v2-create-option-icon">+</span>
+                      <span>
+                        <strong>商品</strong>
+                        <small>新增一般或組合商品</small>
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => void openAdminCreateSeries()}
+                    >
+                      <span className="admin-v2-create-option-icon">+</span>
+                      <span>
+                        <strong>系列</strong>
+                        <small>在指定分類下建立新系列</small>
+                      </span>
+                    </button>
+
+                    <button type="button" disabled>
+                      <span className="admin-v2-create-option-icon">+</span>
+                      <span>
+                        <strong>分類</strong>
+                        <small>建立新的商品分類</small>
+                      </span>
+                    </button>
+                  </div>
+
+                  <p className="admin-v2-create-preview-note">
+                    商品與分類功能將陸續開放
+                  </p>
+
+                  <button
+                    type="button"
+                    className="admin-v2-create-cancel"
+                    onClick={() => setIsAdminCreateMenuOpen(false)}
+                  >
+                    取消
+                  </button>
+                </>
+              ) : (
+                <form
+                  className="admin-v2-series-form"
+                  onSubmit={handleAdminSeriesSubmit}
+                >
+                  <label className="admin-v2-series-field">
+                    <span>系列名稱</span>
+                    <input
+                      type="text"
+                      value={adminSeriesName}
+                      onChange={(event) => {
+                        setAdminSeriesName(event.target.value);
+                        setAdminSeriesMessage("");
+                        setAdminSeriesError("");
+                      }}
+                      placeholder="例如：玫瑰系列"
+                      autoFocus
+                      disabled={adminSeriesSaving}
+                    />
+                  </label>
+
+                  <label className="admin-v2-series-field">
+                    <span>所屬分類</span>
+                    <select
+                      value={adminSeriesCategoryId}
+                      onChange={(event) => {
+                        setAdminSeriesCategoryId(event.target.value);
+                        setAdminSeriesMessage("");
+                        setAdminSeriesError("");
+                      }}
+                      disabled={
+                        adminSeriesLoading ||
+                        adminSeriesSaving ||
+                        adminCatalogCategories.length === 0
+                      }
+                    >
+                      {adminSeriesLoading ? (
+                        <option value="">讀取分類中…</option>
+                      ) : adminCatalogCategories.length === 0 ? (
+                        <option value="">沒有可用分類</option>
+                      ) : (
+                        adminCatalogCategories.map((category) => (
+                          <option
+                            key={category.id}
+                            value={String(category.id)}
+                          >
+                            {category.name}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </label>
+
+                  {adminSeriesError && (
+                    <p className="admin-v2-series-feedback error">
+                      {adminSeriesError}
+                    </p>
+                  )}
+
+                  {adminSeriesMessage && (
+                    <p className="admin-v2-series-feedback success">
+                      ✓ {adminSeriesMessage}
+                    </p>
+                  )}
+
+                  <div className="admin-v2-series-actions">
+                    <button
+                      type="button"
+                      className="admin-v2-series-back"
+                      onClick={() => {
+                        setAdminCreateView("menu");
+                        setAdminSeriesMessage("");
+                        setAdminSeriesError("");
+                      }}
+                      disabled={adminSeriesSaving}
+                    >
+                      返回
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="admin-v2-series-submit"
+                      disabled={
+                        adminSeriesLoading ||
+                        adminSeriesSaving ||
+                        !adminSeriesName.trim() ||
+                        !adminSeriesCategoryId
+                      }
+                    >
+                      {adminSeriesSaving ? "建立中…" : "建立系列"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </section>
+          </div>,
+          document.body
+        )}
 
       <section className="dragon-hero-v330 dragon-hero-v340" aria-label="佐登妮絲城堡龍血主視覺">
         <picture className="dragon-hero-picture-v330 dragon-hero-picture-v340">
@@ -6147,6 +6503,286 @@ const sevenSequenceGuideV377 = [
           font-weight: 950;
           text-decoration: none;
           box-shadow: 0 12px 24px rgba(178, 65, 51, 0.20);
+        }
+
+        .admin-v2-create-entry-button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          min-height: 52px;
+          margin-top: 14px;
+          padding: 0 18px;
+          border: 1.5px dashed rgba(154, 48, 66, 0.52);
+          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.82);
+          color: #8f2b3c;
+          font-family: inherit;
+          font-size: 15px;
+          font-weight: 950;
+          cursor: pointer;
+          box-shadow: 0 8px 20px rgba(84, 44, 37, 0.06);
+        }
+
+        .admin-v2-create-entry-plus {
+          display: inline-grid;
+          place-items: center;
+          width: 24px;
+          height: 24px;
+          border-radius: 999px;
+          background: #9a3042;
+          color: #fff;
+          font-size: 19px;
+          line-height: 1;
+          font-weight: 700;
+        }
+
+        .admin-v2-create-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 99999;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          padding: 18px 14px 0;
+          background: rgba(45, 30, 25, 0.42);
+          backdrop-filter: blur(3px);
+        }
+
+        .admin-v2-create-sheet {
+          width: min(100%, 520px);
+          max-height: min(82vh, 650px);
+          overflow-y: auto;
+          padding: 10px 18px 22px;
+          border: 1px solid rgba(154, 48, 66, 0.13);
+          border-bottom: 0;
+          border-radius: 30px 30px 0 0;
+          background: #fffaf6;
+          box-shadow: 0 -20px 55px rgba(57, 35, 29, 0.2);
+        }
+
+        .admin-v2-create-handle {
+          width: 44px;
+          height: 5px;
+          margin: 1px auto 15px;
+          border-radius: 999px;
+          background: rgba(76, 52, 43, 0.18);
+        }
+
+        .admin-v2-create-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 14px;
+          margin-bottom: 16px;
+        }
+
+        .admin-v2-create-kicker {
+          display: block;
+          margin-bottom: 3px;
+          color: #9a3042;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+        }
+
+        .admin-v2-create-header h2 {
+          margin: 0;
+          color: #432f29;
+          font-size: 24px;
+          line-height: 1.25;
+          font-weight: 950;
+        }
+
+        .admin-v2-create-close {
+          display: grid;
+          place-items: center;
+          flex: 0 0 auto;
+          width: 40px;
+          height: 40px;
+          border: 1px solid rgba(80, 55, 46, 0.12);
+          border-radius: 999px;
+          background: #fff;
+          color: #4b352d;
+          font: inherit;
+          font-size: 25px;
+          line-height: 1;
+          cursor: pointer;
+        }
+
+        .admin-v2-create-options {
+          display: grid;
+          gap: 10px;
+        }
+
+        .admin-v2-create-options > button {
+          display: flex;
+          align-items: center;
+          gap: 13px;
+          width: 100%;
+          min-height: 70px;
+          padding: 12px 14px;
+          border: 1px solid rgba(154, 48, 66, 0.14);
+          border-radius: 19px;
+          background: #fff;
+          color: #49332c;
+          font-family: inherit;
+          text-align: left;
+        }
+
+        .admin-v2-create-options > button:disabled {
+          opacity: 1;
+          cursor: default;
+        }
+
+        .admin-v2-create-option-icon {
+          display: grid;
+          place-items: center;
+          flex: 0 0 auto;
+          width: 38px;
+          height: 38px;
+          border-radius: 13px;
+          background: #f7e7e9;
+          color: #9a3042;
+          font-size: 24px;
+          font-weight: 700;
+          line-height: 1;
+        }
+
+        .admin-v2-create-options strong,
+        .admin-v2-create-options small {
+          display: block;
+        }
+
+        .admin-v2-create-options strong {
+          margin-bottom: 3px;
+          font-size: 16px;
+          font-weight: 950;
+        }
+
+        .admin-v2-create-options small {
+          color: #856f66;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .admin-v2-series-form {
+          display: grid;
+          gap: 15px;
+        }
+
+        .admin-v2-series-field {
+          display: grid;
+          gap: 7px;
+        }
+
+        .admin-v2-series-field > span {
+          color: #594139;
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .admin-v2-series-field input,
+        .admin-v2-series-field select {
+          box-sizing: border-box;
+          width: 100%;
+          min-height: 52px;
+          padding: 0 14px;
+          border: 1px solid rgba(154, 48, 66, 0.18);
+          border-radius: 15px;
+          outline: none;
+          background: #fff;
+          color: #49332c;
+          font-family: inherit;
+          font-size: 15px;
+          font-weight: 750;
+        }
+
+        .admin-v2-series-field input:focus,
+        .admin-v2-series-field select:focus {
+          border-color: rgba(154, 48, 66, 0.72);
+          box-shadow: 0 0 0 3px rgba(154, 48, 66, 0.08);
+        }
+
+        .admin-v2-series-field input:disabled,
+        .admin-v2-series-field select:disabled {
+          opacity: 0.65;
+        }
+
+        .admin-v2-series-feedback {
+          margin: 0;
+          padding: 11px 13px;
+          border-radius: 13px;
+          font-size: 13px;
+          font-weight: 850;
+        }
+
+        .admin-v2-series-feedback.error {
+          background: #fff0f1;
+          color: #9a3042;
+        }
+
+        .admin-v2-series-feedback.success {
+          background: #f1f7ef;
+          color: #48633f;
+        }
+
+        .admin-v2-series-actions {
+          display: grid;
+          grid-template-columns: 0.82fr 1.18fr;
+          gap: 10px;
+          margin-top: 4px;
+        }
+
+        .admin-v2-series-back,
+        .admin-v2-series-submit {
+          min-height: 50px;
+          border-radius: 15px;
+          font-family: inherit;
+          font-size: 15px;
+          font-weight: 900;
+          cursor: pointer;
+        }
+
+        .admin-v2-series-back {
+          border: 0;
+          background: #eee6e0;
+          color: #5c443b;
+        }
+
+        .admin-v2-series-submit {
+          border: 1px solid #9a3042;
+          background: linear-gradient(135deg, #9a3042, #7f2635);
+          color: #fff;
+        }
+
+        .admin-v2-series-submit:disabled,
+        .admin-v2-series-back:disabled {
+          opacity: 0.5;
+          cursor: default;
+        }
+
+        .admin-v2-create-preview-note {
+          margin: 13px 4px 0;
+          color: #9a8278;
+          font-size: 12px;
+          font-weight: 700;
+          text-align: center;
+        }
+
+        .admin-v2-create-cancel {
+          width: 100%;
+          min-height: 48px;
+          margin-top: 14px;
+          border: 0;
+          border-radius: 16px;
+          background: #eee6e0;
+          color: #5c443b;
+          font-family: inherit;
+          font-size: 15px;
+          font-weight: 900;
+          cursor: pointer;
         }
 
         .hero-section {

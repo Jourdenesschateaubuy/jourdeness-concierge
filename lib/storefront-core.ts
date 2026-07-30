@@ -35,6 +35,7 @@ export type Product = {
   name: string;
   category: MainCategory;
   series: string;
+  storefrontCategory?: MainCategory;
   originalPrice?: string;
   price: string;
   image: string;

@@ -110,6 +110,7 @@ function productInputFromForm(formData: FormData): ProductWriteInput {
     name,
     category,
     series: stringValue(formData, "series"),
+    storefrontCategory: optionalString(formData, "storefrontCategory"),
     originalPrice: optionalString(formData, "originalPrice"),
     price,
     image,
