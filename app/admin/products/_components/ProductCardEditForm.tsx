@@ -165,9 +165,13 @@ export default function ProductCardEditForm({
     product.status ?? "active"
   );
 
-  const [category, setCategory] = useState<string>(
-    product.category ?? "保養品"
-  );
+const initialCategory = product.category?.trim() ?? "";
+
+const [category, setCategory] = useState<string>(
+  categories.includes(initialCategory)
+    ? initialCategory
+    : categories[0] || "保養品"
+);
   const [series, setSeries] = useState(product.series ?? "");
   const [spec, setSpec] = useState(product.spec ?? "");
   const [expiryNote, setExpiryNote] = useState(
@@ -202,6 +206,7 @@ export default function ProductCardEditForm({
   return (
     <form action={action} className={styles.form}>
       <input type="hidden" name="id" value={product.id} />
+      <input type="hidden" name="category" value={category} />
 
       {/* 不顯示，但保留原資料 */}
       <input type="hidden" name="sku" value={product.sku ?? ""} />
@@ -386,7 +391,6 @@ export default function ProductCardEditForm({
             <label>
               <span>商品狀態</span>
               <select
-                name="status"
                 value={status}
                 onChange={(event) =>
                   setStatus(event.target.value as ProductStatus)
