@@ -310,6 +310,47 @@ export async function updateProductStatus(
 
   return result.rows[0] ? rowToProduct(result.rows[0]) : null;
 }
+export async function updateProductSortOrders(
+  items: Array<{
+    id: number;
+    sortOrder: number;
+  }>
+) {
+  if (items.length === 0) return;
+
+  return withDbClient(async (client) => {
+    await client.query("BEGIN");
+
+    try {
+      for (const item of items) {
+        if (
+          !Number.isInteger(item.id) ||
+          item.id <= 0 ||
+          !Number.isInteger(item.sortOrder)
+        ) {
+          throw new Error("商品排序資料無效。");
+        }
+
+        await client.query(
+          `
+            UPDATE products
+            SET
+              sort_order = $2,
+              updated_at = NOW()
+            WHERE id = $1
+          `,
+          [item.id, item.sortOrder]
+        );
+      }
+
+      await client.query("COMMIT");
+      return true;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  });
+}
 
 export async function deleteDatabaseProduct(id: number) {
   const result = await dbQuery<{ id: number }>(

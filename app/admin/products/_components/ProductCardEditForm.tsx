@@ -294,10 +294,14 @@ const [category, setCategory] = useState<string>(
                 <span>商品卡＋商品詳情主圖</span>
               </div>
 
-              <small>
-                建議 750 × 795 px
+               <small>
+                建議尺寸：750 × 795 px
                 <br />
-                比例 1 : 1.06
+                建議比例：1 : 1.06
+                <br />
+                建議格式：JPG
+                <br />
+                使用位置：商品卡＋商品詳情主圖
               </small>
             </div>
 

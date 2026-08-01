@@ -1,49 +1,47 @@
 ﻿import { NextResponse } from "next/server";
-import {
-  handleUpload,
-  type HandleUploadBody,
-} from "@vercel/blob/client";
 import { hasValidAdminSession } from "../../../../../lib/admin-auth";
+import { saveProductImage } from "../../../../../lib/upload-storage";
+
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   if (!(await hasValidAdminSession())) {
     return NextResponse.json(
       { error: "未登入後台" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
   try {
-    const body = (await request.json()) as HandleUploadBody;
+    const formData = await request.formData();
+    const file = formData.get("file");
 
-    const response = await handleUpload({
-      body,
-      request,
+    if (!(file instanceof File)) {
+      return NextResponse.json(
+        { error: "沒有收到圖片檔案" },
+        { status: 400 },
+      );
+    }
 
-      onBeforeGenerateToken: async () => {
-        return {
-          allowedContentTypes: [
-            "image/jpeg",
-            "image/png",
-            "image/webp",
-          ],
-          maximumSizeInBytes: 10 * 1024 * 1024,
-          addRandomSuffix: true,
-        };
-      },
+    const savedImage = await saveProductImage(file);
 
-      onUploadCompleted: async () => {
-        // 圖片 URL 之後會由商品表單寫入 Neon。
-      },
+    return NextResponse.json({
+      success: true,
+      url: savedImage.publicUrl,
+      fileName: savedImage.fileName,
+      relativePath: savedImage.relativePath,
     });
-
-    return NextResponse.json(response);
   } catch (error) {
     console.error("Product image upload failed:", error);
 
+    const message =
+      error instanceof Error
+        ? error.message
+        : "圖片上傳失敗";
+
     return NextResponse.json(
-      { error: "圖片上傳失敗" },
-      { status: 400 }
+      { error: message },
+      { status: 400 },
     );
   }
 }

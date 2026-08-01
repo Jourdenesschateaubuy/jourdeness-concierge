@@ -1,0 +1,281 @@
+.form {
+  display: grid;
+  gap: 16px;
+  padding-bottom: 82px;
+}
+
+.stateCard {
+  min-height: 260px;
+  padding: 28px;
+  border: 1px solid #eee3df;
+  border-radius: 16px;
+  background: #fffaf8;
+  color: #6d5d60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.stateCard p {
+  margin: 0;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #eadadd;
+  border-top-color: #8b2940;
+  border-radius: 999px;
+  animation: studioSpin 0.8s linear infinite;
+}
+
+@keyframes studioSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.topLine {
+  padding: 2px 2px 15px;
+  border-bottom: 1px solid #eee3df;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.topLine > div {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.topLine span {
+  color: #9d2d42;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.topLine h2 {
+  margin: 0;
+  color: #463639;
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.syncBadge {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #efebe9;
+  color: #7d7073 !important;
+  letter-spacing: 0 !important;
+}
+
+.unsavedBadge {
+  background: #fff0d8;
+  color: #965900 !important;
+}
+
+.cardSection {
+  padding: 18px;
+  border: 1px solid #ece1de;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 7px 20px rgba(72, 49, 53, 0.04);
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 20px;
+}
+
+.imageColumn {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.imagePreview {
+  width: 100%;
+  aspect-ratio: 1 / 1.06;
+  overflow: hidden;
+  border: 1px solid #e5d9d6;
+  border-radius: 12px;
+  background: #f8f4f2;
+  display: grid;
+  place-items: center;
+  color: #938387;
+  font-size: 11px;
+  text-align: center;
+}
+
+.imagePreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.uploadButton {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: #f3e6e9;
+  color: #86283d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  text-align: center;
+}
+
+.uploadButton input {
+  display: none;
+}
+
+.imageColumn small {
+  color: #8b7c7f;
+  font-size: 10px;
+  text-align: center;
+}
+
+.fieldsColumn {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 13px;
+}
+
+.field {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.field > span {
+  color: #6f5d61;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #ded2cf;
+  border-radius: 10px;
+  background: #fffdfc;
+  color: #382d30;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #a74459;
+  box-shadow: 0 0 0 3px rgba(157, 45, 66, 0.1);
+}
+
+.priceGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.noteBox {
+  padding: 12px 14px;
+  border-radius: 11px;
+  background: #f8f5f4;
+  color: #7c6d70;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.errorMessage,
+.successMessage {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.errorMessage {
+  background: #fff0f0;
+  color: #a02f3f;
+}
+
+.successMessage {
+  background: #edf8f1;
+  color: #287247;
+}
+
+.stickyActions {
+  position: sticky;
+  bottom: -22px;
+  z-index: 5;
+  margin: 0 -22px -22px;
+  padding: 13px 22px;
+  border-top: 1px solid #e8ddda;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  display: grid;
+  grid-template-columns: auto minmax(150px, 1fr);
+  gap: 10px;
+}
+
+.fullEditorLink,
+.saveButton {
+  min-height: 44px;
+  padding: 0 15px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.fullEditorLink {
+  border: 1px solid #dacbce;
+  background: #ffffff;
+  color: #7d2638;
+}
+
+.saveButton {
+  border: 0;
+  background: #7d2638;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.saveButton:disabled {
+  background: #c8b9bc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1180px) {
+  .cardSection {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1020px) {
+  .cardSection,
+  .priceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .imagePreview {
+    width: min(100%, 210px);
+  }
+}

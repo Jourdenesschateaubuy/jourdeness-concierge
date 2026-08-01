@@ -556,3 +556,75 @@
     grid-column: auto;
   }
 }
+.sortCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 76px;
+}
+
+.dragHandle,
+.dragHandleDisabled {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d8d8d8;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.dragHandle {
+  cursor: grab;
+  touch-action: none;
+}
+
+.dragHandle:hover {
+  border-color: #8d8d8d;
+  background: #f7f7f7;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.dragHandleDisabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.draggingRow {
+  position: relative;
+  z-index: 20;
+  opacity: 0.82;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.sortSaving {
+  margin-left: 14px;
+  font-weight: 600;
+}
+
+.sortHint {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid #dedede;
+  border-radius: 8px;
+  background: #f7f7f7;
+  font-size: 14px;
+}
+
+.sortError {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid #d98b8b;
+  border-radius: 8px;
+  background: #fff3f3;
+  color: #a12626;
+  font-size: 14px;
+  font-weight: 600;
+}

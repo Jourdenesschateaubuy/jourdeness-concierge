@@ -1,16 +1,22 @@
 "use server";
-
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { hasValidAdminSession } from "../../../lib/admin-auth";
+
 import {
   createDatabaseProduct,
   deleteDatabaseProduct,
+  getDatabaseProduct,
   updateDatabaseProduct,
+  updateProductSortOrders,
   updateProductStatus,
   type ProductStatus,
   type ProductWriteInput,
 } from "../../../lib/product-repository";
+
+import {
+  deleteUploadedImage,
+} from "../../../lib/upload-storage";
 
 const VALID_STATUSES: ProductStatus[] = [
   "active",
@@ -153,51 +159,132 @@ export async function createProductAction(formData: FormData) {
   redirect(`/admin/products/${product.id}/edit?saved=created`);
 }
 
-export async function updateProductAction(formData: FormData) {
-  await requireAdmin();
-
-  const id = Number(stringValue(formData, "id"));
-  if (!Number.isInteger(id) || id <= 0) {
-    throw new Error("商品 ID 無效");
-  }
-
-  const product = await updateDatabaseProduct(
-    id,
-    productInputFromForm(formData)
-  );
-
-  if (!product) {
-    throw new Error("找不到這筆商品");
-  }
-
-  revalidatePath("/admin");
-  revalidatePath("/admin/products");
-  revalidatePath("/");
-  revalidatePath(`/admin/products/${id}/edit`);
-  redirect(`/admin/products/${id}/edit?saved=updated`);
-}
-
 export async function changeProductStatusAction(formData: FormData) {
   await requireAdmin();
 
   const id = Number(stringValue(formData, "id"));
   const status = parseStatus(stringValue(formData, "status"));
 
-  if (!Number.isInteger(id) || id <= 0) return;
+  if (!Number.isInteger(id) || id <= 0) {
+    return;
+  }
 
   await updateProductStatus(id, status);
+
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/");
+}
+
+
+export async function updateProductAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = Number(stringValue(formData, "id"));
+
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("商品 ID 無效");
+  }
+
+  const existingProduct = await getDatabaseProduct(id);
+
+  if (!existingProduct) {
+    throw new Error("找不到這筆商品");
+  }
+
+  const input = productInputFromForm(formData);
+
+  const product = await updateDatabaseProduct(id, input);
+
+  if (!product) {
+    throw new Error("找不到這筆商品");
+  }
+
+  if (
+    existingProduct.image &&
+    existingProduct.image !== product.image
+  ) {
+    try {
+      await deleteUploadedImage(existingProduct.image);
+    } catch (error) {
+      console.error("舊商品圖片刪除失敗：", error);
+    }
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/products");
+  revalidatePath("/");
+  revalidatePath(`/admin/products/${id}/edit`);
+
+  redirect(`/admin/products/${id}/edit?saved=updated`);
 }
 
 export async function deleteProductAction(formData: FormData) {
   await requireAdmin();
 
   const id = Number(stringValue(formData, "id"));
-  if (!Number.isInteger(id) || id <= 0) return;
 
-  await deleteDatabaseProduct(id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return;
+  }
+
+  const existingProduct = await getDatabaseProduct(id);
+
+  if (!existingProduct) {
+    return;
+  }
+
+  const deleted = await deleteDatabaseProduct(id);
+
+  if (!deleted) {
+    throw new Error("商品刪除失敗");
+  }
+
+  if (existingProduct.image) {
+    try {
+      await deleteUploadedImage(existingProduct.image);
+    } catch (error) {
+      console.error("商品圖片刪除失敗：", error);
+    }
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/products");
+  revalidatePath("/");
+}
+export async function saveProductSortOrderAction(
+  items: Array<{
+    id: number;
+    sortOrder: number;
+  }>
+) {
+  await requireAdmin();
+
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error("缺少商品排序資料");
+  }
+
+  const normalizedItems = items.map((item) => {
+    const id = Number(item.id);
+    const sortOrder = Number(item.sortOrder);
+
+    if (
+      !Number.isInteger(id) ||
+      id <= 0 ||
+      !Number.isInteger(sortOrder) ||
+      sortOrder <= 0
+    ) {
+      throw new Error("商品排序資料無效");
+    }
+
+    return {
+      id,
+      sortOrder,
+    };
+  });
+
+  await updateProductSortOrders(normalizedItems);
+
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/");

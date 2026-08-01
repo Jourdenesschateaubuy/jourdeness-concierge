@@ -147,6 +147,45 @@ function Home() {
 
   const suppressAdminProductClickRef = useRef(false);
 
+  function sendStudioSelection(
+    selection:
+      | {
+          type: "product";
+          productId: number;
+          label: string;
+        }
+      | {
+          type: "product-detail";
+          productId: number;
+          label: string;
+        }
+      | {
+          type: "hero";
+          label: string;
+        }
+      | {
+          type: "ranking";
+          rank: number;
+          label: string;
+        }
+      | {
+          type: "series";
+          label: string;
+        }
+  ) {
+    if (!isAdminMode || !isAdminEditMode) {
+      return;
+    }
+
+    window.parent.postMessage(
+      {
+        type: "jourdeness-studio-selection",
+        selection,
+      },
+      window.location.origin
+    );
+  }
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -160,8 +199,61 @@ function Home() {
         | {
             type?: string;
             enabled?: boolean;
+            productId?: number;
+            patch?: Partial<StorefrontProduct>;
           }
         | undefined;
+
+      if (
+        data?.type === "jourdeness-studio-product-preview" &&
+        Number.isInteger(data.productId) &&
+        data.patch
+      ) {
+        const productId = Number(data.productId);
+        const patch = data.patch;
+
+        setProducts((currentProducts) =>
+          currentProducts.map((product) =>
+            product.id === productId
+              ? {
+                  ...product,
+                  ...patch,
+                }
+              : product
+          )
+        );
+
+        setSelectedDetailProduct((currentProduct) =>
+          currentProduct?.id === productId
+            ? {
+                ...currentProduct,
+                ...patch,
+              }
+            : currentProduct
+        );
+
+        return;
+      }
+
+      if (
+        data?.type === "jourdeness-studio-open-product-detail" &&
+        Number.isInteger(data.productId)
+      ) {
+        const productId = Number(data.productId);
+        const product = products.find(
+          (item) => item.id === productId
+        );
+
+        if (product) {
+          setManagedProductId(product.id);
+          setIsCartOpen(false);
+          setCartStep(1);
+          setCartReturnProduct(null);
+          openProductDetail(product, false);
+        }
+
+        return;
+      }
 
       if (data?.type !== "jourdeness-admin-edit-mode") {
         return;
@@ -186,7 +278,7 @@ function Home() {
         clearTimeout(adminPressTimerRef.current);
       }
     };
-  }, []);
+  }, [products]);
 
   useEffect(() => {
     let cancelled = false;
@@ -2896,6 +2988,41 @@ const sevenSequenceGuideV377 = [
             event.preventDefault();
           }
         }}
+        onDoubleClick={(event) => {
+          if (!isAdminMode || !isAdminEditMode) {
+            return;
+          }
+
+          const target = event.target as HTMLElement;
+
+          if (
+            target.closest(
+              "button, a, input, select, textarea"
+            )
+          ) {
+            return;
+          }
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          setManagedProductId(product.id);
+          setIsCartOpen(false);
+          setCartStep(1);
+          setCartReturnProduct(null);
+          openProductDetail(product, false);
+
+          sendStudioSelection({
+            type: "product-detail",
+            productId: product.id,
+            label: product.name,
+          });
+        }}
+        title={
+          isAdminMode && isAdminEditMode
+            ? "單擊選取商品卡｜雙擊編輯商品詳情"
+            : undefined
+        }
         role="button"
         tabIndex={0}
         onClick={(event) => {
@@ -2905,6 +3032,13 @@ const sevenSequenceGuideV377 = [
 
             suppressAdminProductClickRef.current = false;
             setManagedProductId(product.id);
+
+            sendStudioSelection({
+              type: "product",
+              productId: product.id,
+              label: product.cardName ?? product.name,
+            });
+
             return;
           }
 
@@ -2928,6 +3062,13 @@ const sevenSequenceGuideV377 = [
 
             if (isAdminMode && isAdminEditMode) {
               setManagedProductId(product.id);
+
+              sendStudioSelection({
+                type: "product",
+                productId: product.id,
+                label: product.cardName ?? product.name,
+              });
+
               return;
             }
 
@@ -2958,7 +3099,7 @@ const sevenSequenceGuideV377 = [
             )}
 
             <div className="product-card-title-slot-v364">
-              <h3>{product.name}</h3>
+              <h3>{product.cardName ?? product.name}</h3>
             </div>
           </div>
 
@@ -2983,6 +3124,13 @@ const sevenSequenceGuideV377 = [
 
                 if (isAdminMode && isAdminEditMode) {
                   setManagedProductId(product.id);
+
+                  sendStudioSelection({
+                    type: "product",
+                    productId: product.id,
+                    label: product.cardName ?? product.name,
+                  });
+
                   return;
                 }
 
@@ -4055,6 +4203,31 @@ const sevenSequenceGuideV377 = [
               outline: 1px dashed rgba(125, 38, 56, .20);
               outline-offset: 1px;
               cursor: pointer;
+            }
+
+            .admin-v2-manageable-product::after {
+              content: "單擊選取｜雙擊商品詳情";
+              position: absolute;
+              left: 50%;
+              bottom: 8px;
+              z-index: 55;
+              padding: 5px 8px;
+              border-radius: 999px;
+              background: rgba(63, 38, 43, .88);
+              color: #fff;
+              font-size: 9px;
+              font-weight: 900;
+              line-height: 1;
+              white-space: nowrap;
+              opacity: 0;
+              pointer-events: none;
+              transform: translate(-50%, 5px);
+              transition: opacity .16s ease, transform .16s ease;
+            }
+
+            .admin-v2-manageable-product:hover::after {
+              opacity: 1;
+              transform: translate(-50%, 0);
             }
 
             .admin-v2-manageable-product button,
