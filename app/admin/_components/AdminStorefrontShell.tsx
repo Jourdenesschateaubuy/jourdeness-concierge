@@ -7,8 +7,17 @@ import {
   useState,
 } from "react";
 
+import type {
+  HeroSlot,
+  SiteStudioPreviewPatch,
+  SiteStudioSectionKey,
+} from "../../../lib/site-studio-types";
+import CatalogStudioEditor from "./CatalogStudioEditor";
+import HeroStudioEditor from "./HeroStudioEditor";
+import HomeSectionStudioEditor from "./HomeSectionStudioEditor";
 import ProductDetailStudioEditor from "./ProductDetailStudioEditor";
 import ProductStudioEditor from "./ProductStudioEditor";
+import RankingStudioEditor from "./RankingStudioEditor";
 import styles from "../admin-v2-shell.module.css";
 
 type StudioSelection =
@@ -24,6 +33,7 @@ type StudioSelection =
     }
   | {
       type: "hero";
+      slot: HeroSlot;
       label?: string;
     }
   | {
@@ -32,8 +42,12 @@ type StudioSelection =
       label?: string;
     }
   | {
-      type: "series";
-      categoryId?: number;
+      type: "navigation";
+      label?: string;
+    }
+  | {
+      type: "section";
+      sectionKey: SiteStudioSectionKey;
       label?: string;
     }
   | null;
@@ -44,11 +58,7 @@ type ProductCardPreviewDraft = {
   originalPrice: string;
   price: string;
   priceNote: string;
-  status:
-    | "active"
-    | "inactive"
-    | "coming_soon"
-    | "sold_out";
+  status: "active" | "inactive" | "coming_soon" | "sold_out";
   image: string;
 };
 
@@ -72,88 +82,77 @@ type ProductDetailPreviewDraft = {
 };
 
 export default function AdminStorefrontShell() {
-  const storefrontFrameRef =
-    useRef<HTMLIFrameElement>(null);
+  const storefrontFrameRef = useRef<HTMLIFrameElement>(null);
   const previewScrollYRef = useRef(0);
 
-  const [previewMode, setPreviewMode] =
-    useState(false);
-  const [selection, setSelection] =
-    useState<StudioSelection>(null);
+  const [previewMode, setPreviewMode] = useState(false);
+  const [selection, setSelection] = useState<StudioSelection>(null);
   const [frameKey, setFrameKey] = useState(0);
+
+  const postToPreview = useCallback((message: Record<string, unknown>) => {
+    storefrontFrameRef.current?.contentWindow?.postMessage(
+      message,
+      window.location.origin
+    );
+  }, []);
 
   const sendProductPreviewPatch = useCallback(
     (
       productId: number,
-      patch:
-        | ProductCardPreviewDraft
-        | ProductDetailPreviewDraft
+      patch: ProductCardPreviewDraft | ProductDetailPreviewDraft
     ) => {
-      storefrontFrameRef.current?.contentWindow?.postMessage(
-        {
-          type: "jourdeness-studio-product-preview",
-          productId,
-          patch,
-        },
-        window.location.origin
-      );
+      postToPreview({
+        type: "jourdeness-studio-product-preview",
+        productId,
+        patch,
+      });
     },
-    []
+    [postToPreview]
+  );
+
+  const sendSitePreviewPatch = useCallback(
+    (patch: SiteStudioPreviewPatch) => {
+      postToPreview({
+        type: "jourdeness-studio-site-preview",
+        patch,
+      });
+    },
+    [postToPreview]
   );
 
   const handleProductCardDraftChange = useCallback(
-    (
-      productId: number,
-      draft: ProductCardPreviewDraft
-    ) => {
+    (productId: number, draft: ProductCardPreviewDraft) => {
       sendProductPreviewPatch(productId, draft);
-
-      setSelection((currentSelection) =>
-        currentSelection?.type === "product" &&
-        currentSelection.productId === productId
+      setSelection((current) =>
+        current?.type === "product" && current.productId === productId
           ? {
-              ...currentSelection,
-              label:
-                draft.cardName ||
-                currentSelection.label,
+              ...current,
+              label: draft.cardName || current.label,
             }
-          : currentSelection
+          : current
       );
     },
     [sendProductPreviewPatch]
   );
 
-  const handleProductDetailDraftChange =
-    useCallback(
-      (
-        productId: number,
-        draft: ProductDetailPreviewDraft
-      ) => {
-        sendProductPreviewPatch(productId, draft);
-
-        setSelection((currentSelection) =>
-          currentSelection?.type ===
-            "product-detail" &&
-          currentSelection.productId === productId
-            ? {
-                ...currentSelection,
-                label:
-                  draft.name ||
-                  currentSelection.label,
-              }
-            : currentSelection
-        );
-      },
-      [sendProductPreviewPatch]
-    );
+  const handleProductDetailDraftChange = useCallback(
+    (productId: number, draft: ProductDetailPreviewDraft) => {
+      sendProductPreviewPatch(productId, draft);
+      setSelection((current) =>
+        current?.type === "product-detail" && current.productId === productId
+          ? {
+              ...current,
+              label: draft.name || current.label,
+            }
+          : current
+      );
+    },
+    [sendProductPreviewPatch]
+  );
 
   useEffect(() => {
-    function handleStudioMessage(
-      event: MessageEvent
-    ) {
-      if (event.origin !== window.location.origin) {
-        return;
-      }
+    function handleStudioMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return;
 
       const data = event.data as
         | {
@@ -163,8 +162,7 @@ export default function AdminStorefrontShell() {
         | undefined;
 
       if (
-        data?.type !==
-          "jourdeness-studio-selection" ||
+        data?.type !== "jourdeness-studio-selection" ||
         !data.selection
       ) {
         return;
@@ -173,24 +171,14 @@ export default function AdminStorefrontShell() {
       setSelection(data.selection);
     }
 
-    window.addEventListener(
-      "message",
-      handleStudioMessage
-    );
-
-    return () => {
-      window.removeEventListener(
-        "message",
-        handleStudioMessage
-      );
-    };
+    window.addEventListener("message", handleStudioMessage);
+    return () => window.removeEventListener("message", handleStudioMessage);
   }, []);
 
   function rememberPreviewScroll() {
     try {
       previewScrollYRef.current =
-        storefrontFrameRef.current?.contentWindow
-          ?.scrollY ?? 0;
+        storefrontFrameRef.current?.contentWindow?.scrollY ?? 0;
     } catch {
       previewScrollYRef.current = 0;
     }
@@ -201,9 +189,34 @@ export default function AdminStorefrontShell() {
     setFrameKey((current) => current + 1);
   }
 
+  function openProductDetail(productId: number, label?: string) {
+    setSelection({
+      type: "product-detail",
+      productId,
+      label,
+    });
+
+    postToPreview({
+      type: "jourdeness-studio-open-product-detail",
+      productId,
+    });
+  }
+
+  function openProductCard(productId: number, label?: string) {
+    setSelection({
+      type: "product",
+      productId,
+      label,
+    });
+
+    postToPreview({
+      type: "jourdeness-studio-close-product-detail",
+      productId,
+    });
+  }
+
   function restorePreviewScroll() {
-    const frameWindow =
-      storefrontFrameRef.current?.contentWindow;
+    const frameWindow = storefrontFrameRef.current?.contentWindow;
 
     frameWindow?.postMessage(
       {
@@ -222,16 +235,13 @@ export default function AdminStorefrontShell() {
           behavior: "auto",
         });
       } catch {
-        // 預覽載入期間若尚未能捲動，保持原狀即可。
+        // 預覽載入期間尚未能捲動時保持原狀。
       }
 
-      if (
-        selection?.type === "product-detail"
-      ) {
+      if (selection?.type === "product-detail") {
         frameWindow?.postMessage(
           {
-            type:
-              "jourdeness-studio-open-product-detail",
+            type: "jourdeness-studio-open-product-detail",
             productId: selection.productId,
           },
           window.location.origin
@@ -240,44 +250,23 @@ export default function AdminStorefrontShell() {
     }, 350);
   }
 
-  function openFullPreview() {
-    setPreviewMode(true);
-  }
-
-  function closeFullPreview() {
-    setPreviewMode(false);
-  }
-
   function renderEditorPanel() {
     if (!selection) {
       return (
         <div className={styles.emptyEditor}>
-          <div
-            className={styles.emptyEditorIcon}
-          >
-            ✦
-          </div>
-
+          <div className={styles.emptyEditorIcon}>✦</div>
           <h2>選擇要修改的內容</h2>
-
           <p>
-            請在右側手機網站預覽中點選內容。
-            商品卡單擊選取，雙擊開啟商品詳情。
+            在右側點商品、主視覺、副主視覺、排行榜、首頁標題或漢堡選單。
           </p>
 
           <div className={styles.editorTips}>
-            <span>
-              單擊商品：修改商品卡圖片、名稱與價格
-            </span>
-            <span>
-              雙擊商品：修改商品詳情與輪播圖片
-            </span>
-            <span>
-              點主視覺：更換圖片與查看尺寸
-            </span>
-            <span>
-              點排行榜：修改該排名位置
-            </span>
+            <span>單擊商品：修改商品卡圖片、名稱與價格</span>
+            <span>雙擊商品：修改商品詳情與輪播圖片</span>
+            <span>點主／副主視覺：更換圖片與查看尺寸</span>
+            <span>點排行榜：修改指定排名位置</span>
+            <span>點首頁標題：修改區塊標題與顯示狀態</span>
+            <span>點漢堡選單：管理分類與系列</span>
           </div>
         </div>
       );
@@ -288,33 +277,30 @@ export default function AdminStorefrontShell() {
         <ProductStudioEditor
           key={`card-${selection.productId}`}
           productId={selection.productId}
-          onDraftChange={
-            handleProductCardDraftChange
+          onDraftChange={handleProductCardDraftChange}
+          onOpenDetail={() =>
+            openProductDetail(selection.productId, selection.label)
           }
           onSaved={(updatedProduct) => {
             setSelection({
               type: "product",
               productId: updatedProduct.id,
-              label:
-                updatedProduct.cardName ||
-                updatedProduct.name,
+              label: updatedProduct.cardName || updatedProduct.name,
             });
-
             reloadPreview();
           }}
         />
       );
     }
 
-    if (
-      selection.type === "product-detail"
-    ) {
+    if (selection.type === "product-detail") {
       return (
         <ProductDetailStudioEditor
           key={`detail-${selection.productId}`}
           productId={selection.productId}
-          onDraftChange={
-            handleProductDetailDraftChange
+          onDraftChange={handleProductDetailDraftChange}
+          onEditPrice={() =>
+            openProductCard(selection.productId, selection.label)
           }
           onSaved={(updatedProduct) => {
             setSelection({
@@ -322,7 +308,6 @@ export default function AdminStorefrontShell() {
               productId: updatedProduct.id,
               label: updatedProduct.name,
             });
-
             reloadPreview();
           }}
         />
@@ -331,59 +316,38 @@ export default function AdminStorefrontShell() {
 
     if (selection.type === "hero") {
       return (
-        <div
-          className={styles.editorPlaceholder}
-        >
-          <div className={styles.editorHeading}>
-            <span>首頁主視覺</span>
-            <h2>
-              {selection.label ??
-                "主視覺圖片"}
-            </h2>
-          </div>
-
-          <p>
-            商品功能完成後，下一步會接上主視覺圖片更換與尺寸檢查。
-          </p>
-        </div>
+        <HeroStudioEditor
+          key={`hero-${selection.slot}`}
+          slot={selection.slot}
+          onDraftChange={sendSitePreviewPatch}
+          onSaved={reloadPreview}
+        />
       );
     }
 
     if (selection.type === "ranking") {
       return (
-        <div
-          className={styles.editorPlaceholder}
-        >
-          <div className={styles.editorHeading}>
-            <span>熱銷排行榜</span>
-            <h2>
-              排行榜第 {selection.rank} 名
-            </h2>
-          </div>
-
-          <p>
-            下一步會在這裡修改該格商品、圖片與顯示狀態。
-          </p>
-        </div>
+        <RankingStudioEditor
+          key={`ranking-${selection.rank}`}
+          rank={selection.rank}
+          onDraftChange={sendSitePreviewPatch}
+          onSaved={reloadPreview}
+        />
       );
     }
 
-    return (
-      <div
-        className={styles.editorPlaceholder}
-      >
-        <div className={styles.editorHeading}>
-          <span>選單與系列</span>
-          <h2>
-            {selection.label ?? "系列管理"}
-          </h2>
-        </div>
+    if (selection.type === "section") {
+      return (
+        <HomeSectionStudioEditor
+          key={`section-${selection.sectionKey}`}
+          sectionKey={selection.sectionKey}
+          onDraftChange={sendSitePreviewPatch}
+          onSaved={reloadPreview}
+        />
+      );
+    }
 
-        <p>
-          下一步會在這裡新增系列、修改名稱、選擇所屬分類，以及啟用或停用。
-        </p>
-      </div>
-    );
+    return <CatalogStudioEditor onChanged={reloadPreview} />;
   }
 
   if (previewMode) {
@@ -394,13 +358,10 @@ export default function AdminStorefrontShell() {
           src="/"
           title="佐登妮絲城堡網站預覽"
         />
-
         <button
           type="button"
-          className={
-            styles.returnManageButton
-          }
-          onClick={closeFullPreview}
+          className={styles.returnManageButton}
+          onClick={() => setPreviewMode(false)}
         >
           返回工作台
         </button>
@@ -413,37 +374,20 @@ export default function AdminStorefrontShell() {
       <header className={styles.studioHeader}>
         <div className={styles.studioBrand}>
           <span>Website Studio</span>
-
           <div>
-            <strong>
-              佐登妮絲城堡網站工作台
-            </strong>
-            <small>
-              單擊商品卡，雙擊商品詳情
-            </small>
+            <strong>佐登妮絲城堡網站工作台</strong>
+            <small>單擊商品卡，雙擊商品詳情；其他區塊直接點選</small>
           </div>
         </div>
 
         <div className={styles.studioActions}>
-          <button
-            type="button"
-            onClick={reloadPreview}
-          >
+          <button type="button" onClick={reloadPreview}>
             重新整理預覽
           </button>
-
-          <button
-            type="button"
-            onClick={openFullPreview}
-          >
+          <button type="button" onClick={() => setPreviewMode(true)}>
             全畫面預覽
           </button>
-
-          <a
-            href="/"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href="/" target="_blank" rel="noreferrer">
             開啟正式網站
           </a>
         </div>
@@ -451,72 +395,42 @@ export default function AdminStorefrontShell() {
 
       <div className={styles.studioBody}>
         <aside className={styles.editorPanel}>
-          <div
-            className={
-              styles.editorPanelHeader
-            }
-          >
+          <div className={styles.editorPanelHeader}>
             <div>
               <span>內容編輯器</span>
               <strong>
-                {selection
-                  ? selection.label ??
-                    "目前選取內容"
-                  : "尚未選取"}
+                {selection ? selection.label ?? "目前選取內容" : "尚未選取"}
               </strong>
             </div>
 
             {selection ? (
-              <button
-                type="button"
-                onClick={() =>
-                  setSelection(null)
-                }
-              >
+              <button type="button" onClick={() => setSelection(null)}>
                 關閉
               </button>
             ) : null}
           </div>
 
-          <div
-            className={
-              styles.editorPanelContent
-            }
-          >
+          <div className={styles.editorPanelContent}>
             {renderEditorPanel()}
           </div>
         </aside>
 
-        <main
-          className={styles.previewWorkspace}
-        >
-          <div
-            className={styles.phonePreviewTop}
-          >
+        <main className={styles.previewWorkspace}>
+          <div className={styles.phonePreviewTop}>
             <div>
-              <span
-                className={styles.liveDot}
-              />
+              <span className={styles.liveDot} />
               手機網站預覽
             </div>
-
-            <span>
-              單擊選取｜雙擊商品詳情
-            </span>
+            <span>單擊選取｜雙擊商品詳情</span>
           </div>
 
           <div className={styles.phoneStage}>
             <div className={styles.phoneFrame}>
-              <div
-                className={styles.phoneSpeaker}
-              />
-
+              <div className={styles.phoneSpeaker} />
               <iframe
                 key={frameKey}
                 ref={storefrontFrameRef}
-                className={
-                  styles.storefrontFrame
-                }
+                className={styles.storefrontFrame}
                 src="/?admin=1&edit=1&studio=1"
                 title="佐登妮絲城堡手機網站管理預覽"
                 onLoad={restorePreviewScroll}

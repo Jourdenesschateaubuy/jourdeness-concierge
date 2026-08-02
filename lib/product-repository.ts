@@ -360,3 +360,157 @@ export async function deleteDatabaseProduct(id: number) {
 
   return result.rowCount === 1;
 }
+
+
+export type ProductPartialUpdate = Partial<
+  Pick<
+    ProductWriteInput,
+    | "sku"
+    | "name"
+    | "category"
+    | "series"
+    | "storefrontCategory"
+    | "originalPrice"
+    | "price"
+    | "image"
+    | "description"
+    | "cardName"
+    | "cardSubtitle"
+    | "spec"
+    | "intro"
+    | "priceNote"
+    | "expiryNote"
+    | "internalExpiryDate"
+    | "features"
+    | "suitableFor"
+    | "usage"
+    | "notice"
+    | "gallery"
+    | "expandedInfo"
+    | "comboConfig"
+    | "status"
+    | "sortOrder"
+  >
+>;
+
+const partialProductColumnMap: Record<
+  keyof ProductPartialUpdate,
+  {
+    column: string;
+    json?: boolean;
+  }
+> = {
+  sku: { column: "sku" },
+  name: { column: "name" },
+  category: { column: "category" },
+  series: { column: "series" },
+  storefrontCategory: {
+    column: "storefront_category",
+  },
+  originalPrice: { column: "original_price" },
+  price: { column: "price" },
+  image: { column: "image" },
+  description: { column: "description" },
+  cardName: { column: "card_name" },
+  cardSubtitle: { column: "card_subtitle" },
+  spec: { column: "spec" },
+  intro: { column: "intro" },
+  priceNote: { column: "price_note" },
+  expiryNote: { column: "expiry_note" },
+  internalExpiryDate: {
+    column: "internal_expiry_date",
+  },
+  features: { column: "features", json: true },
+  suitableFor: {
+    column: "suitable_for",
+    json: true,
+  },
+  usage: { column: "usage" },
+  notice: { column: "notice" },
+  gallery: { column: "gallery", json: true },
+  expandedInfo: {
+    column: "expanded_info",
+    json: true,
+  },
+  comboConfig: {
+    column: "combo_config",
+    json: true,
+  },
+  status: { column: "status" },
+  sortOrder: { column: "sort_order" },
+};
+
+export async function updateDatabaseProductPartial(
+  id: number,
+  patch: ProductPartialUpdate
+) {
+  const entries = (
+    Object.entries(patch) as Array<
+      [
+        keyof ProductPartialUpdate,
+        ProductPartialUpdate[keyof ProductPartialUpdate],
+      ]
+    >
+  ).filter(([, value]) => value !== undefined);
+
+  if (entries.length === 0) {
+    return getDatabaseProduct(id);
+  }
+
+  const values: unknown[] = [id];
+
+  const assignments = entries.map(
+    ([field, value], index) => {
+      const definition =
+        partialProductColumnMap[field];
+      const parameterIndex = index + 2;
+
+      const nullableFields = new Set<
+        keyof ProductPartialUpdate
+      >([
+        "sku",
+        "storefrontCategory",
+        "originalPrice",
+        "cardName",
+        "cardSubtitle",
+        "spec",
+        "intro",
+        "priceNote",
+        "expiryNote",
+        "internalExpiryDate",
+        "usage",
+        "notice",
+        "comboConfig",
+      ]);
+
+      values.push(
+        definition.json
+          ? JSON.stringify(value ?? null)
+          : value === "" &&
+              nullableFields.has(field)
+            ? null
+            : value
+      );
+
+      return `${definition.column} = $${parameterIndex}${
+        definition.json ? "::jsonb" : ""
+      }`;
+    }
+  );
+
+  const result = await dbQuery<ProductRow>(
+    `
+      UPDATE products
+      SET
+        ${assignments.join(",\n        ")},
+        updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+    `,
+    values
+  );
+
+  return result.rows[0]
+    ? rowToProduct(result.rows[0])
+    : null;
+}

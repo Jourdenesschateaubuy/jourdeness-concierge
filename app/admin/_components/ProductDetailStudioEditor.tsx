@@ -8,6 +8,7 @@ import {
   type FormEvent,
 } from "react";
 
+import { readJsonResponse } from "../../../lib/http-json";
 import styles from "./product-detail-studio-editor.module.css";
 
 type ExpandedInfoItem = {
@@ -56,6 +57,7 @@ type ProductDetailStudioEditorProps = {
     productId: number,
     draft: ProductDetailForm
   ) => void;
+  onEditPrice?: () => void;
   onSaved?: (product: StudioProduct) => void;
 };
 
@@ -128,6 +130,7 @@ function getUploadedImageUrl(payload: unknown) {
 export default function ProductDetailStudioEditor({
   productId,
   onDraftChange,
+  onEditPrice,
   onSaved,
 }: ProductDetailStudioEditorProps) {
   const [product, setProduct] =
@@ -160,10 +163,13 @@ export default function ProductDetailStudioEditor({
         );
 
         const payload =
-          (await response.json()) as {
+          await readJsonResponse<{
             product?: StudioProduct;
             error?: string;
-          };
+          }>(
+            response,
+            "商品詳情讀取失敗"
+          );
 
         if (!response.ok || !payload.product) {
           throw new Error(
@@ -269,10 +275,13 @@ export default function ProductDetailStudioEditor({
       );
 
       const payload =
-        (await response.json()) as {
+        await readJsonResponse<{
           error?: string;
           [key: string]: unknown;
-        };
+        }>(
+          response,
+          "圖片上傳失敗"
+        );
 
       if (!response.ok) {
         throw new Error(
@@ -449,10 +458,13 @@ export default function ProductDetailStudioEditor({
       );
 
       const payload =
-        (await response.json()) as {
+        await readJsonResponse<{
           product?: StudioProduct;
           error?: string;
-        };
+        }>(
+          response,
+          "商品詳情儲存失敗"
+        );
 
       if (!response.ok || !payload.product) {
         throw new Error(
@@ -710,8 +722,16 @@ export default function ProductDetailStudioEditor({
         </div>
 
         <p className={styles.referenceNote}>
-          價格屬於商品卡資料。要修改價格，請單擊右側商品卡返回「商品卡編輯」。
+          價格屬於商品卡資料，修改後商品卡與商品詳情會一起更新。
         </p>
+
+        <button
+          type="button"
+          className={styles.editPriceButton}
+          onClick={onEditPrice}
+        >
+          修改商品價格
+        </button>
       </section>
 
       <section className={styles.section}>

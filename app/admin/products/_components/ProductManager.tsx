@@ -344,7 +344,7 @@ export default function ProductManager({
         setSortMessage("");
         }, 1800);
       } catch (error) {
-        console.error("儲存商品排序失敗：", error);
+        console.warn("儲存商品排序失敗：", error);
 
         setOrderedProducts(previousProducts);
         setSortMessage("排序儲存失敗，已恢復原本順序");

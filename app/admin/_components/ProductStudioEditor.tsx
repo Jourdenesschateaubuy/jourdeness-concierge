@@ -8,6 +8,7 @@ import {
   type FormEvent,
 } from "react";
 
+import { readJsonResponse } from "../../../lib/http-json";
 import styles from "./product-studio-editor.module.css";
 
 type ProductStatus =
@@ -44,6 +45,7 @@ type ProductStudioEditorProps = {
     productId: number,
     draft: ProductCardForm
   ) => void;
+  onOpenDetail?: () => void;
   onSaved?: (product: StudioProduct) => void;
 };
 
@@ -57,15 +59,53 @@ const statusOptions: Array<{
   { value: "sold_out", label: "售罄" },
 ];
 
+function cleanMoneyForEditor(
+  value: string | null | undefined,
+  kind: "original" | "selling"
+) {
+  const clean = value?.trim() ?? "";
+
+  if (!clean) return "";
+
+  const label =
+    kind === "original"
+      ? "(?:原價)?"
+      : "(?:產地價|售價|活動價|組合價)?";
+
+  const match = clean.match(
+    new RegExp(
+      `^${label}\\s*\\$?\\s*([\\d,]+)$`
+    )
+  );
+
+  return match?.[1]?.replace(/,/g, "") ?? clean;
+}
+
+function normalizeMoneyForPreview(
+  value: string,
+  kind: "original" | "selling"
+) {
+  return cleanMoneyForEditor(value, kind);
+}
+
 function productToForm(
   product: StudioProduct
 ): ProductCardForm {
   return {
     cardName:
-      product.cardName?.trim() || product.name || "",
-    cardSubtitle: product.cardSubtitle ?? "",
-    originalPrice: product.originalPrice ?? "",
-    price: product.price ?? "",
+      product.cardName?.trim() ||
+      product.name ||
+      "",
+    cardSubtitle:
+      product.cardSubtitle ?? "",
+    originalPrice: cleanMoneyForEditor(
+      product.originalPrice,
+      "original"
+    ),
+    price: cleanMoneyForEditor(
+      product.price,
+      "selling"
+    ),
     priceNote: product.priceNote ?? "",
     status: product.status ?? "active",
     image: product.image ?? "",
@@ -77,7 +117,8 @@ function getUploadedImageUrl(payload: unknown) {
     return "";
   }
 
-  const record = payload as Record<string, unknown>;
+  const record =
+    payload as Record<string, unknown>;
 
   for (const value of [
     record.url,
@@ -89,11 +130,21 @@ function getUploadedImageUrl(payload: unknown) {
     }
   }
 
-  if (record.file && typeof record.file === "object") {
-    const file = record.file as Record<string, unknown>;
+  if (
+    record.file &&
+    typeof record.file === "object"
+  ) {
+    const file =
+      record.file as Record<string, unknown>;
 
-    for (const value of [file.publicUrl, file.url]) {
-      if (typeof value === "string" && value) {
+    for (const value of [
+      file.publicUrl,
+      file.url,
+    ]) {
+      if (
+        typeof value === "string" &&
+        value
+      ) {
         return value;
       }
     }
@@ -105,16 +156,21 @@ function getUploadedImageUrl(payload: unknown) {
 export default function ProductStudioEditor({
   productId,
   onDraftChange,
+  onOpenDetail,
   onSaved,
 }: ProductStudioEditorProps) {
   const [product, setProduct] =
     useState<StudioProduct | null>(null);
   const [form, setForm] =
     useState<ProductCardForm | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] =
+    useState(true);
+  const [saving, setSaving] =
+    useState(false);
+  const [uploading, setUploading] =
+    useState(false);
+  const [message, setMessage] =
+    useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -133,28 +189,38 @@ export default function ProductStudioEditor({
           { cache: "no-store" }
         );
 
-        const payload = (await response.json()) as {
-          product?: StudioProduct;
-          error?: string;
-        };
+        const payload =
+          await readJsonResponse<{
+            product?: StudioProduct;
+            error?: string;
+          }>(
+            response,
+            "商品卡讀取失敗"
+          );
 
-        if (!response.ok || !payload.product) {
+        if (
+          !response.ok ||
+          !payload.product
+        ) {
           throw new Error(
-            payload.error || "讀取商品失敗"
+            payload.error ||
+              "商品卡讀取失敗"
           );
         }
 
         if (cancelled) return;
 
         setProduct(payload.product);
-        setForm(productToForm(payload.product));
+        setForm(
+          productToForm(payload.product)
+        );
       } catch (loadError) {
         if (cancelled) return;
 
         setError(
           loadError instanceof Error
             ? loadError.message
-            : "讀取商品失敗"
+            : "商品卡讀取失敗"
         );
       } finally {
         if (!cancelled) {
@@ -174,16 +240,33 @@ export default function ProductStudioEditor({
     if (!product || !form) return false;
 
     return (
-      JSON.stringify(productToForm(product)) !==
-      JSON.stringify(form)
+      JSON.stringify(
+        productToForm(product)
+      ) !== JSON.stringify(form)
     );
   }, [form, product]);
 
   useEffect(() => {
     if (!form || loading) return;
 
-    onDraftChange?.(productId, form);
-  }, [form, loading, onDraftChange, productId]);
+    onDraftChange?.(productId, {
+      ...form,
+      originalPrice:
+        normalizeMoneyForPreview(
+          form.originalPrice,
+          "original"
+        ),
+      price: normalizeMoneyForPreview(
+        form.price,
+        "selling"
+      ),
+    });
+  }, [
+    form,
+    loading,
+    onDraftChange,
+    productId,
+  ]);
 
   function updateField(
     field: keyof ProductCardForm,
@@ -205,7 +288,8 @@ export default function ProductStudioEditor({
   async function uploadImage(
     event: ChangeEvent<HTMLInputElement>
   ) {
-    const file = event.target.files?.[0];
+    const file =
+      event.target.files?.[0];
     event.target.value = "";
 
     if (!file) return;
@@ -226,18 +310,25 @@ export default function ProductStudioEditor({
         }
       );
 
-      const payload = (await response.json()) as {
-        error?: string;
-        [key: string]: unknown;
-      };
+      const payload =
+        await readJsonResponse<
+          Record<string, unknown> & {
+            error?: string;
+          }
+        >(
+          response,
+          "圖片上傳失敗"
+        );
 
       if (!response.ok) {
         throw new Error(
-          payload.error || "圖片上傳失敗"
+          payload.error ||
+            "圖片上傳失敗"
         );
       }
 
-      const imageUrl = getUploadedImageUrl(payload);
+      const imageUrl =
+        getUploadedImageUrl(payload);
 
       if (!imageUrl) {
         throw new Error(
@@ -282,32 +373,59 @@ export default function ProductStudioEditor({
     setError("");
 
     try {
+      const requestBody = {
+        ...form,
+        originalPrice:
+          normalizeMoneyForPreview(
+            form.originalPrice,
+            "original"
+          ),
+        price: normalizeMoneyForPreview(
+          form.price,
+          "selling"
+        ),
+      };
+
       const response = await fetch(
         `/api/admin/products/${productId}`,
         {
           method: "PATCH",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
-          body: JSON.stringify(form),
+          body: JSON.stringify(requestBody),
         }
       );
 
-      const payload = (await response.json()) as {
-        product?: StudioProduct;
-        message?: string;
-        error?: string;
-      };
+      const payload =
+        await readJsonResponse<{
+          product?: StudioProduct;
+          message?: string;
+          error?: string;
+        }>(
+          response,
+          "商品卡儲存失敗"
+        );
 
-      if (!response.ok || !payload.product) {
+      if (
+        !response.ok ||
+        !payload.product
+      ) {
         throw new Error(
-          payload.error || "商品卡儲存失敗"
+          payload.error ||
+            "商品卡儲存失敗"
         );
       }
 
       setProduct(payload.product);
-      setForm(productToForm(payload.product));
-      setMessage("商品卡已儲存");
+      setForm(
+        productToForm(payload.product)
+      );
+      setMessage(
+        payload.message ||
+          "商品卡已儲存"
+      );
       onSaved?.(payload.product);
     } catch (saveError) {
       setError(
@@ -353,42 +471,62 @@ export default function ProductStudioEditor({
 
         <span
           className={`${styles.syncBadge} ${
-            hasChanges ? styles.unsavedBadge : ""
+            hasChanges
+              ? styles.unsavedBadge
+              : ""
           }`}
         >
-          {hasChanges ? "尚未儲存" : "已同步"}
+          {hasChanges
+            ? "尚未儲存"
+            : "已同步"}
         </span>
       </div>
 
-      <section className={styles.cardSection}>
-        <div className={styles.imageColumn}>
-          <div className={styles.imagePreview}>
+      <section
+        className={styles.cardSection}
+      >
+        <div
+          className={styles.imageColumn}
+        >
+          <div
+            className={styles.imagePreview}
+          >
             {form.image ? (
               <img
                 src={form.image}
                 alt={form.cardName}
               />
             ) : (
-              <span>尚未設定商品圖片</span>
+              <span>
+                尚未設定商品圖片
+              </span>
             )}
           </div>
 
-          <label className={styles.uploadButton}>
+          <label
+            className={styles.uploadButton}
+          >
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={uploadImage}
-              disabled={uploading || saving}
+              disabled={
+                uploading || saving
+              }
             />
             {uploading
               ? "圖片上傳中…"
               : "更換商品卡圖片"}
           </label>
 
-          <small>常用比例：1 : 1.06</small>
+          <small>
+            常用比例：1 : 1.06
+          </small>
         </div>
 
-        <div className={styles.fieldsColumn}>
+        <div
+          className={styles.fieldsColumn}
+        >
           <label className={styles.field}>
             <span>品項名稱</span>
             <input
@@ -422,6 +560,7 @@ export default function ProductStudioEditor({
             <label className={styles.field}>
               <span>原價</span>
               <input
+                inputMode="numeric"
                 value={form.originalPrice}
                 onChange={(event) =>
                   updateField(
@@ -429,14 +568,18 @@ export default function ProductStudioEditor({
                     event.target.value
                   )
                 }
-                placeholder="例如：原價 $890"
+                placeholder="例如：890"
                 disabled={saving}
               />
+              <small>
+                輸入數字即可，前台會自動加上「原價」。
+              </small>
             </label>
 
             <label className={styles.field}>
               <span>目前售價</span>
               <input
+                inputMode="numeric"
                 value={form.price}
                 onChange={(event) =>
                   updateField(
@@ -444,9 +587,12 @@ export default function ProductStudioEditor({
                     event.target.value
                   )
                 }
-                placeholder="例如：產地價 $660"
+                placeholder="例如：660"
                 disabled={saving}
               />
+              <small>
+                輸入數字即可，前台會自動加上價格標籤。
+              </small>
             </label>
           </div>
 
@@ -477,14 +623,16 @@ export default function ProductStudioEditor({
               }
               disabled={saving}
             >
-              {statusOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                >
-                  {option.label}
-                </option>
-              ))}
+              {statusOptions.map(
+                (option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                )
+              )}
             </select>
           </label>
         </div>
@@ -492,7 +640,7 @@ export default function ProductStudioEditor({
 
       <div className={styles.noteBox}>
         這裡只修改商品卡上的名稱、圖片、價格與顯示狀態。
-        商品詳細內容之後使用雙擊商品卡開啟。
+        商品詳細內容使用「商品詳情」開啟。
       </div>
 
       {error ? (
@@ -507,24 +655,29 @@ export default function ProductStudioEditor({
         </p>
       ) : null}
 
-      <div className={styles.stickyActions}>
-        <a
-          href={`/admin/products/${productId}/edit`}
-          target="_blank"
-          rel="noreferrer"
+      <div
+        className={styles.stickyActions}
+      >
+        <button
+          type="button"
+          onClick={onOpenDetail}
           className={styles.fullEditorLink}
         >
-          完整商品資料
-        </a>
+          商品詳情
+        </button>
 
         <button
           type="submit"
           className={styles.saveButton}
           disabled={
-            saving || uploading || !hasChanges
+            saving ||
+            uploading ||
+            !hasChanges
           }
         >
-          {saving ? "儲存中…" : "儲存商品卡"}
+          {saving
+            ? "儲存中…"
+            : "儲存商品卡"}
         </button>
       </div>
     </form>

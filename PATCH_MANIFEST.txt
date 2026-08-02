@@ -1,0 +1,27 @@
+﻿整合修正版包含的程式檔案：
+
+app/admin/_components/CatalogStudioEditor.tsx
+app/admin/_components/HeroStudioEditor.tsx
+app/admin/_components/HomeSectionStudioEditor.tsx
+app/admin/_components/ProductDetailStudioEditor.tsx
+app/admin/_components/ProductManager.tsx
+app/admin/_components/ProductStudioEditor.tsx
+app/admin/_components/RankingStudioEditor.tsx
+app/admin/_components/product-studio-editor.module.css
+app/admin/_components/site-content-studio-editor.module.css
+app/admin/products/_components/ComboConfigEditor.tsx
+app/admin/products/_components/ProductImageUploader.tsx
+app/admin/products/_components/ProductManager.tsx
+app/api/admin/catalog/series/route.ts
+app/api/admin/products/[id]/route.ts
+app/api/admin/site-studio/route.ts
+app/api/storefront/catalog/route.ts
+app/api/storefront/site-studio/route.ts
+app/page.tsx
+lib/catalog-repository.ts
+lib/http-json.ts
+lib/product-repository.ts
+lib/site-studio-types.ts
+lib/storefront-catalog.ts
+
+[v2] lib/catalog-repository.ts - concurrency-safe storefront catalog initialization

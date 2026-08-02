@@ -1,0 +1,354 @@
+export type HeroSlot = "primary" | "secondary";
+
+export type SiteStudioHero = {
+  slot: HeroSlot;
+  label: string;
+  image: string;
+  desktopImage: string;
+  alt: string;
+  title: string;
+  subtitle: string;
+  buttonLabel: string;
+  linkType: "none" | "product" | "category" | "url";
+  linkValue: string;
+  visible: boolean;
+  imageSpec: string;
+};
+
+export type SiteStudioRankingItem = {
+  rank: number;
+  displayProductId: number;
+  actionProductId: number;
+  action: "detail" | "combo";
+  image: string;
+  title: string;
+  subtitle: string;
+  priceLine: string;
+  promoLine: string;
+  buttonLabel: string;
+  layout: "wide" | "portrait" | "wide-compact";
+  imageSpec: string;
+  visible: boolean;
+};
+
+export type SiteStudioSectionKey =
+  | "ranking"
+  | "monthlyOffers"
+  | "skincareNeeds"
+  | "bodyCare"
+  | "health"
+  | "aroma"
+  | "comingSoon";
+
+export type SiteStudioSection = {
+  key: SiteStudioSectionKey;
+  label: string;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  visible: boolean;
+};
+
+export type SiteStudioConfig = {
+  hero: SiteStudioHero;
+  secondaryHero: SiteStudioHero;
+  rankings: SiteStudioRankingItem[];
+  sections: SiteStudioSection[];
+};
+
+export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
+  hero: {
+    slot: "primary",
+    label: "首頁主視覺",
+    image: "/products/no1.png",
+    desktopImage: "/products/no1.png",
+    alt: "佐登妮絲城堡龍血系列主視覺",
+    title: "",
+    subtitle: "",
+    buttonLabel: "",
+    linkType: "none",
+    linkValue: "",
+    visible: true,
+    imageSpec: "手機版 750 × 900 px",
+  },
+  secondaryHero: {
+    slot: "secondary",
+    label: "首頁副主視覺",
+    image: "/products/no2.png",
+    desktopImage: "/products/no2.png",
+    alt: "櫻の雪傳明酸夏日美白系列主視覺",
+    title: "",
+    subtitle: "",
+    buttonLabel: "",
+    linkType: "none",
+    linkValue: "",
+    visible: true,
+    imageSpec: "手機版 750 × 900 px",
+  },
+  rankings: [
+    {
+      rank: 1,
+      displayProductId: 34,
+      actionProductId: 34,
+      action: "detail",
+      image: "/products/TOP1.png",
+      title: "龍血玻尿酸保濕精華液",
+      subtitle: "300mL・人氣保濕明星商品",
+      priceLine: "$1,980",
+      promoLine: "買一送一",
+      buttonLabel: "",
+      layout: "wide",
+      imageSpec: "750 × 500 px",
+      visible: true,
+    },
+    {
+      rank: 2,
+      displayProductId: 15,
+      actionProductId: 119,
+      action: "combo",
+      image: "/products/TOP2.png",
+      title: "龍血求麗頭皮修護洗髮精",
+      subtitle: "500mL・頭皮清潔修護",
+      priceLine: "單瓶 $590",
+      promoLine: "任選 3 瓶 $1,100",
+      buttonLabel: "",
+      layout: "portrait",
+      imageSpec: "640 × 800 px",
+      visible: true,
+    },
+    {
+      rank: 3,
+      displayProductId: 16,
+      actionProductId: 119,
+      action: "combo",
+      image: "/products/TOP3.png",
+      title: "龍血求麗潤澤修護沐浴乳",
+      subtitle: "500mL・潤澤潔淨肌膚",
+      priceLine: "單瓶 $590",
+      promoLine: "任選 3 瓶 $1,100",
+      buttonLabel: "",
+      layout: "portrait",
+      imageSpec: "640 × 800 px",
+      visible: true,
+    },
+    {
+      rank: 4,
+      displayProductId: 120,
+      actionProductId: 120,
+      action: "detail",
+      image: "/products/TOP4.png",
+      title: "龍血求麗精華液",
+      subtitle: "30mL＋肌可佳膠原蛋白彈潤原液 30mL",
+      priceLine: "限定組合",
+      promoLine: "$1,290",
+      buttonLabel: "",
+      layout: "wide-compact",
+      imageSpec: "750 × 420 px",
+      visible: true,
+    },
+    {
+      rank: 5,
+      displayProductId: 55,
+      actionProductId: 55,
+      action: "combo",
+      image: "/products/TOP5.png",
+      title: "人氣面膜雙選",
+      subtitle: "爆水保濕 × 美白透亮",
+      priceLine: "單桶 $599",
+      promoLine: "任選 2 桶 $1,100｜任選 5 桶 $2,750",
+      buttonLabel: "",
+      layout: "portrait",
+      imageSpec: "640 × 800 px",
+      visible: true,
+    },
+    {
+      rank: 6,
+      displayProductId: 1,
+      actionProductId: 1,
+      action: "combo",
+      image: "/products/TOP6.png",
+      title: "人氣益生菌雙選",
+      subtitle: "BC-CA 加鈣 × 蔓越莓益生菌",
+      priceLine: "加鈣 $800｜蔓越莓 $990",
+      promoLine: "任選 3 盒 $1,600",
+      buttonLabel: "",
+      layout: "portrait",
+      imageSpec: "640 × 800 px",
+      visible: true,
+    },
+  ],
+  sections: [
+    {
+      key: "ranking",
+      label: "熱銷排行榜",
+      eyebrow: "",
+      title: "熱銷排行榜",
+      subtitle: "",
+      visible: true,
+    },
+    {
+      key: "monthlyOffers",
+      label: "本月優惠",
+      eyebrow: "MONTHLY PICKS",
+      title: "本月優惠・活動方案",
+      subtitle: "排行榜看熱銷；這裡直接告訴你現在怎麼買更划算。",
+      visible: true,
+    },
+    {
+      key: "skincareNeeds",
+      label: "依肌膚需求選保養",
+      eyebrow: "SKIN CARE GUIDE",
+      title: "依肌膚需求選保養",
+      subtitle: "先選需求，再看適合的日常保養組合，找商品更快。",
+      visible: true,
+    },
+    {
+      key: "bodyCare",
+      label: "身體洗護精選",
+      eyebrow: "Body Care",
+      title: "身體洗護精選",
+      subtitle: "洗髮沐浴、牙膏、手工皂與身體保養集中選購。",
+      visible: true,
+    },
+    {
+      key: "health",
+      label: "健康補給精選",
+      eyebrow: "Health Hall",
+      title: "健康補給精選",
+      subtitle: "益生菌、葉黃素、膠原蛋白與日常營養補給。",
+      visible: true,
+    },
+    {
+      key: "aroma",
+      label: "精油香氛精選",
+      eyebrow: "Aroma Hall",
+      title: "精油香氛精選",
+      subtitle: "單方、複方精油與擴香選品，打造日常香氛儀式。",
+      visible: true,
+    },
+    {
+      key: "comingSoon",
+      label: "新品預告",
+      eyebrow: "New Preview",
+      title: "新品預告",
+      subtitle: "新品與新香型陸續登場，搶先查看。",
+      visible: true,
+    },
+  ],
+};
+
+function normalizeHero(
+  value: Partial<SiteStudioHero> | null | undefined,
+  fallback: SiteStudioHero
+): SiteStudioHero {
+  return {
+    ...fallback,
+    ...(value ?? {}),
+    slot: fallback.slot,
+    visible:
+      typeof value?.visible === "boolean"
+        ? value.visible
+        : fallback.visible,
+  };
+}
+
+function normalizeRanking(
+  value: Partial<SiteStudioRankingItem> | null | undefined,
+  fallback: SiteStudioRankingItem
+): SiteStudioRankingItem {
+  return {
+    ...fallback,
+    ...(value ?? {}),
+    rank: fallback.rank,
+    action: "detail",
+    buttonLabel: "",
+    visible:
+      typeof value?.visible === "boolean"
+        ? value.visible
+        : fallback.visible,
+  };
+}
+
+function normalizeSection(
+  value: Partial<SiteStudioSection> | null | undefined,
+  fallback: SiteStudioSection
+): SiteStudioSection {
+  return {
+    ...fallback,
+    ...(value ?? {}),
+    key: fallback.key,
+    visible:
+      typeof value?.visible === "boolean"
+        ? value.visible
+        : fallback.visible,
+  };
+}
+
+export function normalizeSiteStudioConfig(
+  value: Partial<SiteStudioConfig> | null | undefined
+): SiteStudioConfig {
+  const rankings = DEFAULT_SITE_STUDIO_CONFIG.rankings.map((fallback) =>
+    normalizeRanking(
+      value?.rankings?.find((item) => item.rank === fallback.rank),
+      fallback
+    )
+  );
+
+  const sections = DEFAULT_SITE_STUDIO_CONFIG.sections.map((fallback) =>
+    normalizeSection(
+      value?.sections?.find((item) => item.key === fallback.key),
+      fallback
+    )
+  );
+
+  return {
+    hero: normalizeHero(value?.hero, DEFAULT_SITE_STUDIO_CONFIG.hero),
+    secondaryHero: normalizeHero(
+      value?.secondaryHero,
+      DEFAULT_SITE_STUDIO_CONFIG.secondaryHero
+    ),
+    rankings,
+    sections,
+  };
+}
+
+export type SiteStudioPreviewPatch =
+  | { hero: SiteStudioHero }
+  | { secondaryHero: SiteStudioHero }
+  | { ranking: SiteStudioRankingItem }
+  | { section: SiteStudioSection };
+
+export function applySiteStudioPreviewPatch(
+  current: SiteStudioConfig,
+  patch: SiteStudioPreviewPatch
+): SiteStudioConfig {
+  if ("hero" in patch) {
+    return {
+      ...current,
+      hero: patch.hero,
+    };
+  }
+
+  if ("secondaryHero" in patch) {
+    return {
+      ...current,
+      secondaryHero: patch.secondaryHero,
+    };
+  }
+
+  if ("ranking" in patch) {
+    return {
+      ...current,
+      rankings: current.rankings.map((item) =>
+        item.rank === patch.ranking.rank ? patch.ranking : item
+      ),
+    };
+  }
+
+  return {
+    ...current,
+    sections: current.sections.map((item) =>
+      item.key === patch.section.key ? patch.section : item
+    ),
+  };
+}

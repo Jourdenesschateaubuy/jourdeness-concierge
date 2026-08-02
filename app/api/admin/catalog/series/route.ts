@@ -1,134 +1,171 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+
 import { hasValidAdminSession } from "../../../../../lib/admin-auth";
 import {
   createCatalogSeries,
-  getCatalogCategories,
-  getCatalogSeries,
+  getStorefrontCatalog,
+  updateCatalogCategoryStatus,
+  updateCatalogSeriesCategory,
+  updateCatalogSeriesName,
+  updateCatalogSeriesSortOrder,
+  updateCatalogSeriesStatus,
 } from "../../../../../lib/catalog-repository";
 
-const STOREFRONT_CATEGORY_NAMES = new Set([
-  "臉部保養",
-  "身體洗護",
-  "健康補給",
-  "精油香氛",
-  "新品預告",
-]);
+export const dynamic = "force-dynamic";
+
+async function requireAdmin() {
+  return hasValidAdminSession();
+}
+
+async function readCatalog() {
+  return getStorefrontCatalog({
+    includeInactive: true,
+  });
+}
+
+function errorResponse(
+  error: unknown,
+  fallback: string,
+  status = 400
+) {
+  const message =
+    error instanceof Error
+      ? error.message
+      : fallback;
+
+  return NextResponse.json(
+    { error: message },
+    { status }
+  );
+}
 
 export async function GET() {
-  if (!(await hasValidAdminSession())) {
+  if (!(await requireAdmin())) {
     return NextResponse.json(
-      { error: "未登入後台" },
+      { error: "尚未登入管理後台" },
       { status: 401 }
     );
   }
 
   try {
-    const [allCategories, allSeries] = await Promise.all([
-      getCatalogCategories(),
-      getCatalogSeries(),
-    ]);
-
-    const categories = allCategories.filter((category) =>
-      STOREFRONT_CATEGORY_NAMES.has(category.name)
-    );
-
-    const allowedCategoryIds = new Set(
-      categories.map((category) => category.id)
-    );
-
-    const series = allSeries.filter((item) =>
-      allowedCategoryIds.has(item.categoryId)
-    );
-
-    return NextResponse.json({
-      categories,
-      series,
-    });
+    return NextResponse.json(await readCatalog());
   } catch (error) {
-    console.error("Catalog series GET failed:", error);
-
-    return NextResponse.json(
-      { error: "讀取系列資料失敗" },
-      { status: 500 }
+    console.error(
+      "[Jourdeness Studio] catalog GET failed",
+      error
+    );
+    return errorResponse(
+      error,
+      "分類與系列讀取失敗",
+      500
     );
   }
 }
 
 export async function POST(request: Request) {
-  if (!(await hasValidAdminSession())) {
+  if (!(await requireAdmin())) {
     return NextResponse.json(
-      { error: "未登入後台" },
+      { error: "尚未登入管理後台" },
       { status: 401 }
     );
   }
 
   try {
     const body = (await request.json()) as {
-      categoryId?: unknown;
-      name?: unknown;
+      entity?: "series";
+      categoryId?: number;
+      name?: string;
     };
 
-    const categoryId = Number(body.categoryId);
-    const name = String(body.name ?? "").trim();
-
-    if (!Number.isInteger(categoryId) || categoryId <= 0) {
-      return NextResponse.json(
-        { error: "請選擇所屬分類" },
-        { status: 400 }
+    const createdSeries =
+      await createCatalogSeries(
+        Number(body.categoryId),
+        body.name ?? ""
       );
-    }
 
-    if (!name) {
-      return NextResponse.json(
-        { error: "系列名稱不能空白" },
-        { status: 400 }
-      );
-    }
-
-    const categories = await getCatalogCategories();
-
-    const category = categories.find(
-      (item) =>
-        item.id === categoryId &&
-        STOREFRONT_CATEGORY_NAMES.has(item.name)
-    );
-
-    if (!category) {
-      return NextResponse.json(
-        { error: "此分類不可用於前台系列" },
-        { status: 400 }
-      );
-    }
-
-    const series = await createCatalogSeries(categoryId, name);
-
-    return NextResponse.json(
-      {
-        success: true,
-        series,
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({
+      ...(await readCatalog()),
+      createdSeries,
+      message: "系列已新增",
+    });
   } catch (error) {
-    const code =
-      typeof error === "object" &&
-      error !== null &&
-      "code" in error
-        ? String((error as { code?: unknown }).code ?? "")
-        : "";
+    console.error(
+      "[Jourdeness Studio] catalog POST failed",
+      error
+    );
+    return errorResponse(error, "新增系列失敗");
+  }
+}
 
-    if (code === "23505") {
-      return NextResponse.json(
-        { error: "這個分類已經有相同名稱的系列" },
-        { status: 409 }
-      );
+export async function PATCH(request: Request) {
+  if (!(await requireAdmin())) {
+    return NextResponse.json(
+      { error: "尚未登入管理後台" },
+      { status: 401 }
+    );
+  }
+
+  try {
+    const body =
+      (await request.json()) as Record<
+        string,
+        unknown
+      >;
+
+    if (body.entity === "category") {
+      const id = Number(body.id);
+
+      if (body.action === "status") {
+        await updateCatalogCategoryStatus(
+          id,
+          Boolean(body.isActive)
+        );
+      } else {
+        throw new Error(
+          "前台主分類名稱固定，只能啟用或停用"
+        );
+      }
+    } else if (body.entity === "series") {
+      const id = Number(body.id);
+
+      if (body.action === "rename") {
+        await updateCatalogSeriesName(
+          id,
+          String(body.name ?? "")
+        );
+      } else if (body.action === "status") {
+        await updateCatalogSeriesStatus(
+          id,
+          Boolean(body.isActive)
+        );
+      } else if (body.action === "category") {
+        await updateCatalogSeriesCategory(
+          id,
+          Number(body.categoryId)
+        );
+      } else if (body.action === "sort") {
+        await updateCatalogSeriesSortOrder(
+          Number(body.categoryId),
+          Array.isArray(body.orderedIds)
+            ? body.orderedIds.map(Number)
+            : []
+        );
+      } else {
+        throw new Error("不支援的系列操作");
+      }
+    } else {
+      throw new Error("資料類型不正確");
     }
 
-    console.error("Catalog series POST failed:", error);
-
-    return NextResponse.json(
-      { error: "新增系列失敗" },
-      { status: 500 }
+    return NextResponse.json({
+      success: true,
+      ...(await readCatalog()),
+    });
+  } catch (error) {
+    console.error(
+      "[Jourdeness Studio] catalog PATCH failed",
+      error
     );
+    return errorResponse(error, "更新失敗");
   }
 }

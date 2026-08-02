@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
+import { readJsonResponse } from "../../../../lib/http-json";
 import styles from "./product-image-uploader.module.css";
 
 type ProductImageUploaderProps = {
@@ -113,7 +114,11 @@ export default function ProductImageUploader({
         },
       );
 
-      const result = (await response.json()) as UploadResponse;
+      const result =
+        await readJsonResponse<UploadResponse>(
+          response,
+          "圖片上傳失敗"
+        );
 
       if (!response.ok || !result.url) {
         throw new Error(result.error || "圖片上傳失敗");
@@ -125,7 +130,7 @@ export default function ProductImageUploader({
       URL.revokeObjectURL(localPreview);
       localPreviewRef.current = "";
     } catch (uploadError) {
-      console.error(uploadError);
+      console.warn(uploadError);
 
       setError(
         uploadError instanceof Error

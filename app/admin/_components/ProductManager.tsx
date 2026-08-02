@@ -274,7 +274,7 @@ export default function ProductManager({
 
       router.refresh();
     } catch (error) {
-      console.error("儲存商品排序失敗：", error);
+      console.warn("儲存商品排序失敗：", error);
       setOrderedProducts(previousProducts);
       setSortError("排序儲存失敗，已恢復原本順序，請再試一次。");
     } finally {
