@@ -157,18 +157,21 @@ export async function createDatabaseProduct(
       );
       const id = Number(idResult.rows[0]?.id ?? 1);
 
-      const comboConfig =
-        input.comboConfig ??
-        (productType === "combo"
-          ? {
-              productId: id,
-              type: "mix_match" as const,
-              unitLabel: "件",
-              allowSameProduct: true,
-              options: [],
-              plans: [],
-            }
-          : undefined);
+     const comboConfig = input.comboConfig
+     ? {
+      ...input.comboConfig,
+      productId: id,
+        }
+      : productType === "combo"
+       ? {
+        productId: id,
+        type: "mix_match" as const,
+        unitLabel: "件",
+        allowSameProduct: true,
+        options: [],
+        plans: [],
+       }
+        : undefined;
 
       const result = await client.query<ProductRow>(
         `
