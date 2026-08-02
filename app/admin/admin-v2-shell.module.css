@@ -86,6 +86,80 @@
   background: #fff2f4;
 }
 
+.createMenuWrap {
+  position: relative;
+}
+
+.createMenuWrap > summary {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(125, 38, 56, 0.2);
+  border-radius: 10px;
+  background: #7d2638;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 850;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.createMenuWrap > summary::-webkit-details-marker {
+  display: none;
+}
+
+.createMenuWrap[open] > summary,
+.createMenuWrap > summary:hover {
+  background: #611c2b;
+}
+
+.createMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  width: 300px;
+  padding: 8px;
+  border: 1px solid #e5d7da;
+  border-radius: 13px;
+  background: #ffffff;
+  box-shadow: 0 16px 40px rgba(67, 39, 44, 0.16);
+  display: grid;
+  gap: 7px;
+}
+
+.studioActions .createMenu a {
+  min-height: 0;
+  padding: 12px 13px;
+  border: 0;
+  border-radius: 10px;
+  background: #faf6f5;
+  display: grid;
+  align-items: start;
+  justify-content: stretch;
+  gap: 4px;
+  text-align: left;
+}
+
+.studioActions .createMenu a:hover {
+  background: #f6e9ec;
+}
+
+.createMenu strong {
+  color: #6d2031;
+  font-size: 13px;
+}
+
+.createMenu span {
+  color: #8a797d;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
 /* 左右固定為約 50 / 50 */
 .studioBody {
   flex: 1 1 auto;
@@ -189,6 +263,33 @@
   color: #817477;
   font-size: 14px;
   line-height: 1.65;
+}
+
+.emptyCreateActions {
+  width: min(100%, 350px);
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.emptyCreateActions a {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(125, 38, 56, 0.2);
+  border-radius: 10px;
+  background: #ffffff;
+  color: #7d2638;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.emptyCreateActions a:hover {
+  background: #fff2f4;
 }
 
 .editorTips {

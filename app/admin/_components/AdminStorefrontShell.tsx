@@ -260,6 +260,15 @@ export default function AdminStorefrontShell() {
             在右側點商品、主視覺、副主視覺、排行榜、首頁標題或漢堡選單。
           </p>
 
+          <div className={styles.emptyCreateActions}>
+            <a href="/admin/products/new?type=product">
+              ＋ 新增一般商品
+            </a>
+            <a href="/admin/products/new?type=combo">
+              ＋ 新增組合商品
+            </a>
+          </div>
+
           <div className={styles.editorTips}>
             <span>單擊商品：修改商品卡圖片、名稱與價格</span>
             <span>雙擊商品：修改商品詳情與輪播圖片</span>
@@ -381,6 +390,20 @@ export default function AdminStorefrontShell() {
         </div>
 
         <div className={styles.studioActions}>
+          <details className={styles.createMenuWrap}>
+            <summary>＋ 新增內容</summary>
+            <div className={styles.createMenu}>
+              <a href="/admin/products/new?type=product">
+                <strong>新增一般商品</strong>
+                <span>商品卡＋商品資訊一次建立</span>
+              </a>
+              <a href="/admin/products/new?type=combo">
+                <strong>新增組合商品</strong>
+                <span>商品卡＋組合內容＋商品資訊一次建立</span>
+              </a>
+            </div>
+          </details>
+
           <button type="button" onClick={reloadPreview}>
             重新整理預覽
           </button>
