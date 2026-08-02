@@ -1,7 +1,8 @@
 "use client";
 
+
 // Jourdeness storefront build: V3.8.6 — 龍血玫瑰皂改為自由配選項，不再單獨顯示商品卡。
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type SyntheticEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type MouseEvent, type ReactNode, type SyntheticEvent } from "react";
 import { createPortal } from "react-dom";
 
 import {
@@ -49,6 +50,33 @@ import type {
   Product,
   SkinFilter,
 } from "../lib/storefront-core";
+import { readJsonResponse } from "../lib/http-json";
+import {
+  DEFAULT_SITE_STUDIO_CONFIG,
+  applySiteStudioPreviewPatch,
+  type HeroSlot,
+  type SiteStudioConfig,
+  type SiteStudioHero,
+  type SiteStudioPreviewPatch,
+  type SiteStudioRankingItem,
+  type SiteStudioSectionKey,
+} from "../lib/site-studio-types";
+
+type StorefrontCatalogCategory = {
+  id: number;
+  name: string;
+  sortOrder: number;
+  isActive: boolean;
+};
+
+type StorefrontCatalogSeries = {
+  id: number;
+  categoryId: number;
+  categoryName: string;
+  name: string;
+  sortOrder: number;
+  isActive: boolean;
+};
 
 type StorefrontProductStatus =
   | "active"
@@ -66,6 +94,12 @@ function Home() {
   const [products, setProducts] = useState<StorefrontProduct[]>(
     () => fallbackProducts as StorefrontProduct[]
   );
+  const [siteStudioConfig, setSiteStudioConfig] =
+    useState<SiteStudioConfig>(() => DEFAULT_SITE_STUDIO_CONFIG);
+  const [storefrontCatalogCategories, setStorefrontCatalogCategories] =
+    useState<StorefrontCatalogCategory[]>([]);
+  const [storefrontCatalogSeries, setStorefrontCatalogSeries] =
+    useState<StorefrontCatalogSeries[]>([]);
 
   function getComboConfig(productId: number): ComboConfig | null {
     const databaseConfig =
@@ -126,6 +160,17 @@ function Home() {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [isAdminEditMode, setIsAdminEditMode] = useState(false);
   const [managedProductId, setManagedProductId] = useState<number | null>(null);
+  const [isAdminCreateMenuOpen, setIsAdminCreateMenuOpen] = useState(false);
+  const [adminCreateView, setAdminCreateView] = useState<"menu" | "product" | "series">("menu");
+  const [adminCatalogCategories, setAdminCatalogCategories] = useState<
+    Array<{ id: number; name: string }>
+  >([]);
+  const [adminSeriesName, setAdminSeriesName] = useState("");
+  const [adminSeriesCategoryId, setAdminSeriesCategoryId] = useState("");
+  const [adminSeriesLoading, setAdminSeriesLoading] = useState(false);
+  const [adminSeriesSaving, setAdminSeriesSaving] = useState(false);
+  const [adminSeriesMessage, setAdminSeriesMessage] = useState("");
+  const [adminSeriesError, setAdminSeriesError] = useState("");
 
   const adminPressTimerRef =
     useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -134,6 +179,51 @@ function Home() {
     useRef<{ x: number; y: number } | null>(null);
 
   const suppressAdminProductClickRef = useRef(false);
+
+  function sendStudioSelection(
+    selection:
+      | {
+          type: "product";
+          productId: number;
+          label: string;
+        }
+      | {
+          type: "product-detail";
+          productId: number;
+          label: string;
+        }
+      | {
+          type: "hero";
+          slot: HeroSlot;
+          label: string;
+        }
+      | {
+          type: "ranking";
+          rank: number;
+          label: string;
+        }
+      | {
+          type: "navigation";
+          label: string;
+        }
+      | {
+          type: "section";
+          sectionKey: SiteStudioSectionKey;
+          label: string;
+        }
+  ) {
+    if (!isAdminMode || !isAdminEditMode) {
+      return;
+    }
+
+    window.parent.postMessage(
+      {
+        type: "jourdeness-studio-selection",
+        selection,
+      },
+      window.location.origin
+    );
+  }
 
 
   useEffect(() => {
@@ -148,8 +238,80 @@ function Home() {
         | {
             type?: string;
             enabled?: boolean;
+            productId?: number;
+            patch?: Partial<StorefrontProduct> | SiteStudioPreviewPatch;
           }
         | undefined;
+
+      if (
+        data?.type === "jourdeness-studio-product-preview" &&
+        Number.isInteger(data.productId) &&
+        data.patch
+      ) {
+        const productId = Number(data.productId);
+        const patch = data.patch as Partial<StorefrontProduct>;
+
+        setProducts((currentProducts) =>
+          currentProducts.map((product) =>
+            product.id === productId
+              ? {
+                  ...product,
+                  ...patch,
+                }
+              : product
+          )
+        );
+
+        setSelectedDetailProduct((currentProduct) =>
+          currentProduct?.id === productId
+            ? {
+                ...currentProduct,
+                ...patch,
+              }
+            : currentProduct
+        );
+
+        return;
+      }
+
+      if (
+        data?.type === "jourdeness-studio-open-product-detail" &&
+        Number.isInteger(data.productId)
+      ) {
+        const productId = Number(data.productId);
+        const product = products.find(
+          (item) => item.id === productId
+        );
+
+        if (product) {
+          setManagedProductId(product.id);
+          setIsCartOpen(false);
+          setCartStep(1);
+          setCartReturnProduct(null);
+          openProductDetail(product, false);
+        }
+
+        return;
+      }
+
+      if (
+        data?.type === "jourdeness-studio-site-preview" &&
+        data.patch
+      ) {
+        setSiteStudioConfig((current) =>
+          applySiteStudioPreviewPatch(
+            current,
+            data.patch as SiteStudioPreviewPatch
+          )
+        );
+        return;
+      }
+
+      if (data?.type === "jourdeness-studio-close-product-detail") {
+        setSelectedDetailProduct(null);
+        setDetailHistoryActive(false);
+        return;
+      }
 
       if (data?.type !== "jourdeness-admin-edit-mode") {
         return;
@@ -161,6 +323,7 @@ function Home() {
 
       if (!enabled) {
         setManagedProductId(null);
+        setIsAdminCreateMenuOpen(false);
       }
     }
 
@@ -173,7 +336,7 @@ function Home() {
         clearTimeout(adminPressTimerRef.current);
       }
     };
-  }, []);
+  }, [products]);
 
   useEffect(() => {
     let cancelled = false;
@@ -186,9 +349,13 @@ function Home() {
 
         if (!response.ok) return;
 
-        const payload = (await response.json()) as {
-          products?: StorefrontProduct[];
-        };
+        const payload =
+          await readJsonResponse<{
+            products?: StorefrontProduct[];
+          }>(
+            response,
+            "商品資料同步失敗"
+          );
 
         if (
           !cancelled &&
@@ -198,7 +365,7 @@ function Home() {
           setProducts(payload.products);
         }
       } catch (error) {
-        console.error(
+        console.warn(
           "[Jourdeness] 商品資料同步失敗，保留 storefront fallback。",
           error
         );
@@ -206,6 +373,62 @@ function Home() {
     }
 
     void loadStorefrontProducts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadStudioContent() {
+      try {
+        const [studioResponse, catalogResponse] = await Promise.all([
+          fetch("/api/storefront/site-studio", { cache: "no-store" }),
+          fetch("/api/storefront/catalog", { cache: "no-store" }),
+        ]);
+
+        const studioPayload =
+          await readJsonResponse<{
+            config?: SiteStudioConfig;
+          }>(
+            studioResponse,
+            "首頁設定同步失敗"
+          );
+        const catalogPayload =
+          await readJsonResponse<{
+            categories?: StorefrontCatalogCategory[];
+            series?: StorefrontCatalogSeries[];
+          }>(
+            catalogResponse,
+            "分類設定同步失敗"
+          );
+
+        if (cancelled) return;
+
+        if (studioResponse.ok && studioPayload.config) {
+          setSiteStudioConfig(studioPayload.config);
+        }
+
+        if (catalogResponse.ok) {
+          setStorefrontCatalogCategories(
+            Array.isArray(catalogPayload.categories)
+              ? catalogPayload.categories
+              : []
+          );
+          setStorefrontCatalogSeries(
+            Array.isArray(catalogPayload.series)
+              ? catalogPayload.series
+              : []
+          );
+        }
+      } catch (error) {
+        console.warn("[Jourdeness] 工作台首頁設定同步失敗：", error);
+      }
+    }
+
+    void loadStudioContent();
 
     return () => {
       cancelled = true;
@@ -294,7 +517,7 @@ function Home() {
     };
   }, []);
 
-  const seriesList = categoryConfig[selectedCategory];
+  const seriesList = categoryConfig[selectedCategory] ?? ["全部"];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
   const monthlyOfferIdsV316 = new Set([34, 1, 51, 54, 55, 58, 59, 67, 68, 108, 112, 119, 120, 121]);
@@ -400,10 +623,29 @@ function Home() {
     if (selectedCategory === "新品預告") return isComingSoon(product);
     if (isComingSoon(product)) return false;
 
-    if (selectedCategory === "臉部保養") return faceCareProductIdsV368.has(product.id);
-    if (selectedCategory === "身體洗護") return bodyCareProductIdsV368.has(product.id);
-    if (selectedCategory === "健康補給") return healthProductIdsV368.has(product.id);
-    if (selectedCategory === "精油香氛") return essentialOilProductIdsV359.has(product.id);
+    if (selectedCategory === "臉部保養") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "臉部保養"
+        : faceCareProductIdsV368.has(product.id);
+    }
+
+    if (selectedCategory === "身體洗護") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "身體洗護"
+        : bodyCareProductIdsV368.has(product.id);
+    }
+
+    if (selectedCategory === "健康補給") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "健康補給"
+        : healthProductIdsV368.has(product.id);
+    }
+
+    if (selectedCategory === "精油香氛") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "精油香氛"
+        : essentialOilProductIdsV359.has(product.id);
+    }
 
     // 舊分類相容：避免內部跳轉或搜尋仍使用舊分類名稱時失效。
     if (selectedCategory === "本月精選") return isFeaturedProductV31(product) && !isComingSoon(product);
@@ -415,10 +657,29 @@ function Home() {
 
   function matchesMainCategoryAlias(product: Product, alias: MainCategory) {
     if (isComingSoon(product)) return false;
-    if (alias === "臉部保養") return faceCareProductIdsV368.has(product.id);
-    if (alias === "身體洗護") return bodyCareProductIdsV368.has(product.id);
-    if (alias === "健康補給") return healthProductIdsV368.has(product.id);
-    if (alias === "精油香氛") return essentialOilProductIdsV359.has(product.id);
+    if (alias === "臉部保養") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "臉部保養"
+        : faceCareProductIdsV368.has(product.id);
+    }
+
+    if (alias === "身體洗護") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "身體洗護"
+        : bodyCareProductIdsV368.has(product.id);
+    }
+
+    if (alias === "健康補給") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "健康補給"
+        : healthProductIdsV368.has(product.id);
+    }
+
+    if (alias === "精油香氛") {
+      return product.storefrontCategory
+        ? product.storefrontCategory === "精油香氛"
+        : essentialOilProductIdsV359.has(product.id);
+    }
     return false;
   }
 
@@ -661,92 +922,9 @@ const sevenSequenceGuideV377 = [
     },
   ];
 
-  const topRankingItemsV378 = [
-    {
-      rank: 1,
-      displayProductId: 34,
-      actionProductId: 34,
-      action: "detail",
-      image: "/products/TOP1.png",
-      title: "龍血玻尿酸保濕精華液",
-      subtitle: "300mL・人氣保濕明星商品",
-      priceLine: "$1,980",
-      promoLine: "買一送一",
-      buttonLabel: "查看商品",
-      layout: "wide",
-      imageSpec: "750 × 500 px",
-    },
-    {
-      rank: 2,
-      displayProductId: 15,
-      actionProductId: 119,
-      action: "combo",
-      image: "/products/TOP2.png",
-      title: "龍血求麗頭皮修護洗髮精",
-      subtitle: "500mL・頭皮清潔修護",
-      priceLine: "單瓶 $590",
-      promoLine: "任選 3 瓶 $1,100",
-      buttonLabel: "選擇搭配",
-      layout: "portrait",
-      imageSpec: "640 × 800 px",
-    },
-    {
-      rank: 3,
-      displayProductId: 16,
-      actionProductId: 119,
-      action: "combo",
-      image: "/products/TOP3.png",
-      title: "龍血求麗潤澤修護沐浴乳",
-      subtitle: "500mL・潤澤潔淨肌膚",
-      priceLine: "單瓶 $590",
-      promoLine: "任選 3 瓶 $1,100",
-      buttonLabel: "選擇搭配",
-      layout: "portrait",
-      imageSpec: "640 × 800 px",
-    },
-    {
-      rank: 4,
-      displayProductId: 120,
-      actionProductId: 120,
-      action: "detail",
-      image: "/products/TOP4.png",
-      title: "龍血求麗精華液",
-      subtitle: "30mL＋肌可佳膠原蛋白彈潤原液 30mL",
-      priceLine: "限定組合",
-      promoLine: "$1,290",
-      buttonLabel: "查看組合",
-      layout: "wide-compact",
-      imageSpec: "750 × 420 px",
-    },
-    {
-      rank: 5,
-      displayProductId: 55,
-      actionProductId: 55,
-      action: "combo",
-      image: "/products/TOP5.png",
-      title: "人氣面膜雙選",
-      subtitle: "爆水保濕 × 美白透亮",
-      priceLine: "單桶 $599",
-      promoLine: "任選 2 桶 $1,100｜任選 5 桶 $2,750",
-      buttonLabel: "選擇搭配",
-      layout: "portrait",
-      imageSpec: "640 × 800 px",
-    },
-    {
-      rank: 6,
-      displayProductId: 1,
-      actionProductId: 1,
-      action: "combo",
-      image: "/products/TOP6.png",
-      title: "人氣益生菌雙選",
-      subtitle: "BC-CA 加鈣 × 蔓越莓益生菌",
-      priceLine: "加鈣 $800｜蔓越莓 $990",
-      promoLine: "任選 3 盒 $1,600",
-      buttonLabel: "選擇搭配",
-      layout: "portrait",
-      imageSpec: "640 × 800 px",
-    },
-  ] as const;
+  const topRankingItemsV378 = siteStudioConfig.rankings.filter(
+    (item) => item.visible
+  );
   const summerWhiteningProducts = getProductsByIds([68, 47, 48, 49, 110]);
 
   // V3.8.0：首頁「本月優惠・活動方案」改為方案導向，不再重複 TOP 排行榜商品。
@@ -1050,6 +1228,48 @@ const sevenSequenceGuideV377 = [
     ? getDetailGalleryImages(selectedDetailProduct)
     : [];
 
+  function getStudioSection(
+    key: SiteStudioSectionKey
+  ) {
+    return (
+      siteStudioConfig.sections.find((section) => section.key === key) ??
+      DEFAULT_SITE_STUDIO_CONFIG.sections.find((section) => section.key === key)!
+    );
+  }
+
+  function selectStudioSection(
+    event: MouseEvent<HTMLElement>,
+    sectionKey: SiteStudioSectionKey,
+    label: string
+  ) {
+    if (!isAdminMode || !isAdminEditMode) return;
+    event.preventDefault();
+    event.stopPropagation();
+    sendStudioSelection({
+      type: "section",
+      sectionKey,
+      label,
+    });
+  }
+
+  function handleStudioHeroAction(hero: SiteStudioHero) {
+    if (hero.linkType === "product") {
+      const productId = Number(hero.linkValue);
+      const product = products.find((item) => item.id === productId);
+      if (product) openProductDetail(product);
+      return;
+    }
+
+    if (hero.linkType === "category" && hero.linkValue) {
+      openCategoryTab(hero.linkValue as MainCategory, "全部");
+      return;
+    }
+
+    if (hero.linkType === "url" && hero.linkValue) {
+      window.location.href = hero.linkValue;
+    }
+  }
+
   function getProductsByIds(ids: number[]) {
     return ids
       .map((id) => products.find((product) => product.id === id))
@@ -1339,6 +1559,125 @@ const sevenSequenceGuideV377 = [
     }
   }
 
+  async function openAdminCreateSeries() {
+    setAdminCreateView("series");
+    setAdminSeriesMessage("");
+    setAdminSeriesError("");
+
+    if (adminCatalogCategories.length > 0) {
+      if (!adminSeriesCategoryId) {
+        setAdminSeriesCategoryId(String(adminCatalogCategories[0].id));
+      }
+      return;
+    }
+
+    setAdminSeriesLoading(true);
+
+    try {
+      const response = await fetch("/api/admin/catalog/series", {
+        cache: "no-store",
+      });
+
+      const payload =
+        await readJsonResponse<{
+          categories?: Array<{
+            id: number;
+            name: string;
+          }>;
+          error?: string;
+        }>(
+          response,
+          "讀取分類失敗"
+        );
+
+      if (!response.ok) {
+        throw new Error(payload.error || "讀取分類失敗");
+      }
+
+      const categories = Array.isArray(payload.categories)
+        ? payload.categories
+        : [];
+
+      setAdminCatalogCategories(categories);
+
+      if (categories.length > 0) {
+        setAdminSeriesCategoryId(String(categories[0].id));
+      }
+    } catch (error) {
+      setAdminSeriesError(
+        error instanceof Error ? error.message : "讀取分類失敗"
+      );
+    } finally {
+      setAdminSeriesLoading(false);
+    }
+  }
+
+  async function handleAdminSeriesSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    const name = adminSeriesName.trim();
+    const categoryId = Number(adminSeriesCategoryId);
+
+    setAdminSeriesMessage("");
+    setAdminSeriesError("");
+
+    if (!name) {
+      setAdminSeriesError("請輸入系列名稱");
+      return;
+    }
+
+    if (!Number.isInteger(categoryId) || categoryId <= 0) {
+      setAdminSeriesError("請選擇所屬分類");
+      return;
+    }
+
+    setAdminSeriesSaving(true);
+
+    try {
+      const response = await fetch("/api/admin/catalog/series", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          categoryId,
+          name,
+        }),
+      });
+
+      const payload =
+        await readJsonResponse<{
+          success?: boolean;
+          createdSeries?: {
+            id: number;
+            name: string;
+            categoryName: string;
+          };
+          error?: string;
+        }>(
+          response,
+          "新增系列失敗"
+        );
+
+      if (!response.ok) {
+        throw new Error(payload.error || "新增系列失敗");
+      }
+
+      setAdminSeriesMessage(
+        "已建立「" + (payload.createdSeries?.name || name) + "」"
+      );
+      setAdminSeriesName("");
+    } catch (error) {
+      setAdminSeriesError(
+        error instanceof Error ? error.message : "新增系列失敗"
+      );
+    } finally {
+      setAdminSeriesSaving(false);
+    }
+  }
+
   function handleDrawerCategory(category: MainCategory, series = "全部") {
     setIsMenuOpen(false);
     jumpToCategory(category, series);
@@ -1388,6 +1727,26 @@ const sevenSequenceGuideV377 = [
     openProductDetail(product);
   }
 
+  function formatMoneyValue(value: string) {
+    const normalized = value.trim().replace(/,/g, "");
+
+    if (!/^\d+$/.test(normalized)) return null;
+
+    return Number(normalized).toLocaleString("en-US");
+  }
+
+  function displayOriginalPrice(product: Product) {
+    const value = product.originalPrice?.trim() ?? "";
+    const legacyMatch = value.match(
+      /^原價\s*\$\s*([\d,]+)$/
+    );
+    const formatted = formatMoneyValue(
+      legacyMatch?.[1] ?? value
+    );
+
+    return formatted ? `原價 $ ${formatted}` : value;
+  }
+
   function hasKnownOriginalPrice(product: Product) {
     if (!product.originalPrice) return false;
     return !(
@@ -1403,7 +1762,25 @@ const sevenSequenceGuideV377 = [
 
   function displayPrice(product: Product) {
     if (hasInquiryPrice(product)) return "售價請洽小幫手";
-    return product.price;
+
+    const value = product.price.trim();
+    const legacyMatch = value.match(
+      /^產地價\s*\$\s*([\d,]+)$/
+    );
+    const formatted = formatMoneyValue(
+      legacyMatch?.[1] ?? value
+    );
+
+    if (!formatted) return value;
+
+    const label =
+      product.category === "外部廠商"
+        ? "售價"
+        : product.category === "組合價"
+          ? "活動價"
+          : "產地價";
+
+    return `${label} $ ${formatted}`;
   }
 
   function getStorefrontStatus(product: Product) {
@@ -2075,12 +2452,15 @@ const sevenSequenceGuideV377 = [
 
   function HomeProductSection({
     id,
+    studioKey,
     title,
+    subtitle,
     products,
     actionLabel,
     onAction,
   }: {
     id?: string;
+    studioKey: SiteStudioSectionKey;
     eyebrow: string;
     title: string;
     subtitle?: string;
@@ -2088,10 +2468,26 @@ const sevenSequenceGuideV377 = [
     actionLabel?: string;
     onAction?: () => void;
   }) {
+    const studioSection = getStudioSection(studioKey);
+    if (!studioSection.visible) return null;
+
     return (
       <section className="home-product-section mall-shelf-section-v271" id={id}>
-        <div className="section-heading compact">
-          <h2>{title}</h2>
+        <div
+          className={`section-heading compact ${
+            isAdminMode && isAdminEditMode
+              ? "admin-v2-manageable-site-block"
+              : ""
+          }`}
+          onClick={(event) =>
+            selectStudioSection(event, studioKey, studioSection.label)
+          }
+        >
+          {studioSection.eyebrow && <span>{studioSection.eyebrow}</span>}
+          <h2>{studioSection.title || title}</h2>
+          {(studioSection.subtitle || subtitle) && (
+            <p>{studioSection.subtitle || subtitle}</p>
+          )}
         </div>
 
         <div className="home-product-grid">
@@ -2127,12 +2523,24 @@ const sevenSequenceGuideV377 = [
   }
 
   function MonthlyOffersSectionV380() {
+    const studioSection = getStudioSection("monthlyOffers");
+    if (!studioSection.visible) return null;
+
     return (
       <section className="home-product-section monthly-offers-section-v380" id="home-hot-products-v380">
-        <div className="section-heading compact monthly-offers-heading-v380">
-          <span>MONTHLY PICKS</span>
-          <h2>本月優惠・活動方案</h2>
-          <p>排行榜看熱銷；這裡直接告訴你現在怎麼買更划算。</p>
+        <div
+          className={`section-heading compact monthly-offers-heading-v380 ${
+            isAdminMode && isAdminEditMode
+              ? "admin-v2-manageable-site-block"
+              : ""
+          }`}
+          onClick={(event) =>
+            selectStudioSection(event, "monthlyOffers", studioSection.label)
+          }
+        >
+          {studioSection.eyebrow && <span>{studioSection.eyebrow}</span>}
+          <h2>{studioSection.title}</h2>
+          {studioSection.subtitle && <p>{studioSection.subtitle}</p>}
         </div>
 
         <div className="monthly-offer-grid-v380">
@@ -2200,12 +2608,24 @@ const sevenSequenceGuideV377 = [
   }
 
   function SkincareNeedSectionV380() {
+    const studioSection = getStudioSection("skincareNeeds");
+    if (!studioSection.visible) return null;
+
     return (
       <section className="home-product-section skincare-needs-section-v380" id="home-skincare-needs-v380">
-        <div className="section-heading compact skincare-needs-heading-v380">
-          <span>SKIN CARE GUIDE</span>
-          <h2>依肌膚需求選保養</h2>
-          <p>先選需求，再看適合的日常保養組合，找商品更快。</p>
+        <div
+          className={`section-heading compact skincare-needs-heading-v380 ${
+            isAdminMode && isAdminEditMode
+              ? "admin-v2-manageable-site-block"
+              : ""
+          }`}
+          onClick={(event) =>
+            selectStudioSection(event, "skincareNeeds", studioSection.label)
+          }
+        >
+          {studioSection.eyebrow && <span>{studioSection.eyebrow}</span>}
+          <h2>{studioSection.title}</h2>
+          {studioSection.subtitle && <p>{studioSection.subtitle}</p>}
         </div>
 
         <div className="skincare-need-tabs-v380" role="tablist" aria-label="依肌膚需求選保養">
@@ -2699,6 +3119,41 @@ const sevenSequenceGuideV377 = [
             event.preventDefault();
           }
         }}
+        onDoubleClick={(event) => {
+          if (!isAdminMode || !isAdminEditMode) {
+            return;
+          }
+
+          const target = event.target as HTMLElement;
+
+          if (
+            target.closest(
+              "button, a, input, select, textarea"
+            )
+          ) {
+            return;
+          }
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          setManagedProductId(product.id);
+          setIsCartOpen(false);
+          setCartStep(1);
+          setCartReturnProduct(null);
+          openProductDetail(product, false);
+
+          sendStudioSelection({
+            type: "product-detail",
+            productId: product.id,
+            label: product.name,
+          });
+        }}
+        title={
+          isAdminMode && isAdminEditMode
+            ? "單擊選取商品卡｜雙擊編輯商品詳情"
+            : undefined
+        }
         role="button"
         tabIndex={0}
         onClick={(event) => {
@@ -2708,6 +3163,13 @@ const sevenSequenceGuideV377 = [
 
             suppressAdminProductClickRef.current = false;
             setManagedProductId(product.id);
+
+            sendStudioSelection({
+              type: "product",
+              productId: product.id,
+              label: product.cardName ?? product.name,
+            });
+
             return;
           }
 
@@ -2731,6 +3193,13 @@ const sevenSequenceGuideV377 = [
 
             if (isAdminMode && isAdminEditMode) {
               setManagedProductId(product.id);
+
+              sendStudioSelection({
+                type: "product",
+                productId: product.id,
+                label: product.cardName ?? product.name,
+              });
+
               return;
             }
 
@@ -2761,13 +3230,13 @@ const sevenSequenceGuideV377 = [
             )}
 
             <div className="product-card-title-slot-v364">
-              <h3>{product.name}</h3>
+              <h3>{product.cardName ?? product.name}</h3>
             </div>
           </div>
 
           <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
             {hasKnownOriginalPrice(product) && (
-              <p className="original-price">{product.originalPrice}</p>
+              <p className="original-price">{displayOriginalPrice(product)}</p>
             )}
 
             <p className={`price ${inquiry ? "inquiry" : ""}`}>
@@ -2786,6 +3255,13 @@ const sevenSequenceGuideV377 = [
 
                 if (isAdminMode && isAdminEditMode) {
                   setManagedProductId(product.id);
+
+                  sendStudioSelection({
+                    type: "product",
+                    productId: product.id,
+                    label: product.cardName ?? product.name,
+                  });
+
                   return;
                 }
 
@@ -3788,56 +4264,82 @@ const sevenSequenceGuideV377 = [
     }
   }
 
-  function renderTopRankingCardV378(item: (typeof topRankingItemsV378)[number]) {
-    const actionProduct = products.find((product) => product.id === item.actionProductId);
+  function renderTopRankingCardV378(item: SiteStudioRankingItem) {
+    const actionProduct = products.find(
+      (product) =>
+        product.id === item.actionProductId
+    );
+
     if (!actionProduct) return null;
 
     const handleAction = () => {
-      if (item.action === "combo") {
-        openComboPicker(actionProduct);
+      if (
+        isAdminMode &&
+        isAdminEditMode
+      ) {
+        sendStudioSelection({
+          type: "ranking",
+          rank: item.rank,
+          label: `排行榜 TOP ${item.rank}`,
+        });
         return;
       }
+
       openProductDetail(actionProduct);
     };
 
     return (
       <article
-        className={`top-ranking-card-v378 top-ranking-${item.rank}-v378 ${item.layout}`}
+        className={`top-ranking-card-v378 top-ranking-${item.rank}-v378 ${item.layout} ${
+          isAdminMode && isAdminEditMode
+            ? "admin-v2-manageable-site-block"
+            : ""
+        }`}
         key={`top-ranking-${item.rank}`}
+        role="button"
+        tabIndex={0}
+        onClick={handleAction}
+        onKeyDown={(event) => {
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+            event.preventDefault();
+            handleAction();
+          }
+        }}
+        aria-label={`查看 TOP ${item.rank}：${item.title}`}
       >
-        <button
-          type="button"
-          className="top-ranking-image-button-v378"
-          onClick={handleAction}
-          aria-label={`查看 TOP ${item.rank}：${item.title}`}
-        >
-          <div className="top-ranking-image-v378">
-            <span className="top-ranking-image-placeholder-v378">
-              TOP {item.rank} 圖片｜{item.imageSpec}
-            </span>
-            <img
-              src={item.image}
-              alt={`TOP ${item.rank} ${item.title}`}
-              onError={(event) => {
-                event.currentTarget.style.display = "none";
-              }}
-            />
-          </div>
-        </button>
+        <div className="top-ranking-image-v378">
+          <span className="top-ranking-image-placeholder-v378">
+            TOP {item.rank} 圖片｜{item.imageSpec}
+          </span>
+          <img
+            src={item.image}
+            alt={`TOP ${item.rank} ${item.title}`}
+            onError={(event) => {
+              event.currentTarget.style.display =
+                "none";
+            }}
+          />
+        </div>
 
         <div className="top-ranking-meta-v378">
-          <span className="top-ranking-rank-v378">TOP {item.rank}</span>
+          <span className="top-ranking-rank-v378">
+            TOP {item.rank}
+          </span>
           <strong>{item.title}</strong>
           <small>{item.subtitle}</small>
 
           <div className="top-ranking-purchase-row-v382">
             <div className="top-ranking-price-block-v382">
-              <p className="top-ranking-price-v382">{item.priceLine}</p>
-              <p className="top-ranking-promo-v382">{item.promoLine}</p>
+              <p className="top-ranking-price-v382">
+                {item.priceLine}
+              </p>
+              <p className="top-ranking-promo-v382">
+                {item.promoLine}
+              </p>
             </div>
-            <button type="button" onClick={handleAction}>
-              {item.buttonLabel}
-            </button>
           </div>
         </div>
       </article>
@@ -3858,6 +4360,31 @@ const sevenSequenceGuideV377 = [
               outline: 1px dashed rgba(125, 38, 56, .20);
               outline-offset: 1px;
               cursor: pointer;
+            }
+
+            .admin-v2-manageable-product::after {
+              content: "單擊選取｜雙擊商品詳情";
+              position: absolute;
+              left: 50%;
+              bottom: 8px;
+              z-index: 55;
+              padding: 5px 8px;
+              border-radius: 999px;
+              background: rgba(63, 38, 43, .88);
+              color: #fff;
+              font-size: 9px;
+              font-weight: 900;
+              line-height: 1;
+              white-space: nowrap;
+              opacity: 0;
+              pointer-events: none;
+              transform: translate(-50%, 5px);
+              transition: opacity .16s ease, transform .16s ease;
+            }
+
+            .admin-v2-manageable-product:hover::after {
+              opacity: 1;
+              transform: translate(-50%, 0);
             }
 
             .admin-v2-manageable-product button,
@@ -3961,6 +4488,44 @@ const sevenSequenceGuideV377 = [
               cursor: pointer;
             }
 
+            .admin-v2-manageable-site-block {
+              position: relative !important;
+              outline: 1px dashed rgba(125, 38, 56, .34) !important;
+              outline-offset: 2px !important;
+              cursor: pointer !important;
+            }
+
+            .admin-v2-manageable-site-block:hover {
+              outline: 2px solid rgba(157, 45, 66, .72) !important;
+              box-shadow: 0 0 0 4px rgba(157, 45, 66, .08) !important;
+            }
+
+            .studio-hero-overlay-v1 {
+              position: absolute;
+              left: 18px;
+              right: 18px;
+              bottom: 18px;
+              z-index: 3;
+              padding: 14px;
+              border-radius: 14px;
+              background: rgba(255,255,255,.88);
+              backdrop-filter: blur(8px);
+              display: grid;
+              gap: 5px;
+            }
+
+            .studio-hero-overlay-v1 strong {
+              color: #6e2132;
+              font-size: 20px;
+            }
+
+            .studio-hero-overlay-v1 span,
+            .studio-hero-overlay-v1 em {
+              color: #6d5b5f;
+              font-size: 12px;
+              font-style: normal;
+            }
+
             .admin-v2-product-edit-button {
               border: 0;
               background: #7d2638;
@@ -3995,17 +4560,41 @@ const sevenSequenceGuideV377 = [
                     type="button"
                     className="admin-v2-product-edit-button"
                     onClick={() => {
-                      const url =
-                        `/admin/products/${managedProductId}/edit`;
+                      const product = products.find(
+                        (item) => item.id === managedProductId
+                      );
 
-                      if (window.parent !== window) {
-                        window.parent.location.href = url;
-                      } else {
-                        window.location.href = url;
+                      if (product) {
+                        sendStudioSelection({
+                          type: "product",
+                          productId: product.id,
+                          label: product.cardName ?? product.name,
+                        });
                       }
                     }}
                   >
-                    修改
+                    商品卡
+                  </button>
+
+                  <button
+                    type="button"
+                    className="admin-v2-product-edit-button"
+                    onClick={() => {
+                      const product = products.find(
+                        (item) => item.id === managedProductId
+                      );
+
+                      if (product) {
+                        openProductDetail(product, false);
+                        sendStudioSelection({
+                          type: "product-detail",
+                          productId: product.id,
+                          label: product.name,
+                        });
+                      }
+                    }}
+                  >
+                    商品詳情
                   </button>
 
                   <button
@@ -4025,8 +4614,27 @@ const sevenSequenceGuideV377 = [
       <header ref={topHeaderRefV370} className="top-header">
         <button
           className="menu-button"
-          onClick={() => setIsMenuOpen(true)}
-          aria-label="開啟選單"
+          onClick={() => {
+            const nextOpen = !isMenuOpen;
+            setIsMenuOpen(nextOpen);
+
+            if (
+              nextOpen &&
+              isAdminMode &&
+              isAdminEditMode
+            ) {
+              sendStudioSelection({
+                type: "navigation",
+                label: "分類與系列",
+              });
+            }
+          }}
+          aria-label={
+            isMenuOpen
+              ? "關閉選單"
+              : "開啟選單"
+          }
+          aria-expanded={isMenuOpen}
         >
           ☰
         </button>
@@ -4349,7 +4957,9 @@ const sevenSequenceGuideV377 = [
 
                         <div className="search-result-price">
                           <strong>{displayPrice(product)}</strong>
-                          {hasKnownOriginalPrice(product) && <span>{product.originalPrice}</span>}
+                          {hasKnownOriginalPrice(product) && (
+                            <span>{displayOriginalPrice(product)}</span>
+                          )}
                         </div>
 
                         <div className="search-result-actions">
@@ -4793,83 +5403,114 @@ const sevenSequenceGuideV377 = [
             </div>
 
             <nav className="drawer-nav drawer-accordion-v25" aria-label="回購需求選單">
-              <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => handleDrawerCategory("本月優惠", "全部")}>
-                  <span>本月優惠</span>
-                </button>
-              </div>
+              {(storefrontCatalogCategories.length > 0
+                ? storefrontCatalogCategories
+                : Object.keys(categoryConfig)
+                    .filter((name) =>
+                      [
+                        "本月優惠",
+                        "臉部保養",
+                        "身體洗護",
+                        "健康補給",
+                        "精油香氛",
+                        "新品預告",
+                      ].includes(name)
+                    )
+                    .map((name, index) => ({
+                      id: index + 1,
+                      name,
+                      sortOrder: index,
+                      isActive: true,
+                    })))
+                .filter((category) => category.isActive)
+                .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id)
+                .map((category) => {
+                  const categorySeries = storefrontCatalogSeries
+                    .filter(
+                      (item) =>
+                        item.categoryId === category.id && item.isActive
+                    )
+                    .sort(
+                      (a, b) =>
+                        a.sortOrder - b.sortOrder || a.id - b.id
+                    );
+                  const fallbackSeries =
+                    categorySeries.length > 0
+                      ? categorySeries.map((item) => item.name)
+                      : (categoryConfig[
+                          category.name as MainCategory
+                        ] ?? []).filter((name) => name !== "全部");
+                  const hasChildren = fallbackSeries.length > 0;
 
-              <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("臉部保養")}>
-                  <span>臉部保養</span>
-                </button>
-                {expandedDrawerGroup === "臉部保養" && (
-                  <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "全部")}>全部</button>
-                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "龍血系列")}>龍血系列</button>
-                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "保濕修護")}>保濕修護</button>
-                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "亮白保養")}>亮白保養</button>
-                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "舒緩敏感")}>舒緩敏感</button>
-                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "面膜")}>面膜</button>
-                    <button type="button" onClick={() => handleDrawerCategory("臉部保養", "高級養護")}>高級養護</button>
-                  </div>
-                )}
-              </div>
+                  return (
+                    <div
+                      className="drawer-accordion-item-v25"
+                      key={`drawer-category-${category.id}-${category.name}`}
+                    >
+                      <button
+                        type="button"
+                        className="drawer-accordion-title-v25"
+                        onClick={() =>
+                          hasChildren
+                            ? toggleDrawerGroup(category.name)
+                            : handleDrawerCategory(
+                                category.name as MainCategory,
+                                "全部"
+                              )
+                        }
+                      >
+                        <span>{category.name}</span>
+                      </button>
 
-              <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("身體洗護")}>
-                  <span>身體洗護</span>
-                </button>
-                {expandedDrawerGroup === "身體洗護" && (
-                  <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => handleDrawerCategory("身體洗護", "全部")}>全部</button>
-                    <button type="button" onClick={() => handleDrawerCategory("身體洗護", "口腔護理")}>口腔護理</button>
-                    <button type="button" onClick={() => handleDrawerCategory("身體洗護", "手工皂")}>手工皂</button>
-                    <button type="button" onClick={() => handleDrawerCategory("身體洗護", "洗髮沐浴")}>洗髮沐浴</button>
-                    <button type="button" onClick={() => handleDrawerCategory("身體洗護", "身體保養")}>身體保養</button>
-                  </div>
-                )}
-              </div>
-
-              <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("健康補給")}>
-                  <span>健康補給</span>
-                </button>
-                {expandedDrawerGroup === "健康補給" && (
-                  <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => handleDrawerCategory("健康補給", "全部")}>全部</button>
-                    <button type="button" onClick={() => handleDrawerCategory("健康補給", "益生菌")}>益生菌</button>
-                    <button type="button" onClick={() => handleDrawerCategory("健康補給", "葉黃素")}>葉黃素</button>
-                    <button type="button" onClick={() => handleDrawerCategory("健康補給", "膠原蛋白")}>膠原蛋白</button>
-                    <button type="button" onClick={() => handleDrawerCategory("健康補給", "魚油")}>魚油</button>
-                  </div>
-                )}
-              </div>
-
-              <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => toggleDrawerGroup("精油香氛")}>
-                  <span>精油香氛</span>
-                </button>
-                {expandedDrawerGroup === "精油香氛" && (
-                  <div className="drawer-sublist-v25">
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "全部")}>全部</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "單方精油")}>單方精油</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "複方精油")}>複方精油</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "七序精油")}>七序精油</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "精萃油")}>精萃油</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "美體精油保養")}>美體精油保養</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "精油配件")}>精油配件</button>
-                    <button type="button" onClick={() => handleDrawerCategory("精油香氛", "擴香設備")}>擴香設備</button>
-                  </div>
-                )}
-              </div>
-
-              <div className="drawer-accordion-item-v25">
-                <button type="button" className="drawer-accordion-title-v25" onClick={() => handleDrawerCategory("新品預告", "全部")}>
-                  <span>新品預告</span>
-                </button>
-              </div>
+                      {hasChildren && expandedDrawerGroup === category.name && (
+                        <div className="drawer-sublist-v25">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDrawerCategory(
+                                category.name as MainCategory,
+                                "全部"
+                              )
+                            }
+                          >
+                            全部
+                          </button>
+                          {fallbackSeries.map((seriesName) => (
+                            <button
+                              type="button"
+                              key={`${category.name}-${seriesName}`}
+                              onClick={() =>
+                                handleDrawerCategory(
+                                  category.name as MainCategory,
+                                  seriesName
+                                )
+                              }
+                            >
+                              {seriesName}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
             </nav>
+
+            {isAdminMode && isAdminEditMode && (
+              <button
+                type="button"
+                className="admin-v2-create-entry-button"
+                onClick={() => {
+                  setAdminCreateView("menu");
+                  setAdminSeriesMessage("");
+                  setAdminSeriesError("");
+                  setIsAdminCreateMenuOpen(true);
+                }}
+              >
+                <span className="admin-v2-create-entry-plus">+</span>
+                <span>新增內容</span>
+              </button>
+            )}
 
             <button
               type="button"
@@ -4885,71 +5526,418 @@ const sevenSequenceGuideV377 = [
         </section>
       )}
 
-      <section className="dragon-hero-v330 dragon-hero-v340" aria-label="佐登妮絲城堡龍血主視覺">
-        <picture className="dragon-hero-picture-v330 dragon-hero-picture-v340">
-          <source media="(min-width: 760px)" srcSet="/products/no1.png" />
-          <img
-            src="/products/no1.png"
-            alt="佐登妮絲城堡龍血系列主視覺"
-            onError={(event) => {
-              event.currentTarget.style.opacity = "0";
-            }}
-          />
-        </picture>
-        <span className="hero-image-placeholder-v340" aria-hidden="true">
-          龍血主視覺｜手機版 750 × 900 px
-        </span>
-      </section>
+      {isAdminMode &&
+        isAdminEditMode &&
+        isAdminCreateMenuOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="admin-v2-create-backdrop"
+            role="presentation"
+            onClick={() => setIsAdminCreateMenuOpen(false)}
+          >
+            <section
+              className="admin-v2-create-sheet"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="admin-v2-create-title"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="admin-v2-create-handle" aria-hidden="true" />
 
-      {/* V3.7.9：排行榜移除 TOP2＋TOP3 額外優惠橫幅；TOP2／TOP3 點擊直接開同一個洗沐自由配選擇器。 */}
-      <section className="top-ranking-section-v378" aria-label="熱銷排行榜">
-        <div className="top-ranking-heading-v378">
-          <h2>熱銷排行榜</h2>
-        </div>
+              <div className="admin-v2-create-header">
+                <div>
+                  <span className="admin-v2-create-kicker">
+                    {adminCreateView === "series" ? "系列" : adminCreateView === "product" ? "商品" : "新增"}
+                  </span>
+                  <h2 id="admin-v2-create-title">
+                    {adminCreateView === "series" ? "新增系列" : adminCreateView === "product" ? "新增商品" : "新增內容"}
+                  </h2>
+                </div>
 
-        <div className="top-ranking-stack-v378">
-          <div className="top-ranking-wide-row-v378">
-            {topRankingItemsV378.slice(0, 1).map((item) => renderTopRankingCardV378(item))}
-          </div>
+                <button
+                  type="button"
+                  className="admin-v2-create-close"
+                  aria-label="關閉新增內容"
+                  onClick={() => setIsAdminCreateMenuOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
 
-          <div className="top-ranking-pair-v378">
-            {topRankingItemsV378.slice(1, 3).map((item) => renderTopRankingCardV378(item))}
-          </div>
-          <div className="top-ranking-wide-row-v378">
-            {topRankingItemsV378.slice(3, 4).map((item) => renderTopRankingCardV378(item))}
-          </div>
+              {adminCreateView === "menu" ? (
+                <>
+                  <div className="admin-v2-create-options">
+                    <button
+                      type="button"
+                      onClick={() => setAdminCreateView("product")}
+                    >
+                      <span className="admin-v2-create-option-icon">+</span>
+                      <span>
+                        <strong>商品</strong>
+                        <small>新增一般或組合商品</small>
+                      </span>
+                    </button>
 
-          <div className="top-ranking-pair-v378">
-            {topRankingItemsV378.slice(4, 6).map((item) => renderTopRankingCardV378(item))}
-          </div>
-        </div>
-      </section>
+                    <button
+                      type="button"
+                      onClick={() => void openAdminCreateSeries()}
+                    >
+                      <span className="admin-v2-create-option-icon">+</span>
+                      <span>
+                        <strong>系列</strong>
+                        <small>在指定分類下建立新系列</small>
+                      </span>
+                    </button>
 
-      <section className="seasonal-feature-v340 seasonal-feature-v358" aria-label="夏日美白系列">
-        <div className="seasonal-hero-button-v340 seasonal-hero-static-v358">
-          <picture className="seasonal-hero-picture-v340">
-            <source media="(min-width: 760px)" srcSet="/products/no2.png" />
+                    <button type="button" disabled>
+                      <span className="admin-v2-create-option-icon">+</span>
+                      <span>
+                        <strong>分類</strong>
+                        <small>建立新的商品分類</small>
+                      </span>
+                    </button>
+                  </div>
+
+                  <p className="admin-v2-create-preview-note">
+                    分類功能將陸續開放
+                  </p>
+
+                  <button
+                    type="button"
+                    className="admin-v2-create-cancel"
+                    onClick={() => setIsAdminCreateMenuOpen(false)}
+                  >
+                    取消
+                  </button>
+                </>
+              ) : adminCreateView === "product" ? (
+                <>
+                  <div className="admin-v2-create-options">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.location.href =
+                          "/admin/products/new?type=product";
+                      }}
+                    >
+                      <span className="admin-v2-create-option-icon">+</span>
+                      <span>
+                        <strong>一般商品</strong>
+                        <small>建立單一品項商品</small>
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.location.href =
+                          "/admin/products/new?type=combo";
+                      }}
+                    >
+                      <span className="admin-v2-create-option-icon">+</span>
+                      <span>
+                        <strong>組合商品</strong>
+                        <small>建立可選方案或多品項組合</small>
+                      </span>
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="admin-v2-create-cancel"
+                    onClick={() => setAdminCreateView("menu")}
+                  >
+                    返回
+                  </button>
+                </>
+              ) : (
+                <form
+                  className="admin-v2-series-form"
+                  onSubmit={handleAdminSeriesSubmit}
+                >
+                  <label className="admin-v2-series-field">
+                    <span>系列名稱</span>
+                    <input
+                      type="text"
+                      value={adminSeriesName}
+                      onChange={(event) => {
+                        setAdminSeriesName(event.target.value);
+                        setAdminSeriesMessage("");
+                        setAdminSeriesError("");
+                      }}
+                      placeholder="例如：玫瑰系列"
+                      autoFocus
+                      disabled={adminSeriesSaving}
+                    />
+                  </label>
+
+                  <label className="admin-v2-series-field">
+                    <span>所屬分類</span>
+                    <select
+                      value={adminSeriesCategoryId}
+                      onChange={(event) => {
+                        setAdminSeriesCategoryId(event.target.value);
+                        setAdminSeriesMessage("");
+                        setAdminSeriesError("");
+                      }}
+                      disabled={
+                        adminSeriesLoading ||
+                        adminSeriesSaving ||
+                        adminCatalogCategories.length === 0
+                      }
+                    >
+                      {adminSeriesLoading ? (
+                        <option value="">讀取分類中…</option>
+                      ) : adminCatalogCategories.length === 0 ? (
+                        <option value="">沒有可用分類</option>
+                      ) : (
+                        adminCatalogCategories.map((category) => (
+                          <option
+                            key={category.id}
+                            value={String(category.id)}
+                          >
+                            {category.name}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </label>
+
+                  {adminSeriesError && (
+                    <p className="admin-v2-series-feedback error">
+                      {adminSeriesError}
+                    </p>
+                  )}
+
+                  {adminSeriesMessage && (
+                    <p className="admin-v2-series-feedback success">
+                      ✓ {adminSeriesMessage}
+                    </p>
+                  )}
+
+                  <div className="admin-v2-series-actions">
+                    <button
+                      type="button"
+                      className="admin-v2-series-back"
+                      onClick={() => {
+                        setAdminCreateView("menu");
+                        setAdminSeriesMessage("");
+                        setAdminSeriesError("");
+                      }}
+                      disabled={adminSeriesSaving}
+                    >
+                      返回
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="admin-v2-series-submit"
+                      disabled={
+                        adminSeriesLoading ||
+                        adminSeriesSaving ||
+                        !adminSeriesName.trim() ||
+                        !adminSeriesCategoryId
+                      }
+                    >
+                      {adminSeriesSaving ? "建立中…" : "建立系列"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </section>
+          </div>,
+          document.body
+        )}
+
+      {siteStudioConfig.hero.visible && (
+        <section
+          className={`dragon-hero-v330 dragon-hero-v340 ${
+            isAdminMode && isAdminEditMode
+              ? "admin-v2-manageable-site-block"
+              : ""
+          }`}
+          aria-label={siteStudioConfig.hero.alt}
+          onClick={(event) => {
+            if (isAdminMode && isAdminEditMode) {
+              event.preventDefault();
+              event.stopPropagation();
+              sendStudioSelection({
+                type: "hero",
+                slot: "primary",
+                label: "首頁主視覺",
+              });
+              return;
+            }
+
+            handleStudioHeroAction(siteStudioConfig.hero);
+          }}
+        >
+          <picture className="dragon-hero-picture-v330 dragon-hero-picture-v340">
+            <source
+              media="(min-width: 760px)"
+              srcSet={
+                siteStudioConfig.hero.desktopImage ||
+                siteStudioConfig.hero.image
+              }
+            />
             <img
-              src="/products/no2.png"
-              alt="櫻の雪傳明酸夏日美白系列主視覺"
+              src={siteStudioConfig.hero.image}
+              alt={siteStudioConfig.hero.alt}
               onError={(event) => {
                 event.currentTarget.style.opacity = "0";
               }}
             />
           </picture>
-        </div>
+          <span className="hero-image-placeholder-v340" aria-hidden="true">
+            主視覺｜{siteStudioConfig.hero.imageSpec}
+          </span>
+          {(siteStudioConfig.hero.title ||
+            siteStudioConfig.hero.subtitle ||
+            siteStudioConfig.hero.buttonLabel) && (
+            <div className="studio-hero-overlay-v1">
+              {siteStudioConfig.hero.title && (
+                <strong>{siteStudioConfig.hero.title}</strong>
+              )}
+              {siteStudioConfig.hero.subtitle && (
+                <span>{siteStudioConfig.hero.subtitle}</span>
+              )}
+              {siteStudioConfig.hero.buttonLabel && (
+                <em>{siteStudioConfig.hero.buttonLabel}</em>
+              )}
+            </div>
+          )}
+        </section>
+      )}
 
-        <div className="seasonal-product-showcase-v342" aria-label="夏日美白精選商品">
-          <div className="seasonal-product-grid-v342">
-            {summerWhiteningProducts.map((product) => (
-              <ProductCard
-                product={product}
-                key={`summer-whitening-${product.id}`}
-              />
-            ))}
+      {getStudioSection("ranking").visible && (
+        <section className="top-ranking-section-v378" aria-label="熱銷排行榜">
+          <div
+            className={`top-ranking-heading-v378 ${
+              isAdminMode && isAdminEditMode
+                ? "admin-v2-manageable-site-block"
+                : ""
+            }`}
+            onClick={(event) =>
+              selectStudioSection(
+                event,
+                "ranking",
+                getStudioSection("ranking").label
+              )
+            }
+          >
+            <h2>{getStudioSection("ranking").title}</h2>
+            {getStudioSection("ranking").subtitle && (
+              <p>{getStudioSection("ranking").subtitle}</p>
+            )}
           </div>
-        </div>
-      </section>
+
+          <div className="top-ranking-stack-v378">
+            <div className="top-ranking-wide-row-v378">
+              {topRankingItemsV378
+                .filter((item) => item.rank === 1)
+                .map((item) => renderTopRankingCardV378(item))}
+            </div>
+            <div className="top-ranking-pair-v378">
+              {topRankingItemsV378
+                .filter((item) => item.rank === 2 || item.rank === 3)
+                .map((item) => renderTopRankingCardV378(item))}
+            </div>
+            <div className="top-ranking-wide-row-v378">
+              {topRankingItemsV378
+                .filter((item) => item.rank === 4)
+                .map((item) => renderTopRankingCardV378(item))}
+            </div>
+            <div className="top-ranking-pair-v378">
+              {topRankingItemsV378
+                .filter((item) => item.rank === 5 || item.rank === 6)
+                .map((item) => renderTopRankingCardV378(item))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {siteStudioConfig.secondaryHero.visible && (
+        <section
+          className="seasonal-feature-v340 seasonal-feature-v358"
+          aria-label={siteStudioConfig.secondaryHero.alt}
+        >
+          <button
+            type="button"
+            className={`seasonal-hero-button-v340 seasonal-hero-static-v358 ${
+              isAdminMode && isAdminEditMode
+                ? "admin-v2-manageable-site-block"
+                : ""
+            }`}
+            style={
+              isAdminMode && isAdminEditMode
+                ? {
+                    pointerEvents: "auto",
+                    cursor: "pointer",
+                  }
+                : undefined
+            }
+            onClick={(event) => {
+              if (isAdminMode && isAdminEditMode) {
+                event.preventDefault();
+                event.stopPropagation();
+                sendStudioSelection({
+                  type: "hero",
+                  slot: "secondary",
+                  label: "首頁副主視覺",
+                });
+                return;
+              }
+
+              handleStudioHeroAction(siteStudioConfig.secondaryHero);
+            }}
+          >
+            <picture className="seasonal-hero-picture-v340">
+              <source
+                media="(min-width: 760px)"
+                srcSet={
+                  siteStudioConfig.secondaryHero.desktopImage ||
+                  siteStudioConfig.secondaryHero.image
+                }
+              />
+              <img
+                src={siteStudioConfig.secondaryHero.image}
+                alt={siteStudioConfig.secondaryHero.alt}
+                onError={(event) => {
+                  event.currentTarget.style.opacity = "0";
+                }}
+              />
+            </picture>
+
+            {(siteStudioConfig.secondaryHero.title ||
+              siteStudioConfig.secondaryHero.subtitle ||
+              siteStudioConfig.secondaryHero.buttonLabel) && (
+              <div className="studio-hero-overlay-v1">
+                {siteStudioConfig.secondaryHero.title && (
+                  <strong>{siteStudioConfig.secondaryHero.title}</strong>
+                )}
+                {siteStudioConfig.secondaryHero.subtitle && (
+                  <span>{siteStudioConfig.secondaryHero.subtitle}</span>
+                )}
+                {siteStudioConfig.secondaryHero.buttonLabel && (
+                  <em>{siteStudioConfig.secondaryHero.buttonLabel}</em>
+                )}
+              </div>
+            )}
+          </button>
+
+          <div className="seasonal-product-showcase-v342" aria-label="夏日美白精選商品">
+            <div className="seasonal-product-grid-v342">
+              {summerWhiteningProducts.map((product) => (
+                <ProductCard
+                  product={product}
+                  key={`summer-whitening-${product.id}`}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <MonthlyOffersSectionV380 />
 
@@ -4958,6 +5946,7 @@ const sevenSequenceGuideV377 = [
 
       <HomeProductSection
         id="home-body-care-hall-v312"
+        studioKey="bodyCare"
         eyebrow="Body Care"
         title="身體洗護精選"
         subtitle="洗髮沐浴、牙膏、手工皂與身體保養集中選購。"
@@ -4968,6 +5957,7 @@ const sevenSequenceGuideV377 = [
 
       <HomeProductSection
         id="home-health-hall-v271"
+        studioKey="health"
         eyebrow="Health Hall"
         title="健康補給精選"
         subtitle="益生菌、葉黃素、膠原蛋白與日常營養補給。"
@@ -4978,6 +5968,7 @@ const sevenSequenceGuideV377 = [
 
       <HomeProductSection
         id="home-aroma-hall-v271"
+        studioKey="aroma"
         eyebrow="Aroma Hall"
         title="精油香氛精選"
         subtitle="單方、複方精油與擴香選品，打造日常香氛儀式。"
@@ -4988,6 +5979,7 @@ const sevenSequenceGuideV377 = [
 
       <HomeProductSection
         id="home-coming-soon-hall-v31"
+        studioKey="comingSoon"
         eyebrow="New Preview"
         title="新品預告"
         subtitle="新品與新香型陸續登場，搶先查看。"
@@ -5529,7 +6521,9 @@ const sevenSequenceGuideV377 = [
                 <div>
                   <p>{getPriceModeLabel(selectedDetailProduct)}</p>
                   {hasKnownOriginalPrice(selectedDetailProduct) && (
-                    <span className="original-price">{selectedDetailProduct.originalPrice}</span>
+                    <span className="original-price">
+                      {displayOriginalPrice(selectedDetailProduct)}
+                    </span>
                   )}
                   <strong className={`price ${hasInquiryPrice(selectedDetailProduct) ? "inquiry" : ""}`}>
                     {displayPrice(selectedDetailProduct)}
@@ -6147,6 +7141,286 @@ const sevenSequenceGuideV377 = [
           font-weight: 950;
           text-decoration: none;
           box-shadow: 0 12px 24px rgba(178, 65, 51, 0.20);
+        }
+
+        .admin-v2-create-entry-button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          min-height: 52px;
+          margin-top: 14px;
+          padding: 0 18px;
+          border: 1.5px dashed rgba(154, 48, 66, 0.52);
+          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.82);
+          color: #8f2b3c;
+          font-family: inherit;
+          font-size: 15px;
+          font-weight: 950;
+          cursor: pointer;
+          box-shadow: 0 8px 20px rgba(84, 44, 37, 0.06);
+        }
+
+        .admin-v2-create-entry-plus {
+          display: inline-grid;
+          place-items: center;
+          width: 24px;
+          height: 24px;
+          border-radius: 999px;
+          background: #9a3042;
+          color: #fff;
+          font-size: 19px;
+          line-height: 1;
+          font-weight: 700;
+        }
+
+        .admin-v2-create-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 99999;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          padding: 18px 14px 0;
+          background: rgba(45, 30, 25, 0.42);
+          backdrop-filter: blur(3px);
+        }
+
+        .admin-v2-create-sheet {
+          width: min(100%, 520px);
+          max-height: min(82vh, 650px);
+          overflow-y: auto;
+          padding: 10px 18px 22px;
+          border: 1px solid rgba(154, 48, 66, 0.13);
+          border-bottom: 0;
+          border-radius: 30px 30px 0 0;
+          background: #fffaf6;
+          box-shadow: 0 -20px 55px rgba(57, 35, 29, 0.2);
+        }
+
+        .admin-v2-create-handle {
+          width: 44px;
+          height: 5px;
+          margin: 1px auto 15px;
+          border-radius: 999px;
+          background: rgba(76, 52, 43, 0.18);
+        }
+
+        .admin-v2-create-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 14px;
+          margin-bottom: 16px;
+        }
+
+        .admin-v2-create-kicker {
+          display: block;
+          margin-bottom: 3px;
+          color: #9a3042;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+        }
+
+        .admin-v2-create-header h2 {
+          margin: 0;
+          color: #432f29;
+          font-size: 24px;
+          line-height: 1.25;
+          font-weight: 950;
+        }
+
+        .admin-v2-create-close {
+          display: grid;
+          place-items: center;
+          flex: 0 0 auto;
+          width: 40px;
+          height: 40px;
+          border: 1px solid rgba(80, 55, 46, 0.12);
+          border-radius: 999px;
+          background: #fff;
+          color: #4b352d;
+          font: inherit;
+          font-size: 25px;
+          line-height: 1;
+          cursor: pointer;
+        }
+
+        .admin-v2-create-options {
+          display: grid;
+          gap: 10px;
+        }
+
+        .admin-v2-create-options > button {
+          display: flex;
+          align-items: center;
+          gap: 13px;
+          width: 100%;
+          min-height: 70px;
+          padding: 12px 14px;
+          border: 1px solid rgba(154, 48, 66, 0.14);
+          border-radius: 19px;
+          background: #fff;
+          color: #49332c;
+          font-family: inherit;
+          text-align: left;
+        }
+
+        .admin-v2-create-options > button:disabled {
+          opacity: 1;
+          cursor: default;
+        }
+
+        .admin-v2-create-option-icon {
+          display: grid;
+          place-items: center;
+          flex: 0 0 auto;
+          width: 38px;
+          height: 38px;
+          border-radius: 13px;
+          background: #f7e7e9;
+          color: #9a3042;
+          font-size: 24px;
+          font-weight: 700;
+          line-height: 1;
+        }
+
+        .admin-v2-create-options strong,
+        .admin-v2-create-options small {
+          display: block;
+        }
+
+        .admin-v2-create-options strong {
+          margin-bottom: 3px;
+          font-size: 16px;
+          font-weight: 950;
+        }
+
+        .admin-v2-create-options small {
+          color: #856f66;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .admin-v2-series-form {
+          display: grid;
+          gap: 15px;
+        }
+
+        .admin-v2-series-field {
+          display: grid;
+          gap: 7px;
+        }
+
+        .admin-v2-series-field > span {
+          color: #594139;
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .admin-v2-series-field input,
+        .admin-v2-series-field select {
+          box-sizing: border-box;
+          width: 100%;
+          min-height: 52px;
+          padding: 0 14px;
+          border: 1px solid rgba(154, 48, 66, 0.18);
+          border-radius: 15px;
+          outline: none;
+          background: #fff;
+          color: #49332c;
+          font-family: inherit;
+          font-size: 15px;
+          font-weight: 750;
+        }
+
+        .admin-v2-series-field input:focus,
+        .admin-v2-series-field select:focus {
+          border-color: rgba(154, 48, 66, 0.72);
+          box-shadow: 0 0 0 3px rgba(154, 48, 66, 0.08);
+        }
+
+        .admin-v2-series-field input:disabled,
+        .admin-v2-series-field select:disabled {
+          opacity: 0.65;
+        }
+
+        .admin-v2-series-feedback {
+          margin: 0;
+          padding: 11px 13px;
+          border-radius: 13px;
+          font-size: 13px;
+          font-weight: 850;
+        }
+
+        .admin-v2-series-feedback.error {
+          background: #fff0f1;
+          color: #9a3042;
+        }
+
+        .admin-v2-series-feedback.success {
+          background: #f1f7ef;
+          color: #48633f;
+        }
+
+        .admin-v2-series-actions {
+          display: grid;
+          grid-template-columns: 0.82fr 1.18fr;
+          gap: 10px;
+          margin-top: 4px;
+        }
+
+        .admin-v2-series-back,
+        .admin-v2-series-submit {
+          min-height: 50px;
+          border-radius: 15px;
+          font-family: inherit;
+          font-size: 15px;
+          font-weight: 900;
+          cursor: pointer;
+        }
+
+        .admin-v2-series-back {
+          border: 0;
+          background: #eee6e0;
+          color: #5c443b;
+        }
+
+        .admin-v2-series-submit {
+          border: 1px solid #9a3042;
+          background: linear-gradient(135deg, #9a3042, #7f2635);
+          color: #fff;
+        }
+
+        .admin-v2-series-submit:disabled,
+        .admin-v2-series-back:disabled {
+          opacity: 0.5;
+          cursor: default;
+        }
+
+        .admin-v2-create-preview-note {
+          margin: 13px 4px 0;
+          color: #9a8278;
+          font-size: 12px;
+          font-weight: 700;
+          text-align: center;
+        }
+
+        .admin-v2-create-cancel {
+          width: 100%;
+          min-height: 48px;
+          margin-top: 14px;
+          border: 0;
+          border-radius: 16px;
+          background: #eee6e0;
+          color: #5c443b;
+          font-family: inherit;
+          font-size: 15px;
+          font-weight: 900;
+          cursor: pointer;
         }
 
         .hero-section {
@@ -19973,8 +21247,8 @@ const sevenSequenceGuideV377 = [
           border: 0 !important;
           border-radius: 0 !important;
           background: #fff !important;
-          cursor: default !important;
-          pointer-events: none !important;
+          cursor: pointer !important;
+          pointer-events: auto !important;
           box-shadow: none !important;
         }
 
@@ -22312,6 +23586,7 @@ const sevenSequenceGuideV377 = [
 
         .top-ranking-card-v378 {
           min-width: 0;
+          cursor: pointer;
           overflow: hidden;
           border: 1px solid rgba(112, 79, 58, 0.11);
           border-radius: 22px;

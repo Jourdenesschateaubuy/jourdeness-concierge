@@ -1,0 +1,504 @@
+.form {
+  display: grid;
+  gap: 16px;
+  padding-bottom: 86px;
+}
+
+.stateCard {
+  min-height: 260px;
+  padding: 28px;
+  border: 1px solid #eee3df;
+  border-radius: 16px;
+  background: #fffaf8;
+  color: #6d5d60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.stateCard p {
+  margin: 0;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #eadadd;
+  border-top-color: #8b2940;
+  border-radius: 999px;
+  animation: detailStudioSpin 0.8s linear infinite;
+}
+
+@keyframes detailStudioSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.topLine {
+  padding: 2px 2px 15px;
+  border-bottom: 1px solid #eee3df;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.topLine > div {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.topLine span {
+  color: #9d2d42;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.topLine h2 {
+  margin: 0;
+  color: #463639;
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.topLine small {
+  color: #8a797d;
+  font-size: 11px;
+}
+
+.syncBadge {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #efebe9;
+  color: #7d7073 !important;
+  letter-spacing: 0 !important;
+}
+
+.unsavedBadge {
+  background: #fff0d8;
+  color: #965900 !important;
+}
+
+.section {
+  padding: 18px;
+  border: 1px solid #ece1de;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 7px 20px rgba(72, 49, 53, 0.04);
+  display: grid;
+  gap: 14px;
+}
+
+.section h3 {
+  margin: 0;
+  color: #5e4147;
+  font-size: 14px;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.sectionHeading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.sectionHeading p {
+  margin: 0;
+  color: #8c7d80;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.field {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.field > span {
+  color: #6f5d61;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border: 1px solid #ded2cf;
+  border-radius: 10px;
+  background: #fffdfc;
+  color: #382d30;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.field input {
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+.field textarea {
+  min-height: 88px;
+  padding: 11px 12px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: #a74459;
+  box-shadow: 0 0 0 3px rgba(157, 45, 66, 0.1);
+}
+
+.uploadButton,
+.addButton {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: #f3e6e9;
+  color: #86283d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.uploadButton input {
+  display: none;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.galleryItem {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #eadfdb;
+  border-radius: 12px;
+  background: #fcf9f8;
+  display: grid;
+  gap: 9px;
+}
+
+.galleryImage {
+  position: relative;
+  aspect-ratio: 1 / 1.06;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #f3eeec;
+}
+
+.galleryImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.galleryImage span {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(69, 45, 50, 0.86);
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.galleryActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.galleryActions button,
+.expandedItemTop button {
+  min-height: 32px;
+  padding: 0 7px;
+  border: 1px solid #dfd2cf;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #7d2638;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.galleryActions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.emptyGallery {
+  padding: 18px;
+  border: 1px dashed #dbcac7;
+  border-radius: 11px;
+  background: #faf7f6;
+  color: #8c7c7f;
+  font-size: 11px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.expandedList {
+  display: grid;
+  gap: 12px;
+}
+
+.expandedItem {
+  padding: 14px;
+  border: 1px solid #eadfdb;
+  border-radius: 12px;
+  background: #fcf9f8;
+  display: grid;
+  gap: 12px;
+}
+
+.expandedItemTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.expandedItemTop strong {
+  color: #61474c;
+  font-size: 11px;
+}
+
+.errorMessage,
+.successMessage {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.errorMessage {
+  background: #fff0f0;
+  color: #a02f3f;
+}
+
+.successMessage {
+  background: #edf8f1;
+  color: #287247;
+}
+
+.stickyActions {
+  position: sticky;
+  bottom: -22px;
+  z-index: 5;
+  margin: 0 -22px -22px;
+  padding: 13px 22px;
+  border-top: 1px solid #e8ddda;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  display: grid;
+  grid-template-columns: 1fr minmax(160px, 230px);
+  align-items: center;
+  gap: 12px;
+}
+
+.stickyActions span {
+  color: #817276;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.saveButton {
+  min-height: 44px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 10px;
+  background: #7d2638;
+  color: #ffffff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.saveButton:disabled {
+  background: #c8b9bc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1080px) {
+  .galleryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .stickyActions {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* 商品詳情編輯器：依照右側手機畫面由上往下呈現 */
+.orderGuide {
+  padding: 12px 14px;
+  border: 1px solid #eadfdb;
+  border-radius: 12px;
+  background: #faf7f6;
+  display: grid;
+  gap: 5px;
+}
+
+.orderGuide strong {
+  color: #7d2638;
+  font-size: 11px;
+}
+
+.orderGuide span {
+  color: #7d7073;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.sectionTitleRow {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+
+.sectionTitleRow > div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.sectionTitleRow h3 {
+  margin: 0;
+}
+
+.sectionTitleRow p {
+  margin: 0;
+  color: #8c7d80;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.sectionStep {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #7d2638;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.readOnlyMeta {
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #e7dbd8;
+  border-radius: 10px;
+  background: #faf7f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.readOnlyMeta span {
+  color: #8b7b7f;
+  font-size: 10px;
+}
+
+.readOnlyMeta strong {
+  color: #7d2638;
+  font-size: 11px;
+}
+
+.priceReferenceSection {
+  background:
+    linear-gradient(135deg, rgba(157, 45, 66, 0.05), transparent 55%),
+    #fffdfa;
+}
+
+.priceReference {
+  padding: 15px;
+  border: 1px solid #ead9d4;
+  border-radius: 13px;
+  background: #fff8f1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 6px 12px;
+}
+
+.priceReference span {
+  color: #9a7b65;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.priceReference del {
+  color: #9b8c8e;
+  font-size: 12px;
+}
+
+.priceReference strong {
+  color: #a52d45;
+  font-size: 21px;
+}
+
+.priceReference em {
+  grid-column: 1 / -1;
+  color: #8a6268;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.referenceNote {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #f7f3f2;
+  color: #7d7073;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.editPriceButton {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid #d9c8cc;
+  border-radius: 10px;
+  background: #fff;
+  color: #7d2638;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}

@@ -1,93 +1,346 @@
-﻿.shell {
-  height: 100dvh;
+.studioShell {
   display: flex;
   flex-direction: column;
+  height: calc(100dvh - 58px);
+  min-height: 640px;
   overflow: hidden;
-  background: #fff;
+  background: #f2efed;
   color: #38282b;
   font-family: Arial, "Noto Sans TC", sans-serif;
 }
 
-.manageBar {
+.studioHeader {
   flex: 0 0 auto;
-  min-height: 58px;
-  padding: 8px 12px;
-  border-bottom: 1px solid #eaded8;
+  min-height: 68px;
+  padding: 10px 18px;
+  border-bottom: 1px solid #e5d9d5;
   background: #fffaf7;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 18px;
 }
 
-.manageTitle {
+.studioBrand {
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 12px;
 }
 
-.manageTitle > div {
-  min-width: 0;
-  display: grid;
-  gap: 2px;
-}
-
-.manageTitle strong {
-  color: #5f1f2d;
-  font-size: 14px;
-}
-
-.manageTitle small {
-  color: #8b7974;
-  font-size: 10px;
-}
-
-.manageBadge {
-  min-height: 30px;
-  padding: 0 10px;
+.studioBrand > span {
+  min-height: 34px;
+  padding: 0 12px;
   border-radius: 999px;
   background: #7d2638;
-  color: #fff;
+  color: #ffffff;
   display: inline-flex;
   align-items: center;
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.previewButton {
-  min-height: 40px;
-  padding: 0 14px;
-  border: 0;
-  border-radius: 11px;
-  background: #302623;
-  color: #fff;
-  font: inherit;
   font-size: 11px;
   font-weight: 900;
+  white-space: nowrap;
+}
+
+.studioBrand > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.studioBrand strong {
+  color: #5f1f2d;
+  font-size: 15px;
+}
+
+.studioBrand small {
+  color: #8b7974;
+  font-size: 11px;
+}
+
+.studioActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.studioActions button,
+.studioActions a {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(125, 38, 56, 0.2);
+  border-radius: 10px;
+  background: #ffffff;
+  color: #7d2638;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  text-decoration: none;
   cursor: pointer;
 }
 
-.manageHint {
+.studioActions button:hover,
+.studioActions a:hover {
+  background: #fff2f4;
+}
+
+/* 左右固定為約 50 / 50 */
+.studioBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.editorPanel {
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid #e0d5d1;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.editorPanelHeader {
   flex: 0 0 auto;
-  min-height: 32px;
-  padding: 6px 10px;
-  border-bottom: 1px solid #eadfd5;
-  background: #fff7ed;
-  color: #816e67;
+  min-height: 64px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #eee4e1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.editorPanelHeader > div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.editorPanelHeader span {
+  color: #9d2d42;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.editorPanelHeader strong {
+  overflow: hidden;
+  color: #49383b;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editorPanelHeader button {
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid #e1d4d7;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #7d2638;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.editorPanelContent {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 22px;
+}
+
+.emptyEditor {
+  min-height: 100%;
+  padding: 40px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.emptyEditorIcon {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  background: #f6e9ec;
+  color: #9d2d42;
   display: grid;
   place-items: center;
-  font-size: 10px;
+  font-size: 25px;
+}
+
+.emptyEditor h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.emptyEditor p {
+  max-width: 330px;
+  margin: 11px 0 0;
+  color: #817477;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.editorTips {
+  width: min(100%, 350px);
+  margin-top: 24px;
+  display: grid;
+  gap: 9px;
+  text-align: left;
+}
+
+.editorTips span {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f8f5f4;
+  color: #75676a;
+  font-size: 12px;
+}
+
+.editorPlaceholder {
+  display: grid;
+  gap: 18px;
+}
+
+.editorHeading {
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee4e1;
+  display: grid;
+  gap: 5px;
+}
+
+.editorHeading span {
+  color: #9d2d42;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.editorHeading h2 {
+  margin: 0;
+  font-size: 23px;
+}
+
+.editorPlaceholder > p {
+  margin: 0;
+  color: #7d7073;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.temporaryEditorLink {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: #7d2638;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.previewWorkspace {
+  min-width: 0;
+  min-height: 0;
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(157, 45, 66, 0.08),
+      transparent 34%
+    ),
+    #ece8e6;
+  display: flex;
+  flex-direction: column;
+}
+
+.phonePreviewTop {
+  flex: 0 0 auto;
+  min-height: 46px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #ddd2ce;
+  background: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #75686a;
+  font-size: 11px;
   font-weight: 750;
+}
+
+.phonePreviewTop > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #513d41;
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #3c9561;
+  box-shadow: 0 0 0 4px rgba(60, 149, 97, 0.12);
+}
+
+.phoneStage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* 手機預覽縮小，避免佔滿右半部 */
+.phoneFrame {
+  position: relative;
+  width: min(100%, 390px);
+  height: calc(100dvh - 220px);
+  min-height: 560px;
+  max-height: 760px;
+  padding: 12px 8px 8px;
+  border: 8px solid #272222;
+  border-radius: 34px;
+  background: #272222;
+  box-shadow:
+    0 24px 48px rgba(48, 33, 36, 0.18),
+    0 8px 18px rgba(48, 33, 36, 0.1);
+}
+
+.phoneSpeaker {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  z-index: 2;
+  width: 74px;
+  height: 5px;
+  border-radius: 999px;
+  background: #4c4545;
+  transform: translateX(-50%);
 }
 
 .storefrontFrame {
   display: block;
-  flex: 1 1 auto;
   width: 100%;
-  min-height: 0;
+  height: 100%;
   border: 0;
-  background: #fff;
+  border-radius: 22px;
+  background: #ffffff;
 }
 
 .previewShell {
@@ -95,7 +348,7 @@
   width: 100%;
   height: 100dvh;
   overflow: hidden;
-  background: #fff;
+  background: #ffffff;
 }
 
 .previewFrame {
@@ -103,72 +356,47 @@
   width: 100%;
   height: 100%;
   border: 0;
-  background: #fff;
+  background: #ffffff;
 }
 
 .returnManageButton {
   position: fixed;
-  right: 14px;
-  bottom: 14px;
+  right: 16px;
+  bottom: 16px;
   z-index: 100;
   min-height: 46px;
-  padding: 0 17px;
+  padding: 0 18px;
   border: 0;
   border-radius: 999px;
   background: #7d2638;
-  color: #fff;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-@media (max-width: 640px) {
-  .manageBar {
-    min-height: 54px;
-    padding: 7px 8px;
-  }
-
-  .manageTitle small {
-    display: none;
-  }
-}
-
-
-/* Admin V2：點選式修改模式 */
-.manageActions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.editModeButton {
-  min-height: 42px;
-  padding: 0 14px;
-  border: 1px solid rgba(125, 38, 56, 0.22);
-  border-radius: 12px;
-  background: #fff;
-  color: #7d2638;
+  color: #ffffff;
   font: inherit;
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
 }
 
-.editModeButtonActive {
-  border-color: #7d2638;
-  background: #7d2638;
-  color: #fff;
-  box-shadow: 0 7px 18px rgba(125, 38, 56, 0.2);
+@media (max-width: 1200px) {
+  .phoneFrame {
+    width: min(100%, 360px);
+    min-height: 540px;
+    max-height: 720px;
+  }
 }
 
-@media (max-width: 560px) {
-  .manageActions {
-    gap: 6px;
-  }
-
-  .editModeButton {
-    min-height: 40px;
-    padding: 0 11px;
-    font-size: 11px;
+@media (max-width: 900px) {
+  .studioShell::before {
+    content: "網站工作台請使用電腦螢幕操作";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    padding: 30px;
+    background: #fffaf7;
+    color: #7d2638;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 900;
   }
 }

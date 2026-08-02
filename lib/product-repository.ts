@@ -20,6 +20,7 @@ export type ProductWriteInput = {
   name: string;
   category: string;
   series: string;
+  storefrontCategory?: string;
   originalPrice?: string;
   price: string;
   image: string;
@@ -48,6 +49,7 @@ type ProductRow = {
   name: string;
   category: string;
   series: string;
+  storefront_category: string | null;
   original_price: string | null;
   price: string;
   image: string;
@@ -83,6 +85,7 @@ function rowToProduct(row: ProductRow): DatabaseProduct {
     name: row.name,
     category: row.category as MainCategory,
     series: row.series,
+    storefrontCategory: optional(row.storefront_category) as MainCategory | undefined,
     originalPrice: optional(row.original_price),
     price: row.price,
     image: row.image,
@@ -139,7 +142,10 @@ export async function getDatabaseProduct(id: number) {
   return result.rows[0] ? rowToProduct(result.rows[0]) : null;
 }
 
-export async function createDatabaseProduct(input: ProductWriteInput) {
+export async function createDatabaseProduct(
+  input: ProductWriteInput,
+  productType: "product" | "combo" = "product"
+) {
   return withDbClient(async (client) => {
     await client.query("BEGIN");
 
@@ -151,18 +157,31 @@ export async function createDatabaseProduct(input: ProductWriteInput) {
       );
       const id = Number(idResult.rows[0]?.id ?? 1);
 
+      const comboConfig =
+        input.comboConfig ??
+        (productType === "combo"
+          ? {
+              productId: id,
+              type: "mix_match" as const,
+              unitLabel: "件",
+              allowSameProduct: true,
+              options: [],
+              plans: [],
+            }
+          : undefined);
+
       const result = await client.query<ProductRow>(
         `
           INSERT INTO products (
-            id, sku, name, category, series, original_price, price, image,
+            id, sku, name, category, series, storefront_category, original_price, price, image,
             description, card_name, card_subtitle, spec, intro, price_note,
             expiry_note, internal_expiry_date,
             features, suitable_for, usage, notice, gallery, expanded_info, combo_config,
             status, sort_order, updated_at
           )
           VALUES (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,
-            $17::jsonb,$18::jsonb,$19,$20,$21::jsonb,$22::jsonb,$23::jsonb,$24,$25,NOW()
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,
+            $18::jsonb,$19::jsonb,$20,$21,$22::jsonb,$23::jsonb,$24::jsonb,$25,$26,NOW()
           )
           RETURNING *
         `,
@@ -172,6 +191,7 @@ export async function createDatabaseProduct(input: ProductWriteInput) {
           input.name,
           input.category,
           input.series,
+          input.storefrontCategory || null,
           input.originalPrice || null,
           input.price,
           input.image,
@@ -189,7 +209,7 @@ export async function createDatabaseProduct(input: ProductWriteInput) {
           input.notice || null,
           JSON.stringify(input.gallery ?? []),
           JSON.stringify(input.expandedInfo ?? []),
-          input.comboConfig ? JSON.stringify(input.comboConfig) : null,
+          comboConfig ? JSON.stringify(comboConfig) : null,
           input.status,
           input.sortOrder,
         ]
@@ -216,26 +236,27 @@ export async function updateDatabaseProduct(
         name = $3,
         category = $4,
         series = $5,
-        original_price = $6,
-        price = $7,
-        image = $8,
-        description = $9,
-        card_name = $10,
-        card_subtitle = $11,
-        spec = $12,
-        intro = $13,
-        price_note = $14,
-        expiry_note = $15,
-        internal_expiry_date = $16,
-        features = $17::jsonb,
-        suitable_for = $18::jsonb,
-        usage = $19,
-        notice = $20,
-        gallery = $21::jsonb,
-        expanded_info = $22::jsonb,
-        combo_config = COALESCE($23::jsonb, combo_config),
-        status = $24,
-        sort_order = $25,
+        storefront_category = COALESCE($6, storefront_category),
+        original_price = $7,
+        price = $8,
+        image = $9,
+        description = $10,
+        card_name = $11,
+        card_subtitle = $12,
+        spec = $13,
+        intro = $14,
+        price_note = $15,
+        expiry_note = $16,
+        internal_expiry_date = $17,
+        features = $18::jsonb,
+        suitable_for = $19::jsonb,
+        usage = $20,
+        notice = $21,
+        gallery = $22::jsonb,
+        expanded_info = $23::jsonb,
+        combo_config = COALESCE($24::jsonb, combo_config),
+        status = $25,
+        sort_order = $26,
         updated_at = NOW()
       WHERE id = $1
       RETURNING *
@@ -246,6 +267,7 @@ export async function updateDatabaseProduct(
       input.name,
       input.category,
       input.series,
+      input.storefrontCategory || null,
       input.originalPrice || null,
       input.price,
       input.image,
@@ -288,6 +310,47 @@ export async function updateProductStatus(
 
   return result.rows[0] ? rowToProduct(result.rows[0]) : null;
 }
+export async function updateProductSortOrders(
+  items: Array<{
+    id: number;
+    sortOrder: number;
+  }>
+) {
+  if (items.length === 0) return;
+
+  return withDbClient(async (client) => {
+    await client.query("BEGIN");
+
+    try {
+      for (const item of items) {
+        if (
+          !Number.isInteger(item.id) ||
+          item.id <= 0 ||
+          !Number.isInteger(item.sortOrder)
+        ) {
+          throw new Error("商品排序資料無效。");
+        }
+
+        await client.query(
+          `
+            UPDATE products
+            SET
+              sort_order = $2,
+              updated_at = NOW()
+            WHERE id = $1
+          `,
+          [item.id, item.sortOrder]
+        );
+      }
+
+      await client.query("COMMIT");
+      return true;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  });
+}
 
 export async function deleteDatabaseProduct(id: number) {
   const result = await dbQuery<{ id: number }>(
@@ -296,4 +359,158 @@ export async function deleteDatabaseProduct(id: number) {
   );
 
   return result.rowCount === 1;
+}
+
+
+export type ProductPartialUpdate = Partial<
+  Pick<
+    ProductWriteInput,
+    | "sku"
+    | "name"
+    | "category"
+    | "series"
+    | "storefrontCategory"
+    | "originalPrice"
+    | "price"
+    | "image"
+    | "description"
+    | "cardName"
+    | "cardSubtitle"
+    | "spec"
+    | "intro"
+    | "priceNote"
+    | "expiryNote"
+    | "internalExpiryDate"
+    | "features"
+    | "suitableFor"
+    | "usage"
+    | "notice"
+    | "gallery"
+    | "expandedInfo"
+    | "comboConfig"
+    | "status"
+    | "sortOrder"
+  >
+>;
+
+const partialProductColumnMap: Record<
+  keyof ProductPartialUpdate,
+  {
+    column: string;
+    json?: boolean;
+  }
+> = {
+  sku: { column: "sku" },
+  name: { column: "name" },
+  category: { column: "category" },
+  series: { column: "series" },
+  storefrontCategory: {
+    column: "storefront_category",
+  },
+  originalPrice: { column: "original_price" },
+  price: { column: "price" },
+  image: { column: "image" },
+  description: { column: "description" },
+  cardName: { column: "card_name" },
+  cardSubtitle: { column: "card_subtitle" },
+  spec: { column: "spec" },
+  intro: { column: "intro" },
+  priceNote: { column: "price_note" },
+  expiryNote: { column: "expiry_note" },
+  internalExpiryDate: {
+    column: "internal_expiry_date",
+  },
+  features: { column: "features", json: true },
+  suitableFor: {
+    column: "suitable_for",
+    json: true,
+  },
+  usage: { column: "usage" },
+  notice: { column: "notice" },
+  gallery: { column: "gallery", json: true },
+  expandedInfo: {
+    column: "expanded_info",
+    json: true,
+  },
+  comboConfig: {
+    column: "combo_config",
+    json: true,
+  },
+  status: { column: "status" },
+  sortOrder: { column: "sort_order" },
+};
+
+export async function updateDatabaseProductPartial(
+  id: number,
+  patch: ProductPartialUpdate
+) {
+  const entries = (
+    Object.entries(patch) as Array<
+      [
+        keyof ProductPartialUpdate,
+        ProductPartialUpdate[keyof ProductPartialUpdate],
+      ]
+    >
+  ).filter(([, value]) => value !== undefined);
+
+  if (entries.length === 0) {
+    return getDatabaseProduct(id);
+  }
+
+  const values: unknown[] = [id];
+
+  const assignments = entries.map(
+    ([field, value], index) => {
+      const definition =
+        partialProductColumnMap[field];
+      const parameterIndex = index + 2;
+
+      const nullableFields = new Set<
+        keyof ProductPartialUpdate
+      >([
+        "sku",
+        "storefrontCategory",
+        "originalPrice",
+        "cardName",
+        "cardSubtitle",
+        "spec",
+        "intro",
+        "priceNote",
+        "expiryNote",
+        "internalExpiryDate",
+        "usage",
+        "notice",
+        "comboConfig",
+      ]);
+
+      values.push(
+        definition.json
+          ? JSON.stringify(value ?? null)
+          : value === "" &&
+              nullableFields.has(field)
+            ? null
+            : value
+      );
+
+      return `${definition.column} = $${parameterIndex}${
+        definition.json ? "::jsonb" : ""
+      }`;
+    }
+  );
+
+  const result = await dbQuery<ProductRow>(
+    `
+      UPDATE products
+      SET
+        ${assignments.join(",\n        ")},
+        updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+    `,
+    values
+  );
+
+  return result.rows[0]
+    ? rowToProduct(result.rows[0])
+    : null;
 }

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   useEffect,
@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 
+import { readJsonResponse } from "../../../../lib/http-json";
 import type {
   ComboConfig,
   ComboOption,
@@ -203,9 +204,13 @@ export default function ComboConfigEditor({
           );
         }
 
-        const data = (await response.json()) as {
-          products?: CatalogProduct[];
-        };
+        const data =
+          await readJsonResponse<{
+            products?: CatalogProduct[];
+          }>(
+            response,
+            "商品資料讀取失敗"
+          );
 
         if (cancelled) return;
 
@@ -217,7 +222,7 @@ export default function ComboConfigEditor({
           )
         );
       } catch (error) {
-        console.error(error);
+        console.warn(error);
       } finally {
         if (!cancelled) {
           setCatalogLoading(false);

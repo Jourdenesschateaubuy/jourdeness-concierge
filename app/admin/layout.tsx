@@ -1,6 +1,9 @@
 ﻿import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+
 import { hasValidAdminSession } from "../../lib/admin-auth";
+
+import AdminNavigation from "./_components/AdminNavigation";
 
 export const dynamic = "force-dynamic";
 
@@ -21,5 +24,10 @@ export default async function AdminLayout({
     redirect("/admin-login");
   }
 
-  return children;
+  return (
+    <>
+      <AdminNavigation />
+      {children}
+    </>
+  );
 }
