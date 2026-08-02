@@ -1,5 +1,7 @@
-﻿import { notFound } from "next/navigation";
+import { notFound } from "next/navigation";
+
 import { getDatabaseProduct } from "../../../../../lib/product-repository";
+import { getComboConfig } from "../../../../../lib/storefront-core";
 import { updateProductAction } from "../../actions";
 import ProductCardEditForm from "../../_components/ProductCardEditForm";
 import styles from "../../../admin.module.css";
@@ -29,13 +31,35 @@ export default async function EditProductPage({
     notFound();
   }
 
+  const legacyComboConfig =
+    product.comboConfig ?? getComboConfig(product.id) ?? undefined;
+
+  const editableProduct = legacyComboConfig
+    ? {
+        ...product,
+        comboConfig: legacyComboConfig,
+      }
+    : product;
+
+  const isComboProduct = Boolean(editableProduct.comboConfig);
+
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
         <div>
-          <p className={styles.eyebrow}>PRODUCT CARD</p>
-          <h1>編輯商品卡</h1>
-          <p>只留下客人會在商品卡上看到的內容。</p>
+          <p className={styles.eyebrow}>
+            {isComboProduct ? "COMBO PRODUCT" : "PRODUCT CARD"}
+          </p>
+
+          <h1>
+            {isComboProduct ? "編輯組合商品" : "編輯商品卡"}
+          </h1>
+
+          <p>
+            {isComboProduct
+              ? "可修改商品卡、組合內容與商品資訊。"
+              : "只留下客人會在商品卡上看到的內容。"}
+          </p>
         </div>
       </header>
 
@@ -51,12 +75,12 @@ export default async function EditProductPage({
             fontSize: 13,
           }}
         >
-          ✓ 商品卡變更已儲存
+          ✓ {isComboProduct ? "組合商品" : "商品卡"}變更已儲存
         </div>
       ) : null}
 
       <ProductCardEditForm
-        product={product}
+        product={editableProduct}
         action={updateProductAction}
       />
     </div>
