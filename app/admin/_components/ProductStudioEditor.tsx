@@ -4,7 +4,6 @@ import {
   useEffect,
   useMemo,
   useState,
-  type ChangeEvent,
   type FormEvent,
 } from "react";
 
@@ -209,47 +208,6 @@ function productToForm(
   };
 }
 
-function getUploadedImageUrl(payload: unknown) {
-  if (!payload || typeof payload !== "object") {
-    return "";
-  }
-
-  const record =
-    payload as Record<string, unknown>;
-
-  for (const value of [
-    record.url,
-    record.publicUrl,
-    record.imageUrl,
-  ]) {
-    if (typeof value === "string" && value) {
-      return value;
-    }
-  }
-
-  if (
-    record.file &&
-    typeof record.file === "object"
-  ) {
-    const file =
-      record.file as Record<string, unknown>;
-
-    for (const value of [
-      file.publicUrl,
-      file.url,
-    ]) {
-      if (
-        typeof value === "string" &&
-        value
-      ) {
-        return value;
-      }
-    }
-  }
-
-  return "";
-}
-
 export default function ProductStudioEditor({
   productId,
   onDraftChange,
@@ -263,8 +221,6 @@ export default function ProductStudioEditor({
   const [loading, setLoading] =
     useState(true);
   const [saving, setSaving] =
-    useState(false);
-  const [uploading, setUploading] =
     useState(false);
   const [message, setMessage] =
     useState("");
@@ -402,72 +358,6 @@ export default function ProductStudioEditor({
 
     setMessage("");
     setError("");
-  }
-
-  async function uploadImage(
-    event: ChangeEvent<HTMLInputElement>
-  ) {
-    const file =
-      event.target.files?.[0];
-    event.target.value = "";
-
-    if (!file) return;
-
-    setUploading(true);
-    setMessage("");
-    setError("");
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch(
-        "/api/admin/product-images/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const payload =
-        await readJsonResponse<
-          Record<string, unknown> & {
-            error?: string;
-          }
-        >(
-          response,
-          "圖片上傳失敗"
-        );
-
-      if (!response.ok) {
-        throw new Error(
-          payload.error ||
-            "圖片上傳失敗"
-        );
-      }
-
-      const imageUrl =
-        getUploadedImageUrl(payload);
-
-      if (!imageUrl) {
-        throw new Error(
-          "圖片已上傳，但沒有取得圖片網址"
-        );
-      }
-
-      updateField("image", imageUrl);
-      setMessage(
-        "新圖片已上傳，請按「儲存商品卡」。"
-      );
-    } catch (uploadError) {
-      setError(
-        uploadError instanceof Error
-          ? uploadError.message
-          : "圖片上傳失敗"
-      );
-    } finally {
-      setUploading(false);
-    }
   }
 
   async function saveProductCard(
@@ -629,20 +519,22 @@ export default function ProductStudioEditor({
             )}
           </div>
 
-          <label
-            className={styles.uploadButton}
-          >
+          <label className={styles.field}>
+            <span>圖片網址</span>
             <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={uploadImage}
-              disabled={
-                uploading || saving
+              value={form.image}
+              onChange={(event) =>
+                updateField(
+                  "image",
+                  event.target.value
+                )
               }
+              placeholder="/products/no1.png"
+              disabled={saving}
             />
-            {uploading
-              ? "圖片上傳中…"
-              : "更換商品卡圖片"}
+            <small>
+              圖片請先放入 public/products，再輸入 /products/檔名。
+            </small>
           </label>
 
           <small>
@@ -827,7 +719,6 @@ export default function ProductStudioEditor({
           className={styles.saveButton}
           disabled={
             saving ||
-            uploading ||
             !hasChanges
           }
         >

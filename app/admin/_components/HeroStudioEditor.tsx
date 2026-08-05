@@ -1,11 +1,10 @@
 "use client";
 
 import {
+  FormEvent,
   useEffect,
   useMemo,
   useState,
-  type ChangeEvent,
-  type FormEvent,
 } from "react";
 
 import { readJsonResponse } from "../../../lib/http-json";
@@ -30,25 +29,6 @@ type ImageMeta = {
   format: string;
 };
 
-function getUploadedImageUrl(payload: unknown) {
-  if (!payload || typeof payload !== "object") return "";
-
-  const record = payload as Record<string, unknown>;
-
-  for (const value of [record.url, record.publicUrl, record.imageUrl]) {
-    if (typeof value === "string" && value) return value;
-  }
-
-  if (record.file && typeof record.file === "object") {
-    const file = record.file as Record<string, unknown>;
-
-    for (const value of [file.publicUrl, file.url]) {
-      if (typeof value === "string" && value) return value;
-    }
-  }
-
-  return "";
-}
 
 function formatBytes(size: number) {
   if (!size) return "—";
@@ -67,7 +47,6 @@ export default function HeroStudioEditor({
   const [imageMeta, setImageMeta] = useState<ImageMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const visualName = slot === "primary" ? "主視覺" : "副主視覺";
@@ -199,54 +178,6 @@ export default function HeroStudioEditor({
     setError("");
   }
 
-  async function uploadImage(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-
-    setUploading(true);
-    setMessage("");
-    setError("");
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("/api/admin/product-images/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const payload =
-        await readJsonResponse<
-          Record<string, unknown> & {
-            error?: string;
-          }
-        >(
-          response,
-          "圖片上傳失敗"
-        );
-
-      if (!response.ok) {
-        throw new Error(payload.error || "圖片上傳失敗");
-      }
-
-      const imageUrl = getUploadedImageUrl(payload);
-      if (!imageUrl) throw new Error("圖片已上傳，但沒有取得網址");
-
-      update("image", imageUrl);
-      update("desktopImage", imageUrl);
-      setMessage("新圖片已上傳，請按儲存。右側目前為即時預覽。");
-    } catch (uploadError) {
-      setError(
-        uploadError instanceof Error
-          ? uploadError.message
-          : "圖片上傳失敗"
-      );
-    } finally {
-      setUploading(false);
-    }
-  }
-
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!draft) return;
@@ -347,15 +278,7 @@ export default function HeroStudioEditor({
           </div>
 
           <div className={styles.imageControls}>
-            <label className={styles.uploadButton}>
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={uploadImage}
-                disabled={uploading || saving}
-              />
-              {uploading ? "圖片上傳中…" : "更換圖片"}
-            </label>
+            
 
             <label className={styles.field}>
               <span>圖片網址</span>
@@ -504,7 +427,7 @@ export default function HeroStudioEditor({
         <button
           type="submit"
           className={styles.primaryButton}
-          disabled={saving || uploading || !hasChanges}
+          disabled={saving || !hasChanges}
         >
           {saving ? "儲存中…" : `儲存${visualName}`}
         </button>
