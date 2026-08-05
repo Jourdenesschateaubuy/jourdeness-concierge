@@ -6,6 +6,7 @@ import styles from "./product-image-uploader.module.css";
 
 type ProductImageUploaderProps = {
   initialImage?: string;
+  onUploadingChange?: (uploading: boolean) => void;
 };
 
 type UploadResponse = {
@@ -15,6 +16,7 @@ type UploadResponse = {
 
 export default function ProductImageUploader({
   initialImage = "",
+  onUploadingChange,
 }: ProductImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const localPreviewRef = useRef("");
@@ -22,6 +24,7 @@ export default function ProductImageUploader({
   const [imageUrl, setImageUrl] = useState(initialImage);
   const [previewUrl, setPreviewUrl] = useState(initialImage);
   const [uploading, setUploading] = useState(false);
+  const [uploadedSinceSave, setUploadedSinceSave] = useState(false);
   const [error, setError] = useState("");
   const [imageInfo, setImageInfo] = useState<{
     width: number;
@@ -102,6 +105,7 @@ export default function ProductImageUploader({
 
       setPreviewUrl(localPreview);
       setUploading(true);
+      onUploadingChange?.(true);
 
       const formData = new FormData();
       formData.append("file", file);
@@ -126,6 +130,7 @@ export default function ProductImageUploader({
 
       setImageUrl(result.url);
       setPreviewUrl(result.url);
+      setUploadedSinceSave(true);
 
       URL.revokeObjectURL(localPreview);
       localPreviewRef.current = "";
@@ -145,6 +150,7 @@ export default function ProductImageUploader({
       localPreviewRef.current = "";
     } finally {
       setUploading(false);
+      onUploadingChange?.(false);
       event.target.value = "";
     }
   }
@@ -158,6 +164,7 @@ export default function ProductImageUploader({
     setImageUrl("");
     setPreviewUrl("");
     setImageInfo(null);
+    setUploadedSinceSave(true);
     setError("");
 
     if (inputRef.current) {
@@ -249,11 +256,15 @@ export default function ProductImageUploader({
         </button>
       )}
 
-      {uploading ? (
-        <p className={styles.status}>圖片正在上傳，請稍候…</p>
-      ) : null}
+      <div aria-live="polite">
+        {uploading ? (
+          <p className={styles.status}>圖片正在上傳，請稍候；完成前不能儲存。</p>
+        ) : uploadedSinceSave && !error ? (
+          <p className={styles.status}>圖片已上傳，請按下方「儲存變更」才會套用到商品。</p>
+        ) : null}
 
-      {error ? <p className={styles.error}>{error}</p> : null}
+        {error ? <p className={styles.error}>{error}</p> : null}
+      </div>
     </div>
   );
 }

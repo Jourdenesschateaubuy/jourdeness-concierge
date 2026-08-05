@@ -18,6 +18,12 @@ import {
 import {
   deleteUploadedImage,
 } from "../../../lib/upload-storage";
+import {
+  formatComboCardPrice,
+  formatOriginalPriceText,
+  formatStandardPriceText,
+  normalizeMoneyAmount,
+} from "../../../lib/product-pricing";
 
 const VALID_STATUSES: ProductStatus[] = [
   "active",
@@ -123,52 +129,6 @@ function parseComboConfig(
 }
 
 
-function formatComboCardPrice(
-  comboConfig: NonNullable<ProductWriteInput["comboConfig"]>,
-  fallbackPrice: string
-) {
-  const unitLabel = comboConfig.unitLabel?.trim() || "件";
-
-  if (comboConfig.type === "fixed_bundle") {
-    const plan = comboConfig.plans.find(
-      (item) => Number.isFinite(item.price) && item.price > 0
-    );
-
-    return plan
-      ? `組合價 $${plan.price.toLocaleString("en-US")}`
-      : fallbackPrice;
-  }
-
-  const parts: string[] = [];
-
-  if (
-    typeof comboConfig.singleUnitPrice === "number" &&
-    Number.isFinite(comboConfig.singleUnitPrice) &&
-    comboConfig.singleUnitPrice > 0
-  ) {
-    parts.push(
-      `單${unitLabel} $${comboConfig.singleUnitPrice.toLocaleString("en-US")}`
-    );
-  }
-
-  for (const plan of comboConfig.plans) {
-    if (!Number.isFinite(plan.price) || plan.price <= 0) continue;
-
-    const formattedPrice = plan.price.toLocaleString("en-US");
-
-    if (comboConfig.type === "buy_get") {
-      const buyQuantity =
-        plan.buyQuantity ?? Math.max(plan.requiredQuantity - 1, 1);
-      const freeQuantity = plan.freeQuantity ?? 1;
-      parts.push(`買${buyQuantity}送${freeQuantity} $${formattedPrice}`);
-    } else {
-      parts.push(`任選${plan.requiredQuantity}${unitLabel} $${formattedPrice}`);
-    }
-  }
-
-  return parts.length > 0 ? parts.join("｜") : fallbackPrice;
-}
-
 function productInputFromForm(
   formData: FormData,
   productType: "product" | "combo" = "product"
@@ -177,11 +137,14 @@ function productInputFromForm(
   const category = stringValue(formData, "category");
   const image = stringValue(formData, "image");
   const comboConfig = parseComboConfig(formData);
-  const rawPrice = stringValue(formData, "price");
-  const price =
-    productType === "combo" && comboConfig
-      ? formatComboCardPrice(comboConfig, rawPrice)
-      : rawPrice;
+  const rawSalePrice = stringValue(formData, "price");
+  const rawOriginalPrice = stringValue(formData, "originalPrice");
+  const promotionText = optionalString(formData, "priceNote");
+  const salePriceAmount =
+    productType === "combo"
+      ? undefined
+      : normalizeMoneyAmount(rawSalePrice);
+  const originalPriceAmount = normalizeMoneyAmount(rawOriginalPrice);
 
   if (!name) throw new Error("商品名稱不能空白");
   if (!category) throw new Error("商品分類不能空白");
@@ -191,7 +154,14 @@ function productInputFromForm(
     throw new Error("請完成組合價格與方案設定");
   }
 
-  if (!price) throw new Error("售價不能空白");
+  if (productType !== "combo" && !salePriceAmount) {
+    throw new Error("售價請填入大於 0 的整數");
+  }
+
+  const price =
+    productType === "combo" && comboConfig
+      ? formatComboCardPrice(comboConfig, rawSalePrice)
+      : formatStandardPriceText(salePriceAmount as number, category);
 
   return {
     sku: optionalString(formData, "sku"),
@@ -199,7 +169,10 @@ function productInputFromForm(
     category,
     series: stringValue(formData, "series"),
     storefrontCategory: optionalString(formData, "storefrontCategory"),
-    originalPrice: optionalString(formData, "originalPrice"),
+    salePriceAmount,
+    originalPriceAmount,
+    promotionText,
+    originalPrice: formatOriginalPriceText(originalPriceAmount),
     price,
     image,
     description: stringValue(formData, "description"),
@@ -207,7 +180,7 @@ function productInputFromForm(
     cardSubtitle: optionalString(formData, "cardSubtitle"),
     spec: optionalString(formData, "spec"),
     intro: optionalString(formData, "intro"),
-    priceNote: optionalString(formData, "priceNote"),
+    priceNote: promotionText,
     expiryNote: optionalString(formData, "expiryNote"),
     internalExpiryDate: optionalString(formData, "internalExpiryDate"),
     features: stringValues(formData, "features"),
@@ -237,6 +210,7 @@ export async function createProductAction(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/admin/products/health");
   revalidatePath("/");
   redirect(`/admin/products/${product.id}/edit?saved=created`);
 }
@@ -255,6 +229,7 @@ export async function changeProductStatusAction(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/admin/products/health");
   revalidatePath("/");
 }
 
@@ -274,7 +249,10 @@ export async function updateProductAction(formData: FormData) {
     throw new Error("找不到這筆商品");
   }
 
-  const input = productInputFromForm(formData);
+  const input = productInputFromForm(
+    formData,
+    existingProduct.productType === "combo" ? "combo" : "product"
+  );
 
   const product = await updateDatabaseProduct(id, input);
 
@@ -295,10 +273,11 @@ export async function updateProductAction(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/admin/products/health");
   revalidatePath("/");
   revalidatePath(`/admin/products/${id}/edit`);
 
-  redirect(`/admin/products/${id}/edit?saved=updated`);
+  redirect(`/admin/products/${id}/edit?saved=updated#save-status`);
 }
 
 
@@ -369,17 +348,22 @@ export async function updateProductEditorAction(
   } else {
     const name = stringValue(formData, "name");
     const image = stringValue(formData, "image");
-    const hasCombo = Boolean(existingProduct.comboConfig);
-    const price = hasCombo
-      ? existingProduct.price
-      : stringValue(formData, "price");
+    const hasCombo = existingProduct.productType === "combo";
+    const rawSalePrice = stringValue(formData, "price");
+    const salePriceAmount = hasCombo
+      ? undefined
+      : normalizeMoneyAmount(rawSalePrice);
+    const originalPriceAmount = normalizeMoneyAmount(
+      stringValue(formData, "originalPrice")
+    );
+    const promotionText = optionalString(formData, "priceNote");
 
     if (!name) {
       throw new Error("商品名稱不能空白");
     }
 
-    if (!hasCombo && !price) {
-      throw new Error("售價不能空白");
+    if (!hasCombo && !salePriceAmount) {
+      throw new Error("售價請填入大於 0 的整數");
     }
 
     if (!image) {
@@ -388,10 +372,20 @@ export async function updateProductEditorAction(
 
     const product = await updateDatabaseProductPartial(id, {
       name,
-      originalPrice: stringValue(formData, "originalPrice"),
-      ...(hasCombo ? {} : { price }),
+      originalPriceAmount: originalPriceAmount ?? null,
+      originalPrice: formatOriginalPriceText(originalPriceAmount) ?? "",
+      promotionText: promotionText ?? null,
+      ...(hasCombo
+        ? {}
+        : {
+            salePriceAmount,
+            price: formatStandardPriceText(
+              salePriceAmount as number,
+              existingProduct.category
+            ),
+          }),
       image,
-      priceNote: stringValue(formData, "priceNote"),
+      priceNote: promotionText ?? "",
       status: parseStatus(stringValue(formData, "status")),
     });
 
@@ -413,10 +407,24 @@ export async function updateProductEditorAction(
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/admin/products/health");
   revalidatePath("/");
   revalidatePath(`/admin/products/${id}/edit`);
 
-  redirect(`/admin/products/${id}/edit?saved=updated`);
+  const returnTo = stringValue(formData, "returnTo");
+
+  if (returnTo === "/admin/products/health") {
+    redirect(`/admin/products/health?refreshed=${id}`);
+  }
+
+  const safeTab =
+    editorTab === "combo" || editorTab === "detail"
+      ? editorTab
+      : "card";
+
+  redirect(
+    `/admin/products/${id}/edit?saved=updated&tab=${safeTab}#save-status`
+  );
 }
 
 export async function deleteProductAction(formData: FormData) {
@@ -450,6 +458,7 @@ export async function deleteProductAction(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/admin/products/health");
   revalidatePath("/");
 }
 export async function saveProductSortOrderAction(
@@ -487,5 +496,6 @@ export async function saveProductSortOrderAction(
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/admin/products/health");
   revalidatePath("/");
 }

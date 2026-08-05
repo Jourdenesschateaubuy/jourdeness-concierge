@@ -63,9 +63,12 @@ export default async function ProductHealthPage() {
 
         <div className={styles.headerActions}>
           <Link href="/admin/products">回商品管理</Link>
-          <Link href="/admin/products/health" className={styles.primaryAction}>
+          <a
+            href={`/admin/products/health?refresh=${Date.now()}`}
+            className={styles.primaryAction}
+          >
             重新檢查
-          </Link>
+          </a>
         </div>
       </header>
 

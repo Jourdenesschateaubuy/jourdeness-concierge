@@ -38,6 +38,10 @@ export type Product = {
   category: MainCategory;
   series: string;
   storefrontCategory?: MainCategory;
+  // 結構化價格欄位。舊 price/originalPrice 暫時保留作前台相容與回滾。
+  salePriceAmount?: number;
+  originalPriceAmount?: number;
+  promotionText?: string;
   originalPrice?: string;
   price: string;
   image: string;

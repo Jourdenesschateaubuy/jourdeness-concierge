@@ -55,8 +55,9 @@ export default function ProductForm({
   const isCombo = productType === "combo";
   const [tab, setTab] = useState<Tab>("card");
 
-  const initialOriginalPrice = normalizeOriginalPriceInput(
-    product?.originalPrice ?? ""
+  const initialOriginalPrice = String(
+    product?.originalPriceAmount ??
+      normalizeOriginalPriceInput(product?.originalPrice ?? "")
   );
 
   const [showOriginalPrice, setShowOriginalPrice] = useState(
@@ -231,8 +232,9 @@ export default function ProductForm({
                   name="price"
                   required
                   inputMode="numeric"
-                  defaultValue={normalizeSellingPriceInput(
-                    product?.price ?? ""
+                  defaultValue={String(
+                    product?.salePriceAmount ??
+                      normalizeSellingPriceInput(product?.price ?? "")
                   )}
                   placeholder="例如：2160"
                 />
@@ -240,10 +242,12 @@ export default function ProductForm({
             )}
 
             <label className={styles.span2}>
-              <span>價格補充</span>
+              <span>促銷／價格補充文字</span>
               <input
                 name="priceNote"
-                defaultValue={product?.priceNote ?? ""}
+                defaultValue={
+                  product?.promotionText ?? product?.priceNote ?? ""
+                }
                 placeholder="例如：實際優惠依 LINE 小幫手確認"
               />
             </label>

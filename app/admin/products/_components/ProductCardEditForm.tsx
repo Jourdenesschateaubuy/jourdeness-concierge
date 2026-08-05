@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { categoryConfig } from "../../../../lib/storefront-core";
 import type {
@@ -16,6 +17,7 @@ type Props = {
   product: DatabaseProduct;
   action: (formData: FormData) => void | Promise<void>;
   initialTab?: Tab;
+  returnTo?: string;
 };
 
 type Tab = "card" | "combo" | "detail";
@@ -126,6 +128,28 @@ const statusLabels: Record<ProductStatus, string> = {
   sold_out: "售罄",
 };
 
+
+function SaveChangesButton({
+  label,
+  imageUploading,
+}: {
+  label: string;
+  imageUploading: boolean;
+}) {
+  const { pending } = useFormStatus();
+  const disabled = pending || imageUploading;
+
+  return (
+    <button type="submit" disabled={disabled} aria-disabled={disabled}>
+      {imageUploading
+        ? "圖片上傳中…"
+        : pending
+          ? "儲存中…"
+          : label}
+    </button>
+  );
+}
+
 function moveItem<T>(items: T[], from: number, to: number) {
   if (to < 0 || to >= items.length) return items;
 
@@ -200,20 +224,28 @@ function defaultUsageText(product: DatabaseProduct) {
 export default function ProductCardEditForm({
   product,
   initialTab = "card",
+  returnTo,
 }: Props) {
   const [tab, setTab] = useState<Tab>(initialTab);
+  const [imageUploading, setImageUploading] = useState(false);
   const hasCombo = Boolean(product.comboConfig);
   const comboPriceSummary = formatComboPriceSummary(product);
 
   const [name, setName] = useState(product.name ?? "");
   const [originalPrice, setOriginalPrice] = useState(
-    normalizeOriginalPriceInput(product.originalPrice ?? "")
+    String(
+      product.originalPriceAmount ??
+        normalizeOriginalPriceInput(product.originalPrice ?? "")
+    )
   );
   const [showOriginalPrice, setShowOriginalPrice] = useState(
     Boolean((product.originalPrice ?? "").trim())
   );
   const [price, setPrice] = useState(
-    normalizeSellingPriceInput(product.price ?? "")
+    String(
+      product.salePriceAmount ??
+        normalizeSellingPriceInput(product.price ?? "")
+    )
   );
   const [status, setStatus] = useState<ProductStatus>(
     product.status ?? "active"
@@ -233,7 +265,7 @@ const [category, setCategory] = useState<string>(
   );
   const [intro, setIntro] = useState(product.intro ?? "");
   const [priceNote, setPriceNote] = useState(
-    product.priceNote ?? ""
+    product.promotionText ?? product.priceNote ?? ""
   );
   const [usage, setUsage] = useState(
     defaultUsageText(product)
@@ -261,6 +293,7 @@ const [category, setCategory] = useState<string>(
     <form action={updateProductEditorAction} className={styles.form}>
       <input type="hidden" name="id" value={product.id} />
       <input type="hidden" name="editorTab" value={tab} />
+      <input type="hidden" name="returnTo" value={returnTo ?? ""} />
       <input type="hidden" name="category" value={category} />
 
       {/* 不顯示，但保留原資料 */}
@@ -362,6 +395,7 @@ const [category, setCategory] = useState<string>(
 
             <ProductImageUploader
               initialImage={product.image ?? ""}
+              onUploadingChange={setImageUploading}
             />
           </section>
 
@@ -464,7 +498,7 @@ const [category, setCategory] = useState<string>(
             </div>
 
             <label>
-              <span>價格下方說明</span>
+              <span>促銷／價格補充文字</span>
               <textarea
                 name="priceNote"
                 rows={3}
@@ -992,9 +1026,16 @@ const [category, setCategory] = useState<string>(
       <div className={styles.actions}>
         <Link href="/admin">返回管理</Link>
 
-        <button type="submit">
-          {tab === "combo" ? "儲存組合價格與方案" : "儲存變更"}
-        </button>
+        <SaveChangesButton
+          imageUploading={imageUploading}
+          label={
+            returnTo === "/admin/products/health"
+              ? "儲存並重新健檢"
+              : tab === "combo"
+                ? "儲存組合價格與方案"
+                : "儲存變更"
+          }
+        />
       </div>
     </form>
   );

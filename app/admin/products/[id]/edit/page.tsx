@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 type EditProductPageProps = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string; tab?: string }>;
+  searchParams: Promise<{ saved?: string; tab?: string; from?: string }>;
 };
 
 export default async function EditProductPage({
@@ -16,7 +16,7 @@ export default async function EditProductPage({
   searchParams,
 }: EditProductPageProps) {
   const { id: idRaw } = await params;
-  const { saved, tab } = await searchParams;
+  const { saved, tab, from } = await searchParams;
   const id = Number(idRaw);
 
   if (!Number.isInteger(id) || id <= 0) notFound();
@@ -42,6 +42,8 @@ export default async function EditProductPage({
 
       {saved ? (
         <div
+          id="save-status"
+          role="status"
           style={{
             marginBottom: 14,
             padding: 12,
@@ -60,6 +62,7 @@ export default async function EditProductPage({
         product={product}
         action={updateProductAction}
         initialTab={tab === "combo" && isCombo ? "combo" : "card"}
+        returnTo={from === "health" ? "/admin/products/health" : undefined}
       />
     </div>
   );

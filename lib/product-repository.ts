@@ -1,5 +1,6 @@
 import type { ComboConfig, MainCategory, Product } from "./storefront-core";
 import { dbQuery, withDbClient } from "./db";
+import { extractPrimaryMoneyAmount } from "./product-pricing";
 
 export type ProductType = "standard" | "combo";
 
@@ -25,6 +26,9 @@ export type ProductWriteInput = {
   category: string;
   series: string;
   storefrontCategory?: string;
+  salePriceAmount?: number;
+  originalPriceAmount?: number;
+  promotionText?: string;
   originalPrice?: string;
   price: string;
   image: string;
@@ -56,6 +60,9 @@ type ProductRow = {
   category: string;
   series: string;
   storefront_category: string | null;
+  sale_price_amount: number | string | null;
+  original_price_amount: number | string | null;
+  promotion_text: string | null;
   original_price: string | null;
   price: string;
   image: string;
@@ -94,6 +101,15 @@ function rowToProduct(row: ProductRow): DatabaseProduct {
     category: row.category as MainCategory,
     series: row.series,
     storefrontCategory: optional(row.storefront_category) as MainCategory | undefined,
+    salePriceAmount:
+      row.sale_price_amount === null
+        ? undefined
+        : Number(row.sale_price_amount),
+    originalPriceAmount:
+      row.original_price_amount === null
+        ? undefined
+        : Number(row.original_price_amount),
+    promotionText: optional(row.promotion_text) ?? optional(row.price_note),
     originalPrice: optional(row.original_price),
     price: row.price,
     image: row.image,
@@ -200,11 +216,25 @@ export async function createDatabaseProduct(
             }
           : undefined;
 
+      const salePriceAmount =
+        normalizedProductType === "combo"
+          ? null
+          : input.salePriceAmount ??
+            extractPrimaryMoneyAmount(input.price) ??
+            null;
+      const originalPriceAmount =
+        input.originalPriceAmount ??
+        extractPrimaryMoneyAmount(input.originalPrice) ??
+        null;
+      const promotionText =
+        input.promotionText || input.priceNote || null;
+
       const result = await client.query<ProductRow>(
         `
           INSERT INTO products (
             id, display_code, product_type,
             sku, name, category, series, storefront_category,
+            sale_price_amount, original_price_amount, promotion_text,
             original_price, price, image, description,
             card_name, card_subtitle, spec, intro, price_note,
             expiry_note, internal_expiry_date,
@@ -213,8 +243,8 @@ export async function createDatabaseProduct(
           )
           VALUES (
             $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,
-            $18,$19,$20::jsonb,$21::jsonb,$22,$23,$24::jsonb,$25::jsonb,
-            $26::jsonb,$27,$28,NOW()
+            $18,$19,$20,$21,$22::jsonb,$23::jsonb,$24,$25,$26::jsonb,$27::jsonb,
+            $28::jsonb,$29,$30,NOW()
           )
           RETURNING *
         `,
@@ -227,6 +257,9 @@ export async function createDatabaseProduct(
           input.category,
           input.series,
           input.storefrontCategory || null,
+          salePriceAmount,
+          originalPriceAmount,
+          promotionText,
           input.originalPrice || null,
           input.price,
           input.image,
@@ -263,6 +296,18 @@ export async function updateDatabaseProduct(
   id: number,
   input: ProductWriteInput
 ) {
+  const salePriceAmount = input.comboConfig
+    ? null
+    : input.salePriceAmount ??
+      extractPrimaryMoneyAmount(input.price) ??
+      null;
+  const originalPriceAmount =
+    input.originalPriceAmount ??
+    extractPrimaryMoneyAmount(input.originalPrice) ??
+    null;
+  const promotionText =
+    input.promotionText || input.priceNote || null;
+
   const result = await dbQuery<ProductRow>(
     `
       UPDATE products
@@ -272,26 +317,29 @@ export async function updateDatabaseProduct(
         category = $4,
         series = $5,
         storefront_category = COALESCE($6, storefront_category),
-        original_price = $7,
-        price = $8,
-        image = $9,
-        description = $10,
-        card_name = $11,
-        card_subtitle = $12,
-        spec = $13,
-        intro = $14,
-        price_note = $15,
-        expiry_note = $16,
-        internal_expiry_date = $17,
-        features = $18::jsonb,
-        suitable_for = $19::jsonb,
-        usage = $20,
-        notice = $21,
-        gallery = $22::jsonb,
-        expanded_info = $23::jsonb,
-        combo_config = COALESCE($24::jsonb, combo_config),
-        status = $25,
-        sort_order = $26,
+        sale_price_amount = $7,
+        original_price_amount = $8,
+        promotion_text = $9,
+        original_price = $10,
+        price = $11,
+        image = $12,
+        description = $13,
+        card_name = $14,
+        card_subtitle = $15,
+        spec = $16,
+        intro = $17,
+        price_note = $18,
+        expiry_note = $19,
+        internal_expiry_date = $20,
+        features = $21::jsonb,
+        suitable_for = $22::jsonb,
+        usage = $23,
+        notice = $24,
+        gallery = $25::jsonb,
+        expanded_info = $26::jsonb,
+        combo_config = COALESCE($27::jsonb, combo_config),
+        status = $28,
+        sort_order = $29,
         updated_at = NOW()
       WHERE id = $1
       RETURNING *
@@ -303,6 +351,9 @@ export async function updateDatabaseProduct(
       input.category,
       input.series,
       input.storefrontCategory || null,
+      salePriceAmount,
+      originalPriceAmount,
+      promotionText,
       input.originalPrice || null,
       input.price,
       input.image,
@@ -329,7 +380,13 @@ export async function updateDatabaseProduct(
   return result.rows[0] ? rowToProduct(result.rows[0]) : null;
 }
 
-export type ProductPartialUpdateInput = Partial<ProductWriteInput> & {
+export type ProductPartialUpdateInput = Omit<
+  Partial<ProductWriteInput>,
+  "salePriceAmount" | "originalPriceAmount" | "promotionText"
+> & {
+  salePriceAmount?: number | null;
+  originalPriceAmount?: number | null;
+  promotionText?: string | null;
   comboConfig?: ComboConfig | null;
 };
 
@@ -358,6 +415,24 @@ export async function updateDatabaseProductPartial(
       patch.storefrontCategory !== undefined
         ? patch.storefrontCategory
         : existing.storefrontCategory,
+    salePriceAmount:
+      patch.salePriceAmount === null
+        ? undefined
+        : patch.salePriceAmount !== undefined
+          ? patch.salePriceAmount
+          : existing.salePriceAmount,
+    originalPriceAmount:
+      patch.originalPriceAmount === null
+        ? undefined
+        : patch.originalPriceAmount !== undefined
+          ? patch.originalPriceAmount
+          : existing.originalPriceAmount,
+    promotionText:
+      patch.promotionText === null
+        ? undefined
+        : patch.promotionText !== undefined
+          ? patch.promotionText
+          : existing.promotionText,
     originalPrice:
       patch.originalPrice !== undefined
         ? patch.originalPrice

@@ -7,6 +7,13 @@ import {
 } from "../../../../../lib/product-repository";
 import type { ComboConfig } from "../../../../../lib/storefront-core";
 import { deleteUploadedImage } from "../../../../../lib/upload-storage";
+import {
+  extractPrimaryMoneyAmount,
+  formatComboCardPrice,
+  formatOriginalPriceText,
+  formatStandardPriceText,
+  normalizeMoneyAmount,
+} from "../../../../../lib/product-pricing";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +34,7 @@ const editableStringFields = [
   "originalPrice",
   "price",
   "priceNote",
+  "promotionText",
   "status",
   "category",
   "storefrontCategory",
@@ -316,6 +324,49 @@ export async function PATCH(
         : value;
   }
 
+  for (const field of ["salePriceAmount", "originalPriceAmount"] as const) {
+    if (!(field in body)) continue;
+
+    const value = body[field];
+
+    if (value === null || value === "") {
+      nextProduct[field] = undefined;
+      continue;
+    }
+
+    const amount = normalizeMoneyAmount(value);
+
+    if (!amount) {
+      return NextResponse.json(
+        { error: `${field} 必須是大於 0 的整數` },
+        { status: 400 }
+      );
+    }
+
+    nextProduct[field] = amount;
+  }
+
+  if ("price" in body && !("salePriceAmount" in body)) {
+    nextProduct.salePriceAmount =
+      existingProduct.productType === "combo"
+        ? undefined
+        : extractPrimaryMoneyAmount(String(nextProduct.price ?? ""));
+  }
+
+  if ("originalPrice" in body && !("originalPriceAmount" in body)) {
+    nextProduct.originalPriceAmount = extractPrimaryMoneyAmount(
+      String(nextProduct.originalPrice ?? "")
+    );
+  }
+
+  if ("priceNote" in body && !("promotionText" in body)) {
+    nextProduct.promotionText = String(nextProduct.priceNote ?? "").trim();
+  }
+
+  if ("promotionText" in body && !("priceNote" in body)) {
+    nextProduct.priceNote = String(nextProduct.promotionText ?? "").trim();
+  }
+
   if ("expandedInfo" in body) {
     const expandedInfo =
       cleanExpandedInfo(body.expandedInfo);
@@ -354,6 +405,36 @@ export async function PATCH(
 
     nextProduct.comboConfig = comboConfig ?? undefined;
   }
+  const nextComboConfig = nextProduct.comboConfig as ComboConfig | undefined;
+
+  if (nextComboConfig) {
+    nextProduct.salePriceAmount = undefined;
+    nextProduct.price = formatComboCardPrice(
+      nextComboConfig,
+      String(nextProduct.price ?? "")
+    );
+  } else {
+    const salePriceAmount = normalizeMoneyAmount(nextProduct.salePriceAmount);
+
+    if (salePriceAmount) {
+      nextProduct.salePriceAmount = salePriceAmount;
+      nextProduct.price = formatStandardPriceText(
+        salePriceAmount,
+        String(nextProduct.category ?? "")
+      );
+    }
+  }
+
+  const originalPriceAmount = normalizeMoneyAmount(
+    nextProduct.originalPriceAmount
+  );
+  nextProduct.originalPriceAmount = originalPriceAmount;
+  nextProduct.originalPrice = formatOriginalPriceText(originalPriceAmount);
+  nextProduct.promotionText = String(
+    nextProduct.promotionText ?? nextProduct.priceNote ?? ""
+  ).trim();
+  nextProduct.priceNote = nextProduct.promotionText;
+
   if (
     !String(nextProduct.name ?? "").trim()
   ) {

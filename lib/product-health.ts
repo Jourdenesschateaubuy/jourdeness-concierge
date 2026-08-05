@@ -151,7 +151,7 @@ function issueForProduct(
     productId: product.id,
     productName: product.name,
     displayCode: product.displayCode,
-    editHref: `/admin/products/${product.id}/edit`,
+    editHref: `/admin/products/${product.id}/edit?from=health`,
   };
 }
 
@@ -472,6 +472,18 @@ export async function buildProductHealthReport(input: {
           }
         }
 
+        if (product.salePriceAmount !== undefined) {
+          issues.push(
+            issueForProduct(product, {
+              severity: "warning",
+              code: "combo-has-standard-sale-price",
+              title: "組合商品仍帶一般售價",
+              detail: `salePriceAmount 目前為 $${product.salePriceAmount.toLocaleString("zh-TW")}。`,
+              suggestion: "組合商品價格應只放在組合價格與方案；重新儲存組合方案即可清除。",
+            })
+          );
+        }
+
         const cardPriceValues = moneyValues(product.price);
         const planPrices = comboPlanPriceSummary(product);
         const missingCardPrices = planPrices.filter(
@@ -491,9 +503,56 @@ export async function buildProductHealthReport(input: {
         }
       }
     } else {
-      const salePrice = primaryMoneyValue(product.price);
-      const originalPrice = primaryMoneyValue(product.originalPrice);
+      const legacySalePrice = primaryMoneyValue(product.price);
+      const legacyOriginalPrice = primaryMoneyValue(product.originalPrice);
+      const salePrice = product.salePriceAmount ?? legacySalePrice;
+      const originalPrice =
+        product.originalPriceAmount ?? legacyOriginalPrice;
       const isInquiry = /洽詢|詢價|請洽/i.test(product.price);
+
+      if (!product.salePriceAmount && legacySalePrice) {
+        issues.push(
+          issueForProduct(product, {
+            severity: "warning",
+            code: "sale-price-not-structured",
+            title: "售價仍只存在舊文字欄位",
+            detail: `目前可從「${product.price}」辨識出 $${legacySalePrice.toLocaleString("zh-TW")}，但 salePriceAmount 尚未寫入。`,
+            suggestion: "重新儲存商品卡，或執行價格結構化遷移。",
+          })
+        );
+      }
+
+      if (
+        product.salePriceAmount &&
+        legacySalePrice &&
+        product.salePriceAmount !== legacySalePrice
+      ) {
+        issues.push(
+          issueForProduct(product, {
+            severity: "error",
+            code: "structured-sale-price-mismatch",
+            title: "結構化售價與舊顯示文字不一致",
+            detail: `正式售價是 $${product.salePriceAmount.toLocaleString("zh-TW")}，舊文字顯示約 $${legacySalePrice.toLocaleString("zh-TW")}。`,
+            suggestion: "重新儲存商品卡，讓前台相容文字由正式售價自動產生。",
+          })
+        );
+      }
+
+      if (
+        product.originalPriceAmount &&
+        legacyOriginalPrice &&
+        product.originalPriceAmount !== legacyOriginalPrice
+      ) {
+        issues.push(
+          issueForProduct(product, {
+            severity: "warning",
+            code: "structured-original-price-mismatch",
+            title: "結構化原價與舊顯示文字不一致",
+            detail: `正式原價是 $${product.originalPriceAmount.toLocaleString("zh-TW")}，舊文字顯示約 $${legacyOriginalPrice.toLocaleString("zh-TW")}。`,
+            suggestion: "重新儲存商品卡，讓原價顯示同步。",
+          })
+        );
+      }
 
       if (!salePrice && !isInquiry) {
         issues.push(
