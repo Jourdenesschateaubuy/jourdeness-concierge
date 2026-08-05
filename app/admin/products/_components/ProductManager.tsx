@@ -377,6 +377,9 @@ export default function ProductManager({
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <Link href="/admin/products/health">
+            商品資料健檢
+          </Link>
           <Link href="/admin/products/new?type=product">
             ＋ 新增一般商品
           </Link>
