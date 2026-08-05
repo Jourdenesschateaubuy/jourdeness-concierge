@@ -31,7 +31,7 @@ export type SiteStudioRankingItem = {
   visible: boolean;
 };
 
-export type SiteStudioSectionKey =
+export type BuiltInSiteStudioSectionKey =
   | "ranking"
   | "monthlyOffers"
   | "skincareNeeds"
@@ -40,6 +40,13 @@ export type SiteStudioSectionKey =
   | "aroma"
   | "comingSoon";
 
+export type SiteStudioSectionKey = string;
+
+export type SiteStudioSectionKind =
+  | "system"
+  | "products"
+  | "image";
+
 export type SiteStudioSection = {
   key: SiteStudioSectionKey;
   label: string;
@@ -47,6 +54,16 @@ export type SiteStudioSection = {
   title: string;
   subtitle: string;
   visible: boolean;
+  kind?: SiteStudioSectionKind;
+  sortOrder?: number;
+  locked?: boolean;
+  productIds?: number[];
+  image?: string;
+  desktopImage?: string;
+  alt?: string;
+  buttonLabel?: string;
+  linkType?: "none" | "product" | "category" | "url";
+  linkValue?: string;
 };
 
 export type SiteStudioConfig = {
@@ -96,7 +113,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       subtitle: "300mL・人氣保濕明星商品",
       priceLine: "$1,980",
       promoLine: "買一送一",
-      buttonLabel: "",
+      buttonLabel: "查看商品",
       layout: "wide",
       imageSpec: "750 × 500 px",
       visible: true,
@@ -111,7 +128,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       subtitle: "500mL・頭皮清潔修護",
       priceLine: "單瓶 $590",
       promoLine: "任選 3 瓶 $1,100",
-      buttonLabel: "",
+      buttonLabel: "選擇搭配",
       layout: "portrait",
       imageSpec: "640 × 800 px",
       visible: true,
@@ -126,7 +143,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       subtitle: "500mL・潤澤潔淨肌膚",
       priceLine: "單瓶 $590",
       promoLine: "任選 3 瓶 $1,100",
-      buttonLabel: "",
+      buttonLabel: "選擇搭配",
       layout: "portrait",
       imageSpec: "640 × 800 px",
       visible: true,
@@ -141,7 +158,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       subtitle: "30mL＋肌可佳膠原蛋白彈潤原液 30mL",
       priceLine: "限定組合",
       promoLine: "$1,290",
-      buttonLabel: "",
+      buttonLabel: "查看組合",
       layout: "wide-compact",
       imageSpec: "750 × 420 px",
       visible: true,
@@ -156,7 +173,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       subtitle: "爆水保濕 × 美白透亮",
       priceLine: "單桶 $599",
       promoLine: "任選 2 桶 $1,100｜任選 5 桶 $2,750",
-      buttonLabel: "",
+      buttonLabel: "選擇搭配",
       layout: "portrait",
       imageSpec: "640 × 800 px",
       visible: true,
@@ -171,7 +188,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       subtitle: "BC-CA 加鈣 × 蔓越莓益生菌",
       priceLine: "加鈣 $800｜蔓越莓 $990",
       promoLine: "任選 3 盒 $1,600",
-      buttonLabel: "",
+      buttonLabel: "選擇搭配",
       layout: "portrait",
       imageSpec: "640 × 800 px",
       visible: true,
@@ -181,6 +198,9 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
     {
       key: "ranking",
       label: "熱銷排行榜",
+      kind: "system",
+      sortOrder: 10,
+      locked: true,
       eyebrow: "",
       title: "熱銷排行榜",
       subtitle: "",
@@ -189,6 +209,8 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
     {
       key: "monthlyOffers",
       label: "本月優惠",
+      kind: "system",
+      sortOrder: 20,
       eyebrow: "MONTHLY PICKS",
       title: "本月優惠・活動方案",
       subtitle: "排行榜看熱銷；這裡直接告訴你現在怎麼買更划算。",
@@ -197,14 +219,19 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
     {
       key: "skincareNeeds",
       label: "依肌膚需求選保養",
+      kind: "system",
+      sortOrder: 25,
       eyebrow: "SKIN CARE GUIDE",
       title: "依肌膚需求選保養",
       subtitle: "先選需求，再看適合的日常保養組合，找商品更快。",
-      visible: true,
+      visible: false,
     },
     {
       key: "bodyCare",
       label: "身體洗護精選",
+      kind: "products",
+      sortOrder: 30,
+      productIds: [54, 67, 108, 119, 112],
       eyebrow: "Body Care",
       title: "身體洗護精選",
       subtitle: "洗髮沐浴、牙膏、手工皂與身體保養集中選購。",
@@ -213,6 +240,9 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
     {
       key: "health",
       label: "健康補給精選",
+      kind: "products",
+      sortOrder: 40,
+      productIds: [1, 58, 2, 3, 69, 56],
       eyebrow: "Health Hall",
       title: "健康補給精選",
       subtitle: "益生菌、葉黃素、膠原蛋白與日常營養補給。",
@@ -221,6 +251,9 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
     {
       key: "aroma",
       label: "精油香氛精選",
+      kind: "products",
+      sortOrder: 50,
+      productIds: [85, 74, 79, 82, 75, 76],
       eyebrow: "Aroma Hall",
       title: "精油香氛精選",
       subtitle: "單方、複方精油與擴香選品，打造日常香氛儀式。",
@@ -229,6 +262,8 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
     {
       key: "comingSoon",
       label: "新品預告",
+      kind: "system",
+      sortOrder: 60,
       eyebrow: "New Preview",
       title: "新品預告",
       subtitle: "新品與新香型陸續登場，搶先查看。",
@@ -260,8 +295,6 @@ function normalizeRanking(
     ...fallback,
     ...(value ?? {}),
     rank: fallback.rank,
-    action: "detail",
-    buttonLabel: "",
     visible:
       typeof value?.visible === "boolean"
         ? value.visible
@@ -273,14 +306,67 @@ function normalizeSection(
   value: Partial<SiteStudioSection> | null | undefined,
   fallback: SiteStudioSection
 ): SiteStudioSection {
-  return {
+  const merged = {
     ...fallback,
     ...(value ?? {}),
     key: fallback.key,
     visible:
-      typeof value?.visible === "boolean"
-        ? value.visible
-        : fallback.visible,
+      fallback.key === "skincareNeeds"
+        ? false
+        : typeof value?.visible === "boolean"
+          ? value.visible
+          : fallback.visible,
+  };
+
+  return {
+    ...merged,
+    kind: merged.kind ?? "system",
+    sortOrder:
+      typeof merged.sortOrder === "number"
+        ? merged.sortOrder
+        : fallback.sortOrder ?? 999,
+    locked: Boolean(merged.locked),
+    productIds: Array.isArray(merged.productIds)
+      ? merged.productIds
+          .map(Number)
+          .filter((id) => Number.isInteger(id) && id > 0)
+      : [],
+    linkType: merged.linkType ?? "none",
+    linkValue: merged.linkValue ?? "",
+  };
+}
+
+function normalizeCustomSection(
+  value: Partial<SiteStudioSection>,
+  index: number
+): SiteStudioSection | null {
+  if (!value.key || !String(value.key).startsWith("custom-")) return null;
+
+  const kind: SiteStudioSectionKind =
+    value.kind === "image" ? "image" : "products";
+
+  return {
+    key: String(value.key),
+    label: String(value.label ?? value.title ?? "自訂首頁區塊"),
+    eyebrow: String(value.eyebrow ?? ""),
+    title: String(value.title ?? "自訂首頁區塊"),
+    subtitle: String(value.subtitle ?? ""),
+    visible: value.visible !== false,
+    kind,
+    sortOrder:
+      typeof value.sortOrder === "number" ? value.sortOrder : 100 + index,
+    locked: false,
+    productIds: Array.isArray(value.productIds)
+      ? value.productIds
+          .map(Number)
+          .filter((id) => Number.isInteger(id) && id > 0)
+      : [],
+    image: String(value.image ?? ""),
+    desktopImage: String(value.desktopImage ?? ""),
+    alt: String(value.alt ?? value.title ?? "首頁視覺圖片"),
+    buttonLabel: String(value.buttonLabel ?? ""),
+    linkType: value.linkType ?? "none",
+    linkValue: String(value.linkValue ?? ""),
   };
 }
 
@@ -294,11 +380,21 @@ export function normalizeSiteStudioConfig(
     )
   );
 
-  const sections = DEFAULT_SITE_STUDIO_CONFIG.sections.map((fallback) =>
+  const builtInKeys = new Set(
+    DEFAULT_SITE_STUDIO_CONFIG.sections.map((item) => item.key)
+  );
+  const builtInSections = DEFAULT_SITE_STUDIO_CONFIG.sections.map((fallback) =>
     normalizeSection(
       value?.sections?.find((item) => item.key === fallback.key),
       fallback
     )
+  );
+  const customSections = (value?.sections ?? [])
+    .filter((item) => !builtInKeys.has(item.key))
+    .map((item, index) => normalizeCustomSection(item, index))
+    .filter((item): item is SiteStudioSection => Boolean(item));
+  const sections = [...builtInSections, ...customSections].sort(
+    (a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999)
   );
 
   return {

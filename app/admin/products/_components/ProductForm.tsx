@@ -38,7 +38,7 @@ function normalizeSellingPriceInput(value: string) {
 function createEmptyComboConfig(productId: number): ComboConfig {
   return {
     productId,
-    type: "mix_match",
+    type: "fixed_bundle",
     unitLabel: "件",
     allowSameProduct: true,
     options: [],
@@ -117,7 +117,7 @@ export default function ProductForm({
             className={tab === "combo" ? styles.activeTab : ""}
             onClick={() => setTab("combo")}
           >
-            組合內容
+            組合價格與方案
           </button>
         ) : null}
 
@@ -219,18 +219,25 @@ export default function ProductForm({
               ) : null}
             </label>
 
-            <label>
-              <span>售價（NT$）*</span>
-              <input
-                name="price"
-                required
-                inputMode="numeric"
-                defaultValue={normalizeSellingPriceInput(
-                  product?.price ?? ""
-                )}
-                placeholder="例如：2160"
-              />
-            </label>
+            {isCombo ? (
+              <div className={styles.positionNote}>
+                組合商品的真正售價統一在「組合價格與方案」設定，
+                商品卡不再提供另一個售價欄位。
+              </div>
+            ) : (
+              <label>
+                <span>售價（NT$）*</span>
+                <input
+                  name="price"
+                  required
+                  inputMode="numeric"
+                  defaultValue={normalizeSellingPriceInput(
+                    product?.price ?? ""
+                  )}
+                  placeholder="例如：2160"
+                />
+              </label>
+            )}
 
             <label className={styles.span2}>
               <span>價格補充</span>

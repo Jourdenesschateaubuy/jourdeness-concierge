@@ -8,7 +8,10 @@ import {
   type FormEvent,
 } from "react";
 
-import { readJsonResponse } from "../../../lib/http-json";
+import {
+  getComboConfig as getFallbackComboConfig,
+  type ComboConfig,
+} from "../../../lib/storefront-core";
 import styles from "./product-detail-studio-editor.module.css";
 
 type ExpandedInfoItem = {
@@ -35,6 +38,7 @@ type StudioProduct = {
   notice?: string | null;
   gallery?: string[] | null;
   expandedInfo?: ExpandedInfoItem[] | null;
+  comboConfig?: ComboConfig | null;
 };
 
 type ProductDetailForm = {
@@ -60,6 +64,59 @@ type ProductDetailStudioEditorProps = {
   onEditPrice?: () => void;
   onSaved?: (product: StudioProduct) => void;
 };
+
+function fixedBundleFallback(product: StudioProduct): ComboConfig | null {
+  if (product.category !== "組合價") return null;
+
+  const prices = [...String(product.price ?? "").matchAll(/([\d,]+)/g)]
+    .map((match) => Number(match[1].replace(/,/g, "")))
+    .filter((value) => Number.isFinite(value) && value > 0);
+  const price = prices.at(-1) ?? 0;
+
+  return {
+    productId: product.id,
+    type: "fixed_bundle",
+    unitLabel: "組",
+    options: [],
+    plans: [
+      {
+        id: "fixed-bundle",
+        label: "固定套組",
+        requiredQuantity: 1,
+        price,
+        priceLabel: price ? `$${price.toLocaleString("zh-TW")}` : "",
+      },
+    ],
+  };
+}
+
+function comboPriceSummary(config: ComboConfig) {
+  if (config.type === "fixed_bundle") {
+    const plan = config.plans.find(
+      (item) => Number.isFinite(item.price) && item.price > 0
+    );
+    return plan
+      ? `組合價 $${plan.price.toLocaleString("zh-TW")}`
+      : "尚未設定固定套組價格";
+  }
+
+  const unitLabel = config.unitLabel || "件";
+  const parts: string[] = [];
+  if (config.singleUnitPrice) {
+    parts.push(`單${unitLabel} $${config.singleUnitPrice.toLocaleString("zh-TW")}`);
+  }
+  for (const plan of config.plans) {
+    if (!Number.isFinite(plan.price) || plan.price <= 0) continue;
+    if (config.type === "buy_get") {
+      const buy = plan.buyQuantity ?? Math.max(plan.requiredQuantity - 1, 1);
+      const free = plan.freeQuantity ?? 1;
+      parts.push(`買${buy}送${free} $${plan.price.toLocaleString("zh-TW")}`);
+    } else {
+      parts.push(`任選${plan.requiredQuantity}${unitLabel} $${plan.price.toLocaleString("zh-TW")}`);
+    }
+  }
+  return parts.join("｜") || "尚未設定組合方案";
+}
 
 function productToForm(
   product: StudioProduct
@@ -144,6 +201,15 @@ export default function ProductDetailStudioEditor({
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  const comboConfig = useMemo(() => {
+    if (!product) return null;
+    return (
+      product.comboConfig ??
+      getFallbackComboConfig(product.id) ??
+      fixedBundleFallback(product)
+    );
+  }, [product]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -163,13 +229,10 @@ export default function ProductDetailStudioEditor({
         );
 
         const payload =
-          await readJsonResponse<{
+          (await response.json()) as {
             product?: StudioProduct;
             error?: string;
-          }>(
-            response,
-            "商品詳情讀取失敗"
-          );
+          };
 
         if (!response.ok || !payload.product) {
           throw new Error(
@@ -275,13 +338,10 @@ export default function ProductDetailStudioEditor({
       );
 
       const payload =
-        await readJsonResponse<{
+        (await response.json()) as {
           error?: string;
           [key: string]: unknown;
-        }>(
-          response,
-          "圖片上傳失敗"
-        );
+        };
 
       if (!response.ok) {
         throw new Error(
@@ -458,13 +518,10 @@ export default function ProductDetailStudioEditor({
       );
 
       const payload =
-        await readJsonResponse<{
+        (await response.json()) as {
           product?: StudioProduct;
           error?: string;
-        }>(
-          response,
-          "商品詳情儲存失敗"
-        );
+        };
 
       if (!response.ok || !payload.product) {
         throw new Error(
@@ -712,9 +769,11 @@ export default function ProductDetailStudioEditor({
           <del>
             {product?.originalPrice?.trim() || "未設定"}
           </del>
-          <span>目前售價</span>
+          <span>{comboConfig ? "組合方案價格" : "目前售價"}</span>
           <strong>
-            {product?.price?.trim() || "未設定"}
+            {comboConfig
+              ? comboPriceSummary(comboConfig)
+              : product?.price?.trim() || "未設定"}
           </strong>
           {product?.priceNote?.trim() ? (
             <em>{product.priceNote}</em>
@@ -722,15 +781,25 @@ export default function ProductDetailStudioEditor({
         </div>
 
         <p className={styles.referenceNote}>
-          價格屬於商品卡資料，修改後商品卡與商品詳情會一起更新。
+          {comboConfig
+            ? "組合商品價格統一在「組合價格與方案」修改，其他頁面只顯示結果。"
+            : "一般商品價格屬於商品卡資料，修改後商品卡與商品詳情會一起更新。"}
         </p>
 
         <button
           type="button"
           className={styles.editPriceButton}
-          onClick={onEditPrice}
+          onClick={() => {
+            if (comboConfig) {
+              window.location.assign(
+                `/admin/products/${productId}/edit?tab=combo`
+              );
+              return;
+            }
+            onEditPrice?.();
+          }}
         >
-          修改商品價格
+          {comboConfig ? "編輯組合價格與方案" : "修改商品價格"}
         </button>
       </section>
 

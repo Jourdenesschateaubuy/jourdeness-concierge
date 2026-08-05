@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -9,11 +9,13 @@ import type {
 } from "../../../../lib/product-repository";
 import ProductImageUploader from "./ProductImageUploader";
 import ComboConfigEditor from "./ComboConfigEditor";
+import { updateProductEditorAction } from "../actions";
 import styles from "./product-card-edit-form.module.css";
 
 type Props = {
   product: DatabaseProduct;
   action: (formData: FormData) => void | Promise<void>;
+  initialTab?: Tab;
 };
 
 type Tab = "card" | "combo" | "detail";
@@ -64,6 +66,57 @@ function formatSellingPricePreview(
         : "產地價";
 
   return `${label} $ ${formatted}`;
+}
+
+function formatComboPriceSummary(product: DatabaseProduct) {
+  const config = product.comboConfig;
+
+  if (!config) return "";
+
+  const unitLabel = config.unitLabel?.trim() || "件";
+
+  if (config.type === "fixed_bundle") {
+    const plan = config.plans.find(
+      (item) => Number.isFinite(item.price) && item.price > 0
+    );
+    return plan
+      ? `組合價 $${plan.price.toLocaleString("en-US")}`
+      : "尚未設定固定套組價格";
+  }
+
+  const parts: string[] = [];
+
+  if (
+    typeof config.singleUnitPrice === "number" &&
+    Number.isFinite(config.singleUnitPrice) &&
+    config.singleUnitPrice > 0
+  ) {
+    parts.push(
+      `單${unitLabel} $${config.singleUnitPrice.toLocaleString("en-US")}`
+    );
+  }
+
+  for (const plan of config.plans) {
+    if (!Number.isFinite(plan.price) || plan.price <= 0) {
+      continue;
+    }
+
+    const formattedPrice = plan.price.toLocaleString("en-US");
+
+    if (config.type === "buy_get") {
+      const buyQuantity =
+        plan.buyQuantity ?? Math.max(plan.requiredQuantity - 1, 1);
+      const freeQuantity = plan.freeQuantity ?? 1;
+
+      parts.push(`買${buyQuantity}送${freeQuantity} $${formattedPrice}`);
+    } else {
+      parts.push(
+        `任選${plan.requiredQuantity}${unitLabel} $${formattedPrice}`
+      );
+    }
+  }
+
+  return parts.join("｜");
 }
 
 const statusLabels: Record<ProductStatus, string> = {
@@ -146,10 +199,11 @@ function defaultUsageText(product: DatabaseProduct) {
 
 export default function ProductCardEditForm({
   product,
-  action,
+  initialTab = "card",
 }: Props) {
-  const [tab, setTab] = useState<Tab>("card");
+  const [tab, setTab] = useState<Tab>(initialTab);
   const hasCombo = Boolean(product.comboConfig);
+  const comboPriceSummary = formatComboPriceSummary(product);
 
   const [name, setName] = useState(product.name ?? "");
   const [originalPrice, setOriginalPrice] = useState(
@@ -204,8 +258,9 @@ const [category, setCategory] = useState<string>(
   );
 
   return (
-    <form action={action} className={styles.form}>
+    <form action={updateProductEditorAction} className={styles.form}>
       <input type="hidden" name="id" value={product.id} />
+      <input type="hidden" name="editorTab" value={tab} />
       <input type="hidden" name="category" value={category} />
 
       {/* 不顯示，但保留原資料 */}
@@ -267,7 +322,7 @@ const [category, setCategory] = useState<string>(
             className={tab === "combo" ? styles.activeTab : ""}
             onClick={() => setTab("combo")}
           >
-            組合內容
+            組合價格與方案
           </button>
         )}
 
@@ -364,19 +419,48 @@ const [category, setCategory] = useState<string>(
                 ) : null}
               </label>
 
-              <label>
-                <span>售價（NT$）</span>
-                <input
-                  name="price"
-                  required
-                  inputMode="numeric"
-                  value={price}
-                  onChange={(event) =>
-                    setPrice(event.target.value)
-                  }
-                  placeholder="例如：2160"
-                />
-              </label>
+              {hasCombo ? (
+                <label>
+                  <span>組合方案價格</span>
+                  <textarea
+                    rows={3}
+                    readOnly
+                    value={comboPriceSummary || "尚未設定組合方案"}
+                  />
+                  <small>
+                    組合商品價格只能在「組合價格與方案」修改。
+                  </small>
+                  <button
+                    type="button"
+                    onClick={() => setTab("combo")}
+                    style={{
+                      minHeight: 40,
+                      border: "1px solid #d9c9cc",
+                      borderRadius: 9,
+                      background: "#fff",
+                      color: "#7d2638",
+                      fontWeight: 850,
+                      cursor: "pointer",
+                    }}
+                  >
+                    前往組合價格與方案
+                  </button>
+                </label>
+              ) : (
+                <label>
+                  <span>售價（NT$）</span>
+                  <input
+                    name="price"
+                    required
+                    inputMode="numeric"
+                    value={price}
+                    onChange={(event) =>
+                      setPrice(event.target.value)
+                    }
+                    placeholder="例如：2160"
+                  />
+                </label>
+              )}
             </div>
 
             <label>
@@ -395,6 +479,7 @@ const [category, setCategory] = useState<string>(
             <label>
               <span>商品狀態</span>
               <select
+                name="status"
                 value={status}
                 onChange={(event) =>
                   setStatus(event.target.value as ProductStatus)
@@ -426,9 +511,11 @@ const [category, setCategory] = useState<string>(
             )}
 
             <b>
-              {price
-                ? formatSellingPricePreview(price, category)
-                : "尚未設定售價"}
+              {hasCombo
+                ? comboPriceSummary || "尚未設定組合方案"
+                : price
+                  ? formatSellingPricePreview(price, category)
+                  : "尚未設定售價"}
             </b>
 
             <button type="button" disabled>
@@ -906,7 +993,7 @@ const [category, setCategory] = useState<string>(
         <Link href="/admin">返回管理</Link>
 
         <button type="submit">
-          儲存變更
+          {tab === "combo" ? "儲存組合價格與方案" : "儲存變更"}
         </button>
       </div>
     </form>

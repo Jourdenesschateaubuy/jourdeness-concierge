@@ -157,21 +157,21 @@ export async function createDatabaseProduct(
       );
       const id = Number(idResult.rows[0]?.id ?? 1);
 
-     const comboConfig = input.comboConfig
-     ? {
-      ...input.comboConfig,
-      productId: id,
-        }
-      : productType === "combo"
-       ? {
-        productId: id,
-        type: "mix_match" as const,
-        unitLabel: "件",
-        allowSameProduct: true,
-        options: [],
-        plans: [],
-       }
-        : undefined;
+      const comboConfig = input.comboConfig
+        ? {
+            ...input.comboConfig,
+            productId: id,
+          }
+        : productType === "combo"
+          ? {
+              productId: id,
+              type: "fixed_bundle" as const,
+              unitLabel: "組",
+              allowSameProduct: false,
+              options: [],
+              plans: [],
+            }
+          : undefined;
 
       const result = await client.query<ProductRow>(
         `
@@ -297,6 +297,104 @@ export async function updateDatabaseProduct(
   return result.rows[0] ? rowToProduct(result.rows[0]) : null;
 }
 
+export type ProductPartialUpdateInput = Partial<ProductWriteInput> & {
+  comboConfig?: ComboConfig | null;
+};
+
+export async function updateDatabaseProductPartial(
+  id: number,
+  patch: ProductPartialUpdateInput
+) {
+  const existing = await getDatabaseProduct(id);
+
+  if (!existing) {
+    return null;
+  }
+
+  const input: ProductWriteInput = {
+    sku: patch.sku !== undefined ? patch.sku : existing.sku,
+    name: patch.name !== undefined ? patch.name : existing.name,
+    category:
+      patch.category !== undefined
+        ? patch.category
+        : existing.category,
+    series:
+      patch.series !== undefined
+        ? patch.series
+        : existing.series,
+    storefrontCategory:
+      patch.storefrontCategory !== undefined
+        ? patch.storefrontCategory
+        : existing.storefrontCategory,
+    originalPrice:
+      patch.originalPrice !== undefined
+        ? patch.originalPrice
+        : existing.originalPrice,
+    price: patch.price !== undefined ? patch.price : existing.price,
+    image: patch.image !== undefined ? patch.image : existing.image,
+    description:
+      patch.description !== undefined
+        ? patch.description
+        : existing.description,
+    cardName:
+      patch.cardName !== undefined
+        ? patch.cardName
+        : existing.cardName,
+    cardSubtitle:
+      patch.cardSubtitle !== undefined
+        ? patch.cardSubtitle
+        : existing.cardSubtitle,
+    spec: patch.spec !== undefined ? patch.spec : existing.spec,
+    intro: patch.intro !== undefined ? patch.intro : existing.intro,
+    priceNote:
+      patch.priceNote !== undefined
+        ? patch.priceNote
+        : existing.priceNote,
+    expiryNote:
+      patch.expiryNote !== undefined
+        ? patch.expiryNote
+        : existing.expiryNote,
+    internalExpiryDate:
+      patch.internalExpiryDate !== undefined
+        ? patch.internalExpiryDate
+        : existing.internalExpiryDate,
+    features:
+      patch.features !== undefined
+        ? patch.features
+        : existing.features ?? [],
+    suitableFor:
+      patch.suitableFor !== undefined
+        ? patch.suitableFor
+        : existing.suitableFor ?? [],
+    usage: patch.usage !== undefined ? patch.usage : existing.usage,
+    notice: patch.notice !== undefined ? patch.notice : existing.notice,
+    gallery:
+      patch.gallery !== undefined
+        ? patch.gallery
+        : existing.gallery ?? [],
+    expandedInfo:
+      patch.expandedInfo !== undefined
+        ? patch.expandedInfo
+        : existing.expandedInfo ?? [],
+    comboConfig:
+      patch.comboConfig === null
+        ? undefined
+        : patch.comboConfig !== undefined
+          ? patch.comboConfig
+          : existing.comboConfig,
+    status:
+      patch.status !== undefined
+        ? patch.status
+        : existing.status,
+    sortOrder:
+      patch.sortOrder !== undefined
+        ? patch.sortOrder
+        : existing.sortOrder,
+  };
+
+  return updateDatabaseProduct(id, input);
+}
+
 export async function updateProductStatus(
   id: number,
   status: ProductStatus
@@ -362,158 +460,4 @@ export async function deleteDatabaseProduct(id: number) {
   );
 
   return result.rowCount === 1;
-}
-
-
-export type ProductPartialUpdate = Partial<
-  Pick<
-    ProductWriteInput,
-    | "sku"
-    | "name"
-    | "category"
-    | "series"
-    | "storefrontCategory"
-    | "originalPrice"
-    | "price"
-    | "image"
-    | "description"
-    | "cardName"
-    | "cardSubtitle"
-    | "spec"
-    | "intro"
-    | "priceNote"
-    | "expiryNote"
-    | "internalExpiryDate"
-    | "features"
-    | "suitableFor"
-    | "usage"
-    | "notice"
-    | "gallery"
-    | "expandedInfo"
-    | "comboConfig"
-    | "status"
-    | "sortOrder"
-  >
->;
-
-const partialProductColumnMap: Record<
-  keyof ProductPartialUpdate,
-  {
-    column: string;
-    json?: boolean;
-  }
-> = {
-  sku: { column: "sku" },
-  name: { column: "name" },
-  category: { column: "category" },
-  series: { column: "series" },
-  storefrontCategory: {
-    column: "storefront_category",
-  },
-  originalPrice: { column: "original_price" },
-  price: { column: "price" },
-  image: { column: "image" },
-  description: { column: "description" },
-  cardName: { column: "card_name" },
-  cardSubtitle: { column: "card_subtitle" },
-  spec: { column: "spec" },
-  intro: { column: "intro" },
-  priceNote: { column: "price_note" },
-  expiryNote: { column: "expiry_note" },
-  internalExpiryDate: {
-    column: "internal_expiry_date",
-  },
-  features: { column: "features", json: true },
-  suitableFor: {
-    column: "suitable_for",
-    json: true,
-  },
-  usage: { column: "usage" },
-  notice: { column: "notice" },
-  gallery: { column: "gallery", json: true },
-  expandedInfo: {
-    column: "expanded_info",
-    json: true,
-  },
-  comboConfig: {
-    column: "combo_config",
-    json: true,
-  },
-  status: { column: "status" },
-  sortOrder: { column: "sort_order" },
-};
-
-export async function updateDatabaseProductPartial(
-  id: number,
-  patch: ProductPartialUpdate
-) {
-  const entries = (
-    Object.entries(patch) as Array<
-      [
-        keyof ProductPartialUpdate,
-        ProductPartialUpdate[keyof ProductPartialUpdate],
-      ]
-    >
-  ).filter(([, value]) => value !== undefined);
-
-  if (entries.length === 0) {
-    return getDatabaseProduct(id);
-  }
-
-  const values: unknown[] = [id];
-
-  const assignments = entries.map(
-    ([field, value], index) => {
-      const definition =
-        partialProductColumnMap[field];
-      const parameterIndex = index + 2;
-
-      const nullableFields = new Set<
-        keyof ProductPartialUpdate
-      >([
-        "sku",
-        "storefrontCategory",
-        "originalPrice",
-        "cardName",
-        "cardSubtitle",
-        "spec",
-        "intro",
-        "priceNote",
-        "expiryNote",
-        "internalExpiryDate",
-        "usage",
-        "notice",
-        "comboConfig",
-      ]);
-
-      values.push(
-        definition.json
-          ? JSON.stringify(value ?? null)
-          : value === "" &&
-              nullableFields.has(field)
-            ? null
-            : value
-      );
-
-      return `${definition.column} = $${parameterIndex}${
-        definition.json ? "::jsonb" : ""
-      }`;
-    }
-  );
-
-  const result = await dbQuery<ProductRow>(
-    `
-      UPDATE products
-      SET
-        ${assignments.join(",\n        ")},
-        updated_at = NOW()
-      WHERE id = $1
-      RETURNING *
-    `,
-    values
-  );
-
-  return result.rows[0]
-    ? rowToProduct(result.rows[0])
-    : null;
 }

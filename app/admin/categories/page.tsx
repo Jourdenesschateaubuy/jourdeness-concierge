@@ -9,38 +9,22 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminCategoriesPage() {
   const [categories, series] = await Promise.all([
-    getCatalogCategories({
-      includeInactive: true,
-    }),
-    getCatalogSeries({
-      includeInactive: true,
-    }),
+    getCatalogCategories({ includeInactive: true, includeCounts: true }),
+    getCatalogSeries({ includeInactive: true, includeCounts: true }),
   ]);
 
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
         <div>
-          <p className={styles.eyebrow}>
-            CATALOG · NEON POSTGRES
-          </p>
-
-          <h1>分類管理</h1>
-
-          <p>
-            管理商品分類、啟用狀態與顯示順序。
-          </p>
+          <p className={styles.eyebrow}>CATALOG STRUCTURE</p>
+          <h1>分類與細項管理</h1>
+          <p>依 01、02、03 排列前台分類；可新增、改名、停用、拖曳與安全刪除。</p>
         </div>
-
-        <span className={styles.statusBadge}>
-          可編輯
-        </span>
+        <span className={styles.statusBadge}>可編輯</span>
       </header>
 
-      <CategoryManager
-        categories={categories}
-        series={series}
-      />
+      <CategoryManager categories={categories} series={series} />
     </div>
   );
 }
