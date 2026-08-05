@@ -326,7 +326,12 @@ export default function CategoryManager({ categories, series }: Props) {
                       >
                         <button type="button" className={styles.dragHandle}>⋮⋮</button>
                         <span className={styles.order}>{orderLabel(index + 1)}</span>
-                        <strong>{item.name}</strong>
+                        <strong>
+                          <span style={{ color: "#8b2d40", marginRight: 8 }}>
+                            {item.displayCode}
+                          </span>
+                          {item.name}
+                        </strong>
                         <small>{item.productCount ?? 0} 個商品</small>
                         <span
                           className={`${styles.status} ${

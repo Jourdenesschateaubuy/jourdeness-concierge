@@ -21,6 +21,7 @@ import { CSS } from "@dnd-kit/utilities";
 import type {
   DatabaseProduct,
   ProductStatus,
+  ProductType,
 } from "../../../../lib/product-repository";
 
 import {
@@ -32,12 +33,8 @@ import {
 import styles from "../../admin.module.css";
 import actionStyles from "./product-manager-actions.module.css";
 
-type AdminProduct = DatabaseProduct & {
-  isCombo: boolean;
-};
-
 type SortableProductRowProps = {
-  product: AdminProduct;
+  product: DatabaseProduct;
   dragDisabled: boolean;
 };
 
@@ -50,6 +47,11 @@ const statusLabel: Record<ProductStatus, string> = {
   inactive: "下架",
   coming_soon: "新品預告",
   sold_out: "售罄",
+};
+
+const productTypeLabel: Record<ProductType, string> = {
+  standard: "一般商品",
+  combo: "組合商品",
 };
 
 function SortableProductRow({
@@ -82,7 +84,11 @@ function SortableProductRow({
         <button
           type="button"
           aria-label={`拖曳調整 ${product.name} 的排序`}
-          title={dragDisabled ? "有使用搜尋或篩選時不能拖曳排序" : "拖曳調整排序"}
+          title={
+            dragDisabled
+              ? "有使用搜尋或篩選時不能拖曳排序"
+              : "拖曳調整排序"
+          }
           disabled={dragDisabled}
           {...attributes}
           {...listeners}
@@ -101,7 +107,12 @@ function SortableProductRow({
         </button>
       </td>
 
-      <td className={styles.idCell}>#{product.id}</td>
+      <td className={styles.idCell}>
+        <strong>{product.displayCode}</strong>
+        <small style={{ display: "block", color: "#8a8a8a" }}>
+          DB #{product.id}
+        </small>
+      </td>
 
       <td>
         <div className={styles.productCell}>
@@ -119,7 +130,6 @@ function SortableProductRow({
 
           <div>
             <strong>{product.cardName ?? product.name}</strong>
-
             <small>
               {product.sku ? `貨號 ${product.sku} · ` : ""}
               {product.spec ?? product.description}
@@ -129,31 +139,26 @@ function SortableProductRow({
       </td>
 
       <td>{product.category}</td>
-
-      <td>{product.series}</td>
+      <td>{product.series || "—"}</td>
 
       <td>
         <div className={styles.priceCell}>
-          {product.originalPrice && (
-            <small>{product.originalPrice}</small>
-          )}
-
+          {product.originalPrice && <small>{product.originalPrice}</small>}
           <strong>{product.price}</strong>
         </div>
       </td>
 
       <td>
-        {product.isCombo ? (
-          <span className={styles.comboBadge}>組合優惠</span>
+        {product.productType === "combo" ? (
+          <span className={styles.comboBadge}>組合商品</span>
         ) : (
-          <span className={styles.muted}>—</span>
+          <span className={styles.muted}>一般商品</span>
         )}
       </td>
 
       <td>
         <form action={changeProductStatusAction}>
           <input type="hidden" name="id" value={product.id} />
-
           <select
             className={actionStyles.statusSelect}
             name="status"
@@ -168,7 +173,6 @@ function SortableProductRow({
             <option value="coming_soon">新品預告</option>
             <option value="sold_out">售罄</option>
           </select>
-
           <noscript>
             <button type="submit">更新</button>
           </noscript>
@@ -178,7 +182,7 @@ function SortableProductRow({
       <td>
         <div className={actionStyles.rowActions}>
           <Link href={`/admin/products/${product.id}/edit`}>
-            編輯
+            {product.productType === "combo" ? "編輯方案" : "編輯"}
           </Link>
 
           <form
@@ -205,17 +209,14 @@ function SortableProductRow({
 export default function ProductManager({
   products,
 }: {
-  products: AdminProduct[];
+  products: DatabaseProduct[];
 }) {
-
   const [orderedProducts, setOrderedProducts] =
-    useState<AdminProduct[]>(products);
-
+    useState<DatabaseProduct[]>(products);
+  const [activeType, setActiveType] = useState<ProductType>("standard");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("全部");
   const [status, setStatus] = useState("全部");
-  const [comboOnly, setComboOnly] = useState(false);
-
   const [sortMessage, setSortMessage] = useState("");
   const [isSavingOrder, startSavingOrder] = useTransition();
 
@@ -225,49 +226,59 @@ export default function ProductManager({
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 6,
-      },
+      activationConstraint: { distance: 6 },
     })
+  );
+
+  const typeProducts = useMemo(
+    () =>
+      orderedProducts.filter(
+        (product) => product.productType === activeType
+      ),
+    [activeType, orderedProducts]
+  );
+
+  const counts = useMemo(
+    () => ({
+      standard: orderedProducts.filter(
+        (product) => product.productType === "standard"
+      ).length,
+      combo: orderedProducts.filter(
+        (product) => product.productType === "combo"
+      ).length,
+    }),
+    [orderedProducts]
   );
 
   const categories = useMemo(
     () =>
       Array.from(
-        new Set(orderedProducts.map((product) => product.category))
+        new Set(typeProducts.map((product) => product.category))
       ).sort((a, b) => a.localeCompare(b, "zh-TW")),
-    [orderedProducts]
+    [typeProducts]
   );
 
   const hasActiveFilter =
     normalize(query) !== "" ||
     category !== "全部" ||
-    status !== "全部" ||
-    comboOnly;
+    status !== "全部";
 
   const filteredProducts = useMemo(() => {
     const keyword = normalize(query);
 
-    return orderedProducts.filter((product) => {
+    return typeProducts.filter((product) => {
       if (category !== "全部" && product.category !== category) {
         return false;
       }
-
       if (status !== "全部" && product.status !== status) {
         return false;
       }
-
-      if (comboOnly && !product.isCombo) {
-        return false;
-      }
-
-      if (!keyword) {
-        return true;
-      }
+      if (!keyword) return true;
 
       const haystack = normalize(
         [
           product.id.toString(),
+          product.displayCode,
           product.sku ?? "",
           product.name,
           product.cardName ?? "",
@@ -276,24 +287,25 @@ export default function ProductManager({
           product.spec ?? "",
           product.price,
           product.status,
+          productTypeLabel[product.productType],
         ].join(" ")
       );
 
       return haystack.includes(keyword);
     });
-  }, [
-    category,
-    comboOnly,
-    orderedProducts,
-    query,
-    status,
-  ]);
+  }, [category, query, status, typeProducts]);
+
+  function switchType(nextType: ProductType) {
+    setActiveType(nextType);
+    setQuery("");
+    setCategory("全部");
+    setStatus("全部");
+  }
 
   function clearFilters() {
     setQuery("");
     setCategory("全部");
     setStatus("全部");
-    setComboOnly(false);
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -308,24 +320,31 @@ export default function ProductManager({
       return;
     }
 
-    const oldIndex = orderedProducts.findIndex(
+    const currentTypeProducts = orderedProducts.filter(
+      (product) => product.productType === activeType
+    );
+    const oldIndex = currentTypeProducts.findIndex(
       (product) => product.id === Number(active.id)
     );
-
-    const newIndex = orderedProducts.findIndex(
+    const newIndex = currentTypeProducts.findIndex(
       (product) => product.id === Number(over.id)
     );
 
-    if (oldIndex === -1 || newIndex === -1) {
-      return;
-    }
+    if (oldIndex === -1 || newIndex === -1) return;
 
-    const previousProducts = orderedProducts;
-    const nextProducts = arrayMove(
-      orderedProducts,
+    const movedTypeProducts = arrayMove(
+      currentTypeProducts,
       oldIndex,
       newIndex
     );
+    let replacementIndex = 0;
+    const previousProducts = orderedProducts;
+    const nextProducts = orderedProducts.map((product) => {
+      if (product.productType !== activeType) return product;
+      const replacement = movedTypeProducts[replacementIndex];
+      replacementIndex += 1;
+      return replacement;
+    });
 
     setOrderedProducts(nextProducts);
     setSortMessage("正在儲存排序…");
@@ -339,56 +358,83 @@ export default function ProductManager({
       try {
         await saveProductSortOrderAction(sortItems);
         setSortMessage("排序已儲存");
-
-        window.setTimeout(() => {
-        setSortMessage("");
-        }, 1800);
+        window.setTimeout(() => setSortMessage(""), 1800);
       } catch (error) {
-        console.warn("儲存商品排序失敗：", error);
-
+        console.error("儲存商品排序失敗：", error);
         setOrderedProducts(previousProducts);
         setSortMessage("排序儲存失敗，已恢復原本順序");
-
-        window.setTimeout(() => {
-          setSortMessage("");
-        }, 3000);
+        window.setTimeout(() => setSortMessage(""), 3000);
       }
     });
   }
-    return (
+
+  return (
     <section className={styles.panel}>
       <div className={actionStyles.topActions}>
         <div>
           <strong>{orderedProducts.length} 筆商品</strong>
-          <span>來源：Neon PostgreSQL</span>
+          <span>內部 DB ID 保留；後台改用 P／C 顯示編號</span>
         </div>
 
-        <Link href="/admin/products/new">
-          ＋ 新增商品
-        </Link>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <Link href="/admin/products/new?type=product">
+            ＋ 新增一般商品
+          </Link>
+          <Link href="/admin/products/new?type=combo">
+            ＋ 新增組合商品
+          </Link>
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+          gap: 10,
+          marginBottom: 18,
+        }}
+      >
+        {(["standard", "combo"] as const).map((type) => (
+          <button
+            key={type}
+            type="button"
+            onClick={() => switchType(type)}
+            style={{
+              minHeight: 52,
+              borderRadius: 12,
+              border:
+                activeType === type
+                  ? "2px solid #7d2638"
+                  : "1px solid #d9c9cc",
+              background: activeType === type ? "#fff7f8" : "#fff",
+              color: "#5f2330",
+              fontWeight: 900,
+              cursor: "pointer",
+            }}
+          >
+            {productTypeLabel[type]}　{counts[type]}
+          </button>
+        ))}
       </div>
 
       <div className={styles.toolbar}>
         <label className={styles.searchBox}>
           <span>搜尋商品</span>
-
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="商品名稱、貨號、系列、ID…"
+            placeholder="商品編號、名稱、貨號、系列、DB ID…"
           />
         </label>
 
         <label className={styles.selectBox}>
           <span>分類</span>
-
           <select
             value={category}
             onChange={(event) => setCategory(event.target.value)}
           >
             <option value="全部">全部分類</option>
-
             {categories.map((item) => (
               <option key={item} value={item}>
                 {item}
@@ -399,7 +445,6 @@ export default function ProductManager({
 
         <label className={styles.selectBox}>
           <span>狀態</span>
-
           <select
             value={status}
             onChange={(event) => setStatus(event.target.value)}
@@ -411,32 +456,20 @@ export default function ProductManager({
             <option value="sold_out">售罄</option>
           </select>
         </label>
-
-        <label className={styles.toggleBox}>
-          <input
-            type="checkbox"
-            checked={comboOnly}
-            onChange={(event) =>
-              setComboOnly(event.target.checked)
-            }
-          />
-
-          <span>只看組合商品</span>
-        </label>
       </div>
 
       <div className={styles.resultBar}>
         <strong>{filteredProducts.length}</strong>
-        <span> / {orderedProducts.length} 筆商品</span>
+        <span> / {typeProducts.length} 筆{productTypeLabel[activeType]}</span>
 
         {hasActiveFilter && (
           <button
             type="button"
             onClick={clearFilters}
             style={{
-              marginLeft: "12px",
+              marginLeft: 12,
               border: "1px solid #cccccc",
-              borderRadius: "6px",
+              borderRadius: 6,
               background: "#ffffff",
               padding: "5px 10px",
               cursor: "pointer",
@@ -456,33 +489,31 @@ export default function ProductManager({
             ? "搜尋或篩選中，暫停拖曳排序"
             : isSavingOrder
               ? "正在儲存排序…"
-              : sortMessage || "拖曳 ☰ 可調整商品順序"}
+              : sortMessage || `拖曳 ☰ 調整${productTypeLabel[activeType]}順序`}
         </span>
       </div>
 
       <div className={styles.tableWrap}>
-      <DndContext
-       id="product-sort-dnd"
-       sensors={sensors}
-       collisionDetection={closestCenter}
-       onDragEnd={handleDragEnd}
->
+        <DndContext
+          id={`product-sort-${activeType}`}
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext
-            items={filteredProducts.map(
-              (product) => product.id
-            )}
+            items={filteredProducts.map((product) => product.id)}
             strategy={verticalListSortingStrategy}
           >
             <table className={styles.productTable}>
               <thead>
                 <tr>
                   <th>排序</th>
-                  <th>ID</th>
+                  <th>商品編號</th>
                   <th>商品</th>
                   <th>分類</th>
                   <th>系列</th>
                   <th>價格</th>
-                  <th>優惠</th>
+                  <th>類型</th>
                   <th>狀態</th>
                   <th>操作</th>
                 </tr>
@@ -493,9 +524,7 @@ export default function ProductManager({
                   <SortableProductRow
                     key={product.id}
                     product={product}
-                    dragDisabled={
-                      hasActiveFilter || isSavingOrder
-                    }
+                    dragDisabled={hasActiveFilter || isSavingOrder}
                   />
                 ))}
               </tbody>
@@ -513,7 +542,6 @@ export default function ProductManager({
 
       <div className={actionStyles.legend}>
         <span>狀態：</span>
-
         {Object.entries(statusLabel).map(([key, label]) => (
           <span key={key}>{label}</span>
         ))}

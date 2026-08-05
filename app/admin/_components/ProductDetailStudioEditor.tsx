@@ -8,10 +8,7 @@ import {
   type FormEvent,
 } from "react";
 
-import {
-  getComboConfig as getFallbackComboConfig,
-  type ComboConfig,
-} from "../../../lib/storefront-core";
+import type { ComboConfig } from "../../../lib/storefront-core";
 import styles from "./product-detail-studio-editor.module.css";
 
 type ExpandedInfoItem = {
@@ -21,6 +18,8 @@ type ExpandedInfoItem = {
 
 type StudioProduct = {
   id: number;
+  displayCode?: string;
+  productType?: "standard" | "combo";
   name: string;
   image?: string | null;
   series?: string | null;
@@ -66,7 +65,7 @@ type ProductDetailStudioEditorProps = {
 };
 
 function fixedBundleFallback(product: StudioProduct): ComboConfig | null {
-  if (product.category !== "組合價") return null;
+  if (product.productType !== "combo" && product.category !== "組合價") return null;
 
   const prices = [...String(product.price ?? "").matchAll(/([\d,]+)/g)]
     .map((match) => Number(match[1].replace(/,/g, "")))
@@ -205,7 +204,6 @@ export default function ProductDetailStudioEditor({
     if (!product) return null;
     return (
       product.comboConfig ??
-      getFallbackComboConfig(product.id) ??
       fixedBundleFallback(product)
     );
   }, [product]);

@@ -338,7 +338,7 @@ const [category, setCategory] = useState<string>(
       {tab === "card" && (
         <div className={styles.panel}>
           <div className={styles.panelHeading}>
-            <span>商品卡</span>
+            <span>{product.displayCode} · 商品卡</span>
             <h2>客人第一眼看到的內容</h2>
           </div>
 
@@ -537,7 +537,7 @@ const [category, setCategory] = useState<string>(
       {tab === "detail" && (
         <div className={styles.panel}>
           <div className={styles.panelHeading}>
-            <span>商品資訊</span>
+            <span>{product.displayCode} · 商品資訊</span>
             <h2>照客人看到的商品頁順序修改</h2>
             <p className={styles.frontOrderNote}>
               從上往下就是前台商品資訊的顯示順序。
