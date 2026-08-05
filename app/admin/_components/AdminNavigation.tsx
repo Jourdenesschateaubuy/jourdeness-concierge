@@ -20,6 +20,10 @@ const navigationItems: NavigationItem[] = [
     label: "商品",
   },
   {
+    href: "/admin/products/health",
+    label: "商品健檢",
+  },
+  {
     href: "/admin/categories",
     label: "分類",
   },
@@ -68,8 +72,12 @@ export default function AdminNavigation() {
           const isActive =
             item.href === "/admin"
               ? pathname === "/admin"
-              : pathname === item.href ||
-                pathname.startsWith(`${item.href}/`);
+              : item.href === "/admin/products"
+                ? pathname === "/admin/products" ||
+                  (pathname.startsWith("/admin/products/") &&
+                    !pathname.startsWith("/admin/products/health"))
+                : pathname === item.href ||
+                  pathname.startsWith(`${item.href}/`);
 
           if (item.disabled) {
             return (

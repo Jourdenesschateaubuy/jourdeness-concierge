@@ -1325,6 +1325,9 @@ const sevenSequenceGuideV377 = [
   const selectedDetailGalleryImages = selectedDetailProduct
     ? getDetailGalleryImages(selectedDetailProduct)
     : [];
+  const selectedDetailComboOffers = selectedDetailProduct
+    ? getProductComboOffers(selectedDetailProduct)
+    : [];
 
   function getStudioSection(
     key: SiteStudioSectionKey
@@ -3288,6 +3291,64 @@ const sevenSequenceGuideV377 = [
     return product.series;
   }
 
+  function getProductComboOffers(product: Product) {
+    if (
+      product.productType === "combo" ||
+      Boolean(product.comboConfig)
+    ) {
+      return [];
+    }
+
+    return products
+      .filter((candidate) => {
+        if (
+          candidate.id === product.id ||
+          candidate.productType !== "combo"
+        ) {
+          return false;
+        }
+
+        const config = getComboConfig(candidate.id);
+        if (!config) return false;
+
+        return config.options.some(
+          (option) => option.productId === product.id
+        );
+      })
+      .sort((a, b) => {
+        const statusRank = (item: StorefrontProduct) => {
+          if (item.status === "active") return 0;
+          if (item.status === "sold_out") return 1;
+          if (item.status === "coming_soon") return 2;
+          return 3;
+        };
+
+        return statusRank(a) - statusRank(b) || a.id - b.id;
+      })
+      .slice(0, 4);
+  }
+
+  function getComboOfferSummary(product: Product) {
+    const config = getComboConfig(product.id);
+    if (!config) return displayPrice(product);
+
+    const planLabels = config.plans
+      .filter(
+        (plan) => Number.isFinite(plan.price) && plan.price > 0
+      )
+      .map(
+        (plan) =>
+          `${plan.label} ${
+            plan.priceLabel ||
+            `$${plan.price.toLocaleString("zh-TW")}`
+          }`
+      );
+
+    return planLabels.length > 0
+      ? planLabels.join("／")
+      : displayPrice(product);
+  }
+
   function getRelatedProducts(product: Product) {
     const manualRelatedIds: Record<number, number[]> = {
   15: [16, 57],
@@ -3300,6 +3361,7 @@ const sevenSequenceGuideV377 = [
 };
 
     const manual = getProductsByIds(manualRelatedIds[product.id] ?? []);
+    const structuredComboOffers = getProductComboOffers(product);
 
     const sameSeries = products.filter(
       (item) =>
@@ -3321,7 +3383,13 @@ const sevenSequenceGuideV377 = [
     );
 
     const seen = new Set<number>();
-    return [...manual, ...comboMatches, ...sameSeries, ...sameCategory]
+    return [
+      ...structuredComboOffers,
+      ...manual,
+      ...comboMatches,
+      ...sameSeries,
+      ...sameCategory,
+    ]
       .filter((item) => {
         if (isConsolidatedChoiceOptionProductV370(item)) return false;
         if (seen.has(item.id)) return false;
@@ -6904,6 +6972,41 @@ const sevenSequenceGuideV377 = [
                   </button>
                 )}
               </div>
+
+              {selectedDetailComboOffers.length > 0 && (
+                <section
+                  className="detail-combo-offers-v390"
+                  aria-label="此商品可使用的組合優惠"
+                >
+                  <div className="detail-combo-offers-heading-v390">
+                    <div>
+                      <span>COMBO OFFER</span>
+                      <h3>此商品有組合優惠</h3>
+                    </div>
+                    <small>選擇組合通常比單買更優惠</small>
+                  </div>
+
+                  <div className="detail-combo-offers-list-v390">
+                    {selectedDetailComboOffers.map((comboProduct) => (
+                      <button
+                        type="button"
+                        key={`detail-combo-offer-${selectedDetailProduct.id}-${comboProduct.id}`}
+                        onClick={() => openRelatedDetail(comboProduct)}
+                      >
+                        <div>
+                          <strong>{getCardName(comboProduct)}</strong>
+                          <span>{getComboOfferSummary(comboProduct)}</span>
+                        </div>
+                        <em>
+                          {isSoldOut(comboProduct)
+                            ? "查看補貨狀態"
+                            : "查看組合優惠 →"}
+                        </em>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               <section className="detail-price-hero-v273" aria-label="價格與加入購物車">
                 <div>
@@ -24498,6 +24601,108 @@ const sevenSequenceGuideV377 = [
           color: #452d2d;
           text-align: left;
           backdrop-filter: blur(10px);
+        }
+
+        .detail-combo-offers-v390 {
+          display: grid;
+          gap: 12px;
+          margin: 0 0 14px;
+          padding: 16px;
+          border: 1px solid rgba(151, 76, 88, 0.22);
+          border-radius: 22px;
+          background: linear-gradient(145deg, #fff8f6, #fffdf9);
+          box-shadow: 0 12px 28px rgba(92, 44, 54, 0.07);
+        }
+
+        .detail-combo-offers-heading-v390 {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 14px;
+        }
+
+        .detail-combo-offers-heading-v390 span {
+          display: block;
+          color: #9a4252;
+          font-size: 9px;
+          font-weight: 1000;
+          letter-spacing: 0.16em;
+        }
+
+        .detail-combo-offers-heading-v390 h3 {
+          margin: 4px 0 0;
+          color: #5f2632;
+          font-size: 17px;
+        }
+
+        .detail-combo-offers-heading-v390 small {
+          color: #8a7471;
+          font-size: 10px;
+          font-weight: 750;
+        }
+
+        .detail-combo-offers-list-v390 {
+          display: grid;
+          gap: 8px;
+        }
+
+        .detail-combo-offers-list-v390 button {
+          width: 100%;
+          min-height: 66px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          border: 1px solid rgba(151, 76, 88, 0.18);
+          border-radius: 16px;
+          padding: 11px 13px;
+          background: #fff;
+          color: #4b3539;
+          text-align: left;
+          cursor: pointer;
+        }
+
+        .detail-combo-offers-list-v390 button > div {
+          min-width: 0;
+          display: grid;
+          gap: 5px;
+        }
+
+        .detail-combo-offers-list-v390 strong {
+          overflow: hidden;
+          color: #4d3036;
+          font-size: 13px;
+          font-weight: 950;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .detail-combo-offers-list-v390 button span {
+          color: #8a615f;
+          font-size: 11px;
+          line-height: 1.45;
+        }
+
+        .detail-combo-offers-list-v390 em {
+          flex: 0 0 auto;
+          color: #8f2c3c;
+          font-size: 11px;
+          font-style: normal;
+          font-weight: 1000;
+          white-space: nowrap;
+        }
+
+        @media (max-width: 520px) {
+          .detail-combo-offers-heading-v390 {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 5px;
+          }
+
+          .detail-combo-offers-list-v390 button {
+            align-items: flex-start;
+            flex-direction: column;
+          }
         }
 
       `}
