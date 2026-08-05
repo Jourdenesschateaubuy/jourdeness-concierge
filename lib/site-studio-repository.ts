@@ -117,6 +117,17 @@ export async function updateSiteStudioRanking(
   });
 }
 
+export async function saveSiteStudioSections(
+  sections: SiteStudioSection[]
+) {
+  const current = await getSiteStudioConfig();
+
+  return saveSiteStudioConfig({
+    ...current,
+    sections,
+  });
+}
+
 export async function updateSiteStudioSection(
   section: SiteStudioSection
 ) {

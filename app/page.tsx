@@ -59,6 +59,7 @@ import {
   type SiteStudioHero,
   type SiteStudioPreviewPatch,
   type SiteStudioRankingItem,
+  type SiteStudioSection,
   type SiteStudioSectionKey,
 } from "../lib/site-studio-types";
 
@@ -102,10 +103,84 @@ function Home() {
     useState<StorefrontCatalogSeries[]>([]);
 
   function getComboConfig(productId: number): ComboConfig | null {
-    const databaseConfig =
-      products.find((product) => product.id === productId)?.comboConfig;
+    const product = products.find((item) => item.id === productId);
+    const databaseConfig = product?.comboConfig;
+    const fallbackConfig = getFallbackComboConfig(productId);
 
-    return databaseConfig ?? getFallbackComboConfig(productId);
+    if (databaseConfig || fallbackConfig) {
+      return databaseConfig ?? fallbackConfig;
+    }
+
+    if (product?.category !== "組合價") {
+      return null;
+    }
+
+    const values = [...product.price.matchAll(/([\d,]+)/g)]
+      .map((match) => Number(match[1].replace(/,/g, "")))
+      .filter((value) => Number.isFinite(value) && value > 0);
+    const price = values.at(-1) ?? 0;
+
+    return {
+      productId,
+      type: "fixed_bundle",
+      unitLabel: "組",
+      allowSameProduct: false,
+      options: [],
+      plans: [
+        {
+          id: "fixed-bundle",
+          label: "固定套組",
+          requiredQuantity: 1,
+          price,
+          priceLabel: price ? `$${price.toLocaleString("zh-TW")}` : "",
+        },
+      ],
+    };
+  }
+
+  function getComboPriceParts(config: ComboConfig) {
+    const unitLabel = config.unitLabel?.trim() || "件";
+
+    if (config.type === "fixed_bundle") {
+      const plan = config.plans.find(
+        (item) => Number.isFinite(item.price) && item.price > 0
+      );
+      return plan ? [`組合價 $${plan.price.toLocaleString("zh-TW")}`] : [];
+    }
+
+    const parts: string[] = [];
+
+    if (
+      typeof config.singleUnitPrice === "number" &&
+      Number.isFinite(config.singleUnitPrice) &&
+      config.singleUnitPrice > 0
+    ) {
+      parts.push(
+        `單${unitLabel} $${config.singleUnitPrice.toLocaleString("zh-TW")}`
+      );
+    } else if (config.singlePriceLabel?.trim()) {
+      parts.push(config.singlePriceLabel.trim());
+    }
+
+    for (const plan of config.plans) {
+      if (!Number.isFinite(plan.price) || plan.price <= 0) continue;
+      const formatted = `$${plan.price.toLocaleString("zh-TW")}`;
+
+      if (config.type === "buy_get") {
+        const buyQuantity =
+          plan.buyQuantity ?? Math.max(plan.requiredQuantity - 1, 1);
+        const freeQuantity = plan.freeQuantity ?? 1;
+        parts.push(`買${buyQuantity}送${freeQuantity} ${formatted}`);
+      } else {
+        parts.push(`任選${plan.requiredQuantity}${unitLabel} ${formatted}`);
+      }
+    }
+
+    return parts;
+  }
+
+  function isFixedBundle(product: Product) {
+    return getComboConfig(product.id)?.type === "fixed_bundle";
   }
   const [selectedCategory, setSelectedCategory] =
     useState<MainCategory>("本月優惠");
@@ -1022,10 +1097,33 @@ const sevenSequenceGuideV377 = [
     homeSkincareNeedGroupsV380[0];
   const activeHomeSkincareProductsV380 = getProductsByIds([...activeHomeSkincareNeedV380.productIds]);
 
-  const mallBodyShelfProducts = getProductsByIds([54, 67, 108, 119, 112]);
-  const mallHealthShelfProducts = getProductsByIds([1, 58, 2, 3, 69, 56]);
-  const mallAromaShelfProducts = getProductsByIds([85, 74, 79, 82, 75, 76]);
-  const mallComingSoonProducts = getProductsByIds([70, 71, 113, 46, 114, 117, 118]);
+  function getConfiguredSectionProducts(
+    key: SiteStudioSectionKey,
+    fallbackIds: number[]
+  ) {
+    const configuredIds = getStudioSection(key).productIds ?? [];
+    return getProductsByIds(configuredIds.length > 0 ? configuredIds : fallbackIds);
+  }
+
+  const mallBodyShelfProducts = getConfiguredSectionProducts(
+    "bodyCare",
+    [54, 67, 108, 119, 112]
+  );
+  const mallHealthShelfProducts = getConfiguredSectionProducts(
+    "health",
+    [1, 58, 2, 3, 69, 56]
+  );
+  const mallAromaShelfProducts = getConfiguredSectionProducts(
+    "aroma",
+    [85, 74, 79, 82, 75, 76]
+  );
+  const mallComingSoonProducts = products
+    .filter((product) => isComingSoon(product))
+    .sort((a, b) =>
+      ((a as StorefrontProduct).sortOrder ?? 0) -
+      ((b as StorefrontProduct).sortOrder ?? 0)
+    )
+    .slice(0, 12);
 
   const mallBrandEntries = [
     {
@@ -1188,7 +1286,7 @@ const sevenSequenceGuideV377 = [
     0
   );
   const cartPromotionSuggestionsV366 =
-    buildCartPromotionSuggestionsV366(cartItems);
+    buildCartPromotionSuggestionsV366(cartItems, getComboConfig);
 
   function getEstimatedUnitPrice(product: Product) {
     const match = product.price.match(/\$\s*([\d,]+)/);
@@ -1761,6 +1859,12 @@ const sevenSequenceGuideV377 = [
   }
 
   function displayPrice(product: Product) {
+    const comboConfig = getComboConfig(product.id);
+    if (comboConfig) {
+      const parts = getComboPriceParts(comboConfig);
+      if (parts.length > 0) return parts.join("｜");
+    }
+
     if (hasInquiryPrice(product)) return "售價請洽小幫手";
 
     const value = product.price.trim();
@@ -1788,17 +1892,39 @@ const sevenSequenceGuideV377 = [
   }
 
   function isComingSoon(product: Product) {
-    if (getStorefrontStatus(product) === "coming_soon") return true;
-    return product.price.includes("新品預告") || productContent(product).priceNote?.includes("新品預告") || false;
+    const status = getStorefrontStatus(product);
+    if (status) return status === "coming_soon";
+
+    return (
+      product.price.includes("新品預告") ||
+      productContent(product).priceNote?.includes("新品預告") ||
+      false
+    );
   }
 
   function isSoldOut(product: Product) {
-    if (getStorefrontStatus(product) === "sold_out") return true;
-    return product.price.includes("缺貨");
+    const status = getStorefrontStatus(product);
+    if (status) return status === "sold_out";
+
+    return (
+      product.price.includes("缺貨") ||
+      product.price.includes("售罄")
+    );
+  }
+
+  function isInactive(product: Product) {
+    return getStorefrontStatus(product) === "inactive";
   }
 
   function isCartDisabled(product: Product) {
-    return isSoldOut(product) || isComingSoon(product);
+    return isInactive(product) || isSoldOut(product) || isComingSoon(product);
+  }
+
+  function getUnavailableLabel(product: Product) {
+    if (isComingSoon(product)) return "新品預告";
+    if (isSoldOut(product)) return "補貨中";
+    if (isInactive(product)) return "暫停販售";
+    return "";
   }
 
   function getNameBasedImageCandidates(product: Product) {
@@ -2108,7 +2234,7 @@ const sevenSequenceGuideV377 = [
     const fullText = `${product.name} ${product.description} ${priceText} ${product.series}`;
 
     if (isComingSoon(product)) return "新品預告";
-    if (isSoldOut(product)) return "缺貨";
+    if (isSoldOut(product)) return "補貨中";
     if (isExpiringDeal(product)) return "限量出清";
     if (fullText.includes("買一送二")) return "買一送二";
     if (fullText.includes("買一送一")) return "買一送一";
@@ -2470,6 +2596,7 @@ const sevenSequenceGuideV377 = [
   }) {
     const studioSection = getStudioSection(studioKey);
     if (!studioSection.visible) return null;
+    if (studioKey === "comingSoon" && products.length === 0) return null;
 
     return (
       <section className="home-product-section mall-shelf-section-v271" id={id}>
@@ -2505,12 +2632,146 @@ const sevenSequenceGuideV377 = [
     );
   }
 
-  function handleMonthlyOfferClickV380(item: (typeof monthlyOfferCardsV380)[number]) {
+  function CustomHomeSection({ section }: { section: SiteStudioSection }) {
+    if (!section.visible) return null;
+
+    if (section.kind === "image") {
+      if (!section.image) return null;
+      return (
+        <section className="custom-home-image-section-v386">
+          <button
+            type="button"
+            onClick={() => {
+              if (section.linkType === "product") {
+                const product = products.find(
+                  (item) => item.id === Number(section.linkValue)
+                );
+                if (product) openProductDetail(product);
+              } else if (section.linkType === "category" && section.linkValue) {
+                jumpToCategory(section.linkValue as MainCategory, "全部");
+              } else if (section.linkType === "url" && section.linkValue) {
+                window.open(section.linkValue, "_blank", "noopener,noreferrer");
+              }
+            }}
+          >
+            <picture>
+              {section.desktopImage && (
+                <source media="(min-width: 760px)" srcSet={section.desktopImage} />
+              )}
+              <img src={section.image} alt={section.alt || section.title} />
+            </picture>
+            {(section.title || section.subtitle || section.buttonLabel) && (
+              <span>
+                {section.eyebrow && <small>{section.eyebrow}</small>}
+                {section.title && <strong>{section.title}</strong>}
+                {section.subtitle && <em>{section.subtitle}</em>}
+                {section.buttonLabel && <b>{section.buttonLabel}</b>}
+              </span>
+            )}
+          </button>
+        </section>
+      );
+    }
+
+    if (section.kind === "products") {
+      return (
+        <HomeProductSection
+          id={`home-${section.key}`}
+          studioKey={section.key}
+          eyebrow={section.eyebrow}
+          title={section.title}
+          subtitle={section.subtitle}
+          products={getProductsByIds(section.productIds ?? [])}
+        />
+      );
+    }
+
+    return null;
+  }
+
+  function renderManagedHomeSection(section: SiteStudioSection) {
+    switch (section.key) {
+      case "monthlyOffers":
+        return <MonthlyOffersSectionV380 key={section.key} />;
+      case "bodyCare":
+        return (
+          <HomeProductSection
+            key={section.key}
+            id="home-body-care-hall-v312"
+            studioKey="bodyCare"
+            eyebrow="Body Care"
+            title="身體洗護精選"
+            subtitle="洗髮沐浴、牙膏、手工皂與身體保養集中選購。"
+            products={mallBodyShelfProducts}
+            actionLabel="進入身體洗護"
+            onAction={() => jumpToCategory("身體洗護", "全部")}
+          />
+        );
+      case "health":
+        return (
+          <HomeProductSection
+            key={section.key}
+            id="home-health-hall-v271"
+            studioKey="health"
+            eyebrow="Health Hall"
+            title="健康補給精選"
+            subtitle="益生菌、葉黃素、膠原蛋白與日常營養補給。"
+            products={mallHealthShelfProducts}
+            actionLabel="進入健康補給"
+            onAction={() => jumpToCategory("健康補給", "全部")}
+          />
+        );
+      case "aroma":
+        return (
+          <HomeProductSection
+            key={section.key}
+            id="home-aroma-hall-v271"
+            studioKey="aroma"
+            eyebrow="Aroma Hall"
+            title="精油香氛精選"
+            subtitle="單方、複方精油與擴香選品，打造日常香氛儀式。"
+            products={mallAromaShelfProducts}
+            actionLabel="進入精油香氛"
+            onAction={() => jumpToCategory("精油香氛", "全部")}
+          />
+        );
+      case "comingSoon":
+        return (
+          <HomeProductSection
+            key={section.key}
+            id="home-coming-soon-hall-v31"
+            studioKey="comingSoon"
+            eyebrow="New Preview"
+            title="新品預告"
+            subtitle="新品與新香型陸續登場，搶先查看。"
+            products={mallComingSoonProducts}
+            actionLabel="查看新品預告"
+            onAction={() => jumpToCategory("新品預告", "全部")}
+          />
+        );
+      case "ranking":
+      case "skincareNeeds":
+        return null;
+      default:
+        return <CustomHomeSection key={section.key} section={section} />;
+    }
+  }
+
+  function handleMonthlyOfferClickV380(
+    item: (typeof monthlyOfferCardsV380)[number]
+  ) {
     if (item.productId) {
-      const product = products.find((candidate) => candidate.id === item.productId);
+      const product = products.find(
+        (candidate) => candidate.id === item.productId
+      );
       if (product) {
         if (isAdminMode && isAdminEditMode) {
           setManagedProductId(product.id);
+          sendStudioSelection({
+            type: "product",
+            productId: product.id,
+            label: product.cardName ?? product.name,
+          });
           return;
         }
 
@@ -2520,6 +2781,31 @@ const sevenSequenceGuideV377 = [
     }
 
     openCategoryTab("本月優惠", "全部");
+  }
+
+  function handleMonthlyOfferDoubleClickV380(
+    event: MouseEvent<HTMLElement>,
+    item: (typeof monthlyOfferCardsV380)[number]
+  ) {
+    if (!isAdminMode || !isAdminEditMode || !item.productId) return;
+
+    const product = products.find(
+      (candidate) => candidate.id === item.productId
+    );
+    if (!product) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    setManagedProductId(product.id);
+    setIsCartOpen(false);
+    setCartStep(1);
+    setCartReturnProduct(null);
+    openProductDetail(product, false);
+    sendStudioSelection({
+      type: "product-detail",
+      productId: product.id,
+      label: product.name,
+    });
   }
 
   function MonthlyOffersSectionV380() {
@@ -2548,9 +2834,12 @@ const sevenSequenceGuideV377 = [
             const product = item.productId
               ? products.find((candidate) => candidate.id === item.productId)
               : null;
-            const isFlexibleCombo = Boolean(product && getComboConfig(product.id));
-
+            const comboConfig = product ? getComboConfig(product.id) : null;
+            const priceParts = comboConfig
+              ? getComboPriceParts(comboConfig)
+              : item.price.split("｜").map((part) => part.trim()).filter(Boolean);
             const offerImage = product?.image ?? null;
+            const unavailable = product ? isCartDisabled(product) : false;
 
             return (
               <article
@@ -2560,6 +2849,14 @@ const sevenSequenceGuideV377 = [
                     : ""
                 }`}
                 key={`${item.badge}-${item.title}`}
+                onDoubleClick={(event) =>
+                  handleMonthlyOfferDoubleClickV380(event, item)
+                }
+                title={
+                  isAdminMode && isAdminEditMode
+                    ? "單擊選取商品卡｜雙擊編輯商品詳情"
+                    : undefined
+                }
               >
                 <button
                   type="button"
@@ -2584,12 +2881,27 @@ const sevenSequenceGuideV377 = [
                 </button>
                 <div className="monthly-offer-content-v381">
                   <span className="monthly-offer-badge-v380">{item.badge}</span>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-                <strong>{item.price}</strong>
-                <button type="button" onClick={() => handleMonthlyOfferClickV380(item)}>
-                  {isFlexibleCombo ? "選擇搭配" : "查看優惠"}
-                </button>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                  <strong className="monthly-offer-price-list-v386">
+                    {priceParts.map((part, index) => (
+                      <span key={`${item.productId ?? item.title}-price-${index}`}>
+                        {part}
+                      </span>
+                    ))}
+                  </strong>
+                  <button
+                    type="button"
+                    onClick={() => handleMonthlyOfferClickV380(item)}
+                  >
+                    {product && unavailable
+                      ? getUnavailableLabel(product)
+                      : comboConfig?.type === "fixed_bundle"
+                        ? "查看組合"
+                        : comboConfig
+                          ? "選擇搭配"
+                          : "查看優惠"}
+                  </button>
                 </div>
               </article>
             );
@@ -3088,7 +3400,10 @@ const sevenSequenceGuideV377 = [
     const comingSoon = isComingSoon(product);
     const unavailable = isCartDisabled(product);
     const inquiry = hasInquiryPrice(product);
-    const selectableCombo = Boolean(getComboConfig(product.id));
+    const comboConfig = getComboConfig(product.id);
+    const selectableCombo = Boolean(
+      comboConfig && comboConfig.type !== "fixed_bundle"
+    );
 
     return (
       <article
@@ -3220,7 +3535,7 @@ const sevenSequenceGuideV377 = [
             {(comingSoon || soldOut || (inquiry && !unavailable)) && (
               <div className="compact-card-status-v350">
                 {comingSoon && <span>新品預告</span>}
-                {soldOut && <span>缺貨</span>}
+                {soldOut && <span>補貨中</span>}
                 {inquiry && !unavailable && <span>價格洽詢</span>}
               </div>
             )}
@@ -3292,7 +3607,7 @@ const sevenSequenceGuideV377 = [
                 {comingSoon
                   ? "新品預告"
                   : soldOut
-                    ? "缺貨中"
+                    ? "補貨中"
                     : selectableCombo
                       ? "查看詳情"
                       : "加入"}
@@ -3379,6 +3694,17 @@ const sevenSequenceGuideV377 = [
 
   function confirmComboSelection() {
     if (!comboPickerProduct || !activeComboConfig || !activeComboPlan) return;
+
+    if (isCartDisabled(comboPickerProduct)) {
+      setCartNotice(
+        isSoldOut(comboPickerProduct)
+          ? "此組合目前補貨中，暫時無法加入購物車。"
+          : "此組合目前尚未開放購買。"
+      );
+      closeComboPicker();
+      return;
+    }
+
     if (!comboCanConfirmV369) return;
 
     const selections: ComboSelection[] = activeComboConfig.options
@@ -3483,15 +3809,80 @@ const sevenSequenceGuideV377 = [
     closeComboPicker();
   }
 
+  function addFixedBundleToCart(
+    product: Product,
+    config: ComboConfig
+  ) {
+    const plan = config.plans.find(
+      (item) => Number.isFinite(item.price) && item.price > 0
+    );
+
+    if (!plan) {
+      setCartNotice("這個固定套組尚未設定價格。");
+      return;
+    }
+
+    const selections: ComboSelection[] = config.options.map((option) => ({
+      optionId: option.id,
+      name: option.name,
+      quantity: option.quantity ?? 1,
+    }));
+    const cartKey = buildComboCartKey(product.id, plan.id, selections);
+    const comboPlanLabel = `${plan.label} $${plan.price.toLocaleString("zh-TW")}`;
+
+    setCartItems((currentItems) => {
+      const existing = currentItems.find((item) => item.cartKey === cartKey);
+      if (existing) {
+        return currentItems.map((item) =>
+          item.cartKey === cartKey
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [
+        ...currentItems,
+        {
+          cartKey,
+          product,
+          quantity: 1,
+          comboPlanId: plan.id,
+          comboPlanLabel,
+          comboSelections: selections,
+          comboPrice: plan.price,
+        },
+      ];
+    });
+
+    setCartNotice("已加入購物車");
+    setSubmitStatus("idle");
+    setSubmitMessage("");
+  }
+
   function addToCart(product: Product) {
     if (isAdminMode && isAdminEditMode) {
       setManagedProductId(product.id);
       return;
     }
 
-    if (isCartDisabled(product)) return;
+    if (isCartDisabled(product)) {
+      setCartNotice(
+        isSoldOut(product)
+          ? "此商品目前補貨中，暫時無法加入購物車。"
+          : isComingSoon(product)
+            ? "此商品目前為新品預告，尚未開放購買。"
+            : "此商品目前暫停販售。"
+      );
+      return;
+    }
 
-    if (getComboConfig(product.id)) {
+    const comboConfig = getComboConfig(product.id);
+    if (comboConfig?.type === "fixed_bundle") {
+      addFixedBundleToCart(product, comboConfig);
+      return;
+    }
+
+    if (comboConfig) {
       openComboPicker(product);
       return;
     }
@@ -3532,7 +3923,14 @@ const sevenSequenceGuideV377 = [
     const comboProduct = products.find(
       (product) => product.id === suggestion.comboProductId
     );
-    if (!comboProduct) return;
+    if (!comboProduct || isCartDisabled(comboProduct)) {
+      setCartNotice(
+        comboProduct && isSoldOut(comboProduct)
+          ? "此優惠組合目前補貨中。"
+          : "此優惠組合目前無法加入購物車。"
+      );
+      return;
+    }
 
     const comboConfig = suggestion.comboPlanId
       ? getComboConfig(suggestion.comboProductId)
@@ -4082,12 +4480,56 @@ const sevenSequenceGuideV377 = [
     return `JD${taipeiParts.year}${taipeiParts.month}${taipeiParts.day}${taipeiParts.hour}${taipeiParts.minute}${taipeiParts.second}${randomCode}`;
   }
 
+  async function findUnavailableCartItems() {
+    try {
+      const response = await fetch("/api/storefront/products", {
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error("商品狀態讀取失敗");
+      const payload = (await response.json()) as {
+        products?: StorefrontProduct[];
+      };
+      const latestById = new Map(
+        (payload.products ?? []).map((product) => [product.id, product])
+      );
+
+      return cartItems.filter((item) => {
+        const latest = latestById.get(item.product.id);
+        return !latest || isCartDisabled(latest);
+      });
+    } catch {
+      return cartItems.filter((item) => {
+        const current = products.find((product) => product.id === item.product.id);
+        return !current || isCartDisabled(current);
+      });
+    }
+  }
+
   async function submitOrder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (cartItems.length === 0) {
       setSubmitStatus("error");
       setSubmitMessage("請先加入商品到購物車。");
+      return;
+    }
+
+    const unavailableItems = await findUnavailableCartItems();
+    if (unavailableItems.length > 0) {
+      setCartItems((current) =>
+        current.filter(
+          (item) =>
+            !unavailableItems.some(
+              (unavailable) => unavailable.product.id === item.product.id
+            )
+        )
+      );
+      setSubmitStatus("error");
+      setSubmitMessage(
+        `以下商品目前新品預告、補貨中或暫停販售，已從購物車移除：${unavailableItems
+          .map((item) => item.product.name)
+          .join("、")}`
+      );
       return;
     }
 
@@ -4870,10 +5312,19 @@ const sevenSequenceGuideV377 = [
               <button
                 type="button"
                 className="combo-picker-confirm-v360"
-                disabled={!comboCanConfirmV369}
+                disabled={
+                  !comboCanConfirmV369 ||
+                  Boolean(comboPickerProduct && isCartDisabled(comboPickerProduct))
+                }
                 onClick={confirmComboSelection}
               >
-                {comboEditingItemKey ? "儲存修改" : "加入購物車"}
+                {comboPickerProduct && isSoldOut(comboPickerProduct)
+                  ? "補貨中"
+                  : comboPickerProduct && isComingSoon(comboPickerProduct)
+                    ? "新品預告"
+                    : comboEditingItemKey
+                      ? "儲存修改"
+                      : "加入購物車"}
               </button>
             </footer>
           </div>
@@ -4972,7 +5423,7 @@ const sevenSequenceGuideV377 = [
                             onClick={() => addToCart(product)}
                             disabled={isCartDisabled(product)}
                           >
-                            {isComingSoon(product) ? "新品預告" : isSoldOut(product) ? "缺貨" : hasInquiryPrice(product) ? "詢問" : "加入"}
+                            {isComingSoon(product) ? "新品預告" : isSoldOut(product) ? "補貨中" : hasInquiryPrice(product) ? "詢問" : "加入"}
                           </button>
                         </div>
                       </div>
@@ -5141,27 +5592,6 @@ const sevenSequenceGuideV377 = [
                   ))}
                 </div>
               </div>
-
-              <div className="oil-boutique-block-v375">
-                <div className="oil-boutique-heading-v375">
-                  <span>EXPLORE</span>
-                  <h3>探索精油系列</h3>
-                </div>
-                <div className="oil-boutique-series-grid-v375">
-                  {oilBoutiqueSeriesOptionsV375.map((item) => (
-                    <button
-                      type="button"
-                      key={`oil-series-${item.id}`}
-                      onClick={() => selectCollectionSeries(item.id)}
-                    >
-                      <i>{item.icon}</i>
-                      <strong>{item.id}</strong>
-                      <small>{item.note}</small>
-                      <span>探索系列 →</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
 <div className="oil-boutique-block-v375">
                 <div className="oil-boutique-heading-v375">
                   <span>BY MOMENT</span>
@@ -5181,19 +5611,6 @@ const sevenSequenceGuideV377 = [
                     </button>
                   ))}
                 </div>
-              </div>
-
-              <div className="oil-boutique-guide-v375">
-                <div>
-                  <span>FIRST SCENT GUIDE</span>
-                  <h3>第一次買精油？從這裡開始</h3>
-                </div>
-                <p><strong>喜歡水果清香</strong> → 從柑橘果香開始</p>
-                <p><strong>喜歡柔和香氣</strong> → 從花香與放鬆系開始</p>
-                <p><strong>喜歡清爽植物味</strong> → 從草本清新開始</p>
-                <p><strong>想直接按摩身體</strong> → 選擇含基底油的精萃油</p>
-                <p><strong>單方／複方純精油</strong> → 擴香使用，肌膚使用前需先以基底油稀釋</p>
-                <small>香氣感受會因個人喜好與使用方式而有所不同；精萃油與純精油使用方式不同，請依商品標示操作。</small>
               </div>
 
               <div className="oil-boutique-all-heading-v375">
@@ -5939,54 +6356,16 @@ const sevenSequenceGuideV377 = [
         </section>
       )}
 
-      <MonthlyOffersSectionV380 />
-
-      <SkincareNeedSectionV380 />
-
-
-      <HomeProductSection
-        id="home-body-care-hall-v312"
-        studioKey="bodyCare"
-        eyebrow="Body Care"
-        title="身體洗護精選"
-        subtitle="洗髮沐浴、牙膏、手工皂與身體保養集中選購。"
-        products={mallBodyShelfProducts}
-        actionLabel="進入身體洗護"
-        onAction={() => jumpToCategory("身體洗護", "全部")}
-      />
-
-      <HomeProductSection
-        id="home-health-hall-v271"
-        studioKey="health"
-        eyebrow="Health Hall"
-        title="健康補給精選"
-        subtitle="益生菌、葉黃素、膠原蛋白與日常營養補給。"
-        products={mallHealthShelfProducts}
-        actionLabel="進入健康補給"
-        onAction={() => jumpToCategory("健康補給", "全部")}
-      />
-
-      <HomeProductSection
-        id="home-aroma-hall-v271"
-        studioKey="aroma"
-        eyebrow="Aroma Hall"
-        title="精油香氛精選"
-        subtitle="單方、複方精油與擴香選品，打造日常香氛儀式。"
-        products={mallAromaShelfProducts}
-        actionLabel="進入精油香氛"
-        onAction={() => jumpToCategory("精油香氛", "全部")}
-      />
-
-      <HomeProductSection
-        id="home-coming-soon-hall-v31"
-        studioKey="comingSoon"
-        eyebrow="New Preview"
-        title="新品預告"
-        subtitle="新品與新香型陸續登場，搶先查看。"
-        products={mallComingSoonProducts}
-        actionLabel="查看新品預告"
-        onAction={() => jumpToCategory("新品預告", "全部")}
-      />
+      {siteStudioConfig.sections
+        .filter(
+          (section) =>
+            section.key !== "ranking" &&
+            section.key !== "skincareNeeds"
+        )
+        .sort(
+          (a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999)
+        )
+        .map((section) => renderManagedHomeSection(section))}
 
 
       {cartTotalQuantity > 0 && (
@@ -6262,9 +6641,14 @@ const sevenSequenceGuideV377 = [
                                 type="button"
                                 className="cart-upsell-add-v355"
                                 onClick={() => addToCart(product)}
-                                aria-label={`加入 ${product.name}`}
+                                disabled={isCartDisabled(product)}
+                                aria-label={
+                                  isCartDisabled(product)
+                                    ? `${product.name}${getUnavailableLabel(product)}`
+                                    : `加入 ${product.name}`
+                                }
                               >
-                                ＋
+                                {isCartDisabled(product) ? "—" : "＋"}
                               </button>
                             </article>
                           ))}
@@ -6541,10 +6925,13 @@ const sevenSequenceGuideV377 = [
                     {isComingSoon(selectedDetailProduct)
                       ? "新品預告"
                       : isSoldOut(selectedDetailProduct)
-                        ? "缺貨中"
-                        : getComboConfig(selectedDetailProduct.id)
-                          ? "選擇搭配"
-                          : "加入購物車"}
+                        ? "補貨中"
+                        : getComboConfig(selectedDetailProduct.id)?.type ===
+                            "fixed_bundle"
+                          ? "加入購物車"
+                          : getComboConfig(selectedDetailProduct.id)
+                            ? "選擇搭配"
+                            : "加入購物車"}
                   </button>
                   <button type="button" onClick={openCartFromDetail}>
                     購物車 {cartTotalQuantity}
@@ -24064,10 +24451,56 @@ const sevenSequenceGuideV377 = [
 
 
 
+        .monthly-offer-price-list-v386 {
+          width: 100%;
+          display: grid;
+          gap: 2px;
+          overflow-wrap: anywhere;
+        }
+
+        .monthly-offer-price-list-v386 > span {
+          display: block;
+        }
+
+        .custom-home-image-section-v386 {
+          margin: 22px 0;
+        }
+
+        .custom-home-image-section-v386 > button {
+          width: 100%;
+          position: relative;
+          overflow: hidden;
+          border: 0;
+          border-radius: 26px;
+          background: #f8f0e5;
+          padding: 0;
+          cursor: pointer;
+        }
+
+        .custom-home-image-section-v386 picture,
+        .custom-home-image-section-v386 img {
+          width: 100%;
+          display: block;
+        }
+
+        .custom-home-image-section-v386 > button > span {
+          position: absolute;
+          inset: auto 20px 20px 20px;
+          display: grid;
+          gap: 4px;
+          padding: 16px;
+          border-radius: 18px;
+          background: rgba(255, 255, 255, 0.88);
+          color: #452d2d;
+          text-align: left;
+          backdrop-filter: blur(10px);
+        }
+
       `}
 
 
-      </style>
+      
+</style>
     </main>
   );
 }

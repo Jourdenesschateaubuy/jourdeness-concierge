@@ -65,6 +65,7 @@ export type ComboOption = {
   id: string;
   name: string;
   productId?: number;
+  quantity?: number;
   singleUnitPrice?: number;
   singlePriceLabel?: string;
 };
@@ -87,7 +88,7 @@ export type ComboPlan = {
 
 export type ComboConfig = {
   productId: number;
-  type?: "mix_match" | "buy_get";
+  type?: "fixed_bundle" | "mix_match" | "buy_get";
   unitLabel: string;
   allowSameProduct?: boolean;
   options: ComboOption[];
@@ -355,6 +356,8 @@ type FlexibleComboPricingV369 = {
 };
 
 export function hasFlexibleSinglePricingV373(config: ComboConfig) {
+  if (config.type === "fixed_bundle") return false;
+
   return Boolean(
     config.singleUnitPrice ||
       config.options.some((option) => option.singleUnitPrice)
@@ -365,6 +368,8 @@ export function calculateFlexibleComboPricingV369(
   config: ComboConfig,
   selections: Record<string, number>
 ): FlexibleComboPricingV369 | null {
+  if (config.type === "fixed_bundle") return null;
+
   const selectedUnitPrices: number[] = [];
 
   for (const option of config.options) {
@@ -494,9 +499,39 @@ function allocateSimpleProductsV366(
 }
 
 export function buildCartPromotionSuggestionsV366(
-  cartItems: CartItem[]
+  cartItems: CartItem[],
+  resolveComboConfig: (productId: number) => ComboConfig | null = getComboConfig
 ): CartPromotionSuggestionV366[] {
   const suggestions: CartPromotionSuggestionV366[] = [];
+
+  const currentBundlePrice = (
+    comboProductId: number,
+    comboPlanId: string | undefined,
+    requiredQuantity: number | undefined,
+    fallbackPrice: number
+  ) => {
+    const config = resolveComboConfig(comboProductId);
+    if (!config) return fallbackPrice;
+
+    const plan =
+      (comboPlanId
+        ? config.plans.find((item) => item.id === comboPlanId)
+        : undefined) ??
+      (requiredQuantity
+        ? config.plans.find(
+            (item) => item.requiredQuantity === requiredQuantity
+          )
+        : undefined) ??
+      (config.type === "fixed_bundle"
+        ? config.plans.find(
+            (item) => Number.isFinite(item.price) && item.price > 0
+          )
+        : undefined);
+
+    return plan && Number.isFinite(plan.price) && plan.price > 0
+      ? plan.price
+      : fallbackPrice;
+  };
 
   const pushFlexibleSuggestion = ({
     id,
@@ -524,18 +559,44 @@ export function buildCartPromotionSuggestionsV366(
     bundlePrice: number;
     note?: string;
   }) => {
+    const currentConfig = resolveComboConfig(comboProductId);
+    const effectiveCandidates = candidates.map((candidate) => {
+      const option = currentConfig?.options.find(
+        (item) =>
+          item.productId === candidate.productId ||
+          item.id === candidate.optionId
+      );
+      const currentUnitPrice =
+        option?.singleUnitPrice ??
+        currentConfig?.singleUnitPrice ??
+        candidate.unitPrice;
+
+      return {
+        ...candidate,
+        unitPrice:
+          Number.isFinite(currentUnitPrice) && currentUnitPrice > 0
+            ? currentUnitPrice
+            : candidate.unitPrice,
+      };
+    });
     const allocations = allocateSimpleProductsV366(
       cartItems,
-      candidates,
+      effectiveCandidates,
       requiredQuantity
     );
     if (allocations.length === 0) return;
 
+    const effectiveBundlePrice = currentBundlePrice(
+      comboProductId,
+      comboPlanId,
+      requiredQuantity,
+      bundlePrice
+    );
     const regularPrice = allocations.reduce(
       (total, allocation) => total + allocation.unitPrice * allocation.quantity,
       0
     );
-    const savings = regularPrice - bundlePrice;
+    const savings = regularPrice - effectiveBundlePrice;
     if (savings <= 0) return;
 
     const comboSelections: ComboSelection[] = allocations
@@ -554,7 +615,7 @@ export function buildCartPromotionSuggestionsV366(
       comboPlanId,
       allocations,
       comboSelections,
-      bundlePrice,
+      bundlePrice: effectiveBundlePrice,
       savings,
       note,
     });
@@ -648,14 +709,15 @@ export function buildCartPromotionSuggestionsV366(
       (total, allocation) => total + allocation.unitPrice * allocation.quantity,
       0
     );
+    const bundlePrice = currentBundlePrice(112, undefined, 2, 1500);
     suggestions.push({
       id: "shampoo-haircare-1plus1",
       title: "龍血洗髮精＋阿甘養護液 1+1",
       detail: "龍血求麗頭皮修護洗髮精 × 1＋阿甘甦醒髮根養護液 × 1",
       comboProductId: 112,
       allocations,
-      bundlePrice: 1500,
-      savings: regularPrice - 1500,
+      bundlePrice,
+      savings: regularPrice - bundlePrice,
     });
   }
 

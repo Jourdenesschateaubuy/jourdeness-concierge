@@ -35,7 +35,6 @@ const navigationItems: NavigationItem[] = [
   {
     href: "/admin/home",
     label: "首頁",
-    disabled: true,
   },
   {
     href: "/admin/banners",

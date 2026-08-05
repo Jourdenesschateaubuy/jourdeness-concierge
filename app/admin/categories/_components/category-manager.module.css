@@ -1,0 +1,273 @@
+.manager {
+  display: grid;
+  gap: 18px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  padding: 24px;
+  border: 1px solid #eadbdd;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #fff, #fff7f8);
+}
+
+.toolbar span {
+  color: #9a2942;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.toolbar h2,
+.toolbar p {
+  margin: 4px 0 0;
+}
+
+.toolbar p {
+  color: #836b6f;
+  font-size: 13px;
+}
+
+.createRow {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+
+.createRow input {
+  min-width: 250px;
+  border: 1px solid #decdd0;
+  border-radius: 12px;
+  padding: 11px 13px;
+}
+
+.createRow button,
+.actions button,
+.expandButton {
+  border: 1px solid #d8bdc2;
+  border-radius: 10px;
+  background: #fff;
+  color: #8d2439;
+  padding: 9px 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.createRow button {
+  background: #8e263b;
+  color: #fff;
+  border-color: #8e263b;
+}
+
+.categoryList {
+  display: grid;
+  gap: 12px;
+}
+
+.categoryCard {
+  border: 1px solid #ead8db;
+  border-radius: 20px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(75, 35, 42, 0.04);
+}
+
+.categoryHead {
+  display: grid;
+  grid-template-columns: 34px 54px minmax(180px, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+}
+
+.dragHandle {
+  border: 0 !important;
+  background: transparent !important;
+  color: #b09499 !important;
+  padding: 6px !important;
+  cursor: grab !important;
+  font-size: 20px;
+}
+
+.order {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #f8e9ec;
+  color: #91243a;
+  font-weight: 950;
+}
+
+.categoryName {
+  display: grid;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: #43282c;
+  text-align: left;
+  cursor: pointer;
+}
+
+.categoryName strong {
+  font-size: 18px;
+}
+
+.categoryName small,
+.seriesTitle span,
+.seriesRow small {
+  color: #8f777b;
+}
+
+.status {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #f0e7e8;
+  color: #806d70;
+  font-size: 12px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.status.active {
+  background: #e5f4ea;
+  color: #2d7750;
+}
+
+.actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.actions .deleteButton {
+  color: #b1283f;
+  background: #fff5f6;
+}
+
+.inactive {
+  opacity: 0.62;
+}
+
+.seriesPanel {
+  border-top: 1px solid #eee1e3;
+  padding: 18px;
+  background: #fffafb;
+}
+
+.seriesTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.seriesTitle > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.seriesList {
+  display: grid;
+  gap: 8px;
+}
+
+.seriesRow {
+  display: grid;
+  grid-template-columns: 34px 48px minmax(160px, 1fr) 100px auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 12px;
+  border: 1px solid #eadadd;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.seriesRow .order {
+  width: 38px;
+  height: 38px;
+  font-size: 12px;
+}
+
+.allRow {
+  grid-template-columns: 48px minmax(160px, 1fr) 1fr;
+  background: #f8f2f3;
+}
+
+.helpBox {
+  display: grid;
+  gap: 5px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: #4a3836;
+  color: #fff;
+}
+
+.helpBox span {
+  color: #e8dddd;
+  font-size: 13px;
+}
+
+.success,
+.error {
+  margin: 0;
+  padding: 12px 15px;
+  border-radius: 12px;
+  font-weight: 800;
+}
+
+.success {
+  background: #e7f5eb;
+  color: #276d48;
+}
+
+.error {
+  background: #fff0f2;
+  color: #a6243d;
+}
+
+@media (max-width: 1000px) {
+  .toolbar,
+  .seriesTitle {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .categoryHead {
+    grid-template-columns: 30px 48px minmax(0, 1fr);
+  }
+
+  .categoryHead > .status,
+  .categoryHead > .actions {
+    grid-column: 3;
+    justify-self: start;
+  }
+
+  .seriesRow {
+    grid-template-columns: 30px 42px minmax(0, 1fr);
+  }
+
+  .seriesRow > small,
+  .seriesRow > .status,
+  .seriesRow > .actions {
+    grid-column: 3;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .createRow {
+    display: grid;
+  }
+
+  .createRow input {
+    min-width: 0;
+    width: 100%;
+  }
+}

@@ -1,24 +1,20 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { readJsonResponse } from "../../../../lib/http-json";
 import type {
   ComboConfig,
   ComboOption,
   ComboPlan,
 } from "../../../../lib/storefront-core";
-
 import styles from "./combo-config-editor.module.css";
 
 type Props = {
   productId: number;
   initialConfig: ComboConfig;
 };
+
+type ComboMode = "fixed_bundle" | "mix_match" | "buy_get";
 
 type CatalogProduct = {
   id: number;
@@ -31,1448 +27,722 @@ type OptionDraft = {
   id: string;
   productId?: number;
   name: string;
+  quantity: string;
   singleUnitPrice: string;
-  singlePriceLabel: string;
 };
 
 type PlanDraft = {
   id: string;
   requiredQuantity: string;
   price: string;
-  note: string;
   buyQuantity: string;
   freeQuantity: string;
-  bonusGiftName: string;
-  bonusGiftQuantity: string;
-  bonusGiftUnitLabel: string;
+  note: string;
 };
 
 function createId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random()
-    .toString(36)
-    .slice(2, 7)}`;
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function numberText(value?: number) {
-  return typeof value === "number"
+  return typeof value === "number" && Number.isFinite(value)
     ? String(value)
     : "";
 }
 
-function positiveNumber(value: string) {
+function positiveNumber(value: string, fallback = 0) {
   const parsed = Number(value);
-
-  return Number.isFinite(parsed) && parsed > 0
-    ? parsed
-    : undefined;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-function moneyLabel(value: number) {
+function money(value: number) {
   return `$${value.toLocaleString("zh-TW")}`;
 }
 
-function moveItem<T>(
-  items: T[],
-  index: number,
-  direction: -1 | 1
-) {
-  const target = index + direction;
+function normalizeInitialOptions(config: ComboConfig): OptionDraft[] {
+  return config.options.map((option) => ({
+    id: option.id,
+    productId: option.productId,
+    name: option.name,
+    quantity: numberText(option.quantity ?? 1),
+    singleUnitPrice: numberText(option.singleUnitPrice),
+  }));
+}
 
-  if (target < 0 || target >= items.length) {
-    return items;
+function normalizeInitialPlans(config: ComboConfig): PlanDraft[] {
+  if (config.plans.length > 0) {
+    return config.plans.map((plan) => ({
+      id: plan.id,
+      requiredQuantity: numberText(plan.requiredQuantity),
+      price: numberText(plan.price),
+      buyQuantity: numberText(
+        plan.buyQuantity ?? Math.max(plan.requiredQuantity - 1, 1)
+      ),
+      freeQuantity: numberText(plan.freeQuantity ?? 1),
+      note: plan.note ?? "",
+    }));
   }
 
-  const next = [...items];
-  const [item] = next.splice(index, 1);
-  next.splice(target, 0, item);
-
-  return next;
+  return [
+    {
+      id: createId("plan"),
+      requiredQuantity: "1",
+      price: "",
+      buyQuantity: "2",
+      freeQuantity: "1",
+      note: "",
+    },
+  ];
 }
 
 export default function ComboConfigEditor({
   productId,
   initialConfig,
 }: Props) {
-  const [comboType, setComboType] = useState<
-    "mix_match" | "buy_get"
-  >(initialConfig.type ?? "mix_match");
-
+  const [mode, setMode] = useState<ComboMode>(
+    initialConfig.type ?? "mix_match"
+  );
   const [unitLabel, setUnitLabel] = useState(
     initialConfig.unitLabel || "件"
   );
-
-  const [
-    allowSameProduct,
-    setAllowSameProduct,
-  ] = useState(
+  const [allowSameProduct, setAllowSameProduct] = useState(
     initialConfig.allowSameProduct ?? true
   );
-
-  const [
-    singleUnitPrice,
-    setSingleUnitPrice,
-  ] = useState(
+  const [singleUnitPrice, setSingleUnitPrice] = useState(
     numberText(initialConfig.singleUnitPrice)
   );
-
-  const [
-    originalSinglePriceLabel,
-    setOriginalSinglePriceLabel,
-  ] = useState(
-    initialConfig.singlePriceLabel ?? ""
+  const [note, setNote] = useState(initialConfig.note ?? "");
+  const [options, setOptions] = useState<OptionDraft[]>(
+    normalizeInitialOptions(initialConfig)
   );
-
-  const [comboNote, setComboNote] = useState(
-    initialConfig.note ?? ""
+  const [plans, setPlans] = useState<PlanDraft[]>(
+    normalizeInitialPlans(initialConfig)
   );
-
-  const [options, setOptions] =
-    useState<OptionDraft[]>(
-      initialConfig.options.map((option) => ({
-        id: option.id,
-        productId: option.productId,
-        name: option.name,
-        singleUnitPrice: numberText(
-          option.singleUnitPrice
-        ),
-        singlePriceLabel:
-          option.singlePriceLabel ?? "",
-      }))
-    );
-
-  const [plans, setPlans] =
-    useState<PlanDraft[]>(
-      initialConfig.plans.map((plan) => ({
-        id: plan.id,
-        requiredQuantity: String(
-          plan.requiredQuantity
-        ),
-        price: String(plan.price),
-        note: plan.note ?? "",
-
-        buyQuantity: numberText(
-          plan.buyQuantity ??
-            Math.max(
-              plan.requiredQuantity - 1,
-              1
-            )
-        ),
-
-        freeQuantity: numberText(
-          plan.freeQuantity ?? 1
-        ),
-
-        bonusGiftName:
-          plan.bonusGift?.name ?? "",
-
-        bonusGiftQuantity:
-          numberText(
-            plan.bonusGift?.quantity
-          ),
-
-        bonusGiftUnitLabel:
-          plan.bonusGift?.unitLabel ?? "組",
-      }))
-    );
-
-  const [catalog, setCatalog] = useState<
-    CatalogProduct[]
-  >([]);
-
-  const [catalogLoading, setCatalogLoading] =
-    useState(false);
-
-  const [pickerOpen, setPickerOpen] =
-    useState(false);
-
+  const [catalog, setCatalog] = useState<CatalogProduct[]>([]);
   const [search, setSearch] = useState("");
+  const [showPicker, setShowPicker] = useState(false);
+  const [manualName, setManualName] = useState("");
 
   useEffect(() => {
     let cancelled = false;
 
     async function loadCatalog() {
-      setCatalogLoading(true);
-
       try {
-        const response = await fetch(
-          "/api/storefront/products"
-        );
+        const response = await fetch("/api/storefront/products", {
+          cache: "no-store",
+        });
+        if (!response.ok) return;
 
-        if (!response.ok) {
-          throw new Error(
-            "無法讀取商品資料"
-          );
-        }
+        const payload = (await response.json()) as {
+          products?: CatalogProduct[];
+        };
 
-        const data =
-          await readJsonResponse<{
-            products?: CatalogProduct[];
-          }>(
-            response,
-            "商品資料讀取失敗"
-          );
-
-        if (cancelled) return;
-
-        setCatalog(
-          (data.products ?? []).filter(
-            (product) =>
-              product.id !== productId &&
-              !product.comboConfig
-          )
-        );
-      } catch (error) {
-        console.warn(error);
-      } finally {
         if (!cancelled) {
-          setCatalogLoading(false);
+          setCatalog(
+            (payload.products ?? []).filter(
+              (product) => product.id !== productId && !product.comboConfig
+            )
+          );
         }
+      } catch (error) {
+        console.error("組合商品目錄讀取失敗", error);
       }
     }
 
     void loadCatalog();
-
     return () => {
       cancelled = true;
     };
   }, [productId]);
+
+  useEffect(() => {
+    if (mode === "fixed_bundle" && plans.length > 1) {
+      setPlans([plans[0]]);
+    }
+  }, [mode, plans]);
 
   const selectedProductIds = useMemo(
     () =>
       new Set(
         options
           .map((option) => option.productId)
-          .filter(
-            (id): id is number =>
-              typeof id === "number"
-          )
+          .filter((id): id is number => typeof id === "number")
       ),
     [options]
   );
 
   const filteredCatalog = useMemo(() => {
-    const keyword = search
-      .trim()
-      .toLowerCase();
+    const keyword = search.trim().toLowerCase();
 
-    return catalog
-      .filter((product) => {
-        if (!keyword) return true;
+    return catalog.filter((product) => {
+      if (selectedProductIds.has(product.id)) return false;
+      if (!keyword) return true;
+      return product.name.toLowerCase().includes(keyword);
+    });
+  }, [catalog, search, selectedProductIds]);
 
-        return product.name
-          .toLowerCase()
-          .includes(keyword);
-      })
-      .slice(0, 40);
-  }, [catalog, search]);
+  const normalizedConfig = useMemo<ComboConfig>(() => {
+    const normalizedOptions: ComboOption[] = options
+      .filter((option) => option.name.trim())
+      .map((option) => ({
+        id: option.id,
+        name: option.name.trim(),
+        productId: option.productId,
+        quantity:
+          mode === "fixed_bundle"
+            ? positiveNumber(option.quantity, 1)
+            : undefined,
+        singleUnitPrice:
+          mode === "fixed_bundle"
+            ? undefined
+            : positiveNumber(option.singleUnitPrice) || undefined,
+      }));
 
-  function addCatalogProduct(
-    product: CatalogProduct
-  ) {
-    setOptions((current) => {
-      if (
-        current.some(
-          (option) =>
-            option.productId === product.id
-        )
-      ) {
-        return current;
-      }
+    let normalizedPlans: ComboPlan[];
 
-      /*
-       * 舊組合資料有些只有名稱、沒有 productId。
-       * 名稱剛好相同時直接補上連結，
-       * 不另外新增重複品項。
-       */
-      const legacyIndex =
-        current.findIndex(
-          (option) =>
-            !option.productId &&
-            option.name === product.name
-        );
+    if (mode === "fixed_bundle") {
+      const price = positiveNumber(plans[0]?.price ?? "");
+      const totalQuantity = normalizedOptions.reduce(
+        (total, option) => total + (option.quantity ?? 1),
+        0
+      );
 
-      if (legacyIndex >= 0) {
-        const next = [...current];
-
-        next[legacyIndex] = {
-          ...next[legacyIndex],
-          productId: product.id,
-        };
-
-        return next;
-      }
-
-      return [
-        ...current,
+      normalizedPlans = [
         {
-          id: createId("option"),
-          productId: product.id,
-          name: product.name,
-          singleUnitPrice: "",
-          singlePriceLabel: "",
+          id: plans[0]?.id || "fixed-bundle",
+          label: "固定套組",
+          requiredQuantity: Math.max(totalQuantity, 1),
+          price,
+          priceLabel: price ? money(price) : "",
+          note: plans[0]?.note.trim() || undefined,
         },
       ];
+    } else if (mode === "buy_get") {
+      normalizedPlans = plans.map((plan) => {
+        const buyQuantity = positiveNumber(plan.buyQuantity, 1);
+        const freeQuantity = positiveNumber(plan.freeQuantity, 1);
+        const price = positiveNumber(plan.price);
+
+        return {
+          id: plan.id,
+          label: `買 ${buyQuantity} 送 ${freeQuantity}`,
+          requiredQuantity: buyQuantity + freeQuantity,
+          buyQuantity,
+          freeQuantity,
+          price,
+          priceLabel: price ? money(price) : "",
+          note: plan.note.trim() || undefined,
+        };
+      });
+    } else {
+      normalizedPlans = plans.map((plan) => {
+        const requiredQuantity = positiveNumber(
+          plan.requiredQuantity,
+          1
+        );
+        const price = positiveNumber(plan.price);
+
+        return {
+          id: plan.id,
+          label: `任選 ${requiredQuantity} ${unitLabel || "件"}`,
+          requiredQuantity,
+          price,
+          priceLabel: price ? money(price) : "",
+          note: plan.note.trim() || undefined,
+        };
+      });
+    }
+
+    const commonSinglePrice = positiveNumber(singleUnitPrice);
+
+    return {
+      productId,
+      type: mode,
+      unitLabel: unitLabel.trim() || "件",
+      allowSameProduct: mode === "fixed_bundle" ? false : allowSameProduct,
+      options: normalizedOptions,
+      plans: normalizedPlans,
+      note: note.trim() || undefined,
+      singleUnitPrice:
+        mode === "fixed_bundle" ? undefined : commonSinglePrice || undefined,
+      singlePriceLabel:
+        mode === "fixed_bundle" || !commonSinglePrice
+          ? undefined
+          : `單${unitLabel.trim() || "件"} ${money(commonSinglePrice)}`,
+    };
+  }, [
+    allowSameProduct,
+    mode,
+    note,
+    options,
+    plans,
+    productId,
+    singleUnitPrice,
+    unitLabel,
+  ]);
+
+  const pricePreview = useMemo(() => {
+    if (mode === "fixed_bundle") {
+      const price = normalizedConfig.plans[0]?.price ?? 0;
+      return price ? `組合價 ${money(price)}` : "尚未設定套組價格";
+    }
+
+    const parts: string[] = [];
+    if (normalizedConfig.singleUnitPrice) {
+      parts.push(
+        `單${normalizedConfig.unitLabel} ${money(
+          normalizedConfig.singleUnitPrice
+        )}`
+      );
+    }
+
+    for (const plan of normalizedConfig.plans) {
+      if (!plan.price) continue;
+      parts.push(`${plan.label.replace(/\s+/g, "")} ${money(plan.price)}`);
+    }
+
+    return parts.join("｜") || "尚未設定優惠方案";
+  }, [mode, normalizedConfig]);
+
+  function addCatalogProduct(product: CatalogProduct) {
+    setOptions((current) => [
+      ...current,
+      {
+        id: `product-${product.id}`,
+        productId: product.id,
+        name: product.name,
+        quantity: "1",
+        singleUnitPrice: "",
+      },
+    ]);
+  }
+
+  function addManualOption() {
+    const name = manualName.trim();
+    if (!name) return;
+
+    setOptions((current) => [
+      ...current,
+      {
+        id: createId("option"),
+        name,
+        quantity: "1",
+        singleUnitPrice: "",
+      },
+    ]);
+    setManualName("");
+  }
+
+  function updateOption(
+    index: number,
+    field: keyof OptionDraft,
+    value: string
+  ) {
+    setOptions((current) =>
+      current.map((option, itemIndex) =>
+        itemIndex === index ? { ...option, [field]: value } : option
+      )
+    );
+  }
+
+  function moveOption(index: number, direction: -1 | 1) {
+    setOptions((current) => {
+      const target = index + direction;
+      if (target < 0 || target >= current.length) return current;
+      const next = [...current];
+      const [item] = next.splice(index, 1);
+      next.splice(target, 0, item);
+      return next;
     });
   }
 
-  function updateOptionName(
-    index: number,
-    value: string
-  ) {
-    setOptions((current) =>
-      current.map((option, itemIndex) =>
-        itemIndex === index
-          ? {
-              ...option,
-              name: value,
-            }
-          : option
-      )
-    );
-  }
-
-  function updateOptionPrice(
-    index: number,
-    value: string
-  ) {
-    setOptions((current) =>
-      current.map((option, itemIndex) =>
-        itemIndex === index
-          ? {
-              ...option,
-              singleUnitPrice: value,
-              /*
-               * 價格有被修改時，
-               * 讓顯示文字重新自動產生。
-               */
-              singlePriceLabel: "",
-            }
-          : option
-      )
-    );
+  function addPlan() {
+    setPlans((current) => [
+      ...current,
+      {
+        id: createId("plan"),
+        requiredQuantity: "2",
+        price: "",
+        buyQuantity: "2",
+        freeQuantity: "1",
+        note: "",
+      },
+    ]);
   }
 
   function updatePlan(
     index: number,
-    patch: Partial<PlanDraft>
+    field: keyof PlanDraft,
+    value: string
   ) {
     setPlans((current) =>
       current.map((plan, itemIndex) =>
-        itemIndex === index
-          ? { ...plan, ...patch }
-          : plan
+        itemIndex === index ? { ...plan, [field]: value } : plan
       )
     );
   }
 
-  const serializedConfig =
-    useMemo<ComboConfig>(() => {
-      const commonPrice =
-        positiveNumber(singleUnitPrice);
-
-      const nextOptions: ComboOption[] =
-        options
-          .filter((option) => option.name.trim())
-          .map((option) => {
-          const optionPrice =
-            positiveNumber(
-              option.singleUnitPrice
-            );
-
-          return {
-            id: option.id,
-            ...(option.productId
-              ? {
-                  productId:
-                    option.productId,
-                }
-              : {}),
-
-            name: option.name.trim(),
-
-            ...(optionPrice
-              ? {
-                  singleUnitPrice:
-                    optionPrice,
-
-                  singlePriceLabel:
-                    option.singlePriceLabel ||
-                    `單${unitLabel} ${moneyLabel(
-                      optionPrice
-                    )}`,
-                }
-              : {}),
-          };
-        });
-
-      const nextPlans: ComboPlan[] =
-        plans.map((plan, index) => {
-          const price =
-            positiveNumber(plan.price) ??
-            0;
-
-          const buyQuantity =
-            positiveNumber(
-              plan.buyQuantity
-            );
-
-          const freeQuantity =
-            positiveNumber(
-              plan.freeQuantity
-            );
-
-          const mixQuantity =
-            positiveNumber(
-              plan.requiredQuantity
-            ) ?? 1;
-
-          const requiredQuantity =
-            comboType === "buy_get"
-              ? (buyQuantity ?? 0) +
-                  (freeQuantity ?? 0) ||
-                1
-              : mixQuantity;
-
-          const label =
-            comboType === "buy_get"
-              ? `買${buyQuantity ?? 0}送${
-                  freeQuantity ?? 0
-                }・共 ${requiredQuantity} ${unitLabel}`
-              : `任選 ${requiredQuantity} ${unitLabel}`;
-
-          const giftQuantity =
-            positiveNumber(
-              plan.bonusGiftQuantity
-            );
-
-          return {
-            id:
-              plan.id ||
-              `plan-${index + 1}`,
-
-            label,
-            requiredQuantity,
-            price,
-            priceLabel:
-              moneyLabel(price),
-
-            ...(plan.note.trim()
-              ? {
-                  note:
-                    plan.note.trim(),
-                }
-              : {}),
-
-            ...(comboType ===
-              "buy_get" &&
-            buyQuantity &&
-            freeQuantity
-              ? {
-                  buyQuantity,
-                  freeQuantity,
-                }
-              : {}),
-
-            ...(comboType ===
-              "mix_match" &&
-            plan.bonusGiftName.trim() &&
-            giftQuantity
-              ? {
-                  bonusGift: {
-                    name:
-                      plan.bonusGiftName.trim(),
-
-                    quantity:
-                      giftQuantity,
-
-                    unitLabel:
-                      plan.bonusGiftUnitLabel.trim() ||
-                      "組",
-                  },
-                }
-              : {}),
-          };
-        });
-
-      return {
-        productId,
-        type: comboType,
-        unitLabel:
-          unitLabel.trim() || "件",
-
-        allowSameProduct,
-
-        options: nextOptions,
-        plans: nextPlans,
-
-        ...(commonPrice
-          ? {
-              singleUnitPrice:
-                commonPrice,
-
-              singlePriceLabel:
-                originalSinglePriceLabel ||
-                `單${unitLabel} ${moneyLabel(
-                  commonPrice
-                )}`,
-            }
-          : {}),
-
-        ...(comboNote.trim()
-          ? {
-              note:
-                comboNote.trim(),
-            }
-          : {}),
-      };
-    }, [
-      allowSameProduct,
-      comboNote,
-      comboType,
-      options,
-      plans,
-      productId,
-      singleUnitPrice,
-      originalSinglePriceLabel,
-      unitLabel,
-    ]);
-
-  const hasBasicProblem =
-    serializedConfig.options.length === 0 ||
-    serializedConfig.plans.length === 0;
-
   return (
-    <div className={styles.editor}>
+    <section className={styles.editor}>
       <input
         type="hidden"
         name="comboConfig"
-        value={JSON.stringify(
-          serializedConfig
-        )}
+        value={JSON.stringify(normalizedConfig)}
       />
 
-      {/* 01 組合方式 */}
-      <section className={styles.section}>
-        <div className={styles.stepHeading}>
-          <span>01</span>
+      <header className={styles.hero}>
+        <div>
+          <span>COMBO PRICING</span>
+          <h2>組合價格與方案</h2>
+          <p>所有組合商品都在這一頁修改價格、內容與優惠規則。</p>
+        </div>
+        <strong>{pricePreview}</strong>
+      </header>
 
+      <section className={styles.block}>
+        <div className={styles.blockTitle}>
+          <b>01</b>
           <div>
-            <h2>組合方式</h2>
-            <small>
-              選擇這張組合商品怎麼賣
-            </small>
+            <h3>販售方式</h3>
+            <p>先選擇這個組合商品屬於哪一種。</p>
           </div>
         </div>
 
-        <div className={styles.typeSwitch}>
-          <button
-            type="button"
-            className={
-              comboType === "mix_match"
-                ? styles.active
-                : ""
-            }
-            onClick={() =>
-              setComboType("mix_match")
-            }
-          >
-            任選搭配
-            <small>
-              例如任選 3 件 $1,600
-            </small>
-          </button>
+        <div className={styles.modeGrid}>
+          {[
+            ["fixed_bundle", "固定套組", "固定內容、單一套組價格"],
+            ["mix_match", "任選搭配", "客人自由選數量與品項"],
+            ["buy_get", "買幾送幾", "設定買幾、送幾與活動價"],
+          ].map(([value, title, description]) => (
+            <button
+              key={value}
+              type="button"
+              className={mode === value ? styles.modeActive : ""}
+              onClick={() => setMode(value as ComboMode)}
+            >
+              <strong>{title}</strong>
+              <span>{description}</span>
+            </button>
+          ))}
+        </div>
+      </section>
 
-          <button
-            type="button"
-            className={
-              comboType === "buy_get"
-                ? styles.active
-                : ""
-            }
-            onClick={() =>
-              setComboType("buy_get")
-            }
-          >
-            買幾送幾
-            <small>
-              例如買 2 送 1
-            </small>
-          </button>
+      <section className={styles.block}>
+        <div className={styles.blockTitle}>
+          <b>02</b>
+          <div>
+            <h3>價格與優惠方案</h3>
+            <p>真正影響前台與購物車的價格只在這裡修改。</p>
+          </div>
         </div>
 
-        <div className={styles.twoColumns}>
+        <div className={styles.basicGrid}>
           <label>
-            <span>商品單位</span>
-
+            <span>計量單位</span>
             <input
               value={unitLabel}
-              onChange={(event) =>
-                setUnitLabel(
-                  event.target.value
-                )
-              }
-              placeholder="盒、瓶、條、桶、件"
+              onChange={(event) => setUnitLabel(event.target.value)}
+              placeholder="件、盒、瓶、組"
             />
-
-            <small>
-              客人會看到「任選 3
-              盒」之類的文字。
-            </small>
           </label>
 
-          <label>
-            <span>
-              全部品項單買價
-              <em>選填</em>
-            </span>
-
-            <div className={styles.moneyInput}>
-              <b>NT$</b>
-
-              <input
-                type="number"
-                min="0"
-                value={singleUnitPrice}
-                onChange={(event) => {
-                  setSingleUnitPrice(
-                    event.target.value
-                  );
-
-                  setOriginalSinglePriceLabel(
-                    ""
-                  );
-                }}
-                placeholder="例如 590"
-              />
-            </div>
-
-            <small>
-              每個品項價格不同時可留空。
-            </small>
-          </label>
-        </div>
-
-        <button
-          type="button"
-          className={
-            allowSameProduct
-              ? styles.toggleOn
-              : styles.toggleOff
-          }
-          onClick={() =>
-            setAllowSameProduct(
-              (current) => !current
-            )
-          }
-        >
-          <span>
-            <strong>
-              允許同款重複選擇
-            </strong>
-
-            <small>
-              例如 3 條都選薰衣草護手霜
-            </small>
-          </span>
-
-          <i aria-hidden="true" />
-        </button>
-      </section>
-
-      {/* 02 可選商品 */}
-      <section className={styles.section}>
-        <div className={styles.sectionTop}>
-          <div className={styles.stepHeading}>
-            <span>02</span>
-
-            <div>
-              <h2>可選商品</h2>
-              <small>
-                客人可以搭配哪些商品
-              </small>
-            </div>
-          </div>
-
-          <div className={styles.sectionActions}>
-            <button
-              type="button"
-              className={styles.primarySmall}
-              onClick={() =>
-                setOptions((current) => [
-                  ...current,
-                  {
-                    id: createId("option"),
-                    name: "",
-                    singleUnitPrice: "",
-                    singlePriceLabel: "",
-                  },
-                ])
-              }
-            >
-              ＋組合內品項
-            </button>
-
-            <button
-              type="button"
-              className={styles.primarySmall}
-              onClick={() =>
-                setPickerOpen(
-                  (current) => !current
-                )
-              }
-            >
-              {pickerOpen
-                ? "收起商品庫"
-                : "＋商品庫"}
-            </button>
-          </div>
-        </div>
-
-        {pickerOpen && (
-          <div className={styles.picker}>
-            <div className={styles.searchBox}>
-              <input
-                type="search"
-                value={search}
-                onChange={(event) =>
-                  setSearch(
-                    event.target.value
-                  )
-                }
-                placeholder="搜尋已建立的一般商品"
-                autoFocus
-              />
-            </div>
-
-            {catalogLoading ? (
-              <p className={styles.empty}>
-                正在讀取商品…
-              </p>
-            ) : (
-              <div
-                className={
-                  styles.catalogList
-                }
-              >
-                {filteredCatalog.map(
-                  (product) => {
-                    const selected =
-                      selectedProductIds.has(
-                        product.id
-                      );
-
-                    return (
-                      <button
-                        key={product.id}
-                        type="button"
-                        disabled={selected}
-                        className={
-                          styles.catalogItem
-                        }
-                        onClick={() =>
-                          addCatalogProduct(
-                            product
-                          )
-                        }
-                      >
-                        <span>
-                          <strong>
-                            {product.name}
-                          </strong>
-
-                          <small>
-                            {product.price}
-                          </small>
-                        </span>
-
-                        <b>
-                          {selected
-                            ? "已加入"
-                            : "加入"}
-                        </b>
-                      </button>
-                    );
-                  }
-                )}
-
-                {!filteredCatalog.length && (
-                  <p
-                    className={
-                      styles.empty
-                    }
-                  >
-                    找不到符合的商品。
-                  </p>
-                )}
+          {mode !== "fixed_bundle" && (
+            <label>
+              <span>共同單買價（選填）</span>
+              <div className={styles.moneyInput}>
+                <em>NT$</em>
+                <input
+                  type="number"
+                  min="0"
+                  value={singleUnitPrice}
+                  onChange={(event) => setSingleUnitPrice(event.target.value)}
+                  placeholder="例如 500"
+                />
               </div>
-            )}
-          </div>
-        )}
-
-        <div className={styles.optionList}>
-          {options.map((option, index) => (
-            <article
-              className={styles.optionCard}
-              key={option.id}
-            >
-              <div
-                className={
-                  styles.optionHeader
-                }
-              >
-                <div>
-                  <small>
-                    品項 {index + 1}・
-                    {option.productId
-                      ? "商品庫"
-                      : "組合內品項"}
-                  </small>
-
-                  {option.productId && (
-                    <strong>
-                      {option.name}
-                    </strong>
-                  )}
-                </div>
-
-                <div
-                  className={
-                    styles.rowActions
-                  }
-                >
-                  <button
-                    type="button"
-                    disabled={index === 0}
-                    onClick={() =>
-                      setOptions(
-                        moveItem(
-                          options,
-                          index,
-                          -1
-                        )
-                      )
-                    }
-                  >
-                    ↑
-                  </button>
-
-                  <button
-                    type="button"
-                    disabled={
-                      index ===
-                      options.length - 1
-                    }
-                    onClick={() =>
-                      setOptions(
-                        moveItem(
-                          options,
-                          index,
-                          1
-                        )
-                      )
-                    }
-                  >
-                    ↓
-                  </button>
-
-                  <button
-                    type="button"
-                    className={
-                      styles.removeButton
-                    }
-                    onClick={() =>
-                      setOptions(
-                        options.filter(
-                          (_, itemIndex) =>
-                            itemIndex !== index
-                        )
-                      )
-                    }
-                  >
-                    移除
-                  </button>
-                </div>
-              </div>
-
-              {!option.productId ? (
-                <label
-                  className={
-                    styles.compactField
-                  }
-                >
-                  <span>
-                    組合內品項名稱
-                  </span>
-
-                  <input
-                    value={option.name}
-                    onChange={(event) =>
-                      updateOptionName(
-                        index,
-                        event.target.value
-                      )
-                    }
-                    placeholder="例如：薰衣草舒緩護手霜"
-                  />
-
-                  <small>
-                    此品項只存在這張組合商品內，
-                    不會另外建立一般商品卡。
-                  </small>
-                </label>
-              ) : (
-                <div
-                  className={
-                    styles.linkedNotice
-                  }
-                >
-                  已連結商品庫：
-                  {option.name}
-                </div>
-              )}
-
-              <label
-                className={
-                  styles.compactField
-                }
-              >
-                <span>
-                  此品項單買價
-                  <em>選填</em>
-                </span>
-
-                <div
-                  className={
-                    styles.moneyInput
-                  }
-                >
-                  <b>NT$</b>
-
-                  <input
-                    type="number"
-                    min="0"
-                    value={
-                      option.singleUnitPrice
-                    }
-                    onChange={(event) =>
-                      updateOptionPrice(
-                        index,
-                        event.target.value
-                      )
-                    }
-                    placeholder={
-                      singleUnitPrice
-                        ? `共同價 ${singleUnitPrice}`
-                        : "例如 990"
-                    }
-                  />
-                </div>
-              </label>
-            </article>
-          ))}
-
-          {options.length === 0 && (
-            <div
-              className={
-                styles.emptyState
-              }
-            >
-              <strong>
-                還沒有可選商品
-              </strong>
-
-              <span>
-                可新增「組合內品項」，或從「商品庫」選擇既有商品。
-              </span>
-            </div>
+            </label>
           )}
-        </div>
-      </section>
-
-      {/* 03 優惠方案 */}
-      <section className={styles.section}>
-        <div className={styles.sectionTop}>
-          <div className={styles.stepHeading}>
-            <span>03</span>
-
-            <div>
-              <h2>優惠方案</h2>
-
-              <small>
-                {comboType === "mix_match"
-                  ? "設定任選數量與組合價"
-                  : "設定買幾、送幾與活動價"}
-              </small>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className={styles.primarySmall}
-            onClick={() =>
-              setPlans((current) => [
-                ...current,
-                {
-                  id: createId("plan"),
-                  requiredQuantity: "3",
-                  price: "",
-                  note: "",
-                  buyQuantity: "2",
-                  freeQuantity: "1",
-                  bonusGiftName: "",
-                  bonusGiftQuantity: "",
-                  bonusGiftUnitLabel: "組",
-                },
-              ])
-            }
-          >
-            ＋新增方案
-          </button>
         </div>
 
         <div className={styles.planList}>
-          {plans.map((plan, index) => {
-            const buy =
-              positiveNumber(
-                plan.buyQuantity
-              ) ?? 0;
+          {plans.map((plan, index) => (
+            <article key={plan.id} className={styles.planCard}>
+              <div className={styles.planHeader}>
+                <div>
+                  <small>方案 {index + 1}</small>
+                  <strong>
+                    {mode === "fixed_bundle"
+                      ? "固定套組售價"
+                      : mode === "buy_get"
+                        ? `買 ${plan.buyQuantity || "-"} 送 ${
+                            plan.freeQuantity || "-"
+                          }`
+                        : `任選 ${plan.requiredQuantity || "-"} ${unitLabel}`}
+                  </strong>
+                </div>
 
-            const free =
-              positiveNumber(
-                plan.freeQuantity
-              ) ?? 0;
-
-            const total =
-              comboType === "buy_get"
-                ? buy + free
-                : positiveNumber(
-                    plan.requiredQuantity
-                  ) ?? 0;
-
-            return (
-              <article
-                key={plan.id}
-                className={
-                  styles.planCard
-                }
-              >
-                <div
-                  className={
-                    styles.planHeader
-                  }
-                >
-                  <div>
-                    <small>
-                      方案 {index + 1}
-                    </small>
-
-                    <strong>
-                      {comboType ===
-                      "buy_get"
-                        ? `買 ${buy} 送 ${free}・共 ${total} ${unitLabel}`
-                        : `任選 ${total} ${unitLabel}`}
-                    </strong>
-                  </div>
-
+                {mode !== "fixed_bundle" && plans.length > 1 && (
                   <button
                     type="button"
-                    className={
-                      styles.removeButton
-                    }
                     onClick={() =>
-                      setPlans(
-                        plans.filter(
-                          (_, itemIndex) =>
-                            itemIndex !== index
-                        )
+                      setPlans((current) =>
+                        current.filter((_, itemIndex) => itemIndex !== index)
+                      )
+                    }
+                  >
+                    刪除
+                  </button>
+                )}
+              </div>
+
+              <div className={styles.planFields}>
+                {mode === "mix_match" && (
+                  <label>
+                    <span>任選數量</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={plan.requiredQuantity}
+                      onChange={(event) =>
+                        updatePlan(index, "requiredQuantity", event.target.value)
+                      }
+                    />
+                  </label>
+                )}
+
+                {mode === "buy_get" && (
+                  <>
+                    <label>
+                      <span>購買數量</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={plan.buyQuantity}
+                        onChange={(event) =>
+                          updatePlan(index, "buyQuantity", event.target.value)
+                        }
+                      />
+                    </label>
+                    <label>
+                      <span>贈送數量</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={plan.freeQuantity}
+                        onChange={(event) =>
+                          updatePlan(index, "freeQuantity", event.target.value)
+                        }
+                      />
+                    </label>
+                  </>
+                )}
+
+                <label>
+                  <span>{mode === "fixed_bundle" ? "套組售價" : "優惠價"}</span>
+                  <div className={styles.moneyInput}>
+                    <em>NT$</em>
+                    <input
+                      type="number"
+                      min="0"
+                      value={plan.price}
+                      onChange={(event) =>
+                        updatePlan(index, "price", event.target.value)
+                      }
+                      placeholder="輸入價格"
+                    />
+                  </div>
+                </label>
+
+                <label className={styles.fullField}>
+                  <span>方案補充說明（選填）</span>
+                  <input
+                    value={plan.note}
+                    onChange={(event) =>
+                      updatePlan(index, "note", event.target.value)
+                    }
+                    placeholder="例如：同款可重複選"
+                  />
+                </label>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {mode !== "fixed_bundle" && (
+          <button type="button" className={styles.addButton} onClick={addPlan}>
+            ＋ 新增優惠方案
+          </button>
+        )}
+      </section>
+
+      <section className={styles.block}>
+        <div className={styles.blockTitle}>
+          <b>03</b>
+          <div>
+            <h3>組合商品內容</h3>
+            <p>
+              {mode === "fixed_bundle"
+                ? "設定固定套組包含哪些商品與數量。"
+                : "設定客人可選擇的商品。"}
+            </p>
+          </div>
+        </div>
+
+        <div className={styles.optionList}>
+          {options.length === 0 ? (
+            <div className={styles.empty}>尚未加入商品內容。</div>
+          ) : (
+            options.map((option, index) => (
+              <article key={option.id} className={styles.optionCard}>
+                <div className={styles.optionOrder}>{index + 1}</div>
+                <label>
+                  <span>品項名稱</span>
+                  <input
+                    value={option.name}
+                    onChange={(event) =>
+                      updateOption(index, "name", event.target.value)
+                    }
+                  />
+                </label>
+
+                {mode === "fixed_bundle" ? (
+                  <label className={styles.smallField}>
+                    <span>數量</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={option.quantity}
+                      onChange={(event) =>
+                        updateOption(index, "quantity", event.target.value)
+                      }
+                    />
+                  </label>
+                ) : (
+                  <label className={styles.smallField}>
+                    <span>個別單買價</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={option.singleUnitPrice}
+                      onChange={(event) =>
+                        updateOption(index, "singleUnitPrice", event.target.value)
+                      }
+                      placeholder="選填"
+                    />
+                  </label>
+                )}
+
+                <div className={styles.optionActions}>
+                  <button
+                    type="button"
+                    disabled={index === 0}
+                    onClick={() => moveOption(index, -1)}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    disabled={index === options.length - 1}
+                    onClick={() => moveOption(index, 1)}
+                  >
+                    ↓
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOptions((current) =>
+                        current.filter((_, itemIndex) => itemIndex !== index)
                       )
                     }
                   >
                     刪除
                   </button>
                 </div>
-
-                {comboType ===
-                "mix_match" ? (
-                  <div
-                    className={
-                      styles.planFields
-                    }
-                  >
-                    <label>
-                      <span>任選數量</span>
-
-                      <div
-                        className={
-                          styles.unitInput
-                        }
-                      >
-                        <input
-                          type="number"
-                          min="1"
-                          value={
-                            plan.requiredQuantity
-                          }
-                          onChange={(event) =>
-                            updatePlan(
-                              index,
-                              {
-                                requiredQuantity:
-                                  event
-                                    .target
-                                    .value,
-                              }
-                            )
-                          }
-                        />
-
-                        <b>
-                          {unitLabel}
-                        </b>
-                      </div>
-                    </label>
-
-                    <label>
-                      <span>
-                        組合價
-                      </span>
-
-                      <div
-                        className={
-                          styles.moneyInput
-                        }
-                      >
-                        <b>NT$</b>
-
-                        <input
-                          type="number"
-                          min="0"
-                          value={
-                            plan.price
-                          }
-                          onChange={(event) =>
-                            updatePlan(
-                              index,
-                              {
-                                price:
-                                  event
-                                    .target
-                                    .value,
-                              }
-                            )
-                          }
-                        />
-                      </div>
-                    </label>
-                  </div>
-                ) : (
-                  <div
-                    className={
-                      styles.buyGetGrid
-                    }
-                  >
-                    <label>
-                      <span>購買</span>
-
-                      <div
-                        className={
-                          styles.unitInput
-                        }
-                      >
-                        <input
-                          type="number"
-                          min="1"
-                          value={
-                            plan.buyQuantity
-                          }
-                          onChange={(event) =>
-                            updatePlan(
-                              index,
-                              {
-                                buyQuantity:
-                                  event
-                                    .target
-                                    .value,
-                              }
-                            )
-                          }
-                        />
-
-                        <b>
-                          {unitLabel}
-                        </b>
-                      </div>
-                    </label>
-
-                    <label>
-                      <span>贈送</span>
-
-                      <div
-                        className={
-                          styles.unitInput
-                        }
-                      >
-                        <input
-                          type="number"
-                          min="1"
-                          value={
-                            plan.freeQuantity
-                          }
-                          onChange={(event) =>
-                            updatePlan(
-                              index,
-                              {
-                                freeQuantity:
-                                  event
-                                    .target
-                                    .value,
-                              }
-                            )
-                          }
-                        />
-
-                        <b>
-                          {unitLabel}
-                        </b>
-                      </div>
-                    </label>
-
-                    <label>
-                      <span>活動價</span>
-
-                      <div
-                        className={
-                          styles.moneyInput
-                        }
-                      >
-                        <b>NT$</b>
-
-                        <input
-                          type="number"
-                          min="0"
-                          value={
-                            plan.price
-                          }
-                          onChange={(event) =>
-                            updatePlan(
-                              index,
-                              {
-                                price:
-                                  event
-                                    .target
-                                    .value,
-                              }
-                            )
-                          }
-                        />
-                      </div>
-                    </label>
-                  </div>
-                )}
-
-                <details
-                  className={
-                    styles.optional
-                  }
-                >
-                  <summary>
-                    其他設定
-                    <span>選填</span>
-                  </summary>
-
-                  <label>
-                    <span>方案說明</span>
-
-                    <textarea
-                      rows={2}
-                      value={plan.note}
-                      onChange={(event) =>
-                        updatePlan(index, {
-                          note:
-                            event.target
-                              .value,
-                        })
-                      }
-                      placeholder="例如：限時優惠、活動說明"
-                    />
-                  </label>
-
-                  {comboType ===
-                    "mix_match" && (
-                    <div
-                      className={
-                        styles.giftBox
-                      }
-                    >
-                      <strong>
-                        額外贈品
-                      </strong>
-
-                      <small>
-                        沒有贈品可全部留空。
-                      </small>
-
-                      <label>
-                        <span>
-                          贈品名稱
-                        </span>
-
-                        <input
-                          value={
-                            plan.bonusGiftName
-                          }
-                          onChange={(
-                            event
-                          ) =>
-                            updatePlan(
-                              index,
-                              {
-                                bonusGiftName:
-                                  event
-                                    .target
-                                    .value,
-                              }
-                            )
-                          }
-                          placeholder="例如：面膜 10 片"
-                        />
-                      </label>
-
-                      <div
-                        className={
-                          styles.twoColumns
-                        }
-                      >
-                        <label>
-                          <span>
-                            數量
-                          </span>
-
-                          <input
-                            type="number"
-                            min="1"
-                            value={
-                              plan.bonusGiftQuantity
-                            }
-                            onChange={(
-                              event
-                            ) =>
-                              updatePlan(
-                                index,
-                                {
-                                  bonusGiftQuantity:
-                                    event
-                                      .target
-                                      .value,
-                                }
-                              )
-                            }
-                          />
-                        </label>
-
-                        <label>
-                          <span>
-                            單位
-                          </span>
-
-                          <input
-                            value={
-                              plan.bonusGiftUnitLabel
-                            }
-                            onChange={(
-                              event
-                            ) =>
-                              updatePlan(
-                                index,
-                                {
-                                  bonusGiftUnitLabel:
-                                    event
-                                      .target
-                                      .value,
-                                }
-                              )
-                            }
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </details>
               </article>
-            );
-          })}
-
-          {plans.length === 0 && (
-            <div
-              className={
-                styles.emptyState
-              }
-            >
-              <strong>
-                還沒有優惠方案
-              </strong>
-
-              <span>
-                至少新增一個方案才能正常販售。
-              </span>
-            </div>
+            ))
           )}
         </div>
-      </section>
 
-      {/* 04 補充說明 */}
-      <section className={styles.section}>
-        <div className={styles.stepHeading}>
-          <span>04</span>
+        <div className={styles.addRow}>
+          <button
+            type="button"
+            className={styles.addButton}
+            onClick={() => setShowPicker((current) => !current)}
+          >
+            ＋ 從商品目錄加入
+          </button>
 
-          <div>
-            <h2>組合補充說明</h2>
-            <small>
-              沒有需要可留空
-            </small>
+          <div className={styles.manualAdd}>
+            <input
+              value={manualName}
+              onChange={(event) => setManualName(event.target.value)}
+              placeholder="或輸入自訂品項名稱"
+            />
+            <button type="button" onClick={addManualOption}>
+              加入
+            </button>
           </div>
         </div>
 
-        <textarea
-          rows={3}
-          value={comboNote}
-          onChange={(event) =>
-            setComboNote(
-              event.target.value
-            )
-          }
-          placeholder="例如：不同品項可自由搭配。"
-        />
+        {showPicker && (
+          <div className={styles.picker}>
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="搜尋商品名稱"
+            />
+            <div>
+              {filteredCatalog.slice(0, 50).map((product) => (
+                <button
+                  type="button"
+                  key={product.id}
+                  onClick={() => addCatalogProduct(product)}
+                >
+                  <strong>{product.name}</strong>
+                  <span>{product.price}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {mode !== "fixed_bundle" && (
+          <label className={styles.toggle}>
+            <input
+              type="checkbox"
+              checked={allowSameProduct}
+              onChange={(event) => setAllowSameProduct(event.target.checked)}
+            />
+            允許同一品項重複選擇
+          </label>
+        )}
       </section>
 
-      <div
-        className={
-          hasBasicProblem
-            ? styles.summaryWarning
-            : styles.summary
-        }
-      >
-        <div>
-          <strong>
-            {comboType === "buy_get"
-              ? "買幾送幾"
-              : "任選搭配"}
-          </strong>
-
-          <span>
-            {serializedConfig.options.length}
-            個可選商品 ・{" "}
-            {serializedConfig.plans.length}
-            個優惠方案
-          </span>
+      <section className={styles.block}>
+        <div className={styles.blockTitle}>
+          <b>04</b>
+          <div>
+            <h3>商品卡價格預覽</h3>
+            <p>首頁、分類頁與商品詳情將使用同一份價格資料。</p>
+          </div>
         </div>
+        <div className={styles.preview}>{pricePreview}</div>
+      </section>
 
-        <b>
-          {hasBasicProblem
-            ? "設定尚未完整"
-            : "設定完成"}
-        </b>
-      </div>
-    </div>
+      <section className={styles.block}>
+        <div className={styles.blockTitle}>
+          <b>05</b>
+          <div>
+            <h3>補充說明</h3>
+            <p>活動限制、贈品或其他需要告知客人的內容。</p>
+          </div>
+        </div>
+        <textarea
+          rows={4}
+          value={note}
+          onChange={(event) => setNote(event.target.value)}
+          placeholder="例如：實際庫存與活動期限依 LINE 小幫手確認。"
+        />
+      </section>
+    </section>
   );
 }
