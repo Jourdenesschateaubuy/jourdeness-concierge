@@ -33,8 +33,8 @@ export default async function NewProductPage({
 
           <p>
             {isCombo
-              ? "先建立組合商品主資料，建立完成後再設定方案與組合內容。"
-              : "建立一般商品主資料。商品 ID 會由資料庫自動產生。"}
+              ? "先建立組合商品主資料，系統會自動分配 C-xxxx 編號，再設定方案與組合內容。"
+              : "建立一般商品主資料。系統會自動分配 P-xxxx 商品編號，內部資料庫 ID 保留自動產生。"}
           </p>
         </div>
       </header>

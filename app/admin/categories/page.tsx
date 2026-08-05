@@ -19,7 +19,7 @@ export default async function AdminCategoriesPage() {
         <div>
           <p className={styles.eyebrow}>CATALOG STRUCTURE</p>
           <h1>分類與細項管理</h1>
-          <p>依 01、02、03 排列前台分類；可新增、改名、停用、拖曳與安全刪除。</p>
+          <p>依 01、02、03 排列前台分類；系列自動分配 S-xxx 編號，可新增、改名、停用、拖曳與安全刪除。</p>
         </div>
         <span className={styles.statusBadge}>可編輯</span>
       </header>

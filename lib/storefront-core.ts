@@ -32,6 +32,8 @@ export type MainCategory = keyof typeof categoryConfig;
 
 export type Product = {
   id: number;
+  displayCode?: string;
+  productType?: "standard" | "combo";
   name: string;
   category: MainCategory;
   series: string;
@@ -344,8 +346,10 @@ const comboConfigsV360: Record<number, ComboConfig> = {
   },
 };
 
-export function getComboConfig(productId: number) {
-  return comboConfigsV360[productId] ?? null;
+export function getComboConfig(_productId: number) {
+  // 所有正式組合方案已改由資料庫 combo_config 管理。
+  // 保留函式只為相容既有呼叫，不再回傳舊寫死設定。
+  return null;
 }
 
 type FlexibleComboPricingV369 = {
@@ -4865,7 +4869,9 @@ export const skinFilters = [
 
 export type SkinFilter = (typeof skinFilters)[number];
 
-export const comboProductIds = new Set<number>([1, 51, 54, 55, 67, 68, 108, 119]);
+export const comboProductIds = new Set<number>([
+  1, 10, 51, 54, 55, 56, 58, 59, 67, 68, 69, 100, 108, 112, 119, 120,
+]);
 
 export const expiringProductIds = new Set<number>([38, 74]);
 

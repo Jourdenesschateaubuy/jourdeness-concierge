@@ -1,6 +1,8 @@
 import type { ComboConfig, MainCategory, Product } from "./storefront-core";
 import { dbQuery, withDbClient } from "./db";
 
+export type ProductType = "standard" | "combo";
+
 export type ProductStatus =
   | "active"
   | "inactive"
@@ -8,6 +10,8 @@ export type ProductStatus =
   | "sold_out";
 
 export type DatabaseProduct = Product & {
+  displayCode: string;
+  productType: ProductType;
   sku?: string;
   status: ProductStatus;
   sortOrder: number;
@@ -45,6 +49,8 @@ export type ProductWriteInput = {
 
 type ProductRow = {
   id: number;
+  display_code: string;
+  product_type: ProductType;
   sku: string | null;
   name: string;
   category: string;
@@ -81,6 +87,8 @@ function optional(value: string | null) {
 function rowToProduct(row: ProductRow): DatabaseProduct {
   return {
     id: row.id,
+    displayCode: row.display_code,
+    productType: row.product_type,
     sku: optional(row.sku),
     name: row.name,
     category: row.category as MainCategory,
@@ -157,12 +165,31 @@ export async function createDatabaseProduct(
       );
       const id = Number(idResult.rows[0]?.id ?? 1);
 
+      const normalizedProductType: ProductType =
+        productType === "combo" ? "combo" : "standard";
+
+      const displayCodeResult =
+        normalizedProductType === "combo"
+          ? await client.query<{ sequence_value: string }>(
+              `SELECT nextval('product_combo_code_seq')::text AS sequence_value`
+            )
+          : await client.query<{ sequence_value: string }>(
+              `SELECT nextval('product_standard_code_seq')::text AS sequence_value`
+            );
+
+      const displayCodeNumber = Number(
+        displayCodeResult.rows[0]?.sequence_value ?? 1
+      );
+      const displayCode = `${
+        normalizedProductType === "combo" ? "C" : "P"
+      }-${String(displayCodeNumber).padStart(4, "0")}`;
+
       const comboConfig = input.comboConfig
         ? {
             ...input.comboConfig,
             productId: id,
           }
-        : productType === "combo"
+        : normalizedProductType === "combo"
           ? {
               productId: id,
               type: "fixed_bundle" as const,
@@ -176,20 +203,25 @@ export async function createDatabaseProduct(
       const result = await client.query<ProductRow>(
         `
           INSERT INTO products (
-            id, sku, name, category, series, storefront_category, original_price, price, image,
-            description, card_name, card_subtitle, spec, intro, price_note,
+            id, display_code, product_type,
+            sku, name, category, series, storefront_category,
+            original_price, price, image, description,
+            card_name, card_subtitle, spec, intro, price_note,
             expiry_note, internal_expiry_date,
-            features, suitable_for, usage, notice, gallery, expanded_info, combo_config,
-            status, sort_order, updated_at
+            features, suitable_for, usage, notice, gallery,
+            expanded_info, combo_config, status, sort_order, updated_at
           )
           VALUES (
             $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,
-            $18::jsonb,$19::jsonb,$20,$21,$22::jsonb,$23::jsonb,$24::jsonb,$25,$26,NOW()
+            $18,$19,$20::jsonb,$21::jsonb,$22,$23,$24::jsonb,$25::jsonb,
+            $26::jsonb,$27,$28,NOW()
           )
           RETURNING *
         `,
         [
           id,
+          displayCode,
+          normalizedProductType,
           input.sku || null,
           input.name,
           input.category,

@@ -9,10 +9,7 @@ import {
 } from "react";
 
 import { readJsonResponse } from "../../../lib/http-json";
-import {
-  getComboConfig as getFallbackComboConfig,
-  type ComboConfig,
-} from "../../../lib/storefront-core";
+import type { ComboConfig } from "../../../lib/storefront-core";
 import styles from "./product-studio-editor.module.css";
 
 type ProductStatus =
@@ -23,6 +20,8 @@ type ProductStatus =
 
 type StudioProduct = {
   id: number;
+  displayCode?: string;
+  productType?: "standard" | "combo";
   name: string;
   cardName?: string | null;
   cardSubtitle?: string | null;
@@ -95,7 +94,7 @@ function normalizeMoneyForPreview(
 }
 
 function createFixedBundleFallback(product: StudioProduct): ComboConfig | null {
-  if (product.category !== "組合價") return null;
+  if (product.productType !== "combo" && product.category !== "組合價") return null;
 
   const values = [...product.price.matchAll(/([\d,]+)/g)]
     .map((match) => Number(match[1].replace(/,/g, "")))
@@ -349,7 +348,6 @@ export default function ProductStudioEditor({
 
     return (
       product.comboConfig ??
-      getFallbackComboConfig(product.id) ??
       createFixedBundleFallback(product) ??
       null
     );
@@ -593,7 +591,7 @@ export default function ProductStudioEditor({
     >
       <div className={styles.topLine}>
         <div>
-          <span>商品卡編輯</span>
+          <span>{product?.displayCode ?? "商品卡"} · 商品卡編輯</span>
           <h2>{form.cardName}</h2>
         </div>
 

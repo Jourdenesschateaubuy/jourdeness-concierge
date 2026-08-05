@@ -1,4 +1,3 @@
-import { comboProductIds } from "../../../lib/storefront-core";
 import { listDatabaseProducts } from "../../../lib/product-repository";
 import ProductManager from "./_components/ProductManager";
 import styles from "../admin.module.css";
@@ -10,11 +9,6 @@ export default async function AdminProductsPage() {
     includeInactive: true,
   });
 
-  const adminProducts = databaseProducts.map((product) => ({
-    ...product,
-    isCombo: comboProductIds.has(product.id),
-  }));
-
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
@@ -22,13 +16,13 @@ export default async function AdminProductsPage() {
           <p className={styles.eyebrow}>PRODUCTS · NEON POSTGRES</p>
           <h1>商品管理</h1>
           <p>
-            商品資料已連接 Neon PostgreSQL，可新增、編輯、切換狀態與刪除。
+            一般商品使用 P 編號，組合商品使用 C 編號；資料庫內部 ID 保留不變。
           </p>
         </div>
         <span className={styles.statusBadge}>可編輯</span>
       </header>
 
-      <ProductManager products={adminProducts} />
+      <ProductManager products={databaseProducts} />
     </div>
   );
 }

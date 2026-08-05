@@ -11,6 +11,8 @@ export type CatalogCategory = {
 
 export type CatalogSeries = {
   id: number;
+  // Storefront 的靜態備援系列沒有管理用編號；資料庫系列仍會提供 S-xxx。
+  displayCode?: string;
   categoryId: number;
   categoryName: string;
   name: string;
@@ -30,6 +32,7 @@ type CategoryRow = {
 
 type SeriesRow = {
   id: number | string;
+  display_code?: string | null;
   category_id: number | string;
   category_name: string;
   name: string;
@@ -52,6 +55,9 @@ function mapCategory(row: CategoryRow): CatalogCategory {
 function mapSeries(row: SeriesRow): CatalogSeries {
   return {
     id: Number(row.id),
+    displayCode:
+      row.display_code?.trim() ||
+      `S-${String(Number(row.id)).padStart(3, "0")}`,
     categoryId: Number(row.category_id),
     categoryName: row.category_name,
     name: row.name,
@@ -99,6 +105,7 @@ export async function getCatalogSeries(options?: {
   const result = await dbQuery<SeriesRow>(`
     SELECT
       s.id,
+      s.display_code,
       s.category_id,
       c.name AS category_name,
       s.name,
@@ -283,16 +290,25 @@ export async function createCatalogSeries(categoryId: number, name: string) {
         SELECT COALESCE(MAX(sort_order), -1) + 1 AS value
         FROM catalog_series
         WHERE category_id = $1
+      ), next_code AS (
+        SELECT nextval('catalog_series_code_seq')::bigint AS value
       ), inserted AS (
         INSERT INTO catalog_series (
-          category_id, name, sort_order, is_active, updated_at
+          display_code, category_id, name, sort_order, is_active, updated_at
         )
-        SELECT $1, $2, next_sort.value, TRUE, NOW()
-        FROM next_sort
-        RETURNING id, category_id, name, sort_order, is_active
+        SELECT
+          'S-' || LPAD(next_code.value::text, 3, '0'),
+          $1,
+          $2,
+          next_sort.value,
+          TRUE,
+          NOW()
+        FROM next_sort, next_code
+        RETURNING id, display_code, category_id, name, sort_order, is_active
       )
-      SELECT inserted.id, inserted.category_id, c.name AS category_name,
-             inserted.name, inserted.sort_order, inserted.is_active
+      SELECT inserted.id, inserted.display_code, inserted.category_id,
+             c.name AS category_name, inserted.name,
+             inserted.sort_order, inserted.is_active
       FROM inserted
       JOIN catalog_categories c ON c.id = inserted.category_id
     `,
@@ -330,9 +346,9 @@ export async function updateCatalogSeriesName(id: number, name: string) {
            UPDATE catalog_series
            SET name = $2, updated_at = NOW()
            WHERE id = $1
-           RETURNING id, category_id, name, sort_order, is_active
+           RETURNING id, display_code, category_id, name, sort_order, is_active
          )
-         SELECT updated.id, updated.category_id, c.name AS category_name,
+         SELECT updated.id, updated.display_code, updated.category_id, c.name AS category_name,
                 updated.name, updated.sort_order, updated.is_active
          FROM updated
          JOIN catalog_categories c ON c.id = updated.category_id`,
@@ -364,9 +380,9 @@ export async function updateCatalogSeriesStatus(id: number, isActive: boolean) {
        UPDATE catalog_series
        SET is_active = $2, updated_at = NOW()
        WHERE id = $1
-       RETURNING id, category_id, name, sort_order, is_active
+       RETURNING id, display_code, category_id, name, sort_order, is_active
      )
-     SELECT updated.id, updated.category_id, c.name AS category_name,
+     SELECT updated.id, updated.display_code, updated.category_id, c.name AS category_name,
             updated.name, updated.sort_order, updated.is_active
      FROM updated
      JOIN catalog_categories c ON c.id = updated.category_id`,
@@ -467,9 +483,9 @@ export async function updateCatalogSeriesCategory(
            updated_at = NOW()
        FROM next_sort
        WHERE id = $1
-       RETURNING id, category_id, name, sort_order, is_active
+       RETURNING id, display_code, category_id, name, sort_order, is_active
      )
-     SELECT updated.id, updated.category_id, c.name AS category_name,
+     SELECT updated.id, updated.display_code, updated.category_id, c.name AS category_name,
             updated.name, updated.sort_order, updated.is_active
      FROM updated
      JOIN catalog_categories c ON c.id = updated.category_id`,

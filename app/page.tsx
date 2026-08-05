@@ -20,10 +20,8 @@ import {
   calculateFlexibleComboPricingV369,
   calculateMaskPromotionV361,
   categoryConfig,
-  comboProductIds,
   expiringProductIds,
   expiryNotesV315,
-  getComboConfig as getFallbackComboConfig,
   getMaskBucketQuantityV361,
   getMaskPromotionNoticeV361,
   getSimpleCartQuantityV366,
@@ -105,13 +103,15 @@ function Home() {
   function getComboConfig(productId: number): ComboConfig | null {
     const product = products.find((item) => item.id === productId);
     const databaseConfig = product?.comboConfig;
-    const fallbackConfig = getFallbackComboConfig(productId);
 
-    if (databaseConfig || fallbackConfig) {
-      return databaseConfig ?? fallbackConfig;
+    if (databaseConfig) {
+      return databaseConfig;
     }
 
-    if (product?.category !== "組合價") {
+    if (
+      product?.productType !== "combo" &&
+      product?.category !== "組合價"
+    ) {
       return null;
     }
 
@@ -2003,7 +2003,11 @@ const sevenSequenceGuideV377 = [
   }
 
   function hasComboPrice(product: Product) {
-    return comboProductIds.has(product.id) || product.category === "組合價";
+    return (
+      product.productType === "combo" ||
+      Boolean(product.comboConfig) ||
+      product.category === "組合價"
+    );
   }
 
   function isExpiringDeal(product: Product) {

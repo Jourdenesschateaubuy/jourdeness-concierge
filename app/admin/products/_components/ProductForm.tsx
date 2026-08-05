@@ -336,6 +336,32 @@ export default function ProductForm({
           </div>
 
           <div className={styles.grid}>
+            {product ? (
+              <>
+                <label>
+                  <span>商品編號</span>
+                  <input value={product.displayCode} readOnly />
+                </label>
+
+                <label>
+                  <span>商品類型</span>
+                  <input
+                    value={
+                      product.productType === "combo"
+                        ? "組合商品"
+                        : "一般商品"
+                    }
+                    readOnly
+                  />
+                </label>
+              </>
+            ) : (
+              <div className={`${styles.span2} ${styles.positionNote}`}>
+                建立後系統會自動分配：一般商品 P-xxxx／組合商品 C-xxxx。
+                內部資料庫 ID 不會重新編號。
+              </div>
+            )}
+
             <label>
               <span>前台主分類 *</span>
               <select
