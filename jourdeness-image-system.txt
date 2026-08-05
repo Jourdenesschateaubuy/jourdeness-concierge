@@ -1,0 +1,541 @@
+﻿===== UPLOAD STORAGE =====
+import crypto from "node:crypto";
+import path from "node:path";
+import {
+  mkdir,
+  unlink,
+  writeFile,
+} from "node:fs/promises";
+
+const DEFAULT_MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+const PRODUCT_IMAGE_TYPES = new Map<string, string>([
+  ["image/jpeg", ".jpg"],
+  ["image/png", ".png"],
+  ["image/webp", ".webp"],
+]);
+
+type SaveUploadedFileOptions = {
+  folder: string;
+  allowedTypes: Map<string, string>;
+  maxSize?: number;
+};
+
+export type SavedUploadedFile = {
+  fileName: string;
+  absolutePath: string;
+  relativePath: string;
+  publicUrl: string;
+  mimeType: string;
+  size: number;
+};
+
+export type SavedProductImage = SavedUploadedFile;
+
+function getUploadRoot(): string {
+  const uploadRoot = process.env.UPLOAD_ROOT?.trim();
+
+  if (!uploadRoot) {
+    throw new Error("缺少 UPLOAD_ROOT 環境變數。");
+  }
+
+  return path.resolve(uploadRoot);
+}
+
+function validateFolderName(folder: string): string {
+  const normalized = folder.trim().replaceAll("\\", "/");
+
+  if (
+    !normalized ||
+    normalized.startsWith("/") ||
+    normalized.includes("..") ||
+    !/^[a-zA-Z0-9/_-]+$/.test(normalized)
+  ) {
+    throw new Error("上傳資料夾名稱無效。");
+  }
+
+  return normalized;
+}
+
+function getExtension(
+  file: File,
+  allowedTypes: Map<string, string>,
+): string {
+  const extension = allowedTypes.get(file.type);
+
+  if (!extension) {
+    throw new Error("不支援這個檔案格式。");
+  }
+
+  return extension;
+}
+
+function createSafeFileName(extension: string): string {
+  const timestamp = Date.now();
+  const randomId = crypto.randomBytes(8).toString("hex");
+
+  return `${timestamp}-${randomId}${extension}`;
+}
+
+export async function saveUploadedFile(
+  file: File,
+  options: SaveUploadedFileOptions,
+): Promise<SavedUploadedFile> {
+  if (!(file instanceof File)) {
+    throw new Error("沒有收到有效的檔案。");
+  }
+
+  if (file.size <= 0) {
+    throw new Error("檔案是空的。");
+  }
+
+  const maxSize =
+    options.maxSize ?? DEFAULT_MAX_FILE_SIZE;
+
+  if (file.size > maxSize) {
+    throw new Error(
+      `檔案大小不可超過 ${Math.round(
+        maxSize / 1024 / 1024,
+      )} MB。`,
+    );
+  }
+
+  const folder = validateFolderName(options.folder);
+  const extension = getExtension(
+    file,
+    options.allowedTypes,
+  );
+
+  const uploadRoot = getUploadRoot();
+  const targetDirectory = path.join(
+    uploadRoot,
+    ...folder.split("/"),
+  );
+
+  await mkdir(targetDirectory, {
+    recursive: true,
+  });
+
+  const fileName = createSafeFileName(extension);
+  const absolutePath = path.join(
+    targetDirectory,
+    fileName,
+  );
+
+  const relativePath = path.posix.join(
+    folder,
+    fileName,
+  );
+
+  const publicUrl = `/api/uploads/${relativePath}`;
+
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  await writeFile(absolutePath, buffer, {
+    flag: "wx",
+  });
+
+  return {
+    fileName,
+    absolutePath,
+    relativePath,
+    publicUrl,
+    mimeType: file.type,
+    size: file.size,
+  };
+}
+
+export async function saveProductImage(
+  file: File,
+): Promise<SavedProductImage> {
+  return saveUploadedFile(file, {
+    folder: "products",
+    allowedTypes: PRODUCT_IMAGE_TYPES,
+    maxSize: 10 * 1024 * 1024,
+  });
+}
+
+export async function deleteUploadedImage(
+  publicUrl: string,
+): Promise<boolean> {
+  if (!publicUrl.startsWith("/api/uploads/")) {
+    return false;
+  }
+
+  const uploadRoot = getUploadRoot();
+
+  const relativePath = publicUrl
+    .replace("/api/uploads/", "")
+    .replaceAll("/", path.sep);
+
+  const absolutePath = path.resolve(
+    uploadRoot,
+    relativePath,
+  );
+
+  const relativeToRoot = path.relative(
+    uploadRoot,
+    absolutePath,
+  );
+
+  if (
+    relativeToRoot.startsWith("..") ||
+    path.isAbsolute(relativeToRoot)
+  ) {
+    throw new Error("無效的檔案路徑。");
+  }
+
+  try {
+    await unlink(absolutePath);
+    return true;
+  } catch (error) {
+    const fileError =
+      error as NodeJS.ErrnoException;
+
+    if (fileError.code === "ENOENT") {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+===== IMAGE REFERENCES =====
+
+app\admin\categories\actions.ts:36:  revalidatePath("/admin/products/new");
+app\admin\dashboard\page.tsx:102:            href="/admin/products/new"
+app\admin\dashboard\page.tsx:373:              href={`/admin/products/${product.id}/edit`}
+app\admin\home\_components\HomeManager.tsx:145:      const response = await fetch("/api/admin/product-images/upload", {
+app\admin\products\health\page.tsx:67:            href={`/admin/products/health?refresh=${Date.now()}`}
+app\admin\products\[id]\edit\page.tsx:65:        returnTo={from === "health" ? "/admin/products/health" : undefined}
+app\admin\products\_components\ProductCardEditForm.tsx:1032:            returnTo === "/admin/products/health"
+app\admin\products\_components\ProductImageUploader.tsx:114:        "/api/admin/product-images/upload",
+app\admin\products\_components\ProductManager.tsx:184:          <Link href={`/admin/products/${product.id}/edit`}>
+app\admin\products\_components\ProductManager.tsx:380:          <Link href="/admin/products/health">
+app\admin\products\_components\ProductManager.tsx:383:          <Link href="/admin/products/new?type=product">
+app\admin\products\_components\ProductManager.tsx:386:          <Link href="/admin/products/new?type=combo">
+app\admin\products\actions.ts:213:  revalidatePath("/admin/products/health");
+app\admin\products\actions.ts:215:  redirect(`/admin/products/${product.id}/edit?saved=created`);
+app\admin\products\actions.ts:232:  revalidatePath("/admin/products/health");
+app\admin\products\actions.ts:276:  revalidatePath("/admin/products/health");
+app\admin\products\actions.ts:278:  revalidatePath(`/admin/products/${id}/edit`);
+app\admin\products\actions.ts:280:  redirect(`/admin/products/${id}/edit?saved=updated#save-status`);
+app\admin\products\actions.ts:410:  revalidatePath("/admin/products/health");
+app\admin\products\actions.ts:412:  revalidatePath(`/admin/products/${id}/edit`);
+app\admin\products\actions.ts:416:  if (returnTo === "/admin/products/health") {
+app\admin\products\actions.ts:417:    redirect(`/admin/products/health?refreshed=${id}`);
+app\admin\products\actions.ts:426:    `/admin/products/${id}/edit?saved=updated&tab=${safeTab}#save-status`
+app\admin\products\actions.ts:461:  revalidatePath("/admin/products/health");
+app\admin\products\actions.ts:499:  revalidatePath("/admin/products/health");
+app\admin\_components\AdminNavigation.tsx:23:    href: "/admin/products/health",
+app\admin\_components\AdminNavigation.tsx:77:                  (pathname.startsWith("/admin/products/") &&
+app\admin\_components\AdminNavigation.tsx:78:                    !pathname.startsWith("/admin/products/health"))
+app\admin\_components\AdminStorefrontShell.tsx:264:            <a href="/admin/products/new?type=product">
+app\admin\_components\AdminStorefrontShell.tsx:267:            <a href="/admin/products/new?type=combo">
+app\admin\_components\AdminStorefrontShell.tsx:396:              <a href="/admin/products/new?type=product">
+app\admin\_components\AdminStorefrontShell.tsx:400:              <a href="/admin/products/new?type=combo">
+app\admin\_components\HeroStudioEditor.tsx:215:      const response = await fetch("/api/admin/product-images/upload", {
+app\admin\_components\ProductDetailStudioEditor.tsx:223:          `/api/admin/products/${productId}`,
+app\admin\_components\ProductDetailStudioEditor.tsx:331:        "/api/admin/product-images/upload",
+app\admin\_components\ProductDetailStudioEditor.tsx:507:        `/api/admin/products/${productId}`,
+app\admin\_components\ProductDetailStudioEditor.tsx:793:                `/admin/products/${productId}/edit?tab=combo`
+app\admin\_components\ProductManager.tsx:22:import { saveProductSortOrderAction } from "../products/actions";
+app\admin\_components\ProductStudioEditor.tsx:285:          `/api/admin/products/${productId}`,
+app\admin\_components\ProductStudioEditor.tsx:425:        "/api/admin/product-images/upload",
+app\admin\_components\ProductStudioEditor.tsx:516:        `/api/admin/products/${productId}`,
+app\admin\_components\ProductStudioEditor.tsx:725:                      `/admin/products/${productId}/edit?tab=combo`
+app\admin\_components\RankingStudioEditor.tsx:271:        "/api/admin/product-images/upload",
+app\api\admin\product-images\upload\route.ts:3:import { saveProductImage } from "../../../../../lib/upload-storage";
+app\api\admin\product-images\upload\route.ts:26:    const savedImage = await saveProductImage(file);
+app\page.tsx:1061:      image: "/products/db-4.jpg",
+app\page.tsx:1950:        candidates.push(`/products/${baseName}.${extension}`);
+app\page.tsx:5158:            src="/products/logo.png"
+app\page.tsx:6110:                          "/admin/products/new?type=product";
+app\page.tsx:6124:                          "/admin/products/new?type=combo";
+app\page.tsx:7247:            src="/products/logo.png"
+lib\product-health.ts:102:  if (cleanImage.startsWith("/api/uploads/")) {
+lib\product-health.ts:106:      .slice("/api/uploads/".length)
+lib\product-health.ts:154:    editHref: `/admin/products/${product.id}/edit?from=health`,
+lib\site-studio-types.ts:80:    image: "/products/no1.png",
+lib\site-studio-types.ts:81:    desktopImage: "/products/no1.png",
+lib\site-studio-types.ts:94:    image: "/products/no2.png",
+lib\site-studio-types.ts:95:    desktopImage: "/products/no2.png",
+lib\site-studio-types.ts:111:      image: "/products/TOP1.png",
+lib\site-studio-types.ts:126:      image: "/products/TOP2.png",
+lib\site-studio-types.ts:141:      image: "/products/TOP3.png",
+lib\site-studio-types.ts:156:      image: "/products/TOP4.png",
+lib\site-studio-types.ts:171:      image: "/products/TOP5.png",
+lib\site-studio-types.ts:186:      image: "/products/TOP6.png",
+lib\storefront-core.ts:972:    image: "/products/probiotic-bc-ca.jpg",
+lib\storefront-core.ts:973:    gallery: ["/products/probiotic-bc-ca.jpg"],
+lib\storefront-core.ts:983:    image: "/products/Lutein.jpg",
+lib\storefront-core.ts:984:    gallery: ["/products/Lutein.jpg"],
+lib\storefront-core.ts:994:    image: "/products/FISH-Collagen.jpg",
+lib\storefront-core.ts:995:    gallery: ["/products/FISH-Collagen.jpg"],
+lib\storefront-core.ts:1005:    image: "/products/Lavender1.jpg",
+lib\storefront-core.ts:1006:    gallery: ["/products/Lavender1.jpg"],
+lib\storefront-core.ts:1016:    image: "/products/Lavender2.jpg",
+lib\storefront-core.ts:1017:    gallery: ["/products/Lavender2.jpg"],
+lib\storefront-core.ts:1027:    image: "/products/Lavender3.jpg",
+lib\storefront-core.ts:1028:    gallery: ["/products/Lavender3.jpg"],
+lib\storefront-core.ts:1038:    image: "/products/rose1.jpg",
+lib\storefront-core.ts:1039:    gallery: ["/products/rose1.jpg"],
+lib\storefront-core.ts:1049:    image: "/products/rose4.jpg",
+lib\storefront-core.ts:1050:    gallery: ["/products/rose4.jpg"],
+lib\storefront-core.ts:1060:    image: "/products/db-1.jpg",
+lib\storefront-core.ts:1061:    gallery: ["/products/db-1.jpg"],
+lib\storefront-core.ts:1071:    image: "/products/db-3.jpg",
+lib\storefront-core.ts:1072:    gallery: ["/products/db-3.jpg"],
+lib\storefront-core.ts:1082:    image: "/products/Radiance and Lifting1.jpg",
+lib\storefront-core.ts:1083:    gallery: ["/products/Radiance and Lifting1.jpg"],
+lib\storefront-core.ts:1093:    image: "/products/Radiance and Lifting2.jpg",
+lib\storefront-core.ts:1094:    gallery: ["/products/Radiance and Lifting2.jpg"],
+lib\storefront-core.ts:1104:    image: "/products/Radiance and Lifting4.jpg",
+lib\storefront-core.ts:1105:    gallery: ["/products/Radiance and Lifting4.jpg"],
+lib\storefront-core.ts:1115:    image: "/products/Radiance and Lifting5.jpg",
+lib\storefront-core.ts:1116:    gallery: ["/products/Radiance and Lifting5.jpg"],
+lib\storefront-core.ts:1126:    image: "/products/BDwash2.jpg",
+lib\storefront-core.ts:1127:    gallery: ["/products/BDwash2.jpg"],
+lib\storefront-core.ts:1137:    image: "/products/BDwash1.jpg",
+lib\storefront-core.ts:1138:    gallery: ["/products/BDwash1.jpg"],
+lib\storefront-core.ts:1148:    image: "/products/Refined Hair Shampoo.jpg",
+lib\storefront-core.ts:1149:    gallery: ["/products/Refined Hair Shampoo.jpg"],
+lib\storefront-core.ts:1159:    image: "/products/Lavender toothpaste.jpg",
+lib\storefront-core.ts:1160:    gallery: ["/products/Lavender toothpaste.jpg"],
+lib\storefront-core.ts:1170:    image: "/products/bd-washtoothpaste.jpg",
+lib\storefront-core.ts:1171:    gallery: ["/products/bd-washtoothpaste.jpg"],
+lib\storefront-core.ts:1181:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1182:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1192:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1193:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1203:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1204:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1214:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1215:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1225:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1226:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1236:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1237:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1247:    image: "/products/Essential Oil E.jpg",
+lib\storefront-core.ts:1248:    gallery: ["/products/Essential Oil E.jpg"],
+lib\storefront-core.ts:1258:    image: "/products/Essential Oil C.jpg",
+lib\storefront-core.ts:1259:    gallery: ["/products/Essential Oil C.jpg"],
+lib\storefront-core.ts:1269:    image: "/products/Essential Oil A.jpg",
+lib\storefront-core.ts:1270:    gallery: ["/products/Essential Oil A.jpg"],
+lib\storefront-core.ts:1279:    image: "/products/Ultrasonic Aroma Diffuser.jpg",
+lib\storefront-core.ts:1280:    gallery: ["/products/Ultrasonic Aroma Diffuser.jpg"],
+lib\storefront-core.ts:1290:    image: "/products/patch 1.png",
+lib\storefront-core.ts:1291:    gallery: ["/products/patch 1.png"],
+lib\storefront-core.ts:1301:    image: "/products/patch 5.png",
+lib\storefront-core.ts:1302:    gallery: ["/products/patch 5.png"],
+lib\storefront-core.ts:1312:    image: "/products/tt6.jpg",
+lib\storefront-core.ts:1313:    gallery: ["/products/tt6.jpg"],
+lib\storefront-core.ts:1323:    image: "/products/collagen 1.jpg",
+lib\storefront-core.ts:1324:    gallery: ["/products/collagen 1.jpg"],
+lib\storefront-core.ts:1334:    image: "/products/DBME.jpg",
+lib\storefront-core.ts:1335:    gallery: ["/products/DBME.jpg"],
+lib\storefront-core.ts:1345:    image: "/products/BD001.jpg",
+lib\storefront-core.ts:1346:    gallery: ["/products/BD001.jpg"],
+lib\storefront-core.ts:1356:    image: "/products/BD0.jpg",
+lib\storefront-core.ts:1357:    gallery: ["/products/BD0.jpg"],
+lib\storefront-core.ts:1366:    image: "/products/water 5.jpg",
+lib\storefront-core.ts:1367:    gallery: ["/products/water 5.jpg"],
+lib\storefront-core.ts:1377:    image: "/products/water 35.png",
+lib\storefront-core.ts:1378:    gallery: ["/products/water 35.png"],
+lib\storefront-core.ts:1388:    image: "/products/white 35.png",
+lib\storefront-core.ts:1389:    gallery: ["/products/white 35.png"],
+lib\storefront-core.ts:1399:    image: "/products/glassskin 3.jpg",
+lib\storefront-core.ts:1400:    gallery: ["/products/glassskin 3.jpg"],
+lib\storefront-core.ts:1410:    image: "/products/glassskin 4.jpg",
+lib\storefront-core.ts:1411:    gallery: ["/products/glassskin 4.jpg"],
+lib\storefront-core.ts:1421:    image: "/products/mandelic acid.jpg",
+lib\storefront-core.ts:1422:    gallery: ["/products/mandelic acid.jpg"],
+lib\storefront-core.ts:1432:    image: "/products/Glacial 1.jpg",
+lib\storefront-core.ts:1433:    gallery: ["/products/Glacial 1.jpg"],
+lib\storefront-core.ts:1443:    image: "/products/Glacial 5.jpg",
+lib\storefront-core.ts:1444:    gallery: ["/products/Glacial 5.jpg"],
+lib\storefront-core.ts:1454:    image: "/products/pineapple 0.jpg",
+lib\storefront-core.ts:1455:    gallery: ["/products/pineapple 0.jpg"],
+lib\storefront-core.ts:1465:    image: "/products/sukola0.jpg",
+lib\storefront-core.ts:1466:    gallery: ["/products/sukola0.jpg"],
+lib\storefront-core.ts:1476:    image: "/products/sukola1.jpg",
+lib\storefront-core.ts:1477:    gallery: ["/products/sukola1.jpg"],
+lib\storefront-core.ts:1487:    image: "/products/su2.jpg",
+lib\storefront-core.ts:1488:    gallery: ["/products/su2.jpg"],
+lib\storefront-core.ts:1498:    image: "/products/su3.jpg",
+lib\storefront-core.ts:1499:    gallery: ["/products/su3.jpg"],
+lib\storefront-core.ts:1508:    image: "/products/soap lav.png",
+lib\storefront-core.ts:1509:    gallery: ["/products/soap lav.png"],
+lib\storefront-core.ts:1519:    image: "/products/patch 1099.png",
+lib\storefront-core.ts:1520:    gallery: ["/products/patch 1099.png"],
+lib\storefront-core.ts:1530:    image: "/products/patch 2500.png",
+lib\storefront-core.ts:1531:    gallery: ["/products/patch 2500.png"],
+lib\storefront-core.ts:1541:    image: "/products/watertooth 31.png",
+lib\storefront-core.ts:1542:    gallery: ["/products/watertooth 31.png"],
+lib\storefront-core.ts:1552:    image: "/products/tooth500.png",
+lib\storefront-core.ts:1553:    gallery: ["/products/tooth500.png"],
+lib\storefront-core.ts:1563:    image: "/products/white water 5.png",
+lib\storefront-core.ts:1564:    gallery: ["/products/white water 5.png"],
+lib\storefront-core.ts:1574:    image: "/products/fishoil1+1.png",
+lib\storefront-core.ts:1575:    gallery: ["/products/fishoil1+1.png"],
+lib\storefront-core.ts:1585:    image: "/products/Argan Oil3.jpg",
+lib\storefront-core.ts:1586:    gallery: ["/products/Argan Oil3.jpg"],
+lib\storefront-core.ts:1596:    image: "/products/BCHA2000.png",
+lib\storefront-core.ts:1597:    gallery: ["/products/BCHA2000.png"],
+lib\storefront-core.ts:1607:    image: "/products/wash11.png",
+lib\storefront-core.ts:1608:    gallery: ["/products/wash11.png"],
+lib\storefront-core.ts:1618:    image: "/products/Ceramide Body Oil.jpg",
+lib\storefront-core.ts:1619:    gallery: ["/products/Ceramide Body Oil.jpg"],
+lib\storefront-core.ts:1629:    image: "/products/24H Revitalizing Essence.jpg",
+lib\storefront-core.ts:1630:    gallery: ["/products/24H Revitalizing Essence.jpg"],
+lib\storefront-core.ts:1640:    image: "/products/24K Gold.jpg",
+lib\storefront-core.ts:1641:    gallery: ["/products/24K Gold.jpg"],
+lib\storefront-core.ts:1651:    image: "/products/glassskin 0.jpg",
+lib\storefront-core.ts:1652:    gallery: ["/products/glassskin 0.jpg"],
+lib\storefront-core.ts:1662:    image: "/products/super water.png",
+lib\storefront-core.ts:1663:    gallery: ["/products/super water.png"],
+lib\storefront-core.ts:1673:    image: "/products/Plant Exosome.jpg",
+lib\storefront-core.ts:1674:    gallery: ["/products/Plant Exosome.jpg"],
+lib\storefront-core.ts:1684:    image: "/products/smell white.jpg",
+lib\storefront-core.ts:1685:    gallery: ["/products/smell white.jpg"],
+lib\storefront-core.ts:1695:    image: "/products/soap lav.png",
+lib\storefront-core.ts:1696:    gallery: ["/products/soap lav.png"],
+lib\storefront-core.ts:1706:    image: "/products/su2+1.png",
+lib\storefront-core.ts:1707:    gallery: ["/products/su2+1.png"],
+lib\storefront-core.ts:1717:    image: "/products/bb2+1.png",
+lib\storefront-core.ts:1718:    gallery: ["/products/bb2+1.png"],
+lib\storefront-core.ts:1728:    image: "/products/DB Essential Oil.png",
+lib\storefront-core.ts:1729:    gallery: ["/products/DB Essential Oil.png"],
+lib\storefront-core.ts:1739:    image: "/products/Lavender Essential Oil.png",
+lib\storefront-core.ts:1740:    gallery: ["/products/Lavender Essential Oil.png"],
+lib\storefront-core.ts:1750:    image: "/products/lip tint.jpg",
+lib\storefront-core.ts:1751:    gallery: ["/products/lip tint.jpg"],
+lib\storefront-core.ts:1761:    image: "/products/lip balm.jpg",
+lib\storefront-core.ts:1762:    gallery: ["/products/lip balm.jpg"],
+lib\storefront-core.ts:1772:    image: "/products/Sweet Orange.png",
+lib\storefront-core.ts:1773:    gallery: ["/products/Sweet Orange.png"],
+lib\storefront-core.ts:1783:    image: "/products/Eucalyptus Essential Oil.png",
+lib\storefront-core.ts:1784:    gallery: ["/products/Eucalyptus Essential Oil.png"],
+lib\storefront-core.ts:1794:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:1795:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:1805:    image: "/products/Essential Oil Travel Case.jpg",
+lib\storefront-core.ts:1806:    gallery: ["/products/Essential Oil Travel Case.jpg"],
+lib\storefront-core.ts:1816:    image: "/products/Lavender Essential Oil.jpg",
+lib\storefront-core.ts:1817:    gallery: ["/products/Lavender Essential Oil.jpg"],
+lib\storefront-core.ts:1827:    image: "/products/jd5.jpg",
+lib\storefront-core.ts:1828:    gallery: ["/products/jd5.jpg"],
+lib\storefront-core.ts:1838:    image: "/products/Easy Breath Essential Oil.jpg",
+lib\storefront-core.ts:1839:    gallery: ["/products/Easy Breath Essential Oil.jpg"],
+lib\storefront-core.ts:1849:    image: "/products/jd12.jpg",
+lib\storefront-core.ts:1850:    gallery: ["/products/jd12.jpg"],
+lib\storefront-core.ts:1860:    image: "/products/Clary Sage Essential Oil.jpg",
+lib\storefront-core.ts:1861:    gallery: ["/products/Clary Sage Essential Oil.jpg"],
+lib\storefront-core.ts:1871:    image: "/products/Magic Slim.jpg",
+lib\storefront-core.ts:1872:    gallery: ["/products/Magic Slim.jpg"],
+lib\storefront-core.ts:1882:    image: "/products/Joyous.jpg",
+lib\storefront-core.ts:1883:    gallery: ["/products/Joyous.jpg"],
+lib\storefront-core.ts:1893:    image: "/products/jd4.jpg",
+lib\storefront-core.ts:1894:    gallery: ["/products/jd4.jpg"],
+lib\storefront-core.ts:1904:    image: "/products/jd1.jpg",
+lib\storefront-core.ts:1905:    gallery: ["/products/jd1.jpg"],
+lib\storefront-core.ts:1915:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1916:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1926:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1927:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1937:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1938:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1948:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1949:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1959:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1960:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1970:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1971:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1981:    image: "/products/Chakra Essential Oil.jpg",
+lib\storefront-core.ts:1982:    gallery: ["/products/Chakra Essential Oil.jpg"],
+lib\storefront-core.ts:1991:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:1992:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:2001:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:2002:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:2012:    image: "/products/Lemon Essential Oil.jpg",
+lib\storefront-core.ts:2013:    gallery: ["/products/Lemon Essential Oil.jpg"],
+lib\storefront-core.ts:2025:    image: "/products/Tea Tree Oil.jpg",
+lib\storefront-core.ts:2026:    gallery: ["/products/Tea Tree Oil.jpg"],
+lib\storefront-core.ts:2037:    image: "/products/Geranium Essential Oil.jpg",
+lib\storefront-core.ts:2038:    gallery: ["/products/Geranium Essential Oil.jpg"],
+lib\storefront-core.ts:2049:    image: "/products/jd6.jpg",
+lib\storefront-core.ts:2050:    gallery: ["/products/jd6.jpg"],
+lib\storefront-core.ts:2060:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:2061:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:2070:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:2071:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:2080:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:2081:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:2090:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:2091:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:2100:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:2101:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:2110:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:2111:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:2120:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:2121:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:2130:    image: "/products/placeholder.jpg",
+lib\storefront-core.ts:2131:    gallery: ["/products/placeholder.jpg"],
+lib\storefront-core.ts:2141:    image: "/products/580-3.png",
+lib\storefront-core.ts:2142:    gallery: ["/products/580-3.png"],
+lib\storefront-core.ts:2154:    image: "/products/Lutein red.png",
+lib\storefront-core.ts:2155:    gallery: ["/products/Lutein red.png"],
+lib\storefront-core.ts:2166:    image: "/products/sunscreen.jpg",
+lib\storefront-core.ts:2167:    gallery: ["/products/sunscreen.jpg"],
+lib\storefront-core.ts:2177:    image: "/products/rose2.jpg",
+lib\storefront-core.ts:2178:    gallery: ["/products/rose2.jpg"],
+lib\storefront-core.ts:2189:    image: "/products/hair1+1.png",
+lib\storefront-core.ts:2190:    gallery: ["/products/hair1+1.png"],
+lib\storefront-core.ts:2205:    image: "/products/Siberian Fir Essential Oil Roller.jpg",
+lib\storefront-core.ts:2206:    gallery: ["/products/Siberian Fir Essential Oil Roller.jpg"],
+lib\storefront-core.ts:2220:    image: "/products/soap rose.png",
+lib\storefront-core.ts:2221:    gallery: ["/products/soap rose.png"],
+lib\storefront-core.ts:2235:    image: "/products/soap Artemisia.png",
+lib\storefront-core.ts:2236:    gallery: ["/products/soap Artemisia.png"],
+lib\storefront-core.ts:2250:    image: "/products/soap lemo.png",
+lib\storefront-core.ts:2251:    gallery: ["/products/soap lemo.png"],
+lib\storefront-core.ts:2265:    image: "/products/soap sandalwood.png",
+lib\storefront-core.ts:2266:    gallery: ["/products/soap sandalwood.png"],
+lib\storefront-core.ts:2280:    image: "/products/Hydrangea Floral.png",
+lib\storefront-core.ts:2281:    gallery: ["/products/Hydrangea Floral.png"],
+lib\storefront-core.ts:2300:    image: "/products/wash31100.png",
+lib\storefront-core.ts:2301:    gallery: ["/products/wash31100.png"],
+lib\storefront-core.ts:2325:    image: "/products/DB-2.jpg",
+lib\storefront-core.ts:2326:    gallery: ["/products/DB-2.jpg", "/products/collagen 1.jpg"],
+lib\storefront-core.ts:2336:    image: "/products/db-4.jpg",
+lib\storefront-core.ts:2337:    gallery: ["/products/db-4.jpg"],
+lib\storefront-core.ts:2363:      image: "/products/top-pick-2.jpg",
+lib\storefront-core.ts:2364:      gallery: ["/products/top-pick-2.jpg"],
+lib\storefront-core.ts:2592:      image: "/products/bdsoap.png",
+lib\storefront-core.ts:2593:      gallery: ["/products/bdsoap.png"],
+lib\storefront-core.ts:3372:    gallery: ["/products/patch 1.png"],
+lib\storefront-core.ts:3394:    gallery: ["/products/patch 5.png"],
+lib\storefront-core.ts:4971:  30: ["/products/patch 1.png", "/products/blue 100.jpg"],
+lib\storefront-core.ts:4972:  31: ["/products/patch 5.png", "/products/red 100.jpg"],
+lib\storefront-core.ts:4974:    "/products/lav-washtoothpaste.jpg",
+lib\storefront-core.ts:4975:    "/products/toothpaste lav.png",
+lib\storefront-core.ts:4976:    "/products/toothpaste-lav.png",
+lib\storefront-core.ts:4977:    "/products/toothpaste_lav.png",
+lib\storefront-core.ts:4978:    "/products/tooth500.png",
+lib\storefront-core.ts:4981:    "/products/bd-washtoothpaste.jpg",
+lib\storefront-core.ts:4982:    "/products/toothpaste bd.png",
+lib\storefront-core.ts:4983:    "/products/toothpaste-bd.png",
+lib\storefront-core.ts:4984:    "/products/toothpaste_bd.png",
+lib\storefront-core.ts:4985:    "/products/tooth500.png",
+lib\storefront-core.ts:4987:  50: ["/products/soap lav.png", "/products/bdsoap.png"],
+lib\storefront-core.ts:4988:  114: ["/products/soap rose.png", "/products/bdsoap.png"],
+lib\storefront-core.ts:4989:  70: ["/products/dragon roller.png", "/products/龍血求麗甦醒精油滾珠.jpg", "/products/龍血求麗甦醒精油滾珠.png"],
+lib\storefront-core.ts:4990:  71: ["/products/lavender roller.png", "/products/薰衣草萬用精油滾珠.jpg", "/products/薰衣草萬用精油滾珠.png"],
+lib\storefront-core.ts:4991:  72: ["/products/lip tint.jpg", "/products/lip tint.png", "/products/lip combo.jpg"],
+lib\storefront-core.ts:4992:  73: ["/products/lip balm.jpg", "/products/lip balm.png", "/products/lip combo.jpg"]
+lib\upload-storage.ts:129:  const publicUrl = `/api/uploads/${relativePath}`;
+lib\upload-storage.ts:148:export async function saveProductImage(
+lib\upload-storage.ts:161:  if (!publicUrl.startsWith("/api/uploads/")) {
+lib\upload-storage.ts:168:    .replace("/api/uploads/", "")
+
+

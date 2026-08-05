@@ -361,7 +361,22 @@ export default function HeroStudioEditor({
               <span>圖片網址</span>
               <input
                 value={draft.image}
-                onChange={(event) => update("image", event.target.value)}
+                onChange={(event) => {
+                 const imageUrl = event.target.value;
+
+                setDraft((current) =>
+                 current
+                   ? {
+                  ...current,
+                  image: imageUrl,
+                   desktopImage: imageUrl,
+                  }
+                  : current
+                  );
+
+                   setMessage("");
+                   setError("");
+                  }}
                 disabled={saving}
               />
             </label>
