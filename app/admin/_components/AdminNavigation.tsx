@@ -33,6 +33,10 @@ const navigationItems: NavigationItem[] = [
     disabled: true,
   },
   {
+    href: "/admin/storefront",
+    label: "商城配置",
+  },
+  {
     href: "/admin",
     label: "網站編輯",
   },
