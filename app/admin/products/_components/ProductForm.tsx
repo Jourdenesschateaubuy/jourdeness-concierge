@@ -74,6 +74,9 @@ export default function ProductForm({
   const [storefrontCategory, setStorefrontCategory] = useState(
     defaultStorefrontCategory
   );
+  const [status, setStatus] = useState(
+    product?.status ?? "active"
+  );
 
   const comboConfig = useMemo(
     () =>
@@ -406,7 +409,16 @@ export default function ProductForm({
               <span>商品狀態</span>
               <select
                 name="status"
-                defaultValue={product?.status ?? "active"}
+                value={status}
+                onChange={(event) =>
+                setStatus(
+                  event.target.value as
+                    | "active"
+                    | "inactive"
+                    | "coming_soon"
+                    | "sold_out"
+                )
+              }
               >
                 <option value="active">上架中</option>
                 <option value="inactive">下架</option>
@@ -438,7 +450,15 @@ export default function ProductForm({
         </section>
 
         <div className={styles.positionNote}>
-          建立後，商品卡會出現在所選前台主分類與系列中。
+          {status === "active" ? (
+            <>
+              上架中的商品必須設定「前台主分類」；儲存後會出現在該商城分類與系列中。
+            </>
+          ) : (
+            <>
+              目前狀態不是「上架中」，商品不會以一般販售商品顯示在正式商城。
+            </>
+          )}
         </div>
       </div>
 

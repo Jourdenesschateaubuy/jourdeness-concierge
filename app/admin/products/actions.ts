@@ -140,6 +140,11 @@ function productInputFromForm(
   const rawSalePrice = stringValue(formData, "price");
   const rawOriginalPrice = stringValue(formData, "originalPrice");
   const promotionText = optionalString(formData, "priceNote");
+  const storefrontCategory = optionalString(
+    formData,
+    "storefrontCategory"
+  );
+  const status = parseStatus(stringValue(formData, "status"));
   const salePriceAmount =
     productType === "combo"
       ? undefined
@@ -149,6 +154,12 @@ function productInputFromForm(
   if (!name) throw new Error("商品名稱不能空白");
   if (!category) throw new Error("商品分類不能空白");
   if (!image) throw new Error("商品圖片路徑不能空白");
+
+  if (status === "active" && !storefrontCategory) {
+    throw new Error(
+      "上架中的商品必須設定前台主分類，否則正式商城不會顯示。"
+    );
+  }
 
   if (productType === "combo" && !comboConfig) {
     throw new Error("請完成組合價格與方案設定");
@@ -168,7 +179,7 @@ function productInputFromForm(
     name,
     category,
     series: stringValue(formData, "series"),
-    storefrontCategory: optionalString(formData, "storefrontCategory"),
+    storefrontCategory,
     salePriceAmount,
     originalPriceAmount,
     promotionText,
@@ -190,7 +201,7 @@ function productInputFromForm(
     gallery: stringValues(formData, "gallery"),
     expandedInfo: expandedInfoValues(formData),
     comboConfig,
-    status: parseStatus(stringValue(formData, "status")),
+    status,
     sortOrder: parseSortOrder(stringValue(formData, "sortOrder")),
   };
 }
@@ -223,6 +234,16 @@ export async function changeProductStatusAction(formData: FormData) {
 
   if (!Number.isInteger(id) || id <= 0) {
     return;
+  }
+
+  if (status === "active") {
+    const product = await getDatabaseProduct(id);
+
+    if (!product?.storefrontCategory) {
+      throw new Error(
+        "無法上架：請先在商品編輯頁設定前台主分類。"
+      );
+    }
   }
 
   await updateProductStatus(id, status);
@@ -357,6 +378,7 @@ export async function updateProductEditorAction(
       stringValue(formData, "originalPrice")
     );
     const promotionText = optionalString(formData, "priceNote");
+    const nextStatus = parseStatus(stringValue(formData, "status"));
 
     if (!name) {
       throw new Error("商品名稱不能空白");
@@ -368,6 +390,12 @@ export async function updateProductEditorAction(
 
     if (!image) {
       throw new Error("商品圖片路徑不能空白");
+    }
+
+    if (nextStatus === "active" && !existingProduct.storefrontCategory) {
+      throw new Error(
+        "無法上架：請先在商品管理設定中指定前台主分類。"
+      );
     }
 
     const product = await updateDatabaseProductPartial(id, {
@@ -386,7 +414,7 @@ export async function updateProductEditorAction(
           }),
       image,
       priceNote: promotionText ?? "",
-      status: parseStatus(stringValue(formData, "status")),
+      status: nextStatus,
     });
 
     if (!product) {
