@@ -242,9 +242,9 @@ export async function createDatabaseProduct(
             expanded_info, combo_config, status, sort_order, updated_at
           )
           VALUES (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,
-            $18,$19,$20,$21,$22::jsonb,$23::jsonb,$24,$25,$26::jsonb,$27::jsonb,
-            $28::jsonb,$29,$30,NOW()
+          $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,
+          $18,$19,$20,$21,$22,$23::jsonb,$24::jsonb,$25,$26,$27::jsonb,
+          $28::jsonb,$29::jsonb,$30,$31,NOW()
           )
           RETURNING *
         `,
