@@ -89,6 +89,20 @@ type StorefrontProduct = Product & {
   sku?: string;
 };
 
+type HomepageStorefrontSection = {
+  id: number;
+  code: string;
+  name: string;
+  description?: string;
+  sortOrder: number;
+  layoutType?: "grid";
+  desktopColumns?: 3 | 4 | 5;
+  mobileColumns?: 1 | 2;
+  maxItems?: number;
+  backgroundStyle?: "default" | "soft" | "white";
+  productIds: number[];
+};
+
 function Home() {
   const [products, setProducts] = useState<StorefrontProduct[]>(
     () => fallbackProducts as StorefrontProduct[]
@@ -99,6 +113,8 @@ function Home() {
     useState<StorefrontCatalogCategory[]>([]);
   const [storefrontCatalogSeries, setStorefrontCatalogSeries] =
     useState<StorefrontCatalogSeries[]>([]);
+  const [homepageStorefrontSections, setHomepageStorefrontSections] =
+    useState<HomepageStorefrontSection[]>([]);
 
   function getComboConfig(productId: number): ComboConfig | null {
     const product = products.find((item) => item.id === productId);
@@ -314,7 +330,11 @@ function Home() {
             type?: string;
             enabled?: boolean;
             productId?: number;
-            patch?: Partial<StorefrontProduct> | SiteStudioPreviewPatch;
+            patch?:
+              | Partial<StorefrontProduct>
+              | SiteStudioPreviewPatch
+              | Partial<HomepageStorefrontSection>;
+            sectionId?: number;
           }
         | undefined;
 
@@ -365,6 +385,29 @@ function Home() {
           setCartReturnProduct(null);
           openProductDetail(product, false);
         }
+
+        return;
+      }
+
+      if (
+        data?.type === "jourdeness-homepage-section-preview" &&
+        Number.isInteger(data.sectionId) &&
+        data.patch
+      ) {
+        const sectionId = Number(data.sectionId);
+        const patch =
+          data.patch as Partial<HomepageStorefrontSection>;
+
+        setHomepageStorefrontSections((currentSections) =>
+          currentSections.map((section) =>
+            section.id === sectionId
+              ? {
+                  ...section,
+                  ...patch,
+                }
+              : section
+          )
+        );
 
         return;
       }
@@ -459,9 +502,22 @@ function Home() {
 
     async function loadStudioContent() {
       try {
-        const [studioResponse, catalogResponse] = await Promise.all([
+        const [
+          studioResponse,
+          catalogResponse,
+          homepageSectionsResponse,
+        ] = await Promise.all([
           fetch("/api/storefront/site-studio", { cache: "no-store" }),
           fetch("/api/storefront/catalog", { cache: "no-store" }),
+          fetch(
+            new URLSearchParams(window.location.search).get("homepagePreview") ===
+              "draft"
+              ? "/api/storefront/homepage-sections?mode=draft"
+              : "/api/storefront/homepage-sections",
+            {
+              cache: "no-store",
+            }
+          ),
         ]);
 
         const studioPayload =
@@ -479,6 +535,13 @@ function Home() {
             catalogResponse,
             "分類設定同步失敗"
           );
+        const homepageSectionsPayload =
+          await readJsonResponse<{
+            sections?: HomepageStorefrontSection[];
+          }>(
+            homepageSectionsResponse,
+            "首頁動態區塊同步失敗"
+          );
 
         if (cancelled) return;
 
@@ -495,6 +558,14 @@ function Home() {
           setStorefrontCatalogSeries(
             Array.isArray(catalogPayload.series)
               ? catalogPayload.series
+              : []
+          );
+        }
+
+        if (homepageSectionsResponse.ok) {
+          setHomepageStorefrontSections(
+            Array.isArray(homepageSectionsPayload.sections)
+              ? homepageSectionsPayload.sections
               : []
           );
         }
@@ -2635,6 +2706,86 @@ const sevenSequenceGuideV377 = [
             {actionLabel}
           </button>
         )}
+      </section>
+    );
+  }
+
+  function DatabaseHomepageSection({
+    section,
+  }: {
+    section: HomepageStorefrontSection;
+  }) {
+    const sectionProducts = section.productIds
+      .map((productId) =>
+        products.find(
+          (product) =>
+            Number(product.id) === Number(productId)
+        )
+      )
+      .filter(Boolean)
+      .slice(
+        0,
+        Math.max(1, section.maxItems ?? 8)
+      ) as Product[];
+
+    if (sectionProducts.length === 0) return null;
+
+    const desktopColumns =
+      section.desktopColumns === 3 ||
+      section.desktopColumns === 5
+        ? section.desktopColumns
+        : 4;
+
+    const mobileColumns =
+      section.mobileColumns === 1 ? 1 : 2;
+
+    const background =
+      section.backgroundStyle === "white"
+        ? "#fff"
+        : section.backgroundStyle === "soft"
+          ? "#f7eee3"
+          : undefined;
+
+    return (
+      <section
+        className="home-product-section mall-shelf-section-v271"
+        id={`database-home-section-${section.code}`}
+        style={{
+          ...(background ? { background } : {}),
+          ...(background
+            ? {
+                borderRadius: 18,
+                padding: "22px 18px",
+              }
+            : {}),
+        }}
+      >
+        <div className="section-heading compact">
+          <span>Homepage Selection</span>
+          <h2>{section.name}</h2>
+          {section.description && (
+            <p>{section.description}</p>
+          )}
+        </div>
+
+        <div
+          className="database-home-grid-v2"
+          style={
+            {
+              "--jourdeness-desktop-columns":
+                desktopColumns,
+              "--jourdeness-mobile-columns":
+                mobileColumns,
+            } as CSSProperties
+          }
+        >
+          {sectionProducts.map((product) => (
+            <ProductCard
+              product={product}
+              key={`database-home-${section.id}-${product.id}`}
+            />
+          ))}
+        </div>
       </section>
     );
   }
@@ -6428,6 +6579,16 @@ const sevenSequenceGuideV377 = [
         </section>
       )}
 
+      {homepageStorefrontSections
+        .slice()
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((section) => (
+          <DatabaseHomepageSection
+            key={`database-home-section-${section.id}`}
+            section={section}
+          />
+        ))}
+
       {siteStudioConfig.sections
         .filter(
           (section) =>
@@ -7288,6 +7449,27 @@ const sevenSequenceGuideV377 = [
       </footer>
 
       <style jsx global>{`
+        .database-home-grid-v2 {
+          display: grid;
+          grid-template-columns:
+            repeat(
+              var(--jourdeness-desktop-columns, 4),
+              minmax(0, 1fr)
+            );
+          gap: 18px 12px;
+        }
+
+        @media (max-width: 760px) {
+          .database-home-grid-v2 {
+            grid-template-columns:
+              repeat(
+                var(--jourdeness-mobile-columns, 2),
+                minmax(0, 1fr)
+              );
+          }
+        }
+
+
 
         :root {
           --bg: #f8f1ea;

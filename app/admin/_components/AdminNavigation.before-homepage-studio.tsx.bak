@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -37,12 +37,12 @@ const navigationItems: NavigationItem[] = [
     label: "商城配置",
   },
   {
-    href: "/admin/homepage-studio",
-    label: "首頁管理",
-  },
-  {
     href: "/admin",
     label: "網站編輯",
+  },
+  {
+    href: "/admin/home",
+    label: "首頁",
   },
   {
     href: "/admin/banners",

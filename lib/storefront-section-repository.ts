@@ -19,6 +19,11 @@ export type StorefrontSection = {
   isActive: boolean;
   sortOrder: number;
   itemCount: number;
+  layoutType: "grid";
+  desktopColumns: 3 | 4 | 5;
+  mobileColumns: 1 | 2;
+  maxItems: number;
+  backgroundStyle: "default" | "soft" | "white";
   createdAt: string;
   updatedAt: string;
 };
@@ -43,6 +48,11 @@ type SectionRow = {
   is_active: boolean;
   sort_order: number;
   item_count: number | string;
+  layout_type: string | null;
+  desktop_columns: number | string | null;
+  mobile_columns: number | string | null;
+  max_items: number | string | null;
+  background_style: "default" | "soft" | "white" | null;
   created_at: Date | string;
   updated_at: Date | string;
 };
@@ -100,6 +110,13 @@ function mapSection(row: SectionRow): StorefrontSection {
     isActive: row.is_active,
     sortOrder: Number(row.sort_order),
     itemCount: Number(row.item_count ?? 0),
+    layoutType: "grid",
+    desktopColumns: [3, 4, 5].includes(Number(row.desktop_columns))
+      ? (Number(row.desktop_columns) as 3 | 4 | 5)
+      : 4,
+    mobileColumns: Number(row.mobile_columns) === 1 ? 1 : 2,
+    maxItems: Math.max(1, Number(row.max_items ?? 8)),
+    backgroundStyle: row.background_style ?? "default",
     createdAt: new Date(row.created_at).toISOString(),
     updatedAt: new Date(row.updated_at).toISOString(),
   };
@@ -404,3 +421,323 @@ export async function updateStorefrontSectionItemSortOrders(
     }
   });
 }
+
+export async function updateStorefrontSectionSortOrders(
+  orderedSectionIds: number[]
+) {
+  if (!Array.isArray(orderedSectionIds) || orderedSectionIds.length === 0) {
+    return true;
+  }
+
+  const uniqueIds = new Set(orderedSectionIds);
+
+  if (uniqueIds.size !== orderedSectionIds.length) {
+    throw new Error("首頁區塊排序資料含有重複 ID");
+  }
+
+  for (const sectionId of orderedSectionIds) {
+    if (!Number.isInteger(sectionId) || sectionId <= 0) {
+      throw new Error("首頁區塊排序資料無效");
+    }
+  }
+
+  return withDbClient(async (client) => {
+    await client.query("BEGIN");
+
+    try {
+      const existing = await client.query<{ id: number }>(
+        `
+          SELECT id
+          FROM storefront_sections
+          WHERE section_type = 'homepage'
+            AND id = ANY($1::int[])
+          FOR UPDATE
+        `,
+        [orderedSectionIds]
+      );
+
+      if (existing.rows.length !== orderedSectionIds.length) {
+        throw new Error("部分首頁區塊不存在，請重新整理後再試");
+      }
+
+      for (const [index, sectionId] of orderedSectionIds.entries()) {
+        await client.query(
+          `
+            UPDATE storefront_sections
+            SET
+              sort_order = $2,
+              updated_at = NOW()
+            WHERE id = $1
+              AND section_type = 'homepage'
+          `,
+          [sectionId, index + 1]
+        );
+      }
+
+      await client.query("COMMIT");
+      return true;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  });
+}
+
+export async function createHomepageStorefrontSection(input: {
+  code: string;
+  name: string;
+  description?: string;
+  desktopColumns?: 3 | 4 | 5;
+  mobileColumns?: 1 | 2;
+  maxItems?: number;
+  backgroundStyle?: "default" | "soft" | "white";
+}) {
+  const code = input.code.trim();
+  const name = input.name.trim();
+  const description = input.description?.trim() || null;
+  const desktopColumns =
+    input.desktopColumns === 3 || input.desktopColumns === 5
+      ? input.desktopColumns
+      : 4;
+  const mobileColumns = input.mobileColumns === 1 ? 1 : 2;
+  const maxItems = Math.max(1, Math.min(24, Number(input.maxItems ?? 8)));
+  const backgroundStyle = input.backgroundStyle ?? "default";
+
+  if (!code) throw new Error("首頁區塊 Code 不能空白");
+  if (!name) throw new Error("首頁區塊名稱不能空白");
+
+  const result = await dbQuery<SectionRow>(
+    `
+      WITH next_sort AS (
+        SELECT COALESCE(MAX(sort_order), 0) + 1 AS value
+        FROM storefront_sections
+        WHERE section_type = 'homepage'
+      )
+      INSERT INTO storefront_sections (
+        code,
+        name,
+        description,
+        section_type,
+        is_active,
+        sort_order,
+        layout_type,
+        desktop_columns,
+        mobile_columns,
+        max_items,
+        background_style,
+        updated_at
+      )
+      SELECT
+        $1,
+        $2,
+        $3,
+        'homepage',
+        TRUE,
+        next_sort.value,
+        'grid',
+        $4,
+        $5,
+        $6,
+        $7,
+        NOW()
+      FROM next_sort
+      RETURNING
+        id,
+        code,
+        name,
+        description,
+        section_type,
+        is_active,
+        sort_order,
+        0::int AS item_count,
+        layout_type,
+        desktop_columns,
+        mobile_columns,
+        max_items,
+        background_style,
+        created_at,
+        updated_at
+    `,
+    [
+      code,
+      name,
+      description,
+      desktopColumns,
+      mobileColumns,
+      maxItems,
+      backgroundStyle,
+    ]
+  );
+
+  if (!result.rows[0]) {
+    throw new Error("首頁區塊建立失敗");
+  }
+
+  return mapSection(result.rows[0]);
+}
+
+export async function updateHomepageStorefrontSection(
+  sectionId: number,
+  input: {
+    name: string;
+    description?: string;
+    desktopColumns?: 3 | 4 | 5;
+    mobileColumns?: 1 | 2;
+    maxItems?: number;
+    backgroundStyle?: "default" | "soft" | "white";
+  }
+) {
+  const name = input.name.trim();
+  const description = input.description?.trim() || null;
+  const desktopColumns =
+    input.desktopColumns === 3 || input.desktopColumns === 5
+      ? input.desktopColumns
+      : 4;
+  const mobileColumns = input.mobileColumns === 1 ? 1 : 2;
+  const maxItems = Math.max(1, Math.min(24, Number(input.maxItems ?? 8)));
+  const backgroundStyle = input.backgroundStyle ?? "default";
+
+  if (!Number.isInteger(sectionId) || sectionId <= 0) {
+    throw new Error("首頁區塊 ID 無效");
+  }
+
+  if (!name) {
+    throw new Error("首頁區塊名稱不能空白");
+  }
+
+  const result = await dbQuery<SectionRow>(
+    `
+      UPDATE storefront_sections
+      SET
+        name = $2,
+        description = $3,
+        layout_type = 'grid',
+        desktop_columns = $4,
+        mobile_columns = $5,
+        max_items = $6,
+        background_style = $7,
+        updated_at = NOW()
+      WHERE id = $1
+        AND section_type = 'homepage'
+      RETURNING
+        id,
+        code,
+        name,
+        description,
+        section_type,
+        is_active,
+        sort_order,
+        (
+          SELECT COUNT(*)::int
+          FROM storefront_section_items
+          WHERE section_id = storefront_sections.id
+        ) AS item_count,
+        layout_type,
+        desktop_columns,
+        mobile_columns,
+        max_items,
+        background_style,
+        created_at,
+        updated_at
+    `,
+    [
+      sectionId,
+      name,
+      description,
+      desktopColumns,
+      mobileColumns,
+      maxItems,
+      backgroundStyle,
+    ]
+  );
+
+  if (!result.rows[0]) {
+    throw new Error("找不到首頁區塊");
+  }
+
+  return mapSection(result.rows[0]);
+}
+
+export async function deleteHomepageStorefrontSection(
+  sectionId: number
+) {
+  if (!Number.isInteger(sectionId) || sectionId <= 0) {
+    throw new Error("首頁區塊 ID 無效");
+  }
+
+  return withDbClient(async (client) => {
+    await client.query("BEGIN");
+
+    try {
+      const section = await client.query<{
+        id: number;
+        name: string;
+      }>(
+        `
+          SELECT id, name
+          FROM storefront_sections
+          WHERE id = $1
+            AND section_type = 'homepage'
+          FOR UPDATE
+        `,
+        [sectionId]
+      );
+
+      if (!section.rows[0]) {
+        throw new Error("找不到首頁區塊");
+      }
+
+      const itemCount = await client.query<{ count: string }>(
+        `
+          SELECT COUNT(*)::text AS count
+          FROM storefront_section_items
+          WHERE section_id = $1
+        `,
+        [sectionId]
+      );
+
+      if (Number(itemCount.rows[0]?.count ?? 0) > 0) {
+        throw new Error("此首頁區塊仍有商品，請先移除所有商品");
+      }
+
+      await client.query(
+        `
+          DELETE FROM storefront_sections
+          WHERE id = $1
+            AND section_type = 'homepage'
+        `,
+        [sectionId]
+      );
+
+      const remaining = await client.query<{ id: number }>(
+        `
+          SELECT id
+          FROM storefront_sections
+          WHERE section_type = 'homepage'
+          ORDER BY sort_order ASC, id ASC
+          FOR UPDATE
+        `
+      );
+
+      for (const [index, row] of remaining.rows.entries()) {
+        await client.query(
+          `
+            UPDATE storefront_sections
+            SET
+              sort_order = $2,
+              updated_at = NOW()
+            WHERE id = $1
+          `,
+          [row.id, index + 1]
+        );
+      }
+
+      await client.query("COMMIT");
+      return true;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  });
+}
+
