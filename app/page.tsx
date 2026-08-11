@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 
 // Jourdeness storefront build: V3.8.6 — 龍血玫瑰皂改為自由配選項，不再單獨顯示商品卡。
@@ -1129,7 +1129,7 @@ const sevenSequenceGuideV377 = [
       title: "龍血求麗修護霜",
       description: "單瓶 $1,190；第二件享5折",
       price: "2瓶 $1,785",
-      image: "/products/db-4.jpg",
+      image: "/api/studio/media/35/file",
       productId: 121 as number | null,
     },
   ];
@@ -5306,7 +5306,7 @@ const sevenSequenceGuideV377 = [
 
         <div className="brand-logo-wrap" aria-hidden="true">
           <img
-            src="/products/logo.png"
+            src="/api/studio/media/77/file"
             alt=""
             onError={(event) => {
               event.currentTarget.style.display = "none";
@@ -7405,7 +7405,7 @@ const sevenSequenceGuideV377 = [
       <footer className="company-footer-v2535" aria-label="公司資訊與購物說明">
         <div className="company-footer-brand-v2535">
           <img
-            src="/products/logo.png"
+            src="/api/studio/media/77/file"
             alt="Château de Jourdeness logo"
             onError={(event) => {
               event.currentTarget.style.display = "none";
@@ -24899,3 +24899,4 @@ const sevenSequenceGuideV377 = [
 export default function Page() {
   return <Home />;
 }
+

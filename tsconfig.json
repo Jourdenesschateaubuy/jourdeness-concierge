@@ -40,9 +40,11 @@
     ".next-3001/types/**/*.ts",
     ".next-3001/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "backup",
-    "backup/**"
-  ]
+ "exclude": [
+  "node_modules",
+  "backup",
+  "backup/**",
+  "_product-studio-source-*",
+  "_product-studio-source-*/**"
+]
 }

@@ -1,4 +1,4 @@
-export type HeroSlot = "primary" | "secondary";
+﻿export type HeroSlot = "primary" | "secondary";
 
 export type SiteStudioHero = {
   slot: HeroSlot;
@@ -77,8 +77,8 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
   hero: {
     slot: "primary",
     label: "首頁主視覺",
-    image: "/products/no1.png",
-    desktopImage: "/products/no1.png",
+    image: "/api/studio/media/85/file",
+    desktopImage: "/api/studio/media/85/file",
     alt: "佐登妮絲城堡龍血系列主視覺",
     title: "",
     subtitle: "",
@@ -91,8 +91,8 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
   secondaryHero: {
     slot: "secondary",
     label: "首頁副主視覺",
-    image: "/products/no2.png",
-    desktopImage: "/products/no2.png",
+    image: "/api/studio/media/86/file",
+    desktopImage: "/api/studio/media/86/file",
     alt: "櫻の雪傳明酸夏日美白系列主視覺",
     title: "",
     subtitle: "",
@@ -108,7 +108,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       displayProductId: 34,
       actionProductId: 34,
       action: "detail",
-      image: "/products/TOP1.png",
+      image: "/api/studio/media/128/file",
       title: "龍血玻尿酸保濕精華液",
       subtitle: "300mL・人氣保濕明星商品",
       priceLine: "$1,980",
@@ -123,7 +123,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       displayProductId: 15,
       actionProductId: 119,
       action: "combo",
-      image: "/products/TOP2.png",
+      image: "/api/studio/media/129/file",
       title: "龍血求麗頭皮修護洗髮精",
       subtitle: "500mL・頭皮清潔修護",
       priceLine: "單瓶 $590",
@@ -138,7 +138,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       displayProductId: 16,
       actionProductId: 119,
       action: "combo",
-      image: "/products/TOP3.png",
+      image: "/api/studio/media/130/file",
       title: "龍血求麗潤澤修護沐浴乳",
       subtitle: "500mL・潤澤潔淨肌膚",
       priceLine: "單瓶 $590",
@@ -153,7 +153,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       displayProductId: 120,
       actionProductId: 120,
       action: "detail",
-      image: "/products/TOP4.png",
+      image: "/api/studio/media/131/file",
       title: "龍血求麗精華液",
       subtitle: "30mL＋肌可佳膠原蛋白彈潤原液 30mL",
       priceLine: "限定組合",
@@ -168,7 +168,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       displayProductId: 55,
       actionProductId: 55,
       action: "combo",
-      image: "/products/TOP5.png",
+      image: "/api/studio/media/132/file",
       title: "人氣面膜雙選",
       subtitle: "爆水保濕 × 美白透亮",
       priceLine: "單桶 $599",
@@ -183,7 +183,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       displayProductId: 1,
       actionProductId: 1,
       action: "combo",
-      image: "/products/TOP6.png",
+      image: "/api/studio/media/133/file",
       title: "人氣益生菌雙選",
       subtitle: "BC-CA 加鈣 × 蔓越莓益生菌",
       priceLine: "加鈣 $800｜蔓越莓 $990",
@@ -448,3 +448,4 @@ export function applySiteStudioPreviewPatch(
     ),
   };
 }
+

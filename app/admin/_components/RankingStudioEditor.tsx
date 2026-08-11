@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   useEffect,
@@ -383,7 +383,7 @@ export default function RankingStudioEditor({
               <span>圖片網址</span>
               <input
                 value={draft.image}
-                placeholder="/products/TOP1.png"
+                placeholder="請從 Media Library 選擇圖片"
                 onChange={(event) =>
                   update(
                     "image",
@@ -392,7 +392,7 @@ export default function RankingStudioEditor({
                 }
               />
               <small>
-                圖片請先放入 public/products，再輸入 /products/檔名。
+                請從 Media Library 選擇圖片。
               </small>
             </label>
 
@@ -580,3 +580,4 @@ export default function RankingStudioEditor({
     </form>
   );
 }
+

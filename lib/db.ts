@@ -1,9 +1,12 @@
-import { Pool, type PoolClient, type QueryResultRow } from "pg";
+﻿import {
+  Pool,
+  neonConfig,
+  type PoolClient,
+  type QueryResultRow,
+} from "@neondatabase/serverless";
+import ws from "ws";
 
-declare global {
-  // eslint-disable-next-line no-var
-  var __jourdenessPgPool: Pool | undefined;
-}
+neonConfig.webSocketConstructor = ws;
 
 function getConnectionString() {
   const value = process.env.DATABASE_URL?.trim();
@@ -18,37 +21,39 @@ function getConnectionString() {
 }
 
 export function getDbPool() {
-  if (!global.__jourdenessPgPool) {
-    global.__jourdenessPgPool = new Pool({
-      connectionString: getConnectionString(),
-      max: 5,
-      idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 10_000,
-      ssl:
-        process.env.NODE_ENV === "production"
-          ? { rejectUnauthorized: false }
-          : undefined,
-    });
-  }
-
-  return global.__jourdenessPgPool;
+  return new Pool({
+    connectionString: getConnectionString(),
+    max: 5,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 10_000,
+  });
 }
 
-export async function dbQuery<T extends QueryResultRow = QueryResultRow>(
+export async function dbQuery<
+  T extends QueryResultRow = QueryResultRow
+>(
   text: string,
   values: unknown[] = []
 ) {
-  return getDbPool().query<T>(text, values);
+  const pool = getDbPool();
+
+  try {
+    return await pool.query<T>(text, values);
+  } finally {
+    await pool.end();
+  }
 }
 
 export async function withDbClient<T>(
   callback: (client: PoolClient) => Promise<T>
 ) {
-  const client = await getDbPool().connect();
+  const pool = getDbPool();
+  const client = await pool.connect();
 
   try {
     return await callback(client);
   } finally {
     client.release();
+    await pool.end();
   }
 }

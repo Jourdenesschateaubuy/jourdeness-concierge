@@ -199,3 +199,43 @@ export async function deleteUploadedImage(
     throw error;
   }
 }
+export function resolveStoredFilePath(
+  storagePath: string,
+): string {
+  const uploadRoot = getUploadRoot();
+
+  const normalized =
+    storagePath.trim();
+
+  const legacyRoot =
+    "D:\\JourdenessData\\";
+
+  if (
+    normalized
+      .toLowerCase()
+      .startsWith(
+        legacyRoot.toLowerCase(),
+      )
+  ) {
+    const relativePath =
+      normalized.slice(
+        legacyRoot.length,
+      );
+
+    return path.resolve(
+      uploadRoot,
+      relativePath,
+    );
+  }
+
+  if (
+    path.isAbsolute(normalized)
+  ) {
+    return normalized;
+  }
+
+  return path.resolve(
+    uploadRoot,
+    normalized,
+  );
+}

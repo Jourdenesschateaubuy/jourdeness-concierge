@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -24,8 +24,8 @@ export default function MediaPicker({
   name = "image",
   value = "",
   label = "圖片網址",
-  placeholder = "/products/no1.png",
-  helperText = "圖片請先放入 public/products，再輸入 /products/檔名。",
+  placeholder = "請從 Media Library 選擇圖片",
+  helperText = "請從 Media Library 選擇圖片。",
   required = false,
   disabled = false,
   onChange,
@@ -126,7 +126,7 @@ export default function MediaPicker({
         </div>
       ) : (
         <div className={styles.emptyState}>
-          尚未設定圖片。請輸入 /products/檔名。
+          尚未設定圖片。請從 Media Library 選擇圖片。
         </div>
       )}
 
@@ -136,3 +136,4 @@ export default function MediaPicker({
     </div>
   );
 }
+

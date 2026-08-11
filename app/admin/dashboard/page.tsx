@@ -4,6 +4,7 @@ import {
   getCatalogSeries,
 } from "../../../lib/catalog-repository";
 import { listDatabaseProducts } from "../../../lib/product-repository";
+import { ORDER_WEB_APP_URL } from "../../../lib/storefront-core";
 import styles from "./dashboard.module.css";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,43 @@ const statusLabel = {
   coming_soon: "新品預告",
   sold_out: "售罄",
 } as const;
+
+type DashboardOrder = {
+  "訂單時間": string;
+  "訂單編號": string;
+  "姓名": string;
+  "LINE ID": string;
+  "電話": string;
+  "取貨方式": string;
+  "商品內容": string;
+  "備註": string;
+  "狀態": string;
+  _row: number;
+};
+
+async function loadDashboardOrders() {
+  try {
+    const response = await fetch(ORDER_WEB_APP_URL, {
+      cache: "no-store",
+      redirect: "follow",
+    });
+
+    if (!response.ok) {
+      return [] as DashboardOrder[];
+    }
+
+    const payload = (await response.json()) as {
+      ok?: boolean;
+      orders?: DashboardOrder[];
+    };
+
+    return payload.ok && Array.isArray(payload.orders)
+      ? payload.orders
+      : [];
+  } catch {
+    return [] as DashboardOrder[];
+  }
+}
 
 function formatUpdatedAt(value: string) {
   return new Intl.DateTimeFormat("zh-TW", {
@@ -26,7 +64,7 @@ function formatUpdatedAt(value: string) {
 }
 
 export default async function AdminDashboardPage() {
-  const [products, categories, series] = await Promise.all([
+  const [products, categories, series, orders] = await Promise.all([
     listDatabaseProducts({
       includeInactive: true,
     }),
@@ -36,6 +74,7 @@ export default async function AdminDashboardPage() {
     getCatalogSeries({
       includeInactive: true,
     }),
+    loadDashboardOrders(),
   ]);
 
   const activeProducts = products.filter(
@@ -60,6 +99,18 @@ export default async function AdminDashboardPage() {
 
   const activeSeries = series.filter(
     (item) => item.isActive
+  ).length;
+
+  const pendingOrders = orders.filter(
+    (order) => order["狀態"] === "待確認"
+  ).length;
+
+  const processingOrders = orders.filter(
+    (order) => order["狀態"] === "處理中"
+  ).length;
+
+  const completedOrders = orders.filter(
+    (order) => order["狀態"] === "已完成"
   ).length;
 
   const recentProducts = [...products]
@@ -88,6 +139,7 @@ export default async function AdminDashboardPage() {
             <span>{products.length} 個商品</span>
             <span>{categories.length} 個分類</span>
             <span>{series.length} 個系列</span>
+            <span>{orders.length} 筆訂單</span>
           </div>
 
           {latestUpdatedAt ? (
@@ -148,6 +200,26 @@ export default async function AdminDashboardPage() {
 
           <span className={styles.cardArrow}>
             查看商品 →
+          </span>
+        </Link>
+
+        <Link
+          href="/admin/orders"
+          className={styles.statCard}
+        >
+          <div className={styles.statCardTop}>
+            <span className={styles.statIcon}>🧾</span>
+            <span className={styles.statLabel}>待確認訂單</span>
+          </div>
+
+          <strong>{pendingOrders}</strong>
+
+          <small>
+            處理中 {processingOrders} · 已完成 {completedOrders}
+          </small>
+
+          <span className={styles.cardArrow}>
+            開啟訂單管理 →
           </span>
         </Link>
 
@@ -214,6 +286,26 @@ export default async function AdminDashboardPage() {
             </Link>
 
             <Link
+              href="/admin/orders"
+              className={styles.moduleCard}
+            >
+              <span className={styles.moduleIcon}>🧾</span>
+
+              <div>
+                <strong>訂單管理</strong>
+                <small>
+                  待確認 {pendingOrders} · 處理中 {processingOrders}
+                </small>
+              </div>
+
+              <p>查看訂單、顧客資料、商品內容與處理狀態。</p>
+
+              <span className={styles.moduleArrow}>
+                開啟訂單管理 →
+              </span>
+            </Link>
+
+            <Link
               href="/admin/categories"
               className={styles.moduleCard}
             >
@@ -249,56 +341,59 @@ export default async function AdminDashboardPage() {
               </span>
             </Link>
 
-            <div
-              className={`${styles.moduleCard} ${styles.comingSoon}`}
+            <Link
+              href="/admin/homepage-studio"
+              className={styles.moduleCard}
             >
               <span className={styles.moduleIcon}>🏠</span>
 
               <div>
                 <strong>首頁 Builder</strong>
-                <small>開發中</small>
+                <small>Homepage Studio</small>
               </div>
 
               <p>管理首頁區塊、顯示狀態與排序。</p>
 
-              <span className={styles.developmentBadge}>
-                Coming Soon
+              <span className={styles.moduleArrow}>
+                開啟首頁 Builder →
               </span>
-            </div>
+            </Link>
 
-            <div
-              className={`${styles.moduleCard} ${styles.comingSoon}`}
+            <Link
+              href="/admin/website-studio/banner"
+              className={styles.moduleCard}
             >
               <span className={styles.moduleIcon}>🖼</span>
 
               <div>
                 <strong>Banner Manager</strong>
-                <small>開發中</small>
+                <small>Banner Builder</small>
               </div>
 
               <p>管理活動主視覺、圖片與展示順序。</p>
 
-              <span className={styles.developmentBadge}>
-                Coming Soon
+              <span className={styles.moduleArrow}>
+                開啟 Banner Manager →
               </span>
-            </div>
+            </Link>
 
-            <div
-              className={`${styles.moduleCard} ${styles.comingSoon}`}
+            <Link
+              href="/admin/website-studio/media"
+              className={styles.moduleCard}
             >
               <span className={styles.moduleIcon}>🗂</span>
 
               <div>
                 <strong>Media Library</strong>
-                <small>開發中</small>
+                <small>圖片庫</small>
               </div>
 
               <p>集中管理網站圖片、尺寸與檔案。</p>
 
-              <span className={styles.developmentBadge}>
-                Coming Soon
+              <span className={styles.moduleArrow}>
+                開啟 Media Library →
               </span>
-            </div>
+            </Link>
           </div>
         </div>
 

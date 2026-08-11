@@ -43,3 +43,9 @@ next-env.d.ts
 # Local dual Next.js dev servers
 .next-3000/
 .next-3001/
+
+*.bak
+_product-studio-source-*
+scripts/test-neon-websocket.ts
+scripts/check-nas-media-files.ts
+scripts/check-old-d-storage-paths.ts

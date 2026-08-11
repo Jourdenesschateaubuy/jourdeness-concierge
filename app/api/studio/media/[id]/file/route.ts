@@ -1,4 +1,4 @@
-import {
+﻿import {
   readFile,
 } from "node:fs/promises";
 
@@ -9,6 +9,10 @@ import {
 import {
   getMediaAsset,
 } from "../../../../../../lib/cms/modules/media/repository";
+
+import {
+  resolveStoredFilePath,
+} from "../../../../../../lib/upload-storage";
 
 export const dynamic = "force-dynamic";
 
@@ -51,10 +55,15 @@ export async function GET(
   }
 
   try {
-    const data =
-      await readFile(
-        asset.storagePath
-      );
+    const filePath =
+resolveStoredFilePath(
+  asset.storagePath
+);
+
+const data =
+await readFile(
+  filePath
+);
 
     return new NextResponse(
       data,
@@ -80,3 +89,4 @@ export async function GET(
     );
   }
 }
+
