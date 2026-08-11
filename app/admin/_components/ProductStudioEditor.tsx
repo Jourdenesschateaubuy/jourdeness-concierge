@@ -9,6 +9,9 @@ import {
 
 import { readJsonResponse } from "../../../lib/http-json";
 import type { ComboConfig } from "../../../lib/storefront-core";
+import MediaPicker, {
+  type PickerMediaAsset,
+} from "../website-studio/components/MediaPicker";
 import styles from "./product-studio-editor.module.css";
 
 type ProductStatus =
@@ -225,6 +228,8 @@ export default function ProductStudioEditor({
   const [message, setMessage] =
     useState("");
   const [error, setError] = useState("");
+  const [mediaPickerOpen, setMediaPickerOpen] =
+    useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -359,6 +364,14 @@ export default function ProductStudioEditor({
     setMessage("");
     setError("");
   }
+  function selectProductImage(
+  asset: PickerMediaAsset
+) {
+  updateField(
+    "image",
+    `/api/studio/media/${asset.id}/file`
+  );
+}
 
   async function saveProductCard(
     event: FormEvent<HTMLFormElement>
@@ -475,6 +488,7 @@ export default function ProductStudioEditor({
   if (!form) return null;
 
   return (
+    <>
     <form
       className={styles.form}
       onSubmit={saveProductCard}
@@ -519,23 +533,63 @@ export default function ProductStudioEditor({
             )}
           </div>
 
-          <label className={styles.field}>
-            <span>圖片網址</span>
-            <input
-              value={form.image}
-              onChange={(event) =>
-                updateField(
-                  "image",
-                  event.target.value
-                )
+          <div className={styles.field}>
+            <span>商品主圖</span>
+
+            <button
+              type="button"
+              onClick={() =>
+                setMediaPickerOpen(true)
               }
-              placeholder="/products/no1.png"
               disabled={saving}
-            />
+              style={{
+                border: 0,
+                borderRadius: 999,
+                padding: "9px 13px",
+                background: "#8c2940",
+                color: "#fff",
+                cursor: saving
+                  ? "not-allowed"
+                  : "pointer",
+                fontWeight: 900,
+              }}
+            >
+              從 Media Library 選擇
+            </button>
+
+            {form.image ? (
+              <button
+                type="button"
+                onClick={() =>
+                  updateField(
+                    "image",
+                    ""
+                  )
+                }
+                disabled={saving}
+                style={{
+                  marginTop: 8,
+                  border:
+                    "1px solid rgba(140,41,64,.16)",
+                  borderRadius: 999,
+                  padding: "8px 11px",
+                  background: "#fff",
+                  color: "#8c2940",
+                  cursor: saving
+                    ? "not-allowed"
+                    : "pointer",
+                  fontWeight: 800,
+                }}
+              >
+                清除圖片
+              </button>
+            ) : null}
+
             <small>
-              圖片請先放入 public/products，再輸入 /products/檔名。
+              新圖片統一從 Media Library 選擇；既有
+              /products/... 圖片仍保留相容。
             </small>
-          </label>
+          </div>
 
           <small>
             常用比例：1 : 1.06
@@ -728,5 +782,15 @@ export default function ProductStudioEditor({
         </button>
       </div>
     </form>
+
+    <MediaPicker
+      open={mediaPickerOpen}
+      title="選擇商品主圖"
+      onClose={() =>
+        setMediaPickerOpen(false)
+      }
+      onSelect={selectProductImage}
+    />
+    </>
   );
 }

@@ -4,11 +4,13 @@ import {
   useEffect,
   useMemo,
   useState,
-  type ChangeEvent,
   type FormEvent,
 } from "react";
 
 import type { ComboConfig } from "../../../lib/storefront-core";
+import MediaPicker, {
+  type PickerMediaAsset,
+} from "../website-studio/components/MediaPicker";
 import styles from "./product-detail-studio-editor.module.css";
 
 type ExpandedInfoItem = {
@@ -195,7 +197,7 @@ export default function ProductDetailStudioEditor({
     useState<ProductDetailForm | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] =
+  const [galleryPickerOpen, setGalleryPickerOpen] =
     useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -306,89 +308,44 @@ export default function ProductDetailStudioEditor({
     setError("");
   }
 
-  async function uploadGalleryImage(
-    event: ChangeEvent<HTMLInputElement>
+  function selectGalleryImage(
+    asset: PickerMediaAsset
   ) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-
-    if (!file || !form) return;
+    if (!form) return;
 
     if (form.gallery.length >= 8) {
       setError("商品輪播圖最多 8 張");
       return;
     }
 
-    setUploading(true);
-    setMessage("");
+    const imageUrl =
+      `/api/studio/media/${asset.id}/file`;
+
+    setForm((current) => {
+      if (!current) return current;
+
+      const startingGallery =
+        current.gallery.length > 0
+          ? current.gallery
+          : product?.image
+            ? [product.image]
+            : [];
+
+      return {
+        ...current,
+        gallery: Array.from(
+          new Set([
+            ...startingGallery,
+            imageUrl,
+          ])
+        ).slice(0, 8),
+      };
+    });
+
+    setMessage(
+      "圖片已加入輪播，請按「儲存商品詳情」。"
+    );
     setError("");
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch(
-        "/api/admin/product-images/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const payload =
-        (await response.json()) as {
-          error?: string;
-          [key: string]: unknown;
-        };
-
-      if (!response.ok) {
-        throw new Error(
-          payload.error || "圖片上傳失敗"
-        );
-      }
-
-      const imageUrl =
-        getUploadedImageUrl(payload);
-
-      if (!imageUrl) {
-        throw new Error(
-          "圖片已上傳，但沒有取得圖片網址"
-        );
-      }
-
-      setForm((current) => {
-        if (!current) return current;
-
-        const startingGallery =
-          current.gallery.length > 0
-            ? current.gallery
-            : product?.image
-              ? [product.image]
-              : [];
-
-        return {
-          ...current,
-          gallery: Array.from(
-            new Set([
-              ...startingGallery,
-              imageUrl,
-            ])
-          ).slice(0, 8),
-        };
-      });
-
-      setMessage(
-        "圖片已加入輪播，請按「儲存商品詳情」。"
-      );
-    } catch (uploadError) {
-      setError(
-        uploadError instanceof Error
-          ? uploadError.message
-          : "圖片上傳失敗"
-      );
-    } finally {
-      setUploading(false);
-    }
   }
 
   function moveGalleryImage(
@@ -609,21 +566,19 @@ export default function ProductDetailStudioEditor({
             </div>
           </div>
 
-          <label className={styles.uploadButton}>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={uploadGalleryImage}
-              disabled={
-                uploading ||
-                saving ||
-                form.gallery.length >= 8
-              }
-            />
-            {uploading
-              ? "上傳中…"
-              : "新增圖片"}
-          </label>
+          <button
+            type="button"
+            className={styles.uploadButton}
+            onClick={() =>
+              setGalleryPickerOpen(true)
+            }
+            disabled={
+              saving ||
+              form.gallery.length >= 8
+            }
+          >
+            從 Media Library 新增圖片
+          </button>
         </div>
 
         {form.gallery.length > 0 ? (
@@ -1053,7 +1008,6 @@ export default function ProductDetailStudioEditor({
           className={styles.saveButton}
           disabled={
             saving ||
-            uploading ||
             !hasChanges
           }
         >
@@ -1062,6 +1016,15 @@ export default function ProductDetailStudioEditor({
             : "儲存商品詳情"}
         </button>
       </div>
+
+      <MediaPicker
+        open={galleryPickerOpen}
+        title="選擇商品輪播圖片"
+        onClose={() =>
+          setGalleryPickerOpen(false)
+        }
+        onSelect={selectGalleryImage}
+      />
     </form>
   );
 }

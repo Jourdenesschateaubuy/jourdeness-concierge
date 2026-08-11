@@ -9,6 +9,9 @@ import type {
   ProductStatus,
 } from "../../../../lib/product-repository";
 import ProductImageUploader from "./ProductImageUploader";
+import MediaPicker, {
+  type PickerMediaAsset,
+} from "../../website-studio/components/MediaPicker";
 import ComboConfigEditor from "./ComboConfigEditor";
 import { updateProductEditorAction } from "../actions";
 import styles from "./product-card-edit-form.module.css";
@@ -228,6 +231,13 @@ export default function ProductCardEditForm({
 }: Props) {
   const [tab, setTab] = useState<Tab>(initialTab);
   const [imageUploading, setImageUploading] = useState(false);
+  const [gallery, setGallery] = useState<string[]>(
+    product.gallery ?? []
+  );
+  const [galleryPickerOpen, setGalleryPickerOpen] =
+    useState(false);
+  const [draggingGalleryIndex, setDraggingGalleryIndex] =
+    useState<number | null>(null);
   const hasCombo = Boolean(product.comboConfig);
   const comboPriceSummary = formatComboPriceSummary(product);
 
@@ -289,6 +299,63 @@ const [category, setCategory] = useState<string>(
       : []
   );
 
+  function addGalleryImage(
+    asset: PickerMediaAsset
+  ) {
+    const imageUrl =
+      `/api/studio/media/${asset.id}/file`;
+
+    setGallery((current) => {
+      if (current.includes(imageUrl)) {
+        return current;
+      }
+
+      return [...current, imageUrl].slice(0, 8);
+    });
+  }
+
+  function moveGalleryByDrag(
+    fromIndex: number,
+    toIndex: number
+  ) {
+    if (
+      fromIndex === toIndex ||
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= gallery.length ||
+      toIndex >= gallery.length
+    ) {
+      return;
+    }
+
+    setGallery(
+      moveItem(
+        gallery,
+        fromIndex,
+        toIndex
+      )
+    );
+  }
+
+  function setGalleryPrimary(
+    index: number
+  ) {
+    if (
+      index <= 0 ||
+      index >= gallery.length
+    ) {
+      return;
+    }
+
+    setGallery(
+      moveItem(
+        gallery,
+        index,
+        0
+      )
+    );
+  }
+
   return (
     <form action={updateProductEditorAction} className={styles.form}>
       <input type="hidden" name="id" value={product.id} />
@@ -324,7 +391,7 @@ const [category, setCategory] = useState<string>(
         value={product.sortOrder ?? 0}
       />
 
-      {(product.gallery ?? []).map((image, index) => (
+      {gallery.map((image, index) => (
         <input
           key={`gallery-${index}`}
           type="hidden"
@@ -963,18 +1030,219 @@ const [category, setCategory] = useState<string>(
 
           {/* 8. 更多商品圖片 */}
           <section className={styles.detailSection}>
-            <div className={styles.frontSectionHeading}>
-              <span>08</span>
-              <div>
-                <h3>更多商品圖片</h3>
-                <small>商品資訊頁的其他圖片</small>
+            <div className={styles.sectionTitleRow}>
+              <div className={styles.frontSectionHeading}>
+                <span>08</span>
+                <div>
+                  <h3>更多商品圖片</h3>
+                  <small>
+                    商品資訊頁的其他圖片，最多 8 張
+                  </small>
+                </div>
               </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setGalleryPickerOpen(true)
+                }
+                disabled={gallery.length >= 8}
+              >
+                ＋從 Media Library 新增圖片
+              </button>
             </div>
 
-            <p className={styles.emptyText}>
-              目前共 {product.gallery?.length ?? 0} 張。
-              多圖片上傳與拖曳排序會在圖片管理階段接入；
-              現有圖片這次儲存不會遺失。
+            {gallery.length === 0 ? (
+              <p className={styles.emptyText}>
+                目前沒有更多商品圖片。
+              </p>
+            ) : (
+              <div className={styles.repeatList}>
+                {gallery.map((image, index) => (
+                  <div
+                    className={styles.repeatItem}
+                    key={`${image}-${index}`}
+                    draggable
+                    onDragStart={() =>
+                      setDraggingGalleryIndex(index)
+                    }
+                    onDragEnd={() =>
+                      setDraggingGalleryIndex(null)
+                    }
+                    onDragOver={(event) =>
+                      event.preventDefault()
+                    }
+                    onDrop={() => {
+                      if (
+                        draggingGalleryIndex !== null
+                      ) {
+                        moveGalleryByDrag(
+                          draggingGalleryIndex,
+                          index
+                        );
+                      }
+
+                      setDraggingGalleryIndex(
+                        null
+                      );
+                    }}
+                    style={{
+                      cursor: "grab",
+                      opacity:
+                        draggingGalleryIndex === index
+                          ? 0.55
+                          : 1,
+                    }}
+                  >
+                    <div
+                      title="拖曳排序"
+                      aria-label="拖曳排序"
+                      style={{
+                        alignSelf: "stretch",
+                        display: "grid",
+                        placeItems: "center",
+                        minWidth: 34,
+                        color: "#8c2940",
+                        fontWeight: 900,
+                        fontSize: 18,
+                        userSelect: "none",
+                      }}
+                    >
+                      ☰
+                    </div>
+
+                    <img
+                      src={image}
+                      alt={`商品圖片 ${index + 1}`}
+                      style={{
+                        width: 88,
+                        height: 88,
+                        objectFit: "contain",
+                        borderRadius: 10,
+                        border:
+                          "1px solid rgba(140,41,64,.12)",
+                        background: "#fff",
+                      }}
+                    />
+
+                    <div
+                      style={{
+                        minWidth: 0,
+                        flex: 1,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <strong>
+                          圖片 {index + 1}
+                        </strong>
+
+                        {index === 0 ? (
+                          <span
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              minHeight: 24,
+                              padding: "2px 8px",
+                              borderRadius: 999,
+                              background: "#8c2940",
+                              color: "#fff",
+                              fontSize: 11,
+                              fontWeight: 900,
+                            }}
+                          >
+                            商品主圖
+                          </span>
+                        ) : null}
+                      </div>
+                      <small
+                        style={{
+                          display: "block",
+                          marginTop: 4,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {image}
+                      </small>
+                    </div>
+
+                    <div className={styles.itemActions}>
+                      {index > 0 ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setGalleryPrimary(index)
+                          }
+                        >
+                          設為主圖
+                        </button>
+                      ) : null}
+
+                      <button
+                        type="button"
+                        disabled={index === 0}
+                        onClick={() =>
+                          setGallery(
+                            moveItem(
+                              gallery,
+                              index,
+                              index - 1
+                            )
+                          )
+                        }
+                      >
+                        ↑
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={
+                          index === gallery.length - 1
+                        }
+                        onClick={() =>
+                          setGallery(
+                            moveItem(
+                              gallery,
+                              index,
+                              index + 1
+                            )
+                          )
+                        }
+                      >
+                        ↓
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setGallery(
+                            gallery.filter(
+                              (_, itemIndex) =>
+                                itemIndex !== index
+                            )
+                          )
+                        }
+                      >
+                        移除
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className={styles.sectionHelp}>
+              第 1 張會同步成商品主圖與商品卡圖片。
+              可拖曳排序、使用 ↑ ↓ 微調，或直接按
+              「設為主圖」。儲存後會依目前順序顯示。
             </p>
           </section>
 
@@ -1022,6 +1290,15 @@ const [category, setCategory] = useState<string>(
           </section>
         </div>
       )}
+
+      <MediaPicker
+        open={galleryPickerOpen}
+        title="選擇更多商品圖片"
+        onClose={() =>
+          setGalleryPickerOpen(false)
+        }
+        onSelect={addGalleryImage}
+      />
 
       <div className={styles.actions}>
         <Link href="/admin">返回管理</Link>

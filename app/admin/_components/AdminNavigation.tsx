@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,6 +20,10 @@ const navigationItems: NavigationItem[] = [
     label: "商品",
   },
   {
+    href: "/admin/orders",
+    label: "訂單",
+  },
+  {
     href: "/admin/products/health",
     label: "商品健檢",
   },
@@ -38,21 +42,23 @@ const navigationItems: NavigationItem[] = [
   },
   {
     href: "/admin/homepage-studio",
-    label: "首頁管理",
+    label: "首頁配置",
   },
   {
     href: "/admin",
     label: "網站編輯",
   },
   {
-    href: "/admin/banners",
-    label: "Banner",
-    disabled: true,
+    href: "/admin/home",
+    label: "首頁",
   },
   {
-    href: "/admin/media",
+    href: "/admin/website-studio/banner",
+    label: "Banner",
+  },
+  {
+    href: "/admin/website-studio/media",
     label: "Media",
-    disabled: true,
   },
 ];
 

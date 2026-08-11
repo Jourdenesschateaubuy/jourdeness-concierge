@@ -117,15 +117,25 @@ function SortableProductRow({
       <td>
         <div className={styles.productCell}>
           <div className={styles.thumb}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={product.image}
-              alt=""
-              loading="lazy"
-              onError={(event) => {
-                event.currentTarget.style.display = "none";
-              }}
-            />
+           {product.image ? (
+  <>
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+  <img
+  src={product.image}
+  alt={product.cardName ?? product.name}
+  loading="lazy"
+/>
+  </>
+) : (
+  <span
+    style={{
+      fontSize: 12,
+      color: "#8a8a8a",
+    }}
+  >
+    尚無圖片
+  </span>
+)}
           </div>
 
           <div>

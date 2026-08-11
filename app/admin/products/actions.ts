@@ -360,6 +360,7 @@ export async function updateProductEditorAction(
       suitableFor: stringValues(formData, "suitableFor"),
       usage: stringValue(formData, "usage"),
       notice: stringValue(formData, "notice"),
+      gallery: stringValues(formData, "gallery"),
       expandedInfo: expandedInfoValues(formData),
     });
 
@@ -392,7 +393,11 @@ export async function updateProductEditorAction(
       throw new Error("商品圖片路徑不能空白");
     }
 
-    if (nextStatus === "active" && !existingProduct.storefrontCategory) {
+    if (
+      nextStatus === "active" &&
+      existingProduct.status !== "active" &&
+      !existingProduct.storefrontCategory
+    ) {
       throw new Error(
         "無法上架：請先在商品管理設定中指定前台主分類。"
       );
