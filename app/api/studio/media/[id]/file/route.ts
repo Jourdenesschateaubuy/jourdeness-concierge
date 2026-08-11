@@ -1,6 +1,7 @@
 import {
   readFile,
 } from "node:fs/promises";
+import path from "node:path";
 
 import {
   NextResponse,
@@ -51,13 +52,33 @@ export async function GET(
   }
 
   try {
-    const data =
-      await readFile(
+    let data: Buffer;
+
+    try {
+      data = await readFile(
         asset.storagePath
       );
+    } catch {
+      const safeFileName =
+        path.basename(
+          asset.originalName
+        );
+
+      const fallbackPath =
+        path.join(
+          process.cwd(),
+          "public",
+          "products",
+          safeFileName
+        );
+
+      data = await readFile(
+        fallbackPath
+      );
+    }
 
     return new NextResponse(
-      data,
+      Uint8Array.from(data),
       {
         headers: {
           "Content-Type":
