@@ -231,6 +231,45 @@ export default function MediaLibraryClient({
     );
   }
 
+  async function queuePublish() {
+    if (!selected) return;
+
+    const ok =
+      window.confirm(
+        `確定要將「${selected.originalName}」加入正式網站發布佇列嗎？`
+      );
+
+    if (!ok) return;
+
+    setMessage(
+      "正在加入正式網站發布佇列..."
+    );
+
+    const response =
+      await fetch(
+        `/api/studio/media/${selected.id}/publish`,
+        {
+          method: "POST",
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      setMessage(
+        data.error ||
+          "加入發布佇列失敗"
+      );
+      return;
+    }
+
+    setMessage(
+      data.message ||
+        "已加入正式網站發布佇列"
+    );
+  }
+
   async function archive() {
     if (!selected) return;
 
@@ -482,6 +521,14 @@ export default function MediaLibraryClient({
               </button>
 
               <button
+            type="button"
+            onClick={queuePublish}
+            style={styles.primaryButton}
+          >
+            同步至正式網站
+          </button>
+
+          <button
                 type="button"
                 onClick={archive}
                 style={styles.archiveButton}
