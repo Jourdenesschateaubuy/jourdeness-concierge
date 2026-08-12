@@ -5,6 +5,7 @@ import {
 import type {
   MediaAsset,
   MediaListResult,
+  MediaPublishStatus,
 } from "./types";
 
 type MediaRow = {
@@ -16,6 +17,28 @@ type MediaRow = {
   byte_size: number | string;
   tags: string[] | null;
   created_at: Date | string;
+
+  publish_status?:
+    | MediaPublishStatus
+    | null;
+
+  publish_requested_at?:
+    | Date
+    | string
+    | null;
+
+  publish_finished_at?:
+    | Date
+    | string
+    | null;
+
+  publish_error?:
+    | string
+    | null;
+
+  published_commit?:
+    | string
+    | null;
 };
 
 function mapRow(
@@ -38,6 +61,29 @@ function mapRow(
       `/api/studio/media/${Number(
         row.id
       )}/file`,
+
+    publishStatus:
+      row.publish_status ?? null,
+
+    publishRequestedAt:
+      row.publish_requested_at
+        ? new Date(
+            row.publish_requested_at
+          ).toISOString()
+        : null,
+
+    publishFinishedAt:
+      row.publish_finished_at
+        ? new Date(
+            row.publish_finished_at
+          ).toISOString()
+        : null,
+
+    publishError:
+      row.publish_error ?? null,
+
+    publishedCommit:
+      row.published_commit ?? null,
   };
 }
 
@@ -63,29 +109,72 @@ export async function listMediaAssets({
     >(
       `
         SELECT
-          id,
-          original_name,
-          title,
-          alt_text,
-          mime_type,
-          byte_size,
-          tags,
-          created_at,
-          COUNT(*) OVER() AS total_count
+          media_assets.id,
+          media_assets.original_name,
+          media_assets.title,
+          media_assets.alt_text,
+          media_assets.mime_type,
+          media_assets.byte_size,
+          media_assets.tags,
+          media_assets.created_at,
+
+          latest_job.status
+            AS publish_status,
+
+          latest_job.requested_at
+            AS publish_requested_at,
+
+          latest_job.finished_at
+            AS publish_finished_at,
+
+          latest_job.error_message
+            AS publish_error,
+
+          latest_job.published_commit,
+
+          COUNT(*) OVER()
+            AS total_count
+
         FROM media_assets
-        WHERE is_active = TRUE
+
+        LEFT JOIN LATERAL (
+          SELECT
+            status,
+            requested_at,
+            finished_at,
+            error_message,
+            published_commit
+          FROM media_publish_jobs
+          WHERE media_id =
+            media_assets.id
+          ORDER BY requested_at DESC
+          LIMIT 1
+        ) latest_job
+          ON TRUE
+
+        WHERE media_assets.is_active = TRUE
           AND (
             $1 = ''
-            OR original_name ILIKE '%' || $1 || '%'
-            OR title ILIKE '%' || $1 || '%'
-            OR alt_text ILIKE '%' || $1 || '%'
-            OR array_to_string(tags, ' ') ILIKE '%' || $1 || '%'
+            OR media_assets.original_name
+              ILIKE '%' || $1 || '%'
+            OR media_assets.title
+              ILIKE '%' || $1 || '%'
+            OR media_assets.alt_text
+              ILIKE '%' || $1 || '%'
+            OR array_to_string(
+              media_assets.tags,
+              ' '
+            ) ILIKE '%' || $1 || '%'
           )
           AND (
             $2 = ''
-            OR mime_type LIKE $2 || '%'
+            OR media_assets.mime_type
+              LIKE $2 || '%'
           )
-        ORDER BY created_at DESC
+
+        ORDER BY
+          media_assets.created_at DESC
+
         LIMIT $3
       `,
       [
@@ -225,7 +314,7 @@ export async function updateMediaAsset(
 
   if (!current) {
     throw new Error(
-      "找不到 Media Asset。"
+      "找不到指定的 Media Asset。"
     );
   }
 

@@ -29,6 +29,29 @@ function bytesLabel(
   ).toFixed(1)} MB`;
 }
 
+function publishStatusLabel(
+  status:
+    | MediaAsset["publishStatus"]
+    | undefined
+) {
+  switch (status) {
+    case "pending":
+      return "🟡 等待發布";
+
+    case "processing":
+      return "🔵 發布中";
+
+    case "published":
+      return "🟢 已發布";
+
+    case "failed":
+      return "🔴 發布失敗";
+
+    default:
+      return "⚪ 尚未發布";
+  }
+}
+
 export default function MediaLibraryClient({
   initialAssets,
 }: {
@@ -36,16 +59,27 @@ export default function MediaLibraryClient({
 }) {
   const [assets, setAssets] =
     useState(initialAssets);
+
   const [search, setSearch] =
     useState("");
+
   const [selectedId, setSelectedId] =
     useState<number | null>(
       initialAssets[0]?.id ?? null
     );
+
   const [message, setMessage] =
     useState("");
+
   const [uploading, setUploading] =
     useState(false);
+
+  const [hydrated, setHydrated] =
+    useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   const filtered =
     useMemo(() => {
@@ -119,7 +153,7 @@ export default function MediaLibraryClient({
       new FormData(form);
 
     setUploading(true);
-    setMessage("上傳中…");
+    setMessage("圖片上傳中…");
 
     try {
       const response =
@@ -137,11 +171,12 @@ export default function MediaLibraryClient({
       if (!response.ok) {
         throw new Error(
           data.error ||
-            "圖片上傳失敗"
+            "圖片上傳失敗。"
         );
       }
 
       form.reset();
+
       await refresh();
 
       setSelectedId(
@@ -149,13 +184,13 @@ export default function MediaLibraryClient({
       );
 
       setMessage(
-        "圖片已加入 Media Library"
+        "圖片已加入 Media Library。"
       );
     } catch (error) {
       setMessage(
         error instanceof Error
           ? error.message
-          : "圖片上傳失敗"
+          : "圖片上傳失敗。"
       );
     } finally {
       setUploading(false);
@@ -220,14 +255,15 @@ export default function MediaLibraryClient({
     if (!response.ok) {
       setMessage(
         data.error ||
-          "儲存失敗"
+          "儲存失敗。"
       );
       return;
     }
 
     await refresh();
+
     setMessage(
-      "媒體資訊已儲存"
+      "圖片資料已儲存。"
     );
   }
 
@@ -236,13 +272,13 @@ export default function MediaLibraryClient({
 
     const ok =
       window.confirm(
-        `確定要將「${selected.originalName}」加入正式網站發布佇列嗎？`
+        `確定要將「${selected.originalName}」加入發布佇列嗎？`
       );
 
     if (!ok) return;
 
     setMessage(
-      "正在加入正式網站發布佇列..."
+      "正在加入發布佇列…"
     );
 
     const response =
@@ -259,14 +295,16 @@ export default function MediaLibraryClient({
     if (!response.ok) {
       setMessage(
         data.error ||
-          "加入發布佇列失敗"
+          "加入發布佇列失敗。"
       );
       return;
     }
 
+    await refresh();
+
     setMessage(
       data.message ||
-        "已加入正式網站發布佇列"
+        "已加入發布佇列。"
     );
   }
 
@@ -275,7 +313,7 @@ export default function MediaLibraryClient({
 
     const ok =
       window.confirm(
-        "要將這張圖片封存嗎？封存不會刪除硬碟上的原始檔案。"
+        "確定要封存這張圖片嗎？封存後將不再出現在 Media Library。"
       );
 
     if (!ok) return;
@@ -290,15 +328,17 @@ export default function MediaLibraryClient({
 
     if (!response.ok) {
       setMessage(
-        "封存失敗"
+        "封存失敗。"
       );
       return;
     }
 
     setSelectedId(null);
+
     await refresh();
+
     setMessage(
-      "圖片已封存"
+      "圖片已封存。"
     );
   }
 
@@ -312,7 +352,7 @@ export default function MediaLibraryClient({
             </span>
 
             <h2 style={styles.title}>
-              圖片庫
+              圖片資產
             </h2>
           </div>
 
@@ -323,7 +363,7 @@ export default function MediaLibraryClient({
                 event.target.value
               )
             }
-            placeholder="搜尋名稱、Alt、標籤"
+            placeholder="搜尋名稱、Alt 或標籤"
             style={styles.search}
           />
         </div>
@@ -347,13 +387,13 @@ export default function MediaLibraryClient({
 
           <input
             name="altText"
-            placeholder="Alt 文字（建議填寫）"
+            placeholder="Alt 圖片說明"
             style={styles.input}
           />
 
           <input
             name="tags"
-            placeholder="標籤，例如：banner, 夏季, 首頁"
+            placeholder="標籤，例如：banner, 商品, 首頁"
             style={styles.input}
           />
 
@@ -370,7 +410,7 @@ export default function MediaLibraryClient({
 
         <div style={styles.summary}>
           <span>
-            {filtered.length} 個媒體
+            {filtered.length} 張圖片
           </span>
 
           <strong>
@@ -421,6 +461,16 @@ export default function MediaLibraryClient({
                         asset.byteSize
                       )}
                     </small>
+
+                    <small
+                      style={
+                        styles.publishBadge
+                      }
+                    >
+                      {publishStatusLabel(
+                        asset.publishStatus
+                      )}
+                    </small>
                   </span>
                 </button>
               )
@@ -432,13 +482,13 @@ export default function MediaLibraryClient({
       <aside style={styles.inspector}>
         <div style={styles.inspectorHeader}>
           <strong>
-            媒體資訊
+            圖片資料
           </strong>
         </div>
 
         {!selected ? (
           <div style={styles.emptyInspector}>
-            選擇一張圖片查看資訊
+            請選擇一張圖片。
           </div>
         ) : (
           <>
@@ -458,8 +508,75 @@ export default function MediaLibraryClient({
               }
               style={styles.form}
             >
+              <div
+                style={
+                  styles.publishPanel
+                }
+              >
+                <strong>
+                  發布狀態
+                </strong>
+
+                <span
+                  style={
+                    styles.publishStatus
+                  }
+                >
+                  {publishStatusLabel(
+                    selected.publishStatus
+                  )}
+                </span>
+
+                {hydrated &&
+                selected.publishRequestedAt ? (
+                  <small>
+                    申請發布：
+                    {" "}
+                    {new Date(
+                      selected.publishRequestedAt
+                    ).toLocaleString(
+                      "zh-TW"
+                    )}
+                  </small>
+                ) : null}
+
+                {hydrated &&
+                selected.publishFinishedAt ? (
+                  <small>
+                    最後完成：
+                    {" "}
+                    {new Date(
+                      selected.publishFinishedAt
+                    ).toLocaleString(
+                      "zh-TW"
+                    )}
+                  </small>
+                ) : null}
+
+                {selected.publishedCommit ? (
+                  <small>
+                    Git Commit：
+                    {" "}
+                    {selected.publishedCommit}
+                  </small>
+                ) : null}
+
+                {selected.publishError ? (
+                  <small
+                    style={
+                      styles.errorText
+                    }
+                  >
+                    發布錯誤：
+                    {" "}
+                    {selected.publishError}
+                  </small>
+                ) : null}
+              </div>
+
               <label style={styles.field}>
                 <span>名稱</span>
+
                 <input
                   name="title"
                   defaultValue={
@@ -471,6 +588,7 @@ export default function MediaLibraryClient({
 
               <label style={styles.field}>
                 <span>Alt</span>
+
                 <textarea
                   name="altText"
                   rows={3}
@@ -483,6 +601,7 @@ export default function MediaLibraryClient({
 
               <label style={styles.field}>
                 <span>標籤</span>
+
                 <input
                   name="tags"
                   defaultValue={
@@ -501,7 +620,7 @@ export default function MediaLibraryClient({
                 </span>
 
                 <span>
-                  類型：
+                  格式：
                   {selected.mimeType}
                 </span>
 
@@ -511,24 +630,29 @@ export default function MediaLibraryClient({
                     selected.byteSize
                   )}
                 </span>
+
+                <span>
+                  Media ID：
+                  {selected.id}
+                </span>
               </div>
 
               <button
                 type="submit"
                 style={styles.primaryButton}
               >
-                儲存媒體資訊
+                儲存圖片資料
               </button>
 
               <button
-            type="button"
-            onClick={queuePublish}
-            style={styles.primaryButton}
-          >
-            同步至正式網站
-          </button>
+                type="button"
+                onClick={queuePublish}
+                style={styles.primaryButton}
+              >
+                加入發布佇列
+              </button>
 
-          <button
+              <button
                 type="button"
                 onClick={archive}
                 style={styles.archiveButton}
@@ -674,6 +798,13 @@ const styles: Record<
     padding: 10,
   },
 
+  publishBadge: {
+    display: "inline-block",
+    marginTop: 4,
+    fontSize: 11,
+    fontWeight: 800,
+  },
+
   inspector: {
     position: "sticky",
     top: 18,
@@ -704,6 +835,26 @@ const styles: Record<
     padding: 14,
   },
 
+  publishPanel: {
+    display: "grid",
+    gap: 6,
+    padding: 12,
+    border:
+      "1px solid rgba(140,41,64,.10)",
+    borderRadius: 12,
+    background: "#fffafb",
+  },
+
+  publishStatus: {
+    fontWeight: 900,
+    fontSize: 14,
+  },
+
+  errorText: {
+    color: "#b42318",
+    lineHeight: 1.5,
+  },
+
   field: {
     display: "grid",
     gap: 6,
@@ -730,19 +881,16 @@ const styles: Record<
   },
 
   empty: {
-    display: "grid",
-    minHeight: 260,
-    placeItems: "center",
+    padding: 28,
     border:
-      "1px dashed rgba(140,41,64,.16)",
-    borderRadius: 18,
-    color: "#8a7c80",
+      "1px dashed rgba(140,41,64,.18)",
+    borderRadius: 16,
+    color: "#796a6e",
+    textAlign: "center",
   },
 
   emptyInspector: {
-    display: "grid",
-    minHeight: 260,
-    placeItems: "center",
-    color: "#8a7c80",
+    padding: 24,
+    color: "#796a6e",
   },
 };
