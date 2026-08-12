@@ -265,24 +265,6 @@ export default async function AdminDashboardPage() {
                 Coming Soon
               </span>
             </div>
-
-            <div
-              className={`${styles.moduleCard} ${styles.comingSoon}`}
-            >
-              <span className={styles.moduleIcon}>🖼</span>
-
-              <div>
-                <strong>Banner Manager</strong>
-                <small>開發中</small>
-              </div>
-
-              <p>管理活動主視覺、圖片與展示順序。</p>
-
-              <span className={styles.developmentBadge}>
-                Coming Soon
-              </span>
-            </div>
-
             <Link
               href="/admin/website-studio/media"
               className={styles.moduleCard}
@@ -417,4 +399,5 @@ export default async function AdminDashboardPage() {
     </main>
   );
 }
+
 

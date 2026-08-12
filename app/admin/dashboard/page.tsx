@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   getCatalogCategories,
   getCatalogSeries,
@@ -358,25 +358,6 @@ export default async function AdminDashboardPage() {
                 開啟首頁 Builder →
               </span>
             </Link>
-
-            <Link
-              href="/admin/website-studio/banner"
-              className={styles.moduleCard}
-            >
-              <span className={styles.moduleIcon}>🖼</span>
-
-              <div>
-                <strong>Banner Manager</strong>
-                <small>Banner Builder</small>
-              </div>
-
-              <p>管理活動主視覺、圖片與展示順序。</p>
-
-              <span className={styles.moduleArrow}>
-                開啟 Banner Manager →
-              </span>
-            </Link>
-
             <Link
               href="/admin/website-studio/media"
               className={styles.moduleCard}

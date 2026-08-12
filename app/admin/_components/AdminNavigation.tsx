@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -25,7 +25,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     href: "/admin/products/health",
-    label: "商品健檢",
+    label: "商品資料健檢",
   },
   {
     href: "/admin/categories",
@@ -38,11 +38,11 @@ const navigationItems: NavigationItem[] = [
   },
   {
     href: "/admin/storefront",
-    label: "商城配置",
+    label: "商城展示配置",
   },
   {
     href: "/admin/homepage-studio",
-    label: "首頁配置",
+    label: "首頁管理",
   },
   {
     href: "/admin",
@@ -50,15 +50,11 @@ const navigationItems: NavigationItem[] = [
   },
   {
     href: "/admin/home",
-    label: "首頁",
-  },
-  {
-    href: "/admin/website-studio/banner",
-    label: "Banner",
+    label: "預覽網站",
   },
   {
     href: "/admin/website-studio/media",
-    label: "Media",
+    label: "Media Library",
   },
 ];
 
@@ -68,7 +64,7 @@ export default function AdminNavigation() {
   return (
     <nav
       className={styles.navigation}
-      aria-label="後台主要導覽"
+      aria-label="後台管理導覽"
     >
       <Link
         href="/admin/dashboard"
@@ -94,7 +90,7 @@ export default function AdminNavigation() {
               <span
                 key={item.href}
                 className={`${styles.link} ${styles.disabled}`}
-                title="此功能尚未開放"
+                title="目前尚未開放"
                 aria-disabled="true"
               >
                 {item.label}
