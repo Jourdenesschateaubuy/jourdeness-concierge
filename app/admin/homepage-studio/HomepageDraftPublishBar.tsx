@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import Link from "next/link";
 import {
   useState,
 } from "react";
@@ -85,27 +86,32 @@ export default function HomepageDraftPublishBar() {
   }
 
   return (
-    <section style={styles.bar}>
-      <div style={styles.copy}>
+    <div style={styles.wrapper}>
+      <div style={styles.status}>
         <strong>
-          首頁草稿
+          草稿模式
         </strong>
 
         <span>
-          管理頁目前修改的是草稿；
-          只有按「發布首頁」後，
-          正式首頁才會更新。
+          發布後才更新正式首頁
         </span>
+
+        {message ? (
+          <em style={styles.message}>
+            {message}
+          </em>
+        ) : null}
       </div>
 
       <div style={styles.actions}>
-        {message ? (
-          <span
-            style={styles.message}
-          >
-            {message}
-          </span>
-        ) : null}
+        <Link
+          href="/"
+          target="_blank"
+          rel="noreferrer"
+          style={styles.frontButton}
+        >
+          開啟前台首頁
+        </Link>
 
         <button
           type="button"
@@ -138,13 +144,12 @@ export default function HomepageDraftPublishBar() {
             runAction("publish")
           }
         >
-          {working ===
-          "publish"
+          {working === "publish"
             ? "發布中…"
             : "發布首頁"}
         </button>
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -152,42 +157,52 @@ const styles: Record<
   string,
   React.CSSProperties
 > = {
-  bar: {
-    display: "flex",
-    justifyContent:
-      "space-between",
-    alignItems: "center",
-    gap: 16,
-    marginBottom: 24,
-    padding: "16px 18px",
-    border:
-      "1px solid rgba(140,41,64,.16)",
-    borderRadius: 18,
-    background: "#fff7f8",
+  wrapper: {
+    display: "grid",
+    justifyItems: "end",
+    gap: 8,
   },
 
-  copy: {
-    display: "grid",
-    gap: 4,
+  status: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 8,
+    flexWrap: "wrap",
+    fontSize: 12,
+    color: "#75666a",
   },
 
   actions: {
     display: "flex",
     alignItems: "center",
-    gap: 10,
+    justifyContent: "flex-end",
+    gap: 8,
     flexWrap: "wrap",
   },
 
   message: {
-    color: "#75666a",
-    fontSize: 12,
+    color: "#8c2940",
+    fontStyle: "normal",
+    fontWeight: 700,
+  },
+
+  frontButton: {
+    border:
+      "1px solid rgba(140,41,64,.18)",
+    borderRadius: 999,
+    padding: "8px 13px",
+    background: "#fff",
+    color: "#8c2940",
+    textDecoration: "none",
+    fontWeight: 800,
   },
 
   secondaryButton: {
     border:
       "1px solid rgba(140,41,64,.18)",
     borderRadius: 999,
-    padding: "9px 14px",
+    padding: "8px 13px",
     background: "#fff",
     color: "#8c2940",
     cursor: "pointer",
@@ -197,7 +212,7 @@ const styles: Record<
   publishButton: {
     border: 0,
     borderRadius: 999,
-    padding: "9px 16px",
+    padding: "8px 15px",
     background: "#8c2940",
     color: "#fff",
     cursor: "pointer",

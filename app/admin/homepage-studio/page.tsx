@@ -1,6 +1,4 @@
-﻿import Link from "next/link";
-
-import HomepagePreview from "./HomepagePreview";
+﻿import HomepagePreview from "./HomepagePreview";
 import HomepageDraftPublishBar from "./HomepageDraftPublishBar";
 import SiteStudioSectionManager from "./SiteStudioSectionManager";
 import SecondaryHeroProductManager from "./SecondaryHeroProductManager";
@@ -51,25 +49,11 @@ export default async function HomepageStudioPage() {
           </h1>
 
           <p style={styles.subtitle}>
-            管理目前網站首頁實際使用的內容。
-            主視覺、TOP 熱銷排行與副主視覺圖片維持固定；
-            其餘首頁區塊可逐步開放排序、內容與商品編排。
+            管理首頁區塊、商品、顯示狀態與排序。
           </p>
         </div>
-
-        <div style={styles.headerActions}>
-          <Link
-            href="/"
-            target="_blank"
-            rel="noreferrer"
-            style={styles.primaryButton}
-          >
-            開啟前台首頁
-          </Link>
-        </div>
+        <HomepageDraftPublishBar />
       </header>
-
-      <HomepageDraftPublishBar />
 
       <section style={styles.fixedSection}>
         <div style={styles.sectionHeading}>
@@ -91,58 +75,22 @@ export default async function HomepageStudioPage() {
         <div style={styles.fixedGrid}>
           <FixedCard
             title="首頁主視覺"
-            description="主視覺圖片與版型維持既有管理方式。"
+            description="750 × 900 px｜圖片固定"
           />
 
           <FixedCard
             title="TOP 熱銷排行"
-            description="排行版型與區塊位置固定，不加入一般拖曳排序。"
+            description="TOP 1–6｜位置與版型固定"
           />
 
           <FixedCard
             title="首頁副主視覺"
-            description={`副主視覺圖片固定；目前搭配 ${
+            description={`750 × 900 px｜搭配 ${
               config.secondaryHero.productIds?.length ?? 0
-            } 個商品，商品內容之後可編排。`}
+            } 個商品`}
           />
         </div>
       </section>
-
-      <section style={styles.summaryGrid}>
-        <SummaryCard
-          label="可管理區塊"
-          value={editableSections.length}
-        />
-
-        <SummaryCard
-          label="顯示中"
-          value={
-            editableSections.filter(
-              (section) => section.visible
-            ).length
-          }
-        />
-
-        <SummaryCard
-          label="已隱藏"
-          value={
-            editableSections.filter(
-              (section) => !section.visible
-            ).length
-          }
-        />
-
-        <SummaryCard
-          label="商品型區塊"
-          value={
-            editableSections.filter(
-              (section) =>
-                section.kind === "products"
-            ).length
-          }
-        />
-      </section>
-
       <div style={styles.workspace}>
         <div>
           <section style={styles.managerSection}>
@@ -258,21 +206,6 @@ function FixedCard({
   );
 }
 
-function SummaryCard({
-  label,
-  value,
-}: {
-  label: string;
-  value: number;
-}) {
-  return (
-    <div style={styles.summaryCard}>
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
-
 const styles: Record<
   string,
   React.CSSProperties
@@ -331,7 +264,7 @@ const styles: Record<
   },
 
   fixedSection: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
 
   managerSection: {
@@ -377,10 +310,10 @@ const styles: Record<
   fixedCard: {
     display: "grid",
     gridTemplateColumns:
-      "42px minmax(0,1fr) auto",
+      "32px minmax(0,1fr) auto",
     alignItems: "center",
-    gap: 12,
-    padding: 18,
+    gap: 10,
+    padding: "12px 14px",
     border:
       "1px solid rgba(140,41,64,.12)",
     borderRadius: 18,
@@ -416,25 +349,6 @@ const styles: Record<
     fontSize: 11,
     fontWeight: 800,
   },
-
-  summaryGrid: {
-    display: "grid",
-    gridTemplateColumns:
-      "repeat(4, minmax(0, 1fr))",
-    gap: 14,
-    marginBottom: 24,
-  },
-
-  summaryCard: {
-    display: "grid",
-    gap: 8,
-    padding: 20,
-    border:
-      "1px solid rgba(140,41,64,.12)",
-    borderRadius: 18,
-    background: "#fff",
-  },
-
   workspace: {
     display: "grid",
     gridTemplateColumns:
@@ -443,6 +357,16 @@ const styles: Record<
     alignItems: "start",
   },
 };
+
+
+
+
+
+
+
+
+
+
 
 
 

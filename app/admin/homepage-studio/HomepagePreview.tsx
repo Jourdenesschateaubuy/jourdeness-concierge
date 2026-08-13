@@ -125,7 +125,7 @@ export default function HomepagePreview() {
           </strong>
 
           <span>
-            以手機版為主要設計基準，編輯與排序時即時同步。
+            草稿即時同步
           </span>
         </div>
 
@@ -162,10 +162,10 @@ const styles: Record<
 > = {
   preview: {
     position: "sticky",
-    top: 18,
+    top: 12,
     display: "grid",
     alignSelf: "start",
-    gap: 12,
+    gap: 7,
     maxHeight:
       "calc(100vh - 36px)",
   },
@@ -184,7 +184,7 @@ const styles: Record<
     border:
       "1px solid rgba(140,41,64,.22)",
     borderRadius: 999,
-    padding: "8px 12px",
+    padding: "6px 10px",
     background: "#fff",
     color: "#8c2940",
     cursor: "pointer",
@@ -195,7 +195,7 @@ const styles: Record<
     overflow: "hidden",
     width: "100%",
     height:
-      "min(760px, calc(100vh - 110px))",
+      "min(790px, calc(100vh - 90px))",
     minHeight: 560,
     border:
       "10px solid #2e292b",
@@ -212,3 +212,6 @@ const styles: Record<
     background: "#fff",
   },
 };
+
+
+

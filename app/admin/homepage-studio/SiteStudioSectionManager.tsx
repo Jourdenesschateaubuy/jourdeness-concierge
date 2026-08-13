@@ -344,7 +344,7 @@ export default function SiteStudioSectionManager({
         aria-live="polite"
       >
         <span>
-          ☰ 拖曳調整一般首頁區塊順序
+          ☰ 拖曳可調整區塊順序
         </span>
 
         <strong>
@@ -462,7 +462,11 @@ function SectionCard({
           ),
         transition,
         opacity:
-          isDragging ? 0.6 : 1,
+          isDragging
+            ? 0.6
+            : section.visible
+              ? 1
+              : 0.58,
       }}
     >
       <div style={styles.cardTop}>
@@ -504,28 +508,33 @@ function SectionCard({
             </span>
           </div>
 
-          <span style={styles.eyebrow}>
-            {section.eyebrow ||
-              section.key}
-          </span>
+          {editing ? (
+            <>
+              <span style={styles.eyebrow}>
+                {section.eyebrow ||
+                  section.key}
+              </span>
 
-          {section.subtitle ? (
-            <p style={styles.subtitle}>
-              {section.subtitle}
-            </p>
-          ) : null}
+              {section.subtitle ? (
+                <p style={styles.subtitle}>
+                  {section.subtitle}
+                </p>
+              ) : null}
 
-          <small style={styles.meta}>
-            Key：{section.key}
-            {" · "}
-            排序：
-            {section.sortOrder ??
-              "-"}
-            {" · "}
-            商品：
-            {section.productIds
-              ?.length ?? 0}
-          </small>
+              <small style={styles.meta}>
+                Key：{section.key}
+                {" · "}
+                排序：
+                {section.sortOrder ??
+                  "-"}
+              </small>
+            </>
+          ) : (
+            <small style={styles.compactMeta}>
+              {section.productIds?.length ?? 0}
+              {" 個商品"}
+            </small>
+          )}
         </div>
 
         <div style={styles.actions}>
@@ -677,18 +686,16 @@ const styles: Record<
     justifyContent:
       "space-between",
     alignItems: "center",
-    gap: 12,
-    padding: "12px 16px",
-    borderRadius: 14,
-    background: "#fff7f8",
-    color: "#75666a",
-    fontSize: 13,
+    gap: 10,
+    padding: "4px 2px",
+    color: "#8f7c81",
+    fontSize: 12,
   },
 
   card: {
     display: "grid",
-    gap: 14,
-    padding: 18,
+    gap: 10,
+    padding: "12px 14px",
     border:
       "1px solid rgba(140,41,64,.14)",
     borderRadius: 18,
@@ -700,14 +707,14 @@ const styles: Record<
   cardTop: {
     display: "grid",
     gridTemplateColumns:
-      "44px minmax(0,1fr) auto",
+      "34px minmax(0,1fr) auto",
     alignItems: "center",
-    gap: 14,
+    gap: 10,
   },
 
   dragHandle: {
-    width: 40,
-    height: 40,
+    width: 32,
+    height: 34,
     border:
       "1px solid rgba(140,41,64,.16)",
     borderRadius: 12,
@@ -720,7 +727,7 @@ const styles: Record<
 
   content: {
     display: "grid",
-    gap: 5,
+    gap: 3,
   },
 
   titleRow: {
@@ -744,6 +751,12 @@ const styles: Record<
 
   meta: {
     color: "#9a8b8e",
+  },
+
+  compactMeta: {
+    color: "#9a8b8e",
+    fontSize: 12,
+    fontWeight: 700,
   },
 
   enabled: {
@@ -775,14 +788,15 @@ const styles: Record<
 
   actions: {
     display: "flex",
-    gap: 8,
+    alignItems: "center",
+    gap: 6,
   },
 
   editButton: {
     border:
       "1px solid rgba(140,41,64,.18)",
     borderRadius: 999,
-    padding: "8px 13px",
+    padding: "7px 11px",
     background: "#fff",
     color: "#8c2940",
     cursor: "pointer",
@@ -793,7 +807,7 @@ const styles: Record<
     border:
       "1px solid rgba(140,41,64,.14)",
     borderRadius: 999,
-    padding: "8px 13px",
+    padding: "7px 11px",
     background: "#fff",
     color: "#75666a",
     cursor: "pointer",
@@ -803,7 +817,7 @@ const styles: Record<
     border:
       "1px solid rgba(38,115,77,.18)",
     borderRadius: 999,
-    padding: "8px 13px",
+    padding: "7px 11px",
     background: "#eef8f1",
     color: "#26734d",
     cursor: "pointer",
@@ -869,6 +883,11 @@ const styles: Record<
     fontWeight: 800,
   },
 };
+
+
+
+
+
 
 
 

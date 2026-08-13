@@ -61,6 +61,9 @@ export default function SecondaryHeroProductManager({
   const [message, setMessage] =
     useState("");
 
+  const [isOpen, setIsOpen] =
+    useState(false);
+
   const [isPending, startTransition] =
     useTransition();
 
@@ -307,23 +310,43 @@ export default function SecondaryHeroProductManager({
             </strong>
           </div>
 
-          <p>
-            這個商品區固定在副主視覺下方，
-            整區不能拖動，但商品可新增、
-            移除與拖曳排序。
-          </p>
+          {isOpen ? (
+            <p>
+              這個商品區固定在副主視覺下方，
+              整區不能拖動，但商品可新增、
+              移除與拖曳排序。
+            </p>
+          ) : null}
         </div>
 
-        <span
-          style={
-            styles.countBadge
-          }
-        >
-          {productIds.length}
-          {" "}個商品
-        </span>
+        <div style={styles.headingActions}>
+          <span
+            style={
+              styles.countBadge
+            }
+          >
+            {productIds.length}
+            {" "}個商品
+          </span>
+
+          <button
+            type="button"
+            style={styles.manageButton}
+            onClick={() =>
+              setIsOpen(
+                (current) => !current
+              )
+            }
+          >
+            {isOpen
+              ? "收合"
+              : "管理商品"}
+          </button>
+        </div>
       </div>
 
+      {isOpen ? (
+        <>
       <div
         style={styles.addRow}
       >
@@ -444,6 +467,8 @@ export default function SecondaryHeroProductManager({
           </SortableContext>
         </DndContext>
       )}
+        </>
+      ) : null}
     </section>
   );
 }
@@ -600,6 +625,24 @@ const styles: Record<
     fontWeight: 800,
   },
 
+  headingActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+
+  manageButton: {
+    border:
+      "1px solid rgba(140,41,64,.18)",
+    borderRadius: 999,
+    padding: "7px 11px",
+    background: "#fff",
+    color: "#8c2940",
+    cursor: "pointer",
+    fontWeight: 800,
+  },
+
   countBadge: {
     height: "fit-content",
     padding: "5px 9px",
@@ -718,3 +761,8 @@ const styles: Record<
     cursor: "pointer",
   },
 };
+
+
+
+
+
