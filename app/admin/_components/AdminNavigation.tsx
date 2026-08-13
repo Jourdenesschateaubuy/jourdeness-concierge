@@ -48,10 +48,7 @@ const navigationItems: NavigationItem[] = [
     href: "/admin",
     label: "網站編輯",
   },
-  {
-    href: "/admin/home",
-    label: "預覽網站",
-  },
+  
   {
     href: "/admin/website-studio/media",
     label: "Media Library",
@@ -125,3 +122,5 @@ export default function AdminNavigation() {
     </nav>
   );
 }
+
+

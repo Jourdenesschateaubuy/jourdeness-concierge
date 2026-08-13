@@ -158,10 +158,10 @@ export default async function AdminDashboardPage() {
           </Link>
 
           <Link
-            href="/admin"
+            href="/admin/homepage-studio"
             className={styles.secondaryAction}
           >
-            開啟網站編輯器
+            開啟首頁管理
           </Link>
         </div>
       </section>
@@ -322,25 +322,6 @@ export default async function AdminDashboardPage() {
                 開啟分類管理 →
               </span>
             </Link>
-
-            <Link
-              href="/admin"
-              className={`${styles.moduleCard} ${styles.editorCard}`}
-            >
-              <span className={styles.moduleIcon}>🌐</span>
-
-              <div>
-                <strong>網站編輯器</strong>
-                <small>Visual Editor</small>
-              </div>
-
-              <p>直接預覽網站並點選商品進行修改。</p>
-
-              <span className={styles.moduleArrow}>
-                立即開啟 →
-              </span>
-            </Link>
-
             <Link
               href="/admin/homepage-studio"
               className={styles.moduleCard}
@@ -451,12 +432,18 @@ export default async function AdminDashboardPage() {
             >
               <div className={styles.recentProduct}>
                 <div className={styles.recentThumb}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={product.image}
-                    alt=""
-                    loading="lazy"
-                  />
+                  {product.image ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={product.image}
+                        alt=""
+                        loading="lazy"
+                      />
+                    </>
+                  ) : (
+                    <span>無圖片</span>
+                  )}
                 </div>
 
                 <div className={styles.recentInfo}>
@@ -492,3 +479,8 @@ export default async function AdminDashboardPage() {
     </main>
   );
 }
+
+
+
+
+

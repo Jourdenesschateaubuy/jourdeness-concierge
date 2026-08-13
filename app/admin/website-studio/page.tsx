@@ -106,10 +106,10 @@ export default async function AdminDashboardPage() {
           </Link>
 
           <Link
-            href="/admin"
+            href="/admin/homepage-studio"
             className={styles.secondaryAction}
           >
-            開啟網站編輯器
+            開啟首頁管理
           </Link>
         </div>
       </section>
@@ -230,41 +230,23 @@ export default async function AdminDashboardPage() {
                 開啟分類管理 →
               </span>
             </Link>
-
             <Link
-              href="/admin"
-              className={`${styles.moduleCard} ${styles.editorCard}`}
-            >
-              <span className={styles.moduleIcon}>🌐</span>
-
-              <div>
-                <strong>網站編輯器</strong>
-                <small>Visual Editor</small>
-              </div>
-
-              <p>直接預覽網站並點選商品進行修改。</p>
-
-              <span className={styles.moduleArrow}>
-                立即開啟 →
-              </span>
-            </Link>
-
-            <div
-              className={`${styles.moduleCard} ${styles.comingSoon}`}
+              href="/admin/homepage-studio"
+              className={styles.moduleCard}
             >
               <span className={styles.moduleIcon}>🏠</span>
 
               <div>
                 <strong>首頁 Builder</strong>
-                <small>開發中</small>
+                <small>Homepage Studio</small>
               </div>
 
-              <p>管理首頁區塊、顯示狀態與排序。</p>
+              <p>管理首頁區塊、商品、顯示狀態與排序。</p>
 
-              <span className={styles.developmentBadge}>
-                Coming Soon
+              <span className={styles.moduleArrow}>
+                開啟首頁 Builder →
               </span>
-            </div>
+            </Link>
             <Link
               href="/admin/website-studio/media"
               className={styles.moduleCard}
@@ -399,5 +381,10 @@ export default async function AdminDashboardPage() {
     </main>
   );
 }
+
+
+
+
+
 
 
