@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   useEffect,
@@ -11,8 +11,13 @@ type HomepageSectionPreviewPatch = {
   patch: Record<string, unknown>;
 };
 
+type HomepageSectionOrderPreview = {
+  sectionIds: number[];
+};
+
 export default function HomepagePreview() {
   const [version, setVersion] = useState(0);
+
   const iframeRef =
     useRef<HTMLIFrameElement | null>(null);
 
@@ -38,19 +43,54 @@ export default function HomepagePreview() {
             "jourdeness-homepage-section-preview",
           sectionId:
             customEvent.detail.sectionId,
-          patch: customEvent.detail.patch,
+          patch:
+            customEvent.detail.patch,
+        },
+        window.location.origin
+      );
+    }
+
+    function forwardSectionOrder(
+      event: Event
+    ) {
+      const customEvent =
+        event as CustomEvent<HomepageSectionOrderPreview>;
+
+      if (
+        !customEvent.detail ||
+        !Array.isArray(
+          customEvent.detail.sectionIds
+        )
+      ) {
+        return;
+      }
+
+      iframeRef.current?.contentWindow?.postMessage(
+        {
+          type:
+            "jourdeness-homepage-section-order-preview",
+          sectionIds:
+            customEvent.detail.sectionIds,
         },
         window.location.origin
       );
     }
 
     function refreshSavedDraft() {
-      setVersion((current) => current + 1);
+      setVersion(
+        (current) =>
+          current + 1
+      );
     }
 
     window.addEventListener(
       "jourdeness-homepage-preview-patch",
       forwardPreviewPatch
+    );
+
+    window.addEventListener(
+      "jourdeness-homepage-section-order-preview",
+      forwardSectionOrder
     );
 
     window.addEventListener(
@@ -65,6 +105,11 @@ export default function HomepagePreview() {
       );
 
       window.removeEventListener(
+        "jourdeness-homepage-section-order-preview",
+        forwardSectionOrder
+      );
+
+      window.removeEventListener(
         "jourdeness-homepage-draft-saved",
         refreshSavedDraft
       );
@@ -75,9 +120,12 @@ export default function HomepagePreview() {
     <aside style={styles.preview}>
       <div style={styles.previewHeader}>
         <div>
-          <strong>手機首頁預覽</strong>
+          <strong>
+            手機首頁預覽
+          </strong>
+
           <span>
-            以手機版為主要設計基準，編輯時即時同步。
+            以手機版為主要設計基準，編輯與排序時即時同步。
           </span>
         </div>
 
@@ -86,7 +134,8 @@ export default function HomepagePreview() {
           style={styles.refreshButton}
           onClick={() =>
             setVersion(
-              (current) => current + 1
+              (current) =>
+                current + 1
             )
           }
         >
@@ -117,13 +166,16 @@ const styles: Record<
     display: "grid",
     alignSelf: "start",
     gap: 12,
-    maxHeight: "calc(100vh - 36px)",
+    maxHeight:
+      "calc(100vh - 36px)",
   },
 
   previewHeader: {
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    justifyContent:
+      "space-between",
+    alignItems:
+      "flex-start",
     gap: 12,
   },
 
@@ -145,7 +197,8 @@ const styles: Record<
     height:
       "min(760px, calc(100vh - 110px))",
     minHeight: 560,
-    border: "10px solid #2e292b",
+    border:
+      "10px solid #2e292b",
     borderRadius: 34,
     background: "#fff",
     boxShadow:

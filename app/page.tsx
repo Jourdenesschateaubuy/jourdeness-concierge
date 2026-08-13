@@ -335,6 +335,7 @@ function Home() {
               | SiteStudioPreviewPatch
               | Partial<HomepageStorefrontSection>;
             sectionId?: number;
+            sectionIds?: number[];
           }
         | undefined;
 
@@ -408,6 +409,47 @@ function Home() {
               : section
           )
         );
+
+        return;
+      }
+
+      if (
+        data?.type ===
+          "jourdeness-homepage-section-order-preview" &&
+        Array.isArray(data.sectionIds)
+      ) {
+        const orderedIds = data.sectionIds
+          .map(Number)
+          .filter((id) => Number.isInteger(id));
+
+        setHomepageStorefrontSections((currentSections) => {
+          const sectionMap = new Map(
+            currentSections.map((section) => [section.id, section])
+          );
+
+          const reordered = orderedIds
+            .map((id, index) => {
+              const section = sectionMap.get(id);
+
+              if (!section) return null;
+
+              sectionMap.delete(id);
+
+              return {
+                ...section,
+                sortOrder: index + 1,
+              };
+            })
+            .filter(
+              (section): section is HomepageStorefrontSection =>
+                section !== null
+            );
+
+          return [
+            ...reordered,
+            ...Array.from(sectionMap.values()),
+          ];
+        });
 
         return;
       }
@@ -24899,4 +24941,6 @@ const sevenSequenceGuideV377 = [
 export default function Page() {
   return <Home />;
 }
+
+
 

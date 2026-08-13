@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
@@ -99,6 +99,20 @@ export default function HomepageSectionSorter({
     );
 
     setGroups(reordered);
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "jourdeness-homepage-section-order-preview",
+        {
+          detail: {
+            sectionIds: reordered.map(
+              (group) => group.section.id
+            ),
+          },
+        }
+      )
+    );
+
     setMessage("排序儲存中…");
 
     startTransition(async () => {
@@ -109,6 +123,20 @@ export default function HomepageSectionSorter({
         setMessage("排序已儲存");
       } catch (error) {
         setGroups(previousGroups);
+
+        window.dispatchEvent(
+          new CustomEvent(
+            "jourdeness-homepage-section-order-preview",
+            {
+              detail: {
+                sectionIds: previousGroups.map(
+                  (group) => group.section.id
+                ),
+              },
+            }
+          )
+        );
+
         setMessage(
           error instanceof Error
             ? `排序失敗：${error.message}`
@@ -787,3 +815,4 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.5,
   },
 };
+
