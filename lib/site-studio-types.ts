@@ -13,6 +13,7 @@ export type SiteStudioHero = {
   linkValue: string;
   visible: boolean;
   imageSpec: string;
+  productIds?: number[];
 };
 
 export type SiteStudioRankingItem = {
@@ -34,7 +35,6 @@ export type SiteStudioRankingItem = {
 export type BuiltInSiteStudioSectionKey =
   | "ranking"
   | "monthlyOffers"
-  | "skincareNeeds"
   | "bodyCare"
   | "health"
   | "aroma"
@@ -101,6 +101,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
     linkValue: "",
     visible: true,
     imageSpec: "手機版 750 × 900 px",
+    productIds: [68, 47, 48, 49, 110],
   },
   rankings: [
     {
@@ -211,20 +212,11 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       label: "本月優惠",
       kind: "system",
       sortOrder: 20,
+      productIds: [59, 112, 68, 54, 108, 67, 51, 121],
       eyebrow: "MONTHLY PICKS",
       title: "本月優惠・活動方案",
       subtitle: "排行榜看熱銷；這裡直接告訴你現在怎麼買更划算。",
       visible: true,
-    },
-    {
-      key: "skincareNeeds",
-      label: "依肌膚需求選保養",
-      kind: "system",
-      sortOrder: 25,
-      eyebrow: "SKIN CARE GUIDE",
-      title: "依肌膚需求選保養",
-      subtitle: "先選需求，再看適合的日常保養組合，找商品更快。",
-      visible: false,
     },
     {
       key: "bodyCare",
@@ -264,6 +256,7 @@ export const DEFAULT_SITE_STUDIO_CONFIG: SiteStudioConfig = {
       label: "新品預告",
       kind: "system",
       sortOrder: 60,
+      productIds: [72, 73, 117, 118],
       eyebrow: "New Preview",
       title: "新品預告",
       subtitle: "新品與新香型陸續登場，搶先查看。",
@@ -311,11 +304,9 @@ function normalizeSection(
     ...(value ?? {}),
     key: fallback.key,
     visible:
-      fallback.key === "skincareNeeds"
-        ? false
-        : typeof value?.visible === "boolean"
-          ? value.visible
-          : fallback.visible,
+      typeof value?.visible === "boolean"
+        ? value.visible
+        : fallback.visible,
   };
 
   return {
@@ -448,4 +439,10 @@ export function applySiteStudioPreviewPatch(
     ),
   };
 }
+
+
+
+
+
+
 

@@ -205,7 +205,6 @@ function Home() {
   const [oilBoutiqueFilterV375, setOilBoutiqueFilterV375] = useState("全部");
   const [selectedSkinFilter, setSelectedSkinFilter] =
     useState<SkinFilter>("全部");
-  const [selectedHomeSkincareNeedV380, setSelectedHomeSkincareNeedV380] = useState("乾燥缺水");
   const [commerceFilter, setCommerceFilter] = useState("");
   const [collectionViewLabel, setCollectionViewLabel] = useState("");
   const [expandedDrawerGroup, setExpandedDrawerGroup] = useState<string | null>("本月優惠");
@@ -544,16 +543,33 @@ function Home() {
 
     async function loadStudioContent() {
       try {
+        const isHomepageDraftPreview =
+          new URLSearchParams(
+            window.location.search
+          ).get("homepagePreview") ===
+          "draft";
+
         const [
           studioResponse,
           catalogResponse,
           homepageSectionsResponse,
         ] = await Promise.all([
-          fetch("/api/storefront/site-studio", { cache: "no-store" }),
-          fetch("/api/storefront/catalog", { cache: "no-store" }),
           fetch(
-            new URLSearchParams(window.location.search).get("homepagePreview") ===
-              "draft"
+            isHomepageDraftPreview
+              ? "/api/storefront/site-studio?mode=draft"
+              : "/api/storefront/site-studio",
+            {
+              cache: "no-store",
+            }
+          ),
+          fetch(
+            "/api/storefront/catalog",
+            {
+              cache: "no-store",
+            }
+          ),
+          fetch(
+            isHomepageDraftPreview
               ? "/api/storefront/homepage-sections?mode=draft"
               : "/api/storefront/homepage-sections",
             {
@@ -1113,7 +1129,9 @@ const sevenSequenceGuideV377 = [
   const topRankingItemsV378 = siteStudioConfig.rankings.filter(
     (item) => item.visible
   );
-  const summerWhiteningProducts = getProductsByIds([68, 47, 48, 49, 110]);
+  const summerWhiteningProducts = getProductsByIds(
+    siteStudioConfig.secondaryHero.productIds ?? []
+  );
 
   // V3.8.0：首頁「本月優惠・活動方案」改為方案導向，不再重複 TOP 排行榜商品。
   const monthlyOfferCardsV380 = [
@@ -1177,87 +1195,52 @@ const sevenSequenceGuideV377 = [
   ];
 
   // V3.8.0：臉部保養改為「依肌膚需求選保養」，每次只呈現一組 4 款，避免首頁過長。
-  const homeSkincareNeedGroupsV380 = [
-    {
-      key: "乾燥缺水",
-      description: "日常補水、鎖水與滋潤，適合乾燥、缺水與粗糙膚況。",
-      productIds: [61, 40, 41, 8],
-    },
-    {
-      key: "透亮勻膚",
-      description: "從化妝水、精華、乳液到日間防護，建立完整透亮保養流程。",
-      productIds: [47, 48, 49, 110],
-    },
-    {
-      key: "緊緻熟齡",
-      description: "以緊緻、澎潤與高級養護為主，適合想加強熟齡保養的人。",
-      productIds: [11, 12, 13, 62],
-    },
-    {
-      key: "清潔煥膚",
-      description: "卸妝、潔顏與角質調理一次整理，讓日常清潔流程更完整。",
-      productIds: [35, 36, 42, 45],
-    },
-    {
-      key: "密集修護",
-      description: "集中型修護與高級養護，適合需要加強保濕與膚況調理時使用。",
-      productIds: [33, 65, 10, 64],
-    },
-  ] as const;
-
-  const activeHomeSkincareNeedV380 =
-    homeSkincareNeedGroupsV380.find((group) => group.key === selectedHomeSkincareNeedV380) ??
-    homeSkincareNeedGroupsV380[0];
-  const activeHomeSkincareProductsV380 = getProductsByIds([...activeHomeSkincareNeedV380.productIds]);
-
   function getConfiguredSectionProducts(
-    key: SiteStudioSectionKey,
-    fallbackIds: number[]
+    sectionKey: SiteStudioSectionKey,
+    fallbackProductIds: number[]
   ) {
-    const configuredIds = getStudioSection(key).productIds ?? [];
-    return getProductsByIds(configuredIds.length > 0 ? configuredIds : fallbackIds);
+    const section =
+      siteStudioConfig.sections.find(
+        (item) =>
+          item.key === sectionKey
+      );
+
+    const productIds =
+      section &&
+      Array.isArray(
+        section.productIds
+      )
+        ? section.productIds
+        : fallbackProductIds;
+
+    return getProductsByIds(
+      productIds
+    );
   }
 
-  const mallBodyShelfProducts = getConfiguredSectionProducts(
-    "bodyCare",
-    [54, 67, 108, 119, 112]
-  );
-  const mallHealthShelfProducts = getConfiguredSectionProducts(
-    "health",
-    [1, 58, 2, 3, 69, 56]
-  );
-  const mallAromaShelfProducts = getConfiguredSectionProducts(
-    "aroma",
-    [85, 74, 79, 82, 75, 76]
-  );
-  const mallComingSoonProducts = products
-    .filter((product) => isComingSoon(product))
-    .sort((a, b) =>
-      ((a as StorefrontProduct).sortOrder ?? 0) -
-      ((b as StorefrontProduct).sortOrder ?? 0)
-    )
-    .slice(0, 12);
+  const mallBodyShelfProducts =
+    getConfiguredSectionProducts(
+      "bodyCare",
+      [54, 67, 108, 119, 112]
+    );
 
-  const mallBrandEntries = [
-    {
-      title: "組合優惠",
-      badge: "優惠",
-      text: "人氣回購組合，補貨更划算。",
-      onClick: () => openCommerceFilter("deals-combo", "組合優惠"),
-    },
-    {
-      title: "高級養護",
-      badge: "養護",
-      text: "肌光、玫瑰與賦活系列。",
-      onClick: () => openCategoryTab("臉部保養", "高級養護"),
-    },
-    {
-      title: "新品預告",
-      badge: "上架",
-      text: "更多香型與回購品項陸續登場。",
-      onClick: () => jumpToCategory("新品預告", "全部"),
-    },
-  ];
+  const mallHealthShelfProducts =
+    getConfiguredSectionProducts(
+      "health",
+      [1, 58, 2, 3, 69, 56]
+    );
+
+  const mallAromaShelfProducts =
+    getConfiguredSectionProducts(
+      "aroma",
+      [85, 74, 79, 82, 75, 76]
+    );
+
+  const mallComingSoonProducts =
+    getConfiguredSectionProducts(
+      "comingSoon",
+      [72, 73, 117, 118]
+    );
 
   const quickSearchTerms = [
     "本月優惠",
@@ -2950,7 +2933,6 @@ const sevenSequenceGuideV377 = [
           />
         );
       case "ranking":
-      case "skincareNeeds":
         return null;
       default:
         return <CustomHomeSection key={section.key} section={section} />;
@@ -3012,6 +2994,62 @@ const sevenSequenceGuideV377 = [
     const studioSection = getStudioSection("monthlyOffers");
     if (!studioSection.visible) return null;
 
+    const configuredOfferIds =
+      Array.isArray(
+        studioSection.productIds
+      )
+        ? studioSection.productIds
+        : monthlyOfferCardsV380
+            .map((item) => item.productId)
+            .filter(
+              (id): id is number =>
+                typeof id === "number"
+            );
+
+    const monthlyOfferItemsV380 =
+      configuredOfferIds.flatMap(
+        (productId) => {
+          const existingOffer =
+            monthlyOfferCardsV380.find(
+              (item) =>
+                item.productId === productId
+            );
+
+          if (existingOffer) {
+            return [existingOffer];
+          }
+
+          const product =
+            products.find(
+              (candidate) =>
+                candidate.id === productId
+            );
+
+          if (!product) {
+            return [];
+          }
+
+          return [
+            {
+              badge:
+                product.series ||
+                product.category ||
+                "本月優惠",
+              title:
+                product.cardName ??
+                product.name,
+              description:
+                product.description ||
+                "本月精選商品",
+              price:
+                product.price,
+              productId:
+                product.id as number | null,
+            },
+          ];
+        }
+      );
+
     return (
       <section className="home-product-section monthly-offers-section-v380" id="home-hot-products-v380">
         <div
@@ -3030,7 +3068,7 @@ const sevenSequenceGuideV377 = [
         </div>
 
         <div className="monthly-offer-grid-v380">
-          {monthlyOfferCardsV380.map((item) => {
+          {monthlyOfferItemsV380.map((item) => {
             const product = item.productId
               ? products.find((candidate) => candidate.id === item.productId)
               : null;
@@ -3119,66 +3157,6 @@ const sevenSequenceGuideV377 = [
     );
   }
 
-  function SkincareNeedSectionV380() {
-    const studioSection = getStudioSection("skincareNeeds");
-    if (!studioSection.visible) return null;
-
-    return (
-      <section className="home-product-section skincare-needs-section-v380" id="home-skincare-needs-v380">
-        <div
-          className={`section-heading compact skincare-needs-heading-v380 ${
-            isAdminMode && isAdminEditMode
-              ? "admin-v2-manageable-site-block"
-              : ""
-          }`}
-          onClick={(event) =>
-            selectStudioSection(event, "skincareNeeds", studioSection.label)
-          }
-        >
-          {studioSection.eyebrow && <span>{studioSection.eyebrow}</span>}
-          <h2>{studioSection.title}</h2>
-          {studioSection.subtitle && <p>{studioSection.subtitle}</p>}
-        </div>
-
-        <div className="skincare-need-tabs-v380" role="tablist" aria-label="依肌膚需求選保養">
-          {homeSkincareNeedGroupsV380.map((group) => {
-            const isActive = group.key === activeHomeSkincareNeedV380.key;
-            return (
-              <button
-                type="button"
-                key={group.key}
-                className={isActive ? "active" : ""}
-                aria-selected={isActive}
-                role="tab"
-                onClick={() => setSelectedHomeSkincareNeedV380(group.key)}
-              >
-                {group.key}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="skincare-need-summary-v380">
-          <strong>{activeHomeSkincareNeedV380.key}</strong>
-          <p>{activeHomeSkincareNeedV380.description}</p>
-        </div>
-
-        <div className="home-product-grid skincare-need-product-grid-v380">
-          {activeHomeSkincareProductsV380.map((product) => (
-            <ProductCard product={product} key={`home-skin-need-${activeHomeSkincareNeedV380.key}-${product.id}`} />
-          ))}
-        </div>
-
-        <button
-          type="button"
-          className="home-more-button"
-          onClick={() => jumpToCategory("臉部保養", "全部")}
-        >
-          進入全部臉部保養
-        </button>
-      </section>
-    );
-  }
 
   function ProductVisual({
     product,
@@ -24941,6 +24919,19 @@ const sevenSequenceGuideV377 = [
 export default function Page() {
   return <Home />;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import type { DatabaseProduct } from "../../../../lib/product-repository";
@@ -37,7 +37,7 @@ function sectionKindLabel(section: SiteStudioSection) {
 export default function HomeManager({ initialSections, products }: Props) {
   const [sections, setSections] = useState(
     initialSections
-      .filter((section) => section.key !== "skincareNeeds")
+      
       .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999))
   );
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
@@ -185,7 +185,7 @@ export default function HomeManager({ initialSections, products }: Props) {
       if (payload.config?.sections) {
         setSections(
           payload.config.sections
-            .filter((section) => section.key !== "skincareNeeds")
+            
             .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999))
         );
       }
@@ -463,3 +463,4 @@ export default function HomeManager({ initialSections, products }: Props) {
     </div>
   );
 }
+

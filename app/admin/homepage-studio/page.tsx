@@ -1,19 +1,13 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
-import {
-  createHomepageSectionAction,
-} from "./actions";
 import HomepagePreview from "./HomepagePreview";
-import HomepagePublishPanel from "./HomepagePublishPanel";
-import HomepageSectionSorter from "./HomepageSectionSorter";
+import HomepageDraftPublishBar from "./HomepageDraftPublishBar";
+import SiteStudioSectionManager from "./SiteStudioSectionManager";
+import SecondaryHeroProductManager from "./SecondaryHeroProductManager";
 
 import {
-  listStorefrontSectionItems,
-  listStorefrontSections,
-} from "../../../lib/storefront-section-repository";
-import {
-  getHomepagePublicationStatus,
-} from "../../../lib/cms/modules/homepage/publication";
+  getSiteStudioDraftConfig,
+} from "../../../lib/site-studio-repository";
 import {
   listDatabaseProducts,
 } from "../../../lib/product-repository";
@@ -22,40 +16,26 @@ export const dynamic = "force-dynamic";
 
 export default async function HomepageStudioPage() {
   const [
-    allSections,
-    publicationStatus,
+    config,
     allProducts,
   ] = await Promise.all([
-    listStorefrontSections({
-      includeInactive: true,
-    }),
-    getHomepagePublicationStatus(),
+    getSiteStudioDraftConfig(),
     listDatabaseProducts({
       includeInactive: true,
     }),
   ]);
 
-  const homepageSections = allSections.filter(
-    (section) => section.sectionType === "homepage"
-  );
+  const sections = config.sections
+    .slice()
+    .sort(
+      (a, b) =>
+        (a.sortOrder ?? 999) -
+        (b.sortOrder ?? 999)
+    );
 
-  const groups = await Promise.all(
-    homepageSections.map(async (section) => ({
-      section,
-      items: await listStorefrontSectionItems(section.id, {
-        includeHidden: true,
-        includeInactiveProducts: true,
-      }),
-    }))
-  );
-
-  const enabledCount = homepageSections.filter(
-    (section) => section.isActive
-  ).length;
-
-  const totalItems = groups.reduce(
-    (total, group) => total + group.items.length,
-    0
+  const editableSections = sections.filter(
+    (section) =>
+      section.key !== "ranking"
   );
 
   return (
@@ -71,190 +51,175 @@ export default async function HomepageStudioPage() {
           </h1>
 
           <p style={styles.subtitle}>
-            新增、編輯、啟用、排序與管理首頁商品區塊。
-            Code 由系統自動產生，建立後固定作為區塊識別碼。
+            管理目前網站首頁實際使用的內容。
+            主視覺、TOP 熱銷排行與副主視覺圖片維持固定；
+            其餘首頁區塊可逐步開放排序、內容與商品編排。
           </p>
         </div>
 
         <div style={styles.headerActions}>
-          <details style={styles.createDetails}>
-            <summary style={styles.primaryButton}>
-              ＋ 新增首頁區塊
-            </summary>
-
-            <form
-              action={createHomepageSectionAction}
-              style={styles.createForm}
-            >
-              <input
-                name="name"
-                placeholder="區塊名稱，例如：新品推薦"
-                style={styles.input}
-                required
-              />
-
-              <input
-                name="description"
-                placeholder="區塊描述"
-                style={styles.input}
-              />
-
-              <select
-                name="desktopColumns"
-                defaultValue="4"
-                style={styles.input}
-              >
-                <option value="3">桌機每列 3 個</option>
-                <option value="4">桌機每列 4 個</option>
-                <option value="5">桌機每列 5 個</option>
-              </select>
-
-              <select
-                name="mobileColumns"
-                defaultValue="2"
-                style={styles.input}
-              >
-                <option value="1">手機每列 1 個</option>
-                <option value="2">手機每列 2 個</option>
-              </select>
-
-              <input
-                name="maxItems"
-                type="number"
-                min="1"
-                max="24"
-                defaultValue="8"
-                placeholder="最多顯示商品數"
-                style={styles.input}
-              />
-
-              <select
-                name="backgroundStyle"
-                defaultValue="default"
-                style={styles.input}
-              >
-                <option value="default">預設背景</option>
-                <option value="soft">柔和米色</option>
-                <option value="white">純白背景</option>
-              </select>
-
-              <small style={styles.codeNote}>
-                Code 會由系統自動建立，無須手動輸入。
-              </small>
-
-              <button
-                type="submit"
-                style={styles.submitButton}
-              >
-                建立
-              </button>
-            </form>
-          </details>
-
-          <Link
-            href="/admin/storefront"
-            style={styles.secondaryButton}
-          >
-            商城配置
-          </Link>
-
           <Link
             href="/"
             target="_blank"
             rel="noreferrer"
             style={styles.primaryButton}
           >
-            開啟正式首頁
+            開啟前台首頁
           </Link>
         </div>
       </header>
 
-      <HomepagePublishPanel
-        currentVersionNumber={
-          publicationStatus.currentVersionNumber
-        }
-        publishedAt={
-          publicationStatus.publishedAt
-        }
-        history={
-          publicationStatus.history
-        }
-      />
+      <HomepageDraftPublishBar />
+
+      <section style={styles.fixedSection}>
+        <div style={styles.sectionHeading}>
+          <div>
+            <span style={styles.sectionEyebrow}>
+              FIXED STRUCTURE
+            </span>
+
+            <h2 style={styles.sectionTitle}>
+              固定首頁區塊
+            </h2>
+          </div>
+
+          <small style={styles.sectionNote}>
+            固定區塊不參與一般首頁排序。
+          </small>
+        </div>
+
+        <div style={styles.fixedGrid}>
+          <FixedCard
+            title="首頁主視覺"
+            description="主視覺圖片與版型維持既有管理方式。"
+          />
+
+          <FixedCard
+            title="TOP 熱銷排行"
+            description="排行版型與區塊位置固定，不加入一般拖曳排序。"
+          />
+
+          <FixedCard
+            title="首頁副主視覺"
+            description={`副主視覺圖片固定；目前搭配 ${
+              config.secondaryHero.productIds?.length ?? 0
+            } 個商品，商品內容之後可編排。`}
+          />
+        </div>
+      </section>
 
       <section style={styles.summaryGrid}>
         <SummaryCard
-          label="首頁區塊"
-          value={homepageSections.length}
+          label="可管理區塊"
+          value={editableSections.length}
         />
 
         <SummaryCard
-          label="啟用中區塊"
-          value={enabledCount}
+          label="顯示中"
+          value={
+            editableSections.filter(
+              (section) => section.visible
+            ).length
+          }
         />
 
         <SummaryCard
-          label="區塊商品數"
-          value={totalItems}
+          label="已隱藏"
+          value={
+            editableSections.filter(
+              (section) => !section.visible
+            ).length
+          }
         />
 
         <SummaryCard
-          label="停用區塊"
-          value={homepageSections.length - enabledCount}
-          warning={
-            homepageSections.length - enabledCount > 0
+          label="商品型區塊"
+          value={
+            editableSections.filter(
+              (section) =>
+                section.kind === "products"
+            ).length
           }
         />
       </section>
 
       <div style={styles.workspace}>
         <div>
-          {groups.length > 0 ? (
-            <HomepageSectionSorter
-              initialGroups={groups.map(({ section, items }) => ({
-                section,
-                itemCount: items.length,
-                visibleItemCount: items.filter(
-                  (item) => item.isVisible
-                ).length,
-                productIds: items.map(
-                  (item) => item.productId
-                ),
-              }))}
-              products={allProducts.map((product) => ({
-                id: product.id,
-                displayCode: product.displayCode,
-                sku: product.sku,
-                name: product.name,
-                cardName: product.cardName,
-                status: product.status,
-                category: String(
-                  product.storefrontCategory ||
-                    product.category ||
-                    "未分類"
-                ),
-                series: product.series || "",
-                image: product.image || "",
-                price: product.price || "",
-                salePriceAmount:
-                  product.salePriceAmount,
-                originalPriceAmount:
-                  product.originalPriceAmount,
-                originalPrice:
-                  product.originalPrice,
-              }))}
-            />
-          ) : (
-            <section style={styles.emptyState}>
-              <strong>
-                目前尚未建立首頁商品區塊
-              </strong>
+          <section style={styles.managerSection}>
+            <div style={styles.sectionHeading}>
+              <div>
+                <span style={styles.sectionEyebrow}>
+                  MANAGED SECTIONS
+                </span>
 
-              <p>
-                點選「＋ 新增首頁區塊」建立第一個區塊，
-                Code 將由系統自動產生。
-              </p>
-            </section>
-          )}
+                <h2 style={styles.sectionTitle}>
+                  首頁內容區塊
+                </h2>
+              </div>
+
+              <small style={styles.sectionNote}>
+                目前直接讀取首頁正式設定，不再使用另一套 Homepage Section 資料。
+              </small>
+            </div>
+
+            <SecondaryHeroProductManager
+              hero={
+                config.secondaryHero
+              }
+              products={
+                allProducts.map(
+                  (product) => ({
+                    id: product.id,
+                    displayCode:
+                      product.displayCode,
+                    name: product.name,
+                    cardName:
+                      product.cardName || "",
+                    status:
+                      product.status,
+                    image:
+                      product.image || "",
+                    category: String(
+                      product.storefrontCategory ||
+                        product.category ||
+                        "未分類"
+                    ),
+                    series:
+                      product.series || "",
+                  })
+                )
+              }
+            />
+
+            <SiteStudioSectionManager
+              initialSections={
+                editableSections
+              }
+              products={
+                allProducts.map(
+                  (product) => ({
+                    id: product.id,
+                    displayCode:
+                      product.displayCode,
+                    name: product.name,
+                    cardName:
+                      product.cardName || "",
+                    status:
+                      product.status,
+                    image:
+                      product.image || "",
+                    category: String(
+                      product.storefrontCategory ||
+                        product.category ||
+                        "未分類"
+                    ),
+                    series:
+                      product.series || "",
+                  })
+                )
+              }
+            />
+          </section>
         </div>
 
         <HomepagePreview />
@@ -263,33 +228,58 @@ export default async function HomepageStudioPage() {
   );
 }
 
+function FixedCard({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <article style={styles.fixedCard}>
+      <span style={styles.lockIcon}>
+        🔒
+      </span>
+
+      <div>
+        <strong style={styles.fixedTitle}>
+          {title}
+        </strong>
+
+        <p style={styles.fixedDescription}>
+          {description}
+        </p>
+      </div>
+
+      <span style={styles.fixedBadge}>
+        固定
+      </span>
+    </article>
+  );
+}
+
 function SummaryCard({
   label,
   value,
-  warning = false,
 }: {
   label: string;
   value: number;
-  warning?: boolean;
 }) {
   return (
-    <div
-      style={{
-        ...styles.summaryCard,
-        ...(warning
-          ? styles.summaryCardWarning
-          : {}),
-      }}
-    >
+    <div style={styles.summaryCard}>
       <span>{label}</span>
       <strong>{value}</strong>
     </div>
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<
+  string,
+  React.CSSProperties
+> = {
   page: {
-    width: "min(1600px, calc(100% - 48px))",
+    width:
+      "min(1600px, calc(100% - 48px))",
     margin: "0 auto",
     padding: "40px 0 80px",
     color: "#3d2d31",
@@ -297,7 +287,8 @@ const styles: Record<string, React.CSSProperties> = {
 
   header: {
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent:
+      "space-between",
     alignItems: "flex-start",
     gap: 24,
     marginBottom: 28,
@@ -305,8 +296,8 @@ const styles: Record<string, React.CSSProperties> = {
 
   headerActions: {
     display: "flex",
-    flexWrap: "wrap",
     gap: 10,
+    flexWrap: "wrap",
   },
 
   eyebrow: {
@@ -315,7 +306,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#8c2940",
     fontSize: 12,
     fontWeight: 800,
-    letterSpacing: "0.18em",
+    letterSpacing: ".18em",
   },
 
   title: {
@@ -325,7 +316,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
 
   subtitle: {
-    maxWidth: 760,
+    maxWidth: 780,
     margin: "12px 0 0",
     color: "#75666a",
     lineHeight: 1.7,
@@ -339,13 +330,91 @@ const styles: Record<string, React.CSSProperties> = {
     background: "#8c2940",
   },
 
-  secondaryButton: {
-    border: "1px solid rgba(140, 41, 64, 0.22)",
+  fixedSection: {
+    marginBottom: 24,
+  },
+
+  managerSection: {
+    display: "grid",
+    gap: 14,
+  },
+
+  sectionHeading: {
+    display: "flex",
+    justifyContent:
+      "space-between",
+    alignItems: "flex-end",
+    gap: 16,
+    marginBottom: 12,
+  },
+
+  sectionEyebrow: {
+    display: "block",
+    marginBottom: 4,
+    color: "#9b777f",
+    fontSize: 11,
+    fontWeight: 900,
+    letterSpacing: ".14em",
+  },
+
+  sectionTitle: {
+    margin: 0,
+    fontSize: 22,
+  },
+
+  sectionNote: {
+    color: "#8d7d81",
+    lineHeight: 1.5,
+  },
+
+  fixedGrid: {
+    display: "grid",
+    gridTemplateColumns:
+      "repeat(3, minmax(0, 1fr))",
+    gap: 14,
+  },
+
+  fixedCard: {
+    display: "grid",
+    gridTemplateColumns:
+      "42px minmax(0,1fr) auto",
+    alignItems: "center",
+    gap: 12,
+    padding: 18,
+    border:
+      "1px solid rgba(140,41,64,.12)",
+    borderRadius: 18,
+    background: "#fffafb",
+  },
+
+  lockIcon: {
+    display: "grid",
+    placeItems: "center",
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    background:
+      "rgba(140,41,64,.08)",
+  },
+
+  fixedTitle: {
+    fontSize: 16,
+  },
+
+  fixedDescription: {
+    margin: "5px 0 0",
+    color: "#75666a",
+    fontSize: 13,
+    lineHeight: 1.5,
+  },
+
+  fixedBadge: {
+    padding: "5px 9px",
     borderRadius: 999,
-    padding: "10px 16px",
-    color: "#8c2940",
-    textDecoration: "none",
-    background: "#fff",
+    background: "#efe9eb",
+    color: "#755b62",
+    fontSize: 11,
+    fontWeight: 800,
   },
 
   summaryGrid: {
@@ -360,78 +429,28 @@ const styles: Record<string, React.CSSProperties> = {
     display: "grid",
     gap: 8,
     padding: 20,
-    borderWidth: "1px",
-    borderStyle: "solid",
-    borderColor: "rgba(140, 41, 64, 0.12)",
+    border:
+      "1px solid rgba(140,41,64,.12)",
     borderRadius: 18,
     background: "#fff",
   },
 
-  summaryCardWarning: {
-    borderWidth: "1px",
-    borderStyle: "solid",
-    borderColor: "rgba(180, 35, 24, 0.3)",
-    background: "#fff7f6",
-  },
-
   workspace: {
     display: "grid",
-    gridTemplateColumns: "minmax(0, 1fr) minmax(340px, 430px)",
+    gridTemplateColumns:
+      "minmax(0, 1fr) minmax(340px, 430px)",
     gap: 24,
     alignItems: "start",
   },
-
-  createDetails: {
-    position: "relative",
-  },
-
-  createForm: {
-    position: "absolute",
-    right: 0,
-    top: "48px",
-    zIndex: 20,
-    display: "grid",
-    gap: 10,
-    width: 320,
-    padding: 16,
-    borderRadius: 16,
-    background: "#fff",
-    border: "1px solid rgba(140,41,64,0.15)",
-    boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
-  },
-
-  input: {
-    padding: "10px 12px",
-    borderRadius: 10,
-    border: "1px solid rgba(140,41,64,0.2)",
-    background: "#fff",
-  },
-
-  codeNote: {
-    color: "#837478",
-    lineHeight: 1.5,
-  },
-
-  submitButton: {
-    padding: "10px 14px",
-    borderRadius: 999,
-    border: "none",
-    cursor: "pointer",
-    background: "#8c2940",
-    color: "#fff",
-    fontWeight: 800,
-  },
-
-  emptyState: {
-    display: "grid",
-    justifyItems: "center",
-    gap: 10,
-    padding: 42,
-    border:
-      "1px dashed rgba(140, 41, 64, 0.25)",
-    borderRadius: 20,
-    color: "#75666a",
-    textAlign: "center",
-    background: "#fffafb",
-  },
 };
+
+
+
+
+
+
+
+
+
+
+
