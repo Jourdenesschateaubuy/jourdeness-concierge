@@ -180,7 +180,7 @@ export default async function AdminDashboardPage() {
           <small>共 {series.length} 個系列</small>
 
           <span className={styles.cardMuted}>
-            系列管理即將開放
+            由分類與商品資料共同管理
           </span>
         </article>
       </section>
@@ -381,6 +381,7 @@ export default async function AdminDashboardPage() {
     </main>
   );
 }
+
 
 
 

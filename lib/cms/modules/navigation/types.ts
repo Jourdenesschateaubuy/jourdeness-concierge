@@ -1,4 +1,4 @@
-export type NavigationItem = {
+﻿export type NavigationItem = {
   id: string;
   label: string;
   linkType:
@@ -55,3 +55,4 @@ export const defaultNavigation: NavigationSnapshot = {
     },
   ],
 };
+

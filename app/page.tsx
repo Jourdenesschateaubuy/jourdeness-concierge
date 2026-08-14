@@ -115,8 +115,7 @@ function Home() {
     useState<StorefrontCatalogSeries[]>([]);
   const [homepageStorefrontSections, setHomepageStorefrontSections] =
     useState<HomepageStorefrontSection[]>([]);
-
-  function getComboConfig(productId: number): ComboConfig | null {
+function getComboConfig(productId: number): ComboConfig | null {
     const product = products.find((item) => item.id === productId);
     const databaseConfig = product?.comboConfig;
 
@@ -1874,7 +1873,6 @@ const sevenSequenceGuideV377 = [
       setAdminSeriesSaving(false);
     }
   }
-
   function handleDrawerCategory(category: MainCategory, series = "全部") {
     setIsMenuOpen(false);
     jumpToCategory(category, series);
@@ -6061,8 +6059,7 @@ const sevenSequenceGuideV377 = [
               <strong>🚚 滿 NT$3,000 享免運</strong>
               <span>📦 僅提供宅配，送出資料後由 LINE 小幫手確認。</span>
             </div>
-
-            <nav className="drawer-nav drawer-accordion-v25" aria-label="回購需求選單">
+<nav className="drawer-nav drawer-accordion-v25" aria-label="回購需求選單">
               {(storefrontCatalogCategories.length > 0
                 ? storefrontCatalogCategories
                 : Object.keys(categoryConfig)
@@ -24919,6 +24916,15 @@ const sevenSequenceGuideV377 = [
 export default function Page() {
   return <Home />;
 }
+
+
+
+
+
+
+
+
+
 
 
 
