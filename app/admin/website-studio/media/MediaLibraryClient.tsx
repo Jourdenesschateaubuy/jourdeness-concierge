@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   useEffect,
@@ -307,41 +307,6 @@ export default function MediaLibraryClient({
         "已加入發布佇列。"
     );
   }
-
-  async function archive() {
-    if (!selected) return;
-
-    const ok =
-      window.confirm(
-        "確定要封存這張圖片嗎？封存後將不再出現在 Media Library。"
-      );
-
-    if (!ok) return;
-
-    const response =
-      await fetch(
-        `/api/studio/media/${selected.id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-    if (!response.ok) {
-      setMessage(
-        "封存失敗。"
-      );
-      return;
-    }
-
-    setSelectedId(null);
-
-    await refresh();
-
-    setMessage(
-      "圖片已封存。"
-    );
-  }
-
   return (
     <div style={styles.pageGrid}>
       <section style={styles.main}>
@@ -651,14 +616,6 @@ export default function MediaLibraryClient({
               >
                 加入發布佇列
               </button>
-
-              <button
-                type="button"
-                onClick={archive}
-                style={styles.archiveButton}
-              >
-                封存圖片
-              </button>
             </form>
           </>
         )}
@@ -867,17 +824,6 @@ const styles: Record<
     gap: 4,
     color: "#7d6e72",
     fontSize: 12,
-  },
-
-  archiveButton: {
-    border:
-      "1px solid rgba(180,35,24,.18)",
-    borderRadius: 999,
-    padding: "9px 12px",
-    background: "#fff7f6",
-    color: "#b42318",
-    cursor: "pointer",
-    fontWeight: 800,
   },
 
   empty: {

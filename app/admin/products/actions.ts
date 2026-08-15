@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { hasValidAdminSession } from "../../../lib/admin-auth";
@@ -226,18 +226,23 @@ export async function createProductAction(formData: FormData) {
   redirect(`/admin/products/${product.id}/edit?saved=created`);
 }
 
-export async function changeProductStatusAction(formData: FormData) {
+export async function changeProductStatusValueAction(
+  id: number,
+  status: ProductStatus
+) {
   await requireAdmin();
 
-  const id = Number(stringValue(formData, "id"));
-  const status = parseStatus(stringValue(formData, "status"));
-
-  if (!Number.isInteger(id) || id <= 0) {
-    return;
+  if (
+    !Number.isInteger(id) ||
+    id <= 0 ||
+    !VALID_STATUSES.includes(status)
+  ) {
+    throw new Error("商品狀態資料無效。");
   }
 
   if (status === "active") {
-    const product = await getDatabaseProduct(id);
+    const product =
+      await getDatabaseProduct(id);
 
     if (!product?.storefrontCategory) {
       throw new Error(
@@ -246,14 +251,16 @@ export async function changeProductStatusAction(formData: FormData) {
     }
   }
 
-  await updateProductStatus(id, status);
+  await updateProductStatus(
+    id,
+    status
+  );
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/admin/products/health");
   revalidatePath("/");
 }
-
 
 export async function updateProductAction(formData: FormData) {
   await requireAdmin();

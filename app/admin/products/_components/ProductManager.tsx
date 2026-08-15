@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
@@ -25,7 +25,7 @@ import type {
 } from "../../../../lib/product-repository";
 
 import {
-  changeProductStatusAction,
+  changeProductStatusValueAction,
   deleteProductAction,
   saveProductSortOrderAction,
 } from "../actions";
@@ -167,26 +167,32 @@ function SortableProductRow({
       </td>
 
       <td>
-        <form action={changeProductStatusAction}>
-          <input type="hidden" name="id" value={product.id} />
-          <select
-            className={actionStyles.statusSelect}
-            name="status"
-            defaultValue={product.status}
-            aria-label={`${product.name} 商品狀態`}
-            onChange={(event) => {
-              event.currentTarget.form?.requestSubmit();
-            }}
-          >
-            <option value="active">上架中</option>
-            <option value="inactive">下架</option>
-            <option value="coming_soon">新品預告</option>
-            <option value="sold_out">售罄</option>
-          </select>
-          <noscript>
-            <button type="submit">更新</button>
-          </noscript>
-        </form>
+        <select
+          className={actionStyles.statusSelect}
+          value={product.status}
+          aria-label={`${product.name} 商品狀態`}
+          onChange={async (event) => {
+            const nextStatus =
+              event.currentTarget.value as ProductStatus;
+
+            try {
+              await changeProductStatusValueAction(
+                product.id,
+                nextStatus
+              );
+            } catch (error) {
+              console.error(
+                "商品狀態更新失敗：",
+                error
+              );
+            }
+          }}
+        >
+          <option value="active">上架中</option>
+          <option value="inactive">下架</option>
+          <option value="coming_soon">新品預告</option>
+          <option value="sold_out">售罄</option>
+        </select>
       </td>
 
       <td>
