@@ -187,7 +187,7 @@ function productInputFromForm(
     price,
     image,
     description: stringValue(formData, "description"),
-    cardName: optionalString(formData, "cardName"),
+    cardName: stringValue(formData, "name"),
     cardSubtitle: optionalString(formData, "cardSubtitle"),
     spec: optionalString(formData, "spec"),
     intro: optionalString(formData, "intro"),
@@ -238,17 +238,6 @@ export async function changeProductStatusValueAction(
     !VALID_STATUSES.includes(status)
   ) {
     throw new Error("商品狀態資料無效。");
-  }
-
-  if (status === "active") {
-    const product =
-      await getDatabaseProduct(id);
-
-    if (!product?.storefrontCategory) {
-      throw new Error(
-        "無法上架：請先在商品編輯頁設定前台主分類。"
-      );
-    }
   }
 
   await updateProductStatus(

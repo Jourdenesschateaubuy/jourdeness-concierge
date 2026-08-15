@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
@@ -163,15 +163,6 @@ export default function ProductForm({
                 name="name"
                 required
                 defaultValue={product?.name ?? ""}
-              />
-            </label>
-
-            <label>
-              <span>商品卡名稱</span>
-              <input
-                name="cardName"
-                defaultValue={product?.cardName ?? ""}
-                placeholder="留白時使用商品名稱"
               />
             </label>
 

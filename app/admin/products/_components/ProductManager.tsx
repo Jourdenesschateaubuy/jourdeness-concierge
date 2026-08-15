@@ -122,7 +122,7 @@ function SortableProductRow({
     {/* eslint-disable-next-line @next/next/no-img-element */}
   <img
   src={product.image}
-  alt={product.cardName ?? product.name}
+  alt={product.name}
   loading="lazy"
 />
   </>
@@ -139,7 +139,7 @@ function SortableProductRow({
           </div>
 
           <div>
-            <strong>{product.cardName ?? product.name}</strong>
+            <strong>{product.name}</strong>
             <small>
               {product.sku ? `貨號 ${product.sku} · ` : ""}
               {product.spec ?? product.description}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
@@ -369,11 +369,6 @@ const [category, setCategory] = useState<string>(
         type="hidden"
         name="description"
         value={product.description ?? ""}
-      />
-      <input
-        type="hidden"
-        name="cardName"
-        value={product.cardName ?? ""}
       />
       <input
         type="hidden"

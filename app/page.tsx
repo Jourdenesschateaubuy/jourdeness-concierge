@@ -2950,7 +2950,7 @@ const sevenSequenceGuideV377 = [
           sendStudioSelection({
             type: "product",
             productId: product.id,
-            label: product.cardName ?? product.name,
+            label: product.name,
           });
           return;
         }
@@ -3191,7 +3191,7 @@ const sevenSequenceGuideV377 = [
   }
 
   function getCardName(product: Product) {
-    return product.cardName ?? productContent(product).cardName ?? product.name;
+    return product.name;
   }
 
   function compactCardText(text: string) {
@@ -3723,7 +3723,7 @@ const sevenSequenceGuideV377 = [
             sendStudioSelection({
               type: "product",
               productId: product.id,
-              label: product.cardName ?? product.name,
+              label: product.name,
             });
 
             return;
@@ -3753,7 +3753,7 @@ const sevenSequenceGuideV377 = [
               sendStudioSelection({
                 type: "product",
                 productId: product.id,
-                label: product.cardName ?? product.name,
+                label: product.name,
               });
 
               return;
@@ -3786,7 +3786,7 @@ const sevenSequenceGuideV377 = [
             )}
 
             <div className="product-card-title-slot-v364">
-              <h3>{product.cardName ?? product.name}</h3>
+              <h3>{product.name}</h3>
             </div>
           </div>
 
@@ -3815,7 +3815,7 @@ const sevenSequenceGuideV377 = [
                   sendStudioSelection({
                     type: "product",
                     productId: product.id,
-                    label: product.cardName ?? product.name,
+                    label: product.name,
                   });
 
                   return;
@@ -5251,7 +5251,7 @@ const sevenSequenceGuideV377 = [
                         sendStudioSelection({
                           type: "product",
                           productId: product.id,
-                          label: product.cardName ?? product.name,
+                          label: product.name,
                         });
                       }
                     }}
@@ -24916,28 +24916,3 @@ const sevenSequenceGuideV377 = [
 export default function Page() {
   return <Home />;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
