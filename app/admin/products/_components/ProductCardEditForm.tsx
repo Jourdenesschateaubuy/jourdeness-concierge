@@ -268,6 +268,15 @@ const [category, setCategory] = useState<string>(
     ? initialCategory
     : categories[0] || "保養品"
 );
+  const initialStorefrontCategory =
+    product.storefrontCategory?.trim() ?? "";
+
+  const [storefrontCategory, setStorefrontCategory] = useState<string>(
+    categories.includes(initialStorefrontCategory)
+      ? initialStorefrontCategory
+      : categories[0] || "臉部保養"
+  );
+
   const [series, setSeries] = useState(product.series ?? "");
   const [spec, setSpec] = useState(product.spec ?? "");
   const [expiryNote, setExpiryNote] = useState(
@@ -1028,6 +1037,12 @@ return (
               </button>
             </div>
 
+
+            <p className={styles.sectionHelp}>
+              已設定 {gallery.length} 張更多商品圖片；
+              前台商品頁共顯示 {gallery.length + 1} 張（含商品主圖）。
+            </p>
+
             {gallery.length === 0 ? (
               <p className={styles.emptyText}>
                 目前沒有更多商品圖片。
@@ -1224,6 +1239,24 @@ return (
               </label>
 
               <label>
+                <span>前台主分類 *</span>
+                <select
+                  name="storefrontCategory"
+                  required
+                  value={storefrontCategory}
+                  onChange={(event) =>
+                    setStorefrontCategory(event.target.value)
+                  }
+                >
+                  {categories.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
                 <span>商品系列</span>
                 <input
                   name="series"
@@ -1264,6 +1297,3 @@ return (
     </form>
   );
 }
-
-
-

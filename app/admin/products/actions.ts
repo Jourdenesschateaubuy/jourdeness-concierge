@@ -341,6 +341,10 @@ export async function updateProductEditorAction(
     }
   } else if (editorTab === "detail") {
     const category = stringValue(formData, "category");
+    const storefrontCategory = stringValue(
+      formData,
+      "storefrontCategory"
+    );
 
     if (!category) {
       throw new Error("商品分類不能空白");
@@ -348,6 +352,7 @@ export async function updateProductEditorAction(
 
     const product = await updateDatabaseProductPartial(id, {
       category,
+      storefrontCategory,
       series: stringValue(formData, "series"),
       spec: stringValue(formData, "spec"),
       intro: stringValue(formData, "intro"),
