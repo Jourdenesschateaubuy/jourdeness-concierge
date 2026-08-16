@@ -1,8 +1,8 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import {
   listDatabaseProducts,
-  updateDatabaseProduct,
+  updateDatabaseProductPartial,
 } from "../../../../lib/product-repository";
 
 import {
@@ -81,19 +81,11 @@ async function buildMigration(apply: boolean) {
   }> = [];
 
   for (const product of products) {
+    if (![1, 59, 61].includes(product.id)) {
+      continue;
+    }
     const legacy = legacyContent(product.id);
     const changedFields: string[] = [];
-
-    const cardName = pickText(
-      product.cardName,
-      legacy.cardName
-    );
-
-    const cardSubtitle = pickText(
-      product.cardSubtitle,
-      legacy.cardSubtitle
-    );
-
     const spec = pickText(
       product.spec,
       legacy.spec
@@ -103,12 +95,6 @@ async function buildMigration(apply: boolean) {
       product.intro,
       legacy.intro
     );
-
-    const priceNote = pickText(
-      product.priceNote,
-      legacy.priceNote
-    );
-
     const expiryNote = pickText(
       product.expiryNote,
       legacy.expiryNote
@@ -118,12 +104,6 @@ async function buildMigration(apply: boolean) {
       product.usage,
       legacy.usage
     );
-
-    const notice = pickText(
-      product.notice,
-      legacy.notice
-    );
-
     const features = pickList(
       product.features,
       legacy.features
@@ -143,21 +123,6 @@ async function buildMigration(apply: boolean) {
       product.expandedInfo,
       legacy.expandedInfo
     );
-
-    if (
-      !hasText(product.cardName) &&
-      hasText(legacy.cardName)
-    ) {
-      changedFields.push("商品卡名稱");
-    }
-
-    if (
-      !hasText(product.cardSubtitle) &&
-      hasText(legacy.cardSubtitle)
-    ) {
-      changedFields.push("商品卡副標");
-    }
-
     if (
       !hasText(product.spec) &&
       hasText(legacy.spec)
@@ -171,14 +136,6 @@ async function buildMigration(apply: boolean) {
     ) {
       changedFields.push("商品簡介");
     }
-
-    if (
-      !hasText(product.priceNote) &&
-      hasText(legacy.priceNote)
-    ) {
-      changedFields.push("價格下方說明");
-    }
-
     if (
       !hasText(product.expiryNote) &&
       hasText(legacy.expiryNote)
@@ -210,14 +167,6 @@ async function buildMigration(apply: boolean) {
     ) {
       changedFields.push("使用方式");
     }
-
-    if (
-      !hasText(product.notice) &&
-      hasText(legacy.notice)
-    ) {
-      changedFields.push("配送提醒");
-    }
-
     if (
       !product.gallery?.length &&
       legacy.gallery?.length
@@ -248,37 +197,15 @@ async function buildMigration(apply: boolean) {
 
     if (!apply) continue;
 
-    await updateDatabaseProduct(product.id, {
-      sku: product.sku,
-      name: product.name,
-      category: product.category,
-      series: product.series,
-
-      originalPrice: product.originalPrice,
-      price: product.price,
-      image: product.image,
-      description: product.description,
-
-      cardName,
-      cardSubtitle,
+    await updateDatabaseProductPartial(product.id, {
       spec,
       intro,
-      priceNote,
       expiryNote,
-      internalExpiryDate:
-        product.internalExpiryDate,
-
       features,
       suitableFor,
       usage,
-      notice,
       gallery,
       expandedInfo,
-
-      comboConfig: product.comboConfig,
-
-      status: product.status,
-      sortOrder: product.sortOrder,
     });
   }
 
