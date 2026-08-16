@@ -1989,14 +1989,7 @@ const sevenSequenceGuideV377 = [
   }
 
   function isComingSoon(product: Product) {
-    const status = getStorefrontStatus(product);
-    if (status) return status === "coming_soon";
-
-    return (
-      product.price.includes("新品預告") ||
-      productContent(product).priceNote?.includes("新品預告") ||
-      false
-    );
+    return getStorefrontStatus(product) === "coming_soon";
   }
 
   function isSoldOut(product: Product) {
@@ -2049,11 +2042,10 @@ const sevenSequenceGuideV377 = [
   }
 
   function getImageCandidates(product: Product) {
-    const override = productContent(product);
+
     const candidates = [
       product.image,
       ...(productImageFallbacks[product.id] ?? []),
-      ...(override.gallery ?? []),
       ...(product.gallery ?? []),
       ...getNameBasedImageCandidates(product),
     ].filter((image): image is string => Boolean(image && !image.includes("placeholder")));
@@ -2066,12 +2058,9 @@ const sevenSequenceGuideV377 = [
   }
 
   function getDetailGalleryImages(product: Product) {
-    const override = productContent(product);
-
     const candidates = [
       getPrimaryImage(product),
       ...(product.gallery ?? []),
-      ...(override.gallery ?? []),
     ].filter(
       (image): image is string =>
         Boolean(image && !image.includes("placeholder"))
@@ -2117,10 +2106,7 @@ const sevenSequenceGuideV377 = [
     const tags = new Set<string>();
     const name = product.name;
     const series = product.series;
-    const configuredTags =
-      product.suitableFor?.length
-        ? product.suitableFor
-        : productContent(product).suitableFor ?? [];
+    const configuredTags = product.suitableFor ?? [];
 
     for (const item of configuredTags) {
       if (item.includes("缺水") || item.includes("保濕") || item.includes("乾燥")) tags.add("乾燥缺水");
@@ -3241,7 +3227,7 @@ const sevenSequenceGuideV377 = [
   }
 
   function getSpecLine(product: Product) {
-    const spec = product.spec ?? productContent(product).spec;
+    const spec = product.spec;
     if (spec) return `${spec}・${product.series}。`;
     return product.description;
   }
@@ -3267,11 +3253,11 @@ const sevenSequenceGuideV377 = [
   }
 
   function getIntroText(product: Product) {
-    return product.intro ?? productContent(product).intro ?? "";
+    return product.intro ?? "";
   }
 
   function getSpecText(product: Product) {
-    const spec = product.spec ?? productContent(product).spec;
+    const spec = product.spec;
     if (spec) return spec;
     return product.description.split("。")[0] || "依商品標示";
   }
@@ -3342,18 +3328,11 @@ const sevenSequenceGuideV377 = [
   }
 
   function getExpandedInfo(product: Product) {
-    if (product.expandedInfo?.length) {
-      return product.expandedInfo;
-    }
-
-    return productContent(product).expandedInfo ?? [];
+    return product.expandedInfo ?? [];
   }
 
   function getSuitableItems(product: Product) {
-    const customItems =
-      product.suitableFor?.length
-        ? product.suitableFor
-        : productContent(product).suitableFor;
+    const customItems = product.suitableFor;
 
     if (customItems?.length) return customItems;
 
@@ -3364,8 +3343,7 @@ const sevenSequenceGuideV377 = [
   }
 
   function getUsageText(product: Product) {
-    const customUsage =
-      product.usage || productContent(product).usage;
+    const customUsage = product.usage;
 
     if (customUsage) return customUsage;
 
@@ -3402,10 +3380,7 @@ const sevenSequenceGuideV377 = [
   }
 
   function getDetailBullets(product: Product) {
-    const customFeatures =
-      product.features?.length
-        ? product.features
-        : productContent(product).features;
+    const customFeatures = product.features;
 
     if (customFeatures?.length) return customFeatures;
 
