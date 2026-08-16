@@ -337,26 +337,7 @@ const [category, setCategory] = useState<string>(
     );
   }
 
-  function setGalleryPrimary(
-    index: number
-  ) {
-    if (
-      index <= 0 ||
-      index >= gallery.length
-    ) {
-      return;
-    }
-
-    setGallery(
-      moveItem(
-        gallery,
-        index,
-        0
-      )
-    );
-  }
-
-  return (
+return (
     <form action={updateProductEditorAction} className={styles.form}>
       <input type="hidden" name="id" value={product.id} />
       <input type="hidden" name="editorTab" value={tab} />
@@ -1137,24 +1118,6 @@ const [category, setCategory] = useState<string>(
                         <strong>
                           圖片 {index + 1}
                         </strong>
-
-                        {index === 0 ? (
-                          <span
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              minHeight: 24,
-                              padding: "2px 8px",
-                              borderRadius: 999,
-                              background: "#8c2940",
-                              color: "#fff",
-                              fontSize: 11,
-                              fontWeight: 900,
-                            }}
-                          >
-                            商品主圖
-                          </span>
-                        ) : null}
                       </div>
                       <small
                         style={{
@@ -1170,16 +1133,6 @@ const [category, setCategory] = useState<string>(
                     </div>
 
                     <div className={styles.itemActions}>
-                      {index > 0 ? (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setGalleryPrimary(index)
-                          }
-                        >
-                          設為主圖
-                        </button>
-                      ) : null}
 
                       <button
                         type="button"
@@ -1235,9 +1188,8 @@ const [category, setCategory] = useState<string>(
             )}
 
             <p className={styles.sectionHelp}>
-              第 1 張會同步成商品主圖與商品卡圖片。
-              可拖曳排序、使用 ↑ ↓ 微調，或直接按
-              「設為主圖」。儲存後會依目前順序顯示。
+              更多商品圖片僅用於商品詳情頁。
+              可拖曳排序、使用 ↑ ↓ 微調；儲存後會依目前順序顯示。
             </p>
           </section>
 
@@ -1312,3 +1264,6 @@ const [category, setCategory] = useState<string>(
     </form>
   );
 }
+
+
+

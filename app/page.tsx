@@ -2067,14 +2067,16 @@ const sevenSequenceGuideV377 = [
 
   function getDetailGalleryImages(product: Product) {
     const override = productContent(product);
-    const configuredGallery = [
+
+    const candidates = [
+      getPrimaryImage(product),
       ...(product.gallery ?? []),
       ...(override.gallery ?? []),
-    ].filter((image): image is string => Boolean(image && !image.includes("placeholder")));
+    ].filter(
+      (image): image is string =>
+        Boolean(image && !image.includes("placeholder"))
+    );
 
-    // 商品資訊圖片只讀取明確設定的 gallery；未設定時僅顯示主圖一張。
-    // 後續要增加圖片時，直接在該商品的 gallery 陣列繼續加入路徑即可。
-    const candidates = configuredGallery.length > 0 ? configuredGallery : [product.image];
     return Array.from(new Set(candidates)).slice(0, 8);
   }
 
@@ -4997,14 +4999,16 @@ const sevenSequenceGuideV377 = [
           <span className="top-ranking-image-placeholder-v378">
             TOP {item.rank} 圖片｜{item.imageSpec}
           </span>
-          <img
-            src={item.image}
-            alt={`TOP ${item.rank} ${item.title}`}
-            onError={(event) => {
-              event.currentTarget.style.display =
-                "none";
-            }}
-          />
+          {item.image ? (
+            <img
+              src={item.image}
+              alt={`TOP ${item.rank} ${item.title}`}
+              onError={(event) => {
+                event.currentTarget.style.display =
+                  "none";
+              }}
+            />
+          ) : null}
         </div>
 
         <div className="top-ranking-meta-v378">
@@ -7337,7 +7341,7 @@ const sevenSequenceGuideV377 = [
                     >
                       <div className="related-image">
                         {hasRealImage(item) ? (
-                          <img src={item.image} alt={item.name} />
+                          <img src={getPrimaryImage(item)} alt={item.name} />
                         ) : (
                           <span>圖片準備中</span>
                         )}
@@ -24916,3 +24920,7 @@ const sevenSequenceGuideV377 = [
 export default function Page() {
   return <Home />;
 }
+
+
+
+
