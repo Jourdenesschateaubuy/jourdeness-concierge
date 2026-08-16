@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
@@ -289,12 +289,7 @@ const [category, setCategory] = useState<string>(
   const [usage, setUsage] = useState(
     defaultUsageText(product)
   );
-  const [notice, setNotice] = useState(
-    product.notice ??
-      "滿 NT$3,000 享免運，僅提供宅配。\n送出資料後，請至 LINE 與小幫手確認庫存、效期、金額、付款方式與宅配資訊。"
-  );
-
-  const [features, setFeatures] = useState<string[]>(
+const [features, setFeatures] = useState<string[]>(
     product.features?.length ? product.features : [""]
   );
 
@@ -992,32 +987,11 @@ return (
             />
           </section>
 
-          {/* 7. 配送提醒 */}
-          <section className={styles.detailSection}>
-            <div className={styles.frontSectionHeading}>
-              <span>07</span>
-              <div>
-                <h3>配送提醒</h3>
-                <small>前台會依換行分成不同段落</small>
-              </div>
-            </div>
-
-            <textarea
-              name="notice"
-              rows={5}
-              value={notice}
-              onChange={(event) =>
-                setNotice(event.target.value)
-              }
-              placeholder="每一段可用換行分開"
-            />
-          </section>
-
-          {/* 8. 更多商品圖片 */}
+{/* 7. 更多商品圖片 */}
           <section className={styles.detailSection}>
             <div className={styles.sectionTitleRow}>
               <div className={styles.frontSectionHeading}>
-                <span>08</span>
+                <span>07</span>
                 <div>
                   <h3>更多商品圖片</h3>
                   <small>

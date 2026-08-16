@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 
 // Jourdeness storefront build: V3.8.6 — 龍血玫瑰皂改為自由配選項，不再單獨顯示商品卡。
@@ -2371,7 +2371,6 @@ const sevenSequenceGuideV377 = [
       getPriceNote(product),
       getIntroText(product),
       getExpiryNote(product),
-      getNoticeText(product),
       ...getSuitableItems(product),
       ...getDetailBullets(product),
       ...getProductTags(product),
@@ -3340,14 +3339,6 @@ const sevenSequenceGuideV377 = [
     const secondary = clean(secondaryRaw);
 
     return { primary, secondary };
-  }
-
-  function getNoticeText(product: Product) {
-    return (
-      product.notice ??
-      productContent(product).notice ??
-      "滿 NT$3,000 享免運，僅提供宅配。\n送出資料後，請至 LINE 與小幫手確認庫存、效期、金額、付款方式與宅配資訊。"
-    );
   }
 
   function getExpandedInfo(product: Product) {
@@ -7312,19 +7303,6 @@ const sevenSequenceGuideV377 = [
                 </section>
               )}
 
-
-              <section className="detail-info-block soft">
-                <h3>配送提醒</h3>
-                {getNoticeText(selectedDetailProduct)
-                  .split(/\n+/)
-                  .map((line) => line.trim())
-                  .filter(Boolean)
-                  .map((line, index) => (
-                    <p key={`notice-${selectedDetailProduct.id}-${index}`}>
-                      {line}
-                    </p>
-                  ))}
-              </section>
 
               <section className="detail-info-block">
                 <div className="related-heading related-heading-v22">
@@ -14456,7 +14434,7 @@ const sevenSequenceGuideV377 = [
         }
 
 
-        /* Commerce V2.4.5：商品頁售價卡移到配送提醒上方 */
+        /* Commerce V2.4.5：商品頁售價卡位置調整 */
         .detail-buybox-v21 {
           margin-top: 14px !important;
           margin-bottom: 12px !important;
@@ -24920,7 +24898,3 @@ const sevenSequenceGuideV377 = [
 export default function Page() {
   return <Home />;
 }
-
-
-
-

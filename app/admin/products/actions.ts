@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { hasValidAdminSession } from "../../../lib/admin-auth";
@@ -360,7 +360,6 @@ export async function updateProductEditorAction(
       features: stringValues(formData, "features"),
       suitableFor: stringValues(formData, "suitableFor"),
       usage: stringValue(formData, "usage"),
-      notice: stringValue(formData, "notice"),
       gallery: stringValues(formData, "gallery"),
       expandedInfo: expandedInfoValues(formData),
     });
