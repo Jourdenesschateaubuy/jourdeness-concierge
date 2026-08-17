@@ -1,6 +1,5 @@
 import { dbQuery, withDbClient } from "./db";
 import type {
-  DatabaseProduct,
   ProductStatus,
 } from "./product-repository";
 
@@ -44,9 +43,18 @@ export type BundleOfferWriteInput = {
   plans: BundleOfferPlanInput[];
 };
 
+export type BundleOfferItemProduct = {
+  id: number;
+  displayCode: string;
+  name: string;
+  image: string;
+  price: string;
+  status: ProductStatus;
+};
+
 export type BundleOfferItem = BundleOfferItemInput & {
   id: number;
-  product?: DatabaseProduct;
+  product: BundleOfferItemProduct;
 };
 
 export type BundleOfferPlan = BundleOfferPlanInput & {
@@ -88,6 +96,12 @@ type BundleOfferItemRow = {
   role: BundleItemRole;
   quantity: number;
   sort_order: number;
+
+  product_display_code: string;
+  product_name: string;
+  product_image: string;
+  product_price: string;
+  product_status: ProductStatus;
 };
 
 type BundleOfferPlanRow = {
@@ -132,6 +146,14 @@ function rowToBundleItem(
     role: row.role,
     quantity: row.quantity,
     sortOrder: row.sort_order,
+    product: {
+      id: row.product_id,
+      displayCode: row.product_display_code,
+      name: row.product_name,
+      image: row.product_image,
+      price: row.product_price,
+      status: row.product_status,
+    },
   };
 }
 
@@ -199,10 +221,29 @@ async function loadBundleOfferRelations(
   const [itemsResult, plansResult] = await Promise.all([
     dbQuery<BundleOfferItemRow>(
       `
-        SELECT *
-        FROM bundle_offer_items
-        WHERE bundle_offer_id = $1
-        ORDER BY sort_order ASC, id ASC
+        SELECT
+          item.id,
+          item.bundle_offer_id,
+          item.product_id,
+          item.role,
+          item.quantity,
+          item.sort_order,
+
+          product.display_code AS product_display_code,
+          product.name AS product_name,
+          product.image AS product_image,
+          product.price AS product_price,
+          product.status AS product_status
+
+        FROM bundle_offer_items AS item
+        JOIN products AS product
+          ON product.id = item.product_id
+
+        WHERE item.bundle_offer_id = $1
+
+        ORDER BY
+          item.sort_order ASC,
+          item.id ASC
       `,
       [bundleOfferId]
     ),
