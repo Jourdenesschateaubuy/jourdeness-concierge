@@ -38,6 +38,25 @@ export default function BundleOfferCreateForm({
   const [priceAmount, setPriceAmount] = useState("");
   const [unitLabel, setUnitLabel] = useState("組");
   const [status, setStatus] = useState("inactive");
+
+  const [requiredQuantity, setRequiredQuantity] =
+    useState("3");
+
+  const [allowSameProduct, setAllowSameProduct] =
+    useState(true);
+
+  const [buyProductId, setBuyProductId] =
+    useState<number | null>(null);
+
+  const [freeProductId, setFreeProductId] =
+    useState<number | null>(null);
+
+  const [buyQuantity, setBuyQuantity] =
+    useState("1");
+
+  const [freeQuantity, setFreeQuantity] =
+    useState("1");
+
   const [query, setQuery] = useState("");
   const [selectedItems, setSelectedItems] = useState<
     SelectedItem[]
@@ -129,18 +148,25 @@ export default function BundleOfferCreateForm({
   async function handleSubmit() {
     setError("");
 
-    if (bundleType !== "fixed_bundle") {
-      setError("目前先完成固定組合；任選組合與買送活動下一步開放。");
-      return;
-    }
 
     if (!name.trim()) {
       setError("請輸入組合優惠名稱。");
       return;
     }
 
-    if (!selectedItems.length) {
+    if (
+      bundleType !== "buy_get" &&
+      !selectedItems.length
+    ) {
       setError("請至少選擇一個一般商品。");
+      return;
+    }
+
+    if (
+      bundleType === "buy_get" &&
+      (buyProductId === null || freeProductId === null)
+    ) {
+      setError("請選擇購買商品與贈送商品。");
       return;
     }
 
@@ -157,10 +183,126 @@ export default function BundleOfferCreateForm({
     setSaving(true);
 
     try {
-      const requiredQuantity = selectedItems.reduce(
+      const fixedRequiredQuantity = selectedItems.reduce(
         (sum, item) => sum + item.quantity,
         0
       );
+
+      const mixMatchRequiredQuantity = Number(requiredQuantity);
+      const normalizedBuyQuantity = Number(buyQuantity);
+      const normalizedFreeQuantity = Number(freeQuantity);
+
+      if (
+        bundleType === "buy_get" &&
+        (
+          !Number.isInteger(normalizedBuyQuantity) ||
+          normalizedBuyQuantity <= 0 ||
+          !Number.isInteger(normalizedFreeQuantity) ||
+          normalizedFreeQuantity <= 0
+        )
+      ) {
+        setError("購買數量與贈送數量都必須是大於 0 的整數。");
+        setSaving(false);
+        return;
+      }
+
+      if (
+        bundleType === "mix_match" &&
+        (!Number.isInteger(mixMatchRequiredQuantity) ||
+          mixMatchRequiredQuantity <= 0)
+      ) {
+        setError("任選數量請輸入大於 0 的整數。");
+        setSaving(false);
+        return;
+      }
+
+      const payload =
+        bundleType === "fixed_bundle"
+          ? {
+              name: name.trim(),
+              bundleType: "fixed_bundle",
+              unitLabel: "組",
+              allowSameProduct: false,
+              status,
+              sortOrder: 0,
+
+              items: selectedItems.map((item, index) => ({
+                productId: item.productId,
+                role: "fixed",
+                quantity: item.quantity,
+                sortOrder: index,
+              })),
+
+              plans: [
+                {
+                  code: "default",
+                  label: name.trim(),
+                  requiredQuantity: fixedRequiredQuantity,
+                  priceAmount: normalizedPrice,
+                  sortOrder: 0,
+                },
+              ],
+            }
+          : bundleType === "mix_match"
+            ? {
+                name: name.trim(),
+                bundleType: "mix_match",
+                unitLabel: "件",
+                allowSameProduct,
+                status,
+                sortOrder: 0,
+
+                items: selectedItems.map((item, index) => ({
+                  productId: item.productId,
+                  role: "option",
+                  quantity: 1,
+                  sortOrder: index,
+                })),
+
+                plans: [
+                  {
+                    code: "default",
+                    label: `任選 ${mixMatchRequiredQuantity} 件`,
+                    requiredQuantity: mixMatchRequiredQuantity,
+                    priceAmount: normalizedPrice,
+                    sortOrder: 0,
+                  },
+                ],
+              }
+            : {
+                name: name.trim(),
+                bundleType: "buy_get",
+                unitLabel: "組",
+                allowSameProduct: false,
+                status,
+                sortOrder: 0,
+
+                items: [
+                  {
+                    productId: buyProductId as number,
+                    role: "buy",
+                    quantity: normalizedBuyQuantity,
+                    sortOrder: 0,
+                  },
+                  {
+                    productId: freeProductId as number,
+                    role: "free",
+                    quantity: normalizedFreeQuantity,
+                    sortOrder: 1,
+                  },
+                ],
+
+                plans: [
+                  {
+                    code: "default",
+                    label: `買 ${normalizedBuyQuantity} 送 ${normalizedFreeQuantity}`,
+                    buyQuantity: normalizedBuyQuantity,
+                    freeQuantity: normalizedFreeQuantity,
+                    priceAmount: normalizedPrice,
+                    sortOrder: 0,
+                  },
+                ],
+              };
 
       const response = await fetch(
         "/api/admin/bundle-offers",
@@ -169,31 +311,7 @@ export default function BundleOfferCreateForm({
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            name: name.trim(),
-            bundleType: "fixed_bundle",
-            unitLabel: unitLabel.trim() || "組",
-            allowSameProduct: false,
-            status,
-            sortOrder: 0,
-
-            items: selectedItems.map((item, index) => ({
-              productId: item.productId,
-              role: "fixed",
-              quantity: item.quantity,
-              sortOrder: index,
-            })),
-
-            plans: [
-              {
-                code: "default",
-                label: name.trim(),
-                requiredQuantity,
-                priceAmount: normalizedPrice,
-                sortOrder: 0,
-              },
-            ],
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -357,8 +475,14 @@ export default function BundleOfferCreateForm({
           background: "#fff",
         }}
       >
-        <h2>3. 從一般商品選擇</h2>
+        <h2>
+          3. {bundleType === "buy_get"
+            ? "設定購買與贈送商品"
+            : "從一般商品選擇"}
+        </h2>
 
+        {bundleType !== "buy_get" ? (
+          <>
         <input
           value={query}
           onChange={(event) =>
@@ -458,6 +582,124 @@ export default function BundleOfferCreateForm({
             );
           })}
         </div>
+          </>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "minmax(0, 1fr) 140px minmax(0, 1fr) 140px",
+              gap: 16,
+              alignItems: "end",
+            }}
+          >
+            <label>
+              <div>
+                <strong>購買商品</strong>
+              </div>
+
+              <select
+                value={buyProductId ?? ""}
+                onChange={(event) =>
+                  setBuyProductId(
+                    event.target.value
+                      ? Number(event.target.value)
+                      : null
+                  )
+                }
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  marginTop: 8,
+                }}
+              >
+                <option value="">請選擇購買商品</option>
+
+                {products.map((product) => (
+                  <option
+                    key={product.id}
+                    value={product.id}
+                  >
+                    {product.displayCode}　{product.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              <div>
+                <strong>購買數量</strong>
+              </div>
+
+              <input
+                type="number"
+                min={1}
+                value={buyQuantity}
+                onChange={(event) =>
+                  setBuyQuantity(event.target.value)
+                }
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  marginTop: 8,
+                }}
+              />
+            </label>
+
+            <label>
+              <div>
+                <strong>贈送商品</strong>
+              </div>
+
+              <select
+                value={freeProductId ?? ""}
+                onChange={(event) =>
+                  setFreeProductId(
+                    event.target.value
+                      ? Number(event.target.value)
+                      : null
+                  )
+                }
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  marginTop: 8,
+                }}
+              >
+                <option value="">請選擇贈送商品</option>
+
+                {products.map((product) => (
+                  <option
+                    key={product.id}
+                    value={product.id}
+                  >
+                    {product.displayCode}　{product.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              <div>
+                <strong>贈送數量</strong>
+              </div>
+
+              <input
+                type="number"
+                min={1}
+                value={freeQuantity}
+                onChange={(event) =>
+                  setFreeQuantity(event.target.value)
+                }
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  marginTop: 8,
+                }}
+              />
+            </label>
+          </div>
+        )}
       </section>
 
       <section
@@ -470,7 +712,98 @@ export default function BundleOfferCreateForm({
       >
         <h2>4. 組合內容</h2>
 
-        {!selectedItems.length ? (
+        {bundleType === "buy_get" ? (
+          buyProductId === null || freeProductId === null ? (
+            <p>請先選擇購買商品與贈送商品。</p>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gap: 16,
+              }}
+            >
+              <div
+                style={{
+                  padding: 16,
+                  borderRadius: 14,
+                  background: "#f8f4f2",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 13,
+                    marginBottom: 6,
+                  }}
+                >
+                  購買商品
+                </div>
+
+                <strong>
+                  {
+                    products.find(
+                      (product) =>
+                        product.id === buyProductId
+                    )?.displayCode
+                  }
+                  {"　"}
+                  {
+                    products.find(
+                      (product) =>
+                        product.id === buyProductId
+                    )?.name
+                  }
+                  {" × "}
+                  {buyQuantity || "0"}
+                </strong>
+              </div>
+
+              <div
+                style={{
+                  textAlign: "center",
+                  fontSize: 22,
+                  fontWeight: 700,
+                }}
+              >
+                ＋
+              </div>
+
+              <div
+                style={{
+                  padding: 16,
+                  borderRadius: 14,
+                  background: "#f8f4f2",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 13,
+                    marginBottom: 6,
+                  }}
+                >
+                  贈送商品
+                </div>
+
+                <strong>
+                  {
+                    products.find(
+                      (product) =>
+                        product.id === freeProductId
+                    )?.displayCode
+                  }
+                  {"　"}
+                  {
+                    products.find(
+                      (product) =>
+                        product.id === freeProductId
+                    )?.name
+                  }
+                  {" × "}
+                  {freeQuantity || "0"}
+                </strong>
+              </div>
+            </div>
+          )
+        ) : !selectedItems.length ? (
           <p>尚未選擇商品。</p>
         ) : (
           <div
@@ -506,21 +839,34 @@ export default function BundleOfferCreateForm({
                     </strong>
                   </div>
 
-                  <input
-                    type="number"
-                    min={1}
-                    value={item.quantity}
-                    onChange={(event) =>
-                      updateQuantity(
-                        item.productId,
-                        Number(event.target.value)
-                      )
-                    }
-                    style={{
-                      width: "100%",
-                      padding: 10,
-                    }}
-                  />
+                  {bundleType === "fixed_bundle" ? (
+                    <input
+                      type="number"
+                      min={1}
+                      value={item.quantity}
+                      onChange={(event) =>
+                        updateQuantity(
+                          item.productId,
+                          Number(event.target.value)
+                        )
+                      }
+                      style={{
+                        width: "100%",
+                        padding: 10,
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        padding: 10,
+                        textAlign: "center",
+                        borderRadius: 10,
+                        background: "#f8f4f2",
+                      }}
+                    >
+                      可選商品
+                    </div>
+                  )}
 
                   <button
                     type="button"
@@ -537,6 +883,83 @@ export default function BundleOfferCreateForm({
         )}
       </section>
 
+      {bundleType === "mix_match" ? (
+        <section
+          style={{
+            border: "1px solid #eadfda",
+            borderRadius: 18,
+            padding: 24,
+            background: "#fff",
+          }}
+        >
+          <h2>5. 任選組合規則</h2>
+
+          <div
+            style={{
+              display: "grid",
+              gap: 18,
+              marginTop: 16,
+            }}
+          >
+            <label>
+              <div>
+                <strong>需選數量</strong>
+              </div>
+
+              <input
+                type="number"
+                min={1}
+                value={requiredQuantity}
+                onChange={(event) =>
+                  setRequiredQuantity(event.target.value)
+                }
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  marginTop: 8,
+                }}
+              />
+
+              <small>
+                例如：填 3，代表客人必須選滿 3 件。
+              </small>
+            </label>
+
+            <label
+              style={{
+                display: "flex",
+                gap: 10,
+                alignItems: "center",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={allowSameProduct}
+                onChange={(event) =>
+                  setAllowSameProduct(event.target.checked)
+                }
+              />
+
+              <span>
+                允許同款商品重複選擇
+              </span>
+            </label>
+
+            <div
+              style={{
+                padding: 14,
+                borderRadius: 12,
+                background: "#f8f4f2",
+              }}
+            >
+              {allowSameProduct
+                ? `客人可從目前選定商品中自由搭配，選滿 ${requiredQuantity || "指定"} 件；同一商品可重複。`
+                : `客人可從目前選定商品中自由搭配，選滿 ${requiredQuantity || "指定"} 件；每款最多選 1 件。`}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section
         style={{
           border: "1px solid #eadfda",
@@ -545,7 +968,11 @@ export default function BundleOfferCreateForm({
           background: "#fff",
         }}
       >
-        <h2>5. 設定優惠方案</h2>
+        <h2>
+          {bundleType === "mix_match"
+            ? "6. 設定優惠方案"
+            : "5. 設定優惠方案"}
+        </h2>
 
         <p>
           商品與數量確認後，再設定這一組的實際優惠售價。
@@ -558,16 +985,37 @@ export default function BundleOfferCreateForm({
             marginTop: 20,
           }}
         >
-          <div>
-            <strong>一般商品合計</strong>
-            <div style={{ fontSize: 24, marginTop: 6 }}>
-              NT${originalTotal.toLocaleString()}
+          {bundleType === "fixed_bundle" ? (
+            <div>
+              <strong>一般商品合計</strong>
+              <div style={{ fontSize: 24, marginTop: 6 }}>
+                NT${originalTotal.toLocaleString()}
+              </div>
             </div>
-          </div>
+          ) : bundleType === "mix_match" ? (
+            <div>
+              <strong>任選規則</strong>
+              <div style={{ fontSize: 18, marginTop: 6 }}>
+                任選 {requiredQuantity || "指定"} 件
+                {allowSameProduct ? "・可同款重複" : "・每款限 1 件"}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <strong>買送規則</strong>
+              <div style={{ fontSize: 18, marginTop: 6 }}>
+                買 {buyQuantity || "指定"} 送 {freeQuantity || "指定"}
+              </div>
+            </div>
+          )}
 
           <label>
             <div>
-              <strong>組合優惠價（NT$）</strong>
+              <strong>
+                {bundleType === "buy_get"
+                  ? "活動售價（NT$）"
+                  : "組合優惠價（NT$）"}
+              </strong>
             </div>
 
             <input
@@ -586,7 +1034,7 @@ export default function BundleOfferCreateForm({
             />
           </label>
 
-          {savings > 0 ? (
+          {bundleType === "fixed_bundle" && savings > 0 ? (
             <div>
               現省{" "}
               <strong>
@@ -605,10 +1053,101 @@ export default function BundleOfferCreateForm({
           background: "#fff",
         }}
       >
-        <h2>6. 建立前預覽</h2>
+        <h2>
+          {bundleType === "mix_match"
+            ? "7. 建立前預覽"
+            : "6. 建立前預覽"}
+        </h2>
 
-        {!selectedItems.length ? (
-          <p>選擇商品後，這裡會顯示完整組合摘要。</p>
+        {bundleType === "buy_get" ? (
+          buyProductId === null || freeProductId === null ? (
+            <p>
+              選擇購買商品與贈送商品後，
+              這裡會顯示完整活動摘要。
+            </p>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gap: 12,
+                marginTop: 16,
+              }}
+            >
+              <div>
+                <strong>
+                  {name.trim() || "尚未輸入組合優惠名稱"}
+                </strong>
+              </div>
+
+              <div>買送活動</div>
+
+              <div>
+                <strong>購買：</strong>
+                {
+                  products.find(
+                    (product) =>
+                      product.id === buyProductId
+                  )?.displayCode
+                }
+                {"　"}
+                {
+                  products.find(
+                    (product) =>
+                      product.id === buyProductId
+                  )?.name
+                }
+                {" × "}
+                {buyQuantity || "0"}
+              </div>
+
+              <div>
+                <strong>贈送：</strong>
+                {
+                  products.find(
+                    (product) =>
+                      product.id === freeProductId
+                  )?.displayCode
+                }
+                {"　"}
+                {
+                  products.find(
+                    (product) =>
+                      product.id === freeProductId
+                  )?.name
+                }
+                {" × "}
+                {freeQuantity || "0"}
+              </div>
+
+              <div>
+                買送規則：
+                買 {buyQuantity || "指定"} 送{" "}
+                {freeQuantity || "指定"}
+              </div>
+
+              <div>
+                活動售價：
+                {normalizedOfferPrice > 0
+                  ? `NT$${normalizedOfferPrice.toLocaleString()}`
+                  : "尚未設定"}
+              </div>
+
+              <div>
+                狀態：
+                {status === "active"
+                  ? "上架中"
+                  : status === "inactive"
+                    ? "下架"
+                    : status === "coming_soon"
+                      ? "新品預告"
+                      : "售罄"}
+              </div>
+            </div>
+          )
+        ) : !selectedItems.length ? (
+          <p>
+            選擇商品後，這裡會顯示完整組合摘要。
+          </p>
         ) : (
           <div
             style={{
@@ -624,7 +1163,9 @@ export default function BundleOfferCreateForm({
             </div>
 
             <div>
-              固定組合
+              {bundleType === "fixed_bundle"
+                ? "固定組合"
+                : "任選組合"}
             </div>
 
             <div>
@@ -641,17 +1182,34 @@ export default function BundleOfferCreateForm({
                     {product.displayCode}
                     {"　"}
                     {product.name}
-                    {" × "}
-                    {item.quantity}
+
+                    {bundleType === "fixed_bundle" ? (
+                      <>
+                        {" × "}
+                        {item.quantity}
+                      </>
+                    ) : (
+                      <>・可選</>
+                    )}
                   </div>
                 );
               })}
             </div>
 
-            <div>
-              一般商品合計：
-              NT${originalTotal.toLocaleString()}
-            </div>
+            {bundleType === "fixed_bundle" ? (
+              <div>
+                一般商品合計：
+                NT${originalTotal.toLocaleString()}
+              </div>
+            ) : (
+              <div>
+                任選規則：
+                任選 {requiredQuantity || "指定"} 件
+                {allowSameProduct
+                  ? "・可同款重複"
+                  : "・每款限 1 件"}
+              </div>
+            )}
 
             <div>
               優惠價：
@@ -660,7 +1218,8 @@ export default function BundleOfferCreateForm({
                 : "尚未設定"}
             </div>
 
-            {savings > 0 ? (
+            {bundleType === "fixed_bundle" &&
+            savings > 0 ? (
               <div>
                 現省：NT${savings.toLocaleString()}
               </div>

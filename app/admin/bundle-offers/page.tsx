@@ -79,18 +79,32 @@ export default async function BundleOffersPage() {
                       {statusLabel(offer.status)}
                     </p>
 
-                    <p>
-                      {offer.items.map((item) => (
-                        <span key={item.id}>
-                          {item.product.displayCode}
-                          {"　"}
-                          {item.product.name}
-                          {" × "}
-                          {item.quantity}
-                          {"　"}
-                        </span>
-                      ))}
-                    </p>
+                    {offer.bundleType === "mix_match" ? (
+                      <p>
+                        <strong>可選商品：</strong>
+                        {offer.items.map((item, index) => (
+                          <span key={item.id}>
+                            {index > 0 ? " ｜ " : ""}
+                            {item.product.displayCode}
+                            {"　"}
+                            {item.product.name}
+                          </span>
+                        ))}
+                      </p>
+                    ) : (
+                      <p>
+                        {offer.items.map((item) => (
+                          <span key={item.id}>
+                            {item.product.displayCode}
+                            {"　"}
+                            {item.product.name}
+                            {" × "}
+                            {item.quantity}
+                            {"　"}
+                          </span>
+                        ))}
+                      </p>
+                    )}
 
                     <p>
                       {offer.plans.map((plan) => (
