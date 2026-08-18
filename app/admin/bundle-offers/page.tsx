@@ -121,7 +121,7 @@ export default async function BundleOffersPage() {
                   <Link
                     href={`/admin/bundle-offers/${offer.id}`}
                   >
-                    查看
+                    編輯
                   </Link>
                 </div>
               </article>

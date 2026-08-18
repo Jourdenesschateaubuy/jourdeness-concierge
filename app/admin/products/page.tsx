@@ -1,13 +1,17 @@
 import { listDatabaseProducts } from "../../../lib/product-repository";
+import { listBundleOffers } from "../../../lib/bundle-offer-repository";
 import ProductManager from "./_components/ProductManager";
 import styles from "../admin.module.css";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminProductsPage() {
-  const databaseProducts = await listDatabaseProducts({
-    includeInactive: true,
-  });
+  const [databaseProducts, bundleOffers] = await Promise.all([
+    listDatabaseProducts({
+      includeInactive: true,
+    }),
+    listBundleOffers(),
+  ]);
 
   return (
     <div className={styles.page}>
@@ -22,7 +26,10 @@ export default async function AdminProductsPage() {
         <span className={styles.statusBadge}>可編輯</span>
       </header>
 
-      <ProductManager products={databaseProducts} />
+      <ProductManager
+        products={databaseProducts}
+        bundleOffers={bundleOffers}
+      />
     </div>
   );
 }

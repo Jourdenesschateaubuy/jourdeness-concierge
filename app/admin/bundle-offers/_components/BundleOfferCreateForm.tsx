@@ -15,8 +15,42 @@ type ProductOption = {
   series: string;
 };
 
+type BundleType =
+  | "fixed_bundle"
+  | "mix_match"
+  | "buy_get";
+
+type InitialBundleOffer = {
+  id: number;
+  name: string;
+  bundleType: BundleType;
+  unitLabel: string;
+  allowSameProduct: boolean;
+  status: string;
+  sortOrder: number;
+
+  items: Array<{
+    productId: number;
+    role: "fixed" | "option" | "buy" | "free";
+    quantity: number;
+    sortOrder: number;
+  }>;
+
+  plans: Array<{
+    code: string;
+    label: string;
+    requiredQuantity?: number;
+    buyQuantity?: number;
+    freeQuantity?: number;
+    priceAmount: number;
+    sortOrder: number;
+  }>;
+};
+
 type Props = {
   products: ProductOption[];
+  mode?: "create" | "edit";
+  initialOffer?: InitialBundleOffer;
 };
 
 type SelectedItem = {
@@ -26,41 +60,93 @@ type SelectedItem = {
 
 export default function BundleOfferCreateForm({
   products,
+  mode = "create",
+  initialOffer,
 }: Props) {
   const router = useRouter();
 
+  const initialPlan = initialOffer?.plans[0];
+
   const [bundleType, setBundleType] =
-    useState<"fixed_bundle" | "mix_match" | "buy_get">(
-      "fixed_bundle"
+    useState<BundleType>(
+      initialOffer?.bundleType ?? "fixed_bundle"
     );
 
-  const [name, setName] = useState("");
-  const [priceAmount, setPriceAmount] = useState("");
-  const [unitLabel, setUnitLabel] = useState("組");
-  const [status, setStatus] = useState("inactive");
+  const [name, setName] =
+    useState(initialOffer?.name ?? "");
+
+  const [priceAmount, setPriceAmount] =
+    useState(
+      initialPlan?.priceAmount != null
+        ? String(initialPlan.priceAmount)
+        : ""
+    );
+  const [unitLabel, setUnitLabel] = useState(initialOffer?.unitLabel ?? "組");
+  const [status, setStatus] =
+    useState(initialOffer?.status ?? "inactive");
 
   const [requiredQuantity, setRequiredQuantity] =
-    useState("3");
+    useState(
+      initialPlan?.requiredQuantity != null
+        ? String(initialPlan.requiredQuantity)
+        : "3"
+    );
 
   const [allowSameProduct, setAllowSameProduct] =
-    useState(true);
+    useState(initialOffer?.allowSameProduct ?? true);
 
   const [buyProductId, setBuyProductId] =
-    useState<number | null>(null);
+    useState<number | null>(
+      initialOffer?.items.find(
+        (item) => item.role === "buy"
+      )?.productId ?? null
+    );
 
   const [freeProductId, setFreeProductId] =
-    useState<number | null>(null);
+    useState<number | null>(
+      initialOffer?.items.find(
+        (item) => item.role === "free"
+      )?.productId ?? null
+    );
 
   const [buyQuantity, setBuyQuantity] =
-    useState("1");
+    useState(
+      initialPlan?.buyQuantity != null
+        ? String(initialPlan.buyQuantity)
+        : String(
+            initialOffer?.items.find(
+              (item) => item.role === "buy"
+            )?.quantity ?? 1
+          )
+    );
 
   const [freeQuantity, setFreeQuantity] =
-    useState("1");
+    useState(
+      initialPlan?.freeQuantity != null
+        ? String(initialPlan.freeQuantity)
+        : String(
+            initialOffer?.items.find(
+              (item) => item.role === "free"
+            )?.quantity ?? 1
+          )
+    );
 
   const [query, setQuery] = useState("");
+
   const [selectedItems, setSelectedItems] = useState<
     SelectedItem[]
-  >([]);
+  >(
+    initialOffer?.items
+      .filter(
+        (item) =>
+          item.role === "fixed" ||
+          item.role === "option"
+      )
+      .map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })) ?? []
+  );
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -304,10 +390,15 @@ export default function BundleOfferCreateForm({
                 ],
               };
 
+      const endpoint =
+        mode === "edit" && initialOffer
+          ? `/api/admin/bundle-offers/${initialOffer.id}`
+          : "/api/admin/bundle-offers";
+
       const response = await fetch(
-        "/api/admin/bundle-offers",
+        endpoint,
         {
-          method: "POST",
+          method: mode === "edit" ? "PUT" : "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -319,7 +410,7 @@ export default function BundleOfferCreateForm({
 
       if (!response.ok || !result?.ok) {
         throw new Error(
-          result?.error || "建立組合優惠失敗。"
+          result?.error || (mode === "edit" ? "更新組合優惠失敗。" : "建立組合優惠失敗。")
         );
       }
 
@@ -329,7 +420,7 @@ export default function BundleOfferCreateForm({
       setError(
         submitError instanceof Error
           ? submitError.message
-          : "建立組合優惠失敗。"
+          : mode === "edit" ? "更新組合優惠失敗。" : "建立組合優惠失敗。"
       );
     } finally {
       setSaving(false);
@@ -1261,8 +1352,12 @@ export default function BundleOfferCreateForm({
         }}
       >
         {saving
-          ? "建立中..."
-          : "建立組合優惠"}
+          ? mode === "edit"
+            ? "儲存中..."
+            : "建立中..."
+          : mode === "edit"
+            ? "儲存修改"
+            : "建立組合優惠"}
       </button>
     </div>
   );

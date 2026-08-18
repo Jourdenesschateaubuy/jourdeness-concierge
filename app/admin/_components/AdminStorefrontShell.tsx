@@ -264,8 +264,8 @@ export default function AdminStorefrontShell() {
             <a href="/admin/products/new?type=product">
               ＋ 新增一般商品
             </a>
-            <a href="/admin/products/new?type=combo">
-              ＋ 新增組合商品
+            <a href="/admin/bundle-offers/new">
+              ＋ 新增組合優惠
             </a>
           </div>
 
@@ -397,9 +397,9 @@ export default function AdminStorefrontShell() {
                 <strong>新增一般商品</strong>
                 <span>商品卡＋商品資訊一次建立</span>
               </a>
-              <a href="/admin/products/new?type=combo">
-                <strong>新增組合商品</strong>
-                <span>商品卡＋組合內容＋商品資訊一次建立</span>
+              <a href="/admin/bundle-offers/new">
+                <strong>新增組合優惠</strong>
+                <span>從既有一般商品建立固定組合、任選組合或買送活動</span>
               </a>
             </div>
           </details>

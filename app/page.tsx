@@ -6259,7 +6259,7 @@ const sevenSequenceGuideV377 = [
                       type="button"
                       onClick={() => {
                         window.location.href =
-                          "/admin/products/new?type=combo";
+                          "/admin/bundle-offers/new";
                       }}
                     >
                       <span className="admin-v2-create-option-icon">+</span>

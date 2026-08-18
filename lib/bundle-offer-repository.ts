@@ -418,6 +418,151 @@ export async function createBundleOffer(
   });
 }
 
+export async function updateBundleOffer(
+  id: number,
+  input: BundleOfferWriteInput
+) {
+  await validateStandardProducts(
+    input.items.map((item) => item.productId)
+  );
+
+  return withDbClient(async (client) => {
+    await client.query("BEGIN");
+
+    try {
+      const offerResult =
+        await client.query<BundleOfferRow>(
+          `
+            UPDATE bundle_offers
+            SET
+              name = $2,
+              bundle_type = $3,
+              unit_label = $4,
+              allow_same_product = $5,
+              cover_image = $6,
+              status = $7,
+              sort_order = $8,
+              updated_at = NOW()
+            WHERE id = $1
+            RETURNING *
+          `,
+          [
+            id,
+            input.name,
+            input.bundleType,
+            input.unitLabel || "組",
+            input.allowSameProduct ?? false,
+            input.coverImage || null,
+            input.status,
+            input.sortOrder ?? 0,
+          ]
+        );
+
+      if (!offerResult.rows[0]) {
+        await client.query("ROLLBACK");
+        return null;
+      }
+
+      await client.query(
+        `
+          DELETE FROM bundle_offer_items
+          WHERE bundle_offer_id = $1
+        `,
+        [id]
+      );
+
+      await client.query(
+        `
+          DELETE FROM bundle_offer_plans
+          WHERE bundle_offer_id = $1
+        `,
+        [id]
+      );
+
+      for (const item of input.items) {
+        await client.query(
+          `
+            INSERT INTO bundle_offer_items (
+              bundle_offer_id,
+              product_id,
+              role,
+              quantity,
+              sort_order
+            )
+            VALUES ($1,$2,$3,$4,$5)
+          `,
+          [
+            id,
+            item.productId,
+            item.role,
+            item.quantity,
+            item.sortOrder ?? 0,
+          ]
+        );
+      }
+
+      for (const plan of input.plans) {
+        await client.query(
+          `
+            INSERT INTO bundle_offer_plans (
+              bundle_offer_id,
+              code,
+              label,
+              required_quantity,
+              buy_quantity,
+              free_quantity,
+              price_amount,
+              sort_order,
+              updated_at
+            )
+            VALUES (
+              $1,$2,$3,$4,$5,$6,$7,$8,NOW()
+            )
+          `,
+          [
+            id,
+            plan.code,
+            plan.label,
+            plan.requiredQuantity ?? null,
+            plan.buyQuantity ?? null,
+            plan.freeQuantity ?? null,
+            plan.priceAmount,
+            plan.sortOrder ?? 0,
+          ]
+        );
+      }
+
+      await client.query("COMMIT");
+
+      return getBundleOffer(id);
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  });
+}
+export async function updateBundleOfferStatus(
+  id: number,
+  status: ProductStatus
+) {
+  const result = await dbQuery<BundleOfferRow>(
+    `
+      UPDATE bundle_offers
+      SET
+        status = $2,
+        updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+    `,
+    [id, status]
+  );
+
+  if (!result.rows[0]) {
+    return null;
+  }
+
+  return getBundleOffer(id);
+}
 export async function deleteBundleOffer(id: number) {
   const result = await dbQuery<{ id: number }>(
     `

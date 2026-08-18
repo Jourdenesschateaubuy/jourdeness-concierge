@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { createProductAction } from "../actions";
 import ProductForm from "../_components/ProductForm";
 import styles from "../../admin.module.css";
@@ -14,6 +15,10 @@ export default async function NewProductPage({
   searchParams,
 }: NewProductPageProps) {
   const params = await searchParams;
+
+  if (params.type === "combo") {
+    redirect("/admin/bundle-offers/new");
+  }
   const productType =
     params.type === "combo" ? "combo" : "product";
 
@@ -24,11 +29,11 @@ export default async function NewProductPage({
       <header className={styles.pageHeader}>
         <div>
           <p className={styles.eyebrow}>
-            {isCombo ? "NEW COMBO PRODUCT" : "NEW PRODUCT"}
+            "NEW PRODUCT"
           </p>
 
           <h1>
-            {isCombo ? "新增組合商品" : "新增一般商品"}
+            "新增一般商品"
           </h1>
 
           <p>
@@ -41,7 +46,7 @@ export default async function NewProductPage({
 
       <ProductForm
         action={createProductAction}
-        submitLabel={isCombo ? "建立組合商品" : "建立一般商品"}
+        submitLabel="建立一般商品"
         productType={productType}
       />
     </div>
