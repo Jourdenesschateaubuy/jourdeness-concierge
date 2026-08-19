@@ -102,7 +102,11 @@ export default function OrdersClient({
   const [autoRefreshEnabled, setAutoRefreshEnabled] =
     useState(true);
   const [lastRefreshAt, setLastRefreshAt] =
-    useState(() => new Date());
+    useState<Date | null>(null);
+
+  useEffect(() => {
+    setLastRefreshAt(new Date());
+  }, []);
 
   const filteredOrders = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -237,12 +241,14 @@ export default function OrdersClient({
 
           <small style={styles.lastRefreshText}>
             最近更新：
-            {lastRefreshAt.toLocaleTimeString(
-              "zh-TW",
-              {
-                hour12: false,
-              }
-            )}
+            {lastRefreshAt
+              ? lastRefreshAt.toLocaleTimeString(
+                  "zh-TW",
+                  {
+                    hour12: false,
+                  }
+                )
+              : "—"}
           </small>
         </div>
 

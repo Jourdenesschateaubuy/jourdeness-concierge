@@ -49,7 +49,7 @@ export default async function EditBundleOfferPage({
           <h1>編輯組合優惠</h1>
 
           <p>
-            修改既有組合優惠的商品、數量、優惠規則、價格與狀態。
+            修改組合優惠的優惠類型、商品、數量、優惠規則與價格。
           </p>
         </div>
       </header>

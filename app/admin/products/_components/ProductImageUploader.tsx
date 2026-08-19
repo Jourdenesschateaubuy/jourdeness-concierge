@@ -14,6 +14,9 @@ type ProductImageUploaderProps = {
   onUploadingChange?: (
     uploading: boolean
   ) => void;
+  onImageChange?: (
+    image: string
+  ) => void;
 };
 
 function mediaUrl(
@@ -25,6 +28,7 @@ function mediaUrl(
 export default function ProductImageUploader({
   initialImage = "",
   onUploadingChange,
+  onImageChange,
 }: ProductImageUploaderProps) {
   const [image, setImage] =
     useState(initialImage);
@@ -38,7 +42,11 @@ export default function ProductImageUploader({
   function selectAsset(
     asset: PickerMediaAsset
   ) {
-    setImage(mediaUrl(asset.id));
+    const nextImage =
+      mediaUrl(asset.id);
+
+    setImage(nextImage);
+    onImageChange?.(nextImage);
   }
 
   return (
@@ -77,9 +85,10 @@ export default function ProductImageUploader({
         {image ? (
           <button
             type="button"
-            onClick={() =>
-              setImage("")
-            }
+            onClick={() => {
+            setImage("");
+            onImageChange?.("");
+          }}
             style={styles.clearButton}
           >
             清除

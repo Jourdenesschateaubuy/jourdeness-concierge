@@ -1,0 +1,14 @@
+ALTER TABLE bundle_offers
+ADD COLUMN IF NOT EXISTS features JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+ALTER TABLE bundle_offers
+ADD COLUMN IF NOT EXISTS expanded_info JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+ALTER TABLE bundle_offers
+ADD COLUMN IF NOT EXISTS suitable_for JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+ALTER TABLE bundle_offers
+ADD COLUMN IF NOT EXISTS usage TEXT;
+
+ALTER TABLE bundle_offers
+ADD COLUMN IF NOT EXISTS gallery JSONB NOT NULL DEFAULT '[]'::jsonb;

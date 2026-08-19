@@ -1,0 +1,8 @@
+ALTER TABLE bundle_offers
+ADD COLUMN IF NOT EXISTS spec TEXT;
+
+ALTER TABLE bundle_offers
+ADD COLUMN IF NOT EXISTS expiry_note TEXT;
+
+ALTER TABLE bundle_offers
+ADD COLUMN IF NOT EXISTS intro TEXT;

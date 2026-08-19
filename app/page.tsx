@@ -103,6 +103,80 @@ type HomepageStorefrontSection = {
   productIds: number[];
 };
 
+type StorefrontBundleOfferItem = {
+  id: number;
+  productId: number;
+  role: "fixed" | "option" | "buy" | "free";
+  quantity: number;
+  sortOrder?: number;
+  product: {
+    id: number;
+    displayCode: string;
+    name: string;
+    image: string;
+    price: string;
+    status: StorefrontProductStatus;
+  };
+};
+
+type StorefrontBundleOfferPlan = {
+  id: number;
+  code: string;
+  label: string;
+  requiredQuantity?: number | null;
+  buyQuantity?: number | null;
+  freeQuantity?: number | null;
+  priceAmount?: number | null;
+  note?: string | null;
+  sortOrder?: number;
+};
+
+type StorefrontBundleOffer = {
+  id: number;
+  name: string;
+  bundleType: "fixed_bundle" | "mix_match" | "buy_get";
+  unitLabel: string;
+  allowSameProduct: boolean;
+  coverImage?: string;
+  cardSubtitle?: string;
+  cardOriginalPriceText?: string;
+  cardPriceText?: string;
+  storefrontCategory?: string;
+  series?: string;
+  spec?: string;
+  expiryNote?: string;
+  intro?: string;
+  features?: string[];
+  expandedInfo?: Array<{ title: string; content: string }>;
+  suitableFor?: string[];
+  usage?: string;
+  gallery?: string[];
+  status: StorefrontProductStatus;
+  sortOrder: number;
+  items: StorefrontBundleOfferItem[];
+  plans: StorefrontBundleOfferPlan[];
+};
+
+type BundleCartSelection = {
+  productId: number;
+  role: "fixed" | "option" | "buy" | "free";
+  name: string;
+  quantity: number;
+  image?: string;
+};
+
+type BundleCartItem = {
+  cartKey: string;
+  bundleOfferId: number;
+  name: string;
+  image?: string;
+  quantity: number;
+  planId: number;
+  planLabel: string;
+  price: number;
+  displayPriceText?: string;
+  selections: BundleCartSelection[];
+};
 function Home() {
   const [products, setProducts] = useState<StorefrontProduct[]>(
     () => fallbackProducts as StorefrontProduct[]
@@ -115,6 +189,8 @@ function Home() {
     useState<StorefrontCatalogSeries[]>([]);
   const [homepageStorefrontSections, setHomepageStorefrontSections] =
     useState<HomepageStorefrontSection[]>([]);
+  const [bundleOffers, setBundleOffers] =
+    useState<StorefrontBundleOffer[]>([]);
 function getComboConfig(productId: number): ComboConfig | null {
     const product = products.find((item) => item.id === productId);
     const databaseConfig = product?.comboConfig;
@@ -208,6 +284,8 @@ function getComboConfig(productId: number): ComboConfig | null {
   const [collectionViewLabel, setCollectionViewLabel] = useState("");
   const [expandedDrawerGroup, setExpandedDrawerGroup] = useState<string | null>("本月優惠");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [bundleCartItems, setBundleCartItems] =
+    useState<BundleCartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
@@ -218,6 +296,8 @@ function getComboConfig(productId: number): ComboConfig | null {
   const [collectionReturnScrollY, setCollectionReturnScrollY] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<Product | null>(null);
+  const [selectedBundleOffer, setSelectedBundleOffer] =
+    useState<StorefrontBundleOffer | null>(null);
   const [detailHistoryActive, setDetailHistoryActive] = useState(false);
   const [cartReturnProduct, setCartReturnProduct] = useState<Product | null>(null);
   const [cartStep, setCartStep] = useState<1 | 2>(1);
@@ -531,6 +611,46 @@ function getComboConfig(productId: number): ComboConfig | null {
     }
 
     void loadStorefrontProducts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadStorefrontBundleOffers() {
+      try {
+        const response = await fetch("/api/storefront/bundle-offers", {
+          cache: "no-store",
+        });
+
+        if (!response.ok) return;
+
+        const payload = await readJsonResponse<{
+          bundleOffers?: StorefrontBundleOffer[];
+        }>(
+          response,
+          "組合優惠資料同步失敗"
+        );
+
+        if (!cancelled) {
+          setBundleOffers(
+            Array.isArray(payload.bundleOffers)
+              ? payload.bundleOffers
+              : []
+          );
+        }
+      } catch (error) {
+        console.warn(
+          "[Jourdeness] 組合優惠資料同步失敗。",
+          error
+        );
+      }
+    }
+
+    void loadStorefrontBundleOffers();
 
     return () => {
       cancelled = true;
@@ -1376,10 +1496,19 @@ const sevenSequenceGuideV377 = [
 
   const lifestyleBrandEntries: { title: string; text: string }[] = [];
 
-  const cartTotalQuantity = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const bundleCartTotalQuantity =
+    bundleCartItems.reduce(
+      (total, item) =>
+        total + item.quantity,
+      0
+    );
+
+  const cartTotalQuantity =
+    cartItems.reduce(
+      (total, item) =>
+        total + item.quantity,
+      0
+    ) + bundleCartTotalQuantity;
   const cartPromotionSuggestionsV366 =
     buildCartPromotionSuggestionsV366(cartItems, getComboConfig);
 
@@ -1404,10 +1533,18 @@ const sevenSequenceGuideV377 = [
   const maskPromotionV361 = calculateMaskPromotionV361(maskBucketQuantityV361);
   const maskBucketRegularSubtotalV361 =
     maskBucketQuantityV361 * MASK_BUCKET_UNIT_PRICE_V361;
+  const bundleCartSubtotal =
+    bundleCartItems.reduce(
+      (total, item) =>
+        total + item.price * item.quantity,
+      0
+    );
+
   const cartEstimatedSubtotal =
     cartRegularSubtotalV361 -
     maskBucketRegularSubtotalV361 +
-    maskPromotionV361.totalPrice;
+    maskPromotionV361.totalPrice +
+    bundleCartSubtotal;
   const freeShippingThresholdV355 = 3000;
   const freeShippingRemainingV355 = Math.max(
     freeShippingThresholdV355 - cartEstimatedSubtotal,
@@ -1873,7 +2010,21 @@ const sevenSequenceGuideV377 = [
       setAdminSeriesSaving(false);
     }
   }
-  function handleDrawerCategory(category: MainCategory, series = "全部") {
+  function handleDrawerCategory(
+    category: MainCategory,
+    series = "\u5168\u90e8"
+  ) {
+    if (
+      category === "\u672c\u6708\u512a\u60e0" &&
+      series === "\u7d44\u5408\u512a\u60e0"
+    ) {
+      openCommerceFilter(
+        "deals-combo",
+        "\u7d44\u5408\u512a\u60e0"
+      );
+      return;
+    }
+
     setIsMenuOpen(false);
     jumpToCategory(category, series);
     openCollectionPage();
@@ -2485,6 +2636,34 @@ const sevenSequenceGuideV377 = [
     return getProductsByIds(recommendIds)
       .filter((product) => !currentIds.has(product.id) && !isCartDisabled(product))
       .slice(0, 4);
+  }
+
+  function openBundleOfferDetail(
+    offer: StorefrontBundleOffer
+  ) {
+    setSelectedDetailProduct(null);
+    setSelectedBundleOffer(offer);
+    setDetailGalleryIndex(0);
+
+    window.setTimeout(() => {
+      const scroller =
+        document.querySelector(
+          ".detail-backdrop"
+        );
+
+      if (
+        scroller instanceof HTMLElement
+      ) {
+        scroller.scrollTo({
+          top: 0,
+          behavior: "auto",
+        });
+      }
+    }, 0);
+  }
+
+  function closeBundleOfferDetail() {
+    setSelectedBundleOffer(null);
   }
 
   function openProductDetail(product: Product, pushHistory = true) {
@@ -4068,6 +4247,126 @@ const sevenSequenceGuideV377 = [
     setSubmitMessage("");
   }
 
+  function addBundleOfferToCart(
+    offer: StorefrontBundleOffer
+  ) {
+    const plan = offer.plans.find(
+      (item) =>
+        typeof item.priceAmount === "number" &&
+        Number.isFinite(item.priceAmount) &&
+        item.priceAmount > 0
+    );
+
+    if (!plan || typeof plan.priceAmount !== "number") {
+      setCartNotice("此組合尚未設定有效價格。");
+      return;
+    }
+
+    if (offer.bundleType !== "buy_get") {
+      setCartNotice("此組合類型將於下一階段接上選擇功能。");
+      return;
+    }
+
+    const buyItems = offer.items.filter(
+      (item) => item.role === "buy"
+    );
+
+    const freeItems = offer.items.filter(
+      (item) => item.role === "free"
+    );
+
+    if (
+      buyItems.length !== 1 ||
+      freeItems.length !== 1
+    ) {
+      setCartNotice("此買送優惠需要選擇商品，下一階段會接上選擇器。");
+      return;
+    }
+
+    const buyItem = buyItems[0];
+    const freeItem = freeItems[0];
+
+    const buyQuantity = Math.max(
+      1,
+      plan.buyQuantity ??
+        buyItem.quantity ??
+        1
+    );
+
+    const freeQuantity = Math.max(
+      1,
+      plan.freeQuantity ??
+        freeItem.quantity ??
+        1
+    );
+
+    const selections: BundleCartSelection[] = [
+      {
+        productId: buyItem.productId,
+        role: "buy",
+        name: buyItem.product.name,
+        quantity: buyQuantity,
+        image: buyItem.product.image || undefined,
+      },
+      {
+        productId: freeItem.productId,
+        role: "free",
+        name: freeItem.product.name,
+        quantity: freeQuantity,
+        image: freeItem.product.image || undefined,
+      },
+    ];
+
+    const cartKey =
+      "bundle-" +
+      offer.id +
+      "-plan-" +
+      plan.id +
+      "-buy-" +
+      buyItem.productId +
+      "-free-" +
+      freeItem.productId;
+
+    setBundleCartItems((currentItems) => {
+      const existing = currentItems.find(
+        (item) => item.cartKey === cartKey
+      );
+
+      if (existing) {
+        return currentItems.map((item) =>
+          item.cartKey === cartKey
+            ? {
+                ...item,
+                quantity: item.quantity + 1,
+              }
+            : item
+        );
+      }
+
+      const nextItem: BundleCartItem = {
+        cartKey,
+        bundleOfferId: offer.id,
+        name: offer.name,
+        image: offer.coverImage,
+        quantity: 1,
+        planId: plan.id,
+        planLabel: plan.label,
+        price: plan.priceAmount!,
+        displayPriceText: offer.cardPriceText,
+        selections,
+      };
+
+      return [
+        ...currentItems,
+        nextItem,
+      ];
+    });
+
+    setCartNotice("已加入購物車");
+    setSubmitStatus("idle");
+    setSubmitMessage("");
+  }
+
   function addToCart(product: Product) {
     if (isAdminMode && isAdminEditMode) {
       setManagedProductId(product.id);
@@ -4265,6 +4564,34 @@ const sevenSequenceGuideV377 = [
     );
   }
 
+  function updateBundleCartQuantity(
+    cartKey: string,
+    quantity: number
+  ) {
+    if (quantity <= 0) {
+      removeBundleCartItem(cartKey);
+      return;
+    }
+
+    setBundleCartItems((currentItems) =>
+      currentItems.map((item) =>
+        item.cartKey === cartKey
+          ? { ...item, quantity }
+          : item
+      )
+    );
+  }
+
+  function removeBundleCartItem(
+    cartKey: string
+  ) {
+    setBundleCartItems((currentItems) =>
+      currentItems.filter(
+        (item) => item.cartKey !== cartKey
+      )
+    );
+  }
+
   function removeFromCart(cartKey: string) {
     setCartItems((currentItems) =>
       currentItems.filter((item) => item.cartKey !== cartKey)
@@ -4278,6 +4605,7 @@ const sevenSequenceGuideV377 = [
     }
 
     setCartItems([]);
+    setBundleCartItems([]);
     setCartStep(1);
     setSubmitStatus("idle");
     setSubmitMessage("");
@@ -4380,11 +4708,24 @@ const sevenSequenceGuideV377 = [
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart);
 
-        if (Array.isArray(parsedCart)) {
+        const savedLegacyItems: Array<Record<string, any>> =
+          Array.isArray(parsedCart)
+            ? parsedCart
+            : Array.isArray(parsedCart?.cartItems)
+              ? parsedCart.cartItems
+              : [];
+
+        const savedBundleItems: Array<Record<string, any>> =
+          !Array.isArray(parsedCart) &&
+          Array.isArray(parsedCart?.bundleCartItems)
+            ? parsedCart.bundleCartItems
+            : [];
+
+        if (savedLegacyItems.length > 0) {
           const restoredCart: CartItem[] = [];
           let skippedLegacyCombo = false;
 
-          parsedCart.forEach((savedItem) => {
+          savedLegacyItems.forEach((savedItem) => {
             const productId = Number(savedItem?.id);
             const quantity = Number(savedItem?.quantity);
             const product = products.find((item) => item.id === productId);
@@ -4482,6 +4823,131 @@ const sevenSequenceGuideV377 = [
           if (skippedLegacyCombo) {
             setCartNotice("任選商品已更新，請重新選擇組合內容");
           }
+        }
+
+
+        const restoredBundleCart: BundleCartItem[] = [];
+
+        savedBundleItems.forEach((savedItem) => {
+          const bundleOfferId = Number(savedItem?.bundleOfferId);
+          const planId = Number(savedItem?.planId);
+          const quantity = Number(savedItem?.quantity);
+          const price = Number(savedItem?.price);
+          const name =
+            typeof savedItem?.name === "string"
+              ? savedItem.name.trim()
+              : "";
+
+          if (
+            !Number.isInteger(bundleOfferId) ||
+            bundleOfferId <= 0 ||
+            !Number.isInteger(planId) ||
+            planId <= 0 ||
+            !Number.isFinite(quantity) ||
+            quantity <= 0 ||
+            !Number.isFinite(price) ||
+            price <= 0 ||
+            !name
+          ) {
+            return;
+          }
+
+          const rawSelections: Array<Record<string, any>> =
+            Array.isArray(savedItem?.selections)
+              ? savedItem.selections
+              : [];
+
+          const selections: BundleCartSelection[] =
+            rawSelections
+              .map((selection) => {
+                const productId = Number(selection?.productId);
+                const selectionQuantity = Number(selection?.quantity);
+                const role = selection?.role;
+                const selectionName =
+                  typeof selection?.name === "string"
+                    ? selection.name.trim()
+                    : "";
+
+                const validRole =
+                  role === "fixed" ||
+                  role === "option" ||
+                  role === "buy" ||
+                  role === "free";
+
+                if (
+                  !Number.isInteger(productId) ||
+                  productId <= 0 ||
+                  !Number.isFinite(selectionQuantity) ||
+                  selectionQuantity <= 0 ||
+                  !validRole ||
+                  !selectionName
+                ) {
+                  return null;
+                }
+
+                const restoredSelection: BundleCartSelection = {
+                  productId,
+                  role,
+                  name: selectionName,
+                  quantity: Math.max(
+                    1,
+                    Math.floor(selectionQuantity)
+                  ),
+                  image:
+                    typeof selection?.image === "string"
+                      ? selection.image
+                      : undefined,
+                };
+
+                return restoredSelection;
+              })
+              .filter(
+                (selection): selection is BundleCartSelection =>
+                  selection !== null
+              );
+
+          if (selections.length === 0) {
+            return;
+          }
+
+          const cartKey =
+            typeof savedItem?.cartKey === "string" &&
+            savedItem.cartKey.trim()
+              ? savedItem.cartKey
+              :
+                "bundle-" +
+                bundleOfferId +
+                "-plan-" +
+                planId;
+
+          restoredBundleCart.push({
+            cartKey,
+            bundleOfferId,
+            name,
+            image:
+              typeof savedItem?.image === "string"
+                ? savedItem.image
+                : undefined,
+            quantity: Math.min(
+              Math.max(Math.floor(quantity), 1),
+              99
+            ),
+            planId,
+            planLabel:
+              typeof savedItem?.planLabel === "string"
+                ? savedItem.planLabel
+                : "",
+            price,
+            displayPriceText:
+              typeof savedItem?.displayPriceText === "string"
+                ? savedItem.displayPriceText
+                : undefined,
+            selections,
+          });
+        });
+
+        if (restoredBundleCart.length > 0) {
+          setBundleCartItems(restoredBundleCart);
         }
       }
 
@@ -4583,26 +5049,54 @@ const sevenSequenceGuideV377 = [
   useEffect(() => {
     if (!hasRestoredSavedDraft) return;
 
-    if (cartItems.length === 0) {
+    if (
+      cartItems.length === 0 &&
+      bundleCartItems.length === 0
+    ) {
       window.localStorage.removeItem(CART_STORAGE_KEY);
       return;
     }
 
+    const savedPayload = {
+      version: 2,
+      cartItems: cartItems.map((item) => ({
+        id: item.product.id,
+        quantity: item.quantity,
+        cartKey: item.cartKey,
+        comboPlanId: item.comboPlanId,
+        comboPlanLabel: item.comboPlanLabel,
+        comboSelections: item.comboSelections,
+        comboPrice: item.comboPrice,
+      })),
+      bundleCartItems: bundleCartItems.map((item) => ({
+        cartKey: item.cartKey,
+        bundleOfferId: item.bundleOfferId,
+        name: item.name,
+        image: item.image,
+        quantity: item.quantity,
+        planId: item.planId,
+        planLabel: item.planLabel,
+        price: item.price,
+        displayPriceText: item.displayPriceText,
+        selections: item.selections.map((selection) => ({
+          productId: selection.productId,
+          role: selection.role,
+          name: selection.name,
+          quantity: selection.quantity,
+          image: selection.image,
+        })),
+      })),
+    };
+
     window.localStorage.setItem(
       CART_STORAGE_KEY,
-      JSON.stringify(
-        cartItems.map((item) => ({
-          id: item.product.id,
-          quantity: item.quantity,
-          cartKey: item.cartKey,
-          comboPlanId: item.comboPlanId,
-          comboPlanLabel: item.comboPlanLabel,
-          comboSelections: item.comboSelections,
-          comboPrice: item.comboPrice,
-        }))
-      )
+      JSON.stringify(savedPayload)
     );
-  }, [cartItems, hasRestoredSavedDraft]);
+  }, [
+    cartItems,
+    bundleCartItems,
+    hasRestoredSavedDraft,
+  ]);
 
   useEffect(() => {
     if (!hasRestoredSavedDraft) return;
@@ -4714,10 +5208,246 @@ const sevenSequenceGuideV377 = [
     }
   }
 
+  async function validateBundleCartBeforeSubmit() {
+    if (bundleCartItems.length === 0) {
+      return {
+        ok: true,
+        changed: false,
+        fetchFailed: false,
+        refreshedItems: [] as BundleCartItem[],
+        invalidNames: [] as string[],
+      };
+    }
+
+    try {
+      const response = await fetch(
+        "/api/storefront/bundle-offers",
+        {
+          cache: "no-store",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "組合優惠狀態讀取失敗"
+        );
+      }
+
+      const payload = (await response.json()) as {
+        bundleOffers?: StorefrontBundleOffer[];
+      };
+
+      const latestById = new Map(
+        (payload.bundleOffers ?? []).map(
+          (offer) => [offer.id, offer]
+        )
+      );
+
+      const refreshedItems: BundleCartItem[] = [];
+      const invalidNames: string[] = [];
+      let changed = false;
+
+      bundleCartItems.forEach((cartItem) => {
+        const offer =
+          latestById.get(cartItem.bundleOfferId);
+
+        if (
+          !offer ||
+          offer.status !== "active"
+        ) {
+          invalidNames.push(cartItem.name);
+          return;
+        }
+
+        const plan = offer.plans.find(
+          (item) =>
+            item.id === cartItem.planId
+        );
+
+        const latestPrice =
+          plan?.priceAmount;
+
+        if (
+          !plan ||
+          typeof latestPrice !== "number" ||
+          !Number.isFinite(latestPrice) ||
+          latestPrice <= 0
+        ) {
+          invalidNames.push(cartItem.name);
+          return;
+        }
+
+        /*
+          目前正式可下單的 Bundle 路徑
+          只有 buy_get。
+          fixed_bundle / mix_match 接上後，
+          再擴充這裡的驗證規則。
+        */
+        if (offer.bundleType !== "buy_get") {
+          invalidNames.push(cartItem.name);
+          return;
+        }
+
+        const buyItems = offer.items.filter(
+          (item) => item.role === "buy"
+        );
+
+        const freeItems = offer.items.filter(
+          (item) => item.role === "free"
+        );
+
+        if (
+          buyItems.length !== 1 ||
+          freeItems.length !== 1
+        ) {
+          invalidNames.push(cartItem.name);
+          return;
+        }
+
+        const buyItem = buyItems[0];
+        const freeItem = freeItems[0];
+
+        if (
+          buyItem.product.status !== "active" ||
+          freeItem.product.status !== "active"
+        ) {
+          invalidNames.push(cartItem.name);
+          return;
+        }
+
+        const expectedBuyQuantity = Math.max(
+          1,
+          plan.buyQuantity ??
+            buyItem.quantity ??
+            1
+        );
+
+        const expectedFreeQuantity = Math.max(
+          1,
+          plan.freeQuantity ??
+            freeItem.quantity ??
+            1
+        );
+
+        const buySelection =
+          cartItem.selections.find(
+            (selection) =>
+              selection.role === "buy"
+          );
+
+        const freeSelection =
+          cartItem.selections.find(
+            (selection) =>
+              selection.role === "free"
+          );
+
+        if (
+          cartItem.selections.length !== 2 ||
+          !buySelection ||
+          !freeSelection ||
+          buySelection.productId !==
+            buyItem.productId ||
+          freeSelection.productId !==
+            freeItem.productId ||
+          buySelection.quantity !==
+            expectedBuyQuantity ||
+          freeSelection.quantity !==
+            expectedFreeQuantity
+        ) {
+          invalidNames.push(cartItem.name);
+          return;
+        }
+
+        const refreshedSelections:
+          BundleCartSelection[] = [
+            {
+              productId: buyItem.productId,
+              role: "buy",
+              name: buyItem.product.name,
+              quantity: expectedBuyQuantity,
+              image:
+                buyItem.product.image ||
+                undefined,
+            },
+            {
+              productId: freeItem.productId,
+              role: "free",
+              name: freeItem.product.name,
+              quantity: expectedFreeQuantity,
+              image:
+                freeItem.product.image ||
+                undefined,
+            },
+          ];
+
+        const refreshedItem:
+          BundleCartItem = {
+            ...cartItem,
+            name: offer.name,
+            image:
+              offer.coverImage ||
+              undefined,
+            planLabel: plan.label,
+            price: latestPrice,
+            displayPriceText:
+              offer.cardPriceText,
+            selections:
+              refreshedSelections,
+          };
+
+        const itemChanged =
+          cartItem.name !==
+            refreshedItem.name ||
+          cartItem.image !==
+            refreshedItem.image ||
+          cartItem.planLabel !==
+            refreshedItem.planLabel ||
+          cartItem.price !==
+            refreshedItem.price ||
+          cartItem.displayPriceText !==
+            refreshedItem.displayPriceText ||
+          JSON.stringify(
+            cartItem.selections
+          ) !==
+            JSON.stringify(
+              refreshedItem.selections
+            );
+
+        if (itemChanged) {
+          changed = true;
+        }
+
+        refreshedItems.push(
+          refreshedItem
+        );
+      });
+
+      return {
+        ok: invalidNames.length === 0,
+        changed,
+        fetchFailed: false,
+        refreshedItems,
+        invalidNames,
+      };
+    } catch {
+      return {
+        ok: false,
+        changed: false,
+        fetchFailed: true,
+        refreshedItems:
+          bundleCartItems,
+        invalidNames: [] as string[],
+      };
+    }
+  }
+
   async function submitOrder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (cartItems.length === 0) {
+    if (
+      cartItems.length === 0 &&
+      bundleCartItems.length === 0
+    ) {
       setSubmitStatus("error");
       setSubmitMessage("請先加入商品到購物車。");
       return;
@@ -4738,6 +5468,41 @@ const sevenSequenceGuideV377 = [
         `以下商品目前新品預告、補貨中或暫停販售，已從購物車移除：${unavailableItems
           .map((item) => item.product.name)
           .join("、")}`
+      );
+      return;
+    }
+
+    const bundleValidation =
+      await validateBundleCartBeforeSubmit();
+
+    if (bundleValidation.fetchFailed) {
+      setSubmitStatus("error");
+      setSubmitMessage(
+        "目前無法確認組合優惠最新狀態，請稍後再試。"
+      );
+      return;
+    }
+
+    if (!bundleValidation.ok) {
+      setBundleCartItems(
+        bundleValidation.refreshedItems
+      );
+      setSubmitStatus("error");
+      setSubmitMessage(
+        bundleValidation.invalidNames.length > 0
+          ? `以下組合優惠已更新或暫停販售，已從購物車移除：${bundleValidation.invalidNames.join("、")}`
+          : "組合優惠目前無法購買，請重新確認購物車。"
+      );
+      return;
+    }
+
+    if (bundleValidation.changed) {
+      setBundleCartItems(
+        bundleValidation.refreshedItems
+      );
+      setSubmitStatus("error");
+      setSubmitMessage(
+        "組合優惠的價格或內容已更新，請確認購物車後再送出訂單。"
       );
       return;
     }
@@ -4790,9 +5555,44 @@ const sevenSequenceGuideV377 = [
           )
           .join("\n");
 
+
         return `${item.product.name} × ${item.quantity}｜${getCartItemDisplayPrice(item)}${
           comboDetails ? `\n${comboDetails}` : ""
         }`;
+      })
+      .join("\n");
+
+    const bundleItemsText = bundleCartItems
+      .map((item) => {
+        const selectionDetails = item.selections
+          .map((selection) => {
+            const roleLabel =
+              selection.role === "buy"
+                ? "購"
+                : selection.role === "free"
+                  ? "贈"
+                  : selection.role === "fixed"
+                    ? "組合"
+                    : "選";
+
+            return `${roleLabel}：${selection.name} × ${selection.quantity}`;
+          })
+          .join("\n");
+
+        const priceText =
+          "NT$" +
+          item.price.toLocaleString("zh-TW");
+
+        return [
+          `${item.name} × ${item.quantity}`,
+          item.planLabel
+            ? `方案：${item.planLabel}`
+            : "",
+          `價格：${priceText}`,
+          selectionDetails,
+        ]
+          .filter(Boolean)
+          .join("\n");
       })
       .join("\n");
     const maskPromotionOrderText = maskBucketQuantityV361 > 0
@@ -4809,7 +5609,7 @@ const sevenSequenceGuideV377 = [
           .filter(Boolean)
           .join("｜")
       : "";
-    const itemsText = [productItemsText, maskPromotionOrderText]
+    const itemsText = [productItemsText, bundleItemsText, maskPromotionOrderText]
       .filter(Boolean)
       .join("\n");
 
@@ -4854,7 +5654,8 @@ const sevenSequenceGuideV377 = [
       address: customer.address.trim(),
       note: noteWithAddress,
       itemsText,
-      items: cartItems.map((item) => ({
+      items: [
+        ...cartItems.map((item) => ({
         id: item.product.id,
         name: item.product.name,
         category: item.product.category,
@@ -4874,6 +5675,52 @@ const sevenSequenceGuideV377 = [
         comboPlan: item.comboPlanLabel || "",
         comboSelections: item.comboSelections ?? [],
       })),
+
+        ...bundleCartItems.map((item) => ({
+          id: item.bundleOfferId,
+          bundleOfferId: item.bundleOfferId,
+          bundlePlanId: item.planId,
+          name: item.name,
+          category: "組合優惠",
+          series: "組合優惠",
+          originalPrice: "",
+          price:
+            "NT$" +
+            item.price.toLocaleString("zh-TW"),
+          comboPrice: item.price,
+          description: item.selections
+            .map((selection) => {
+              const roleLabel =
+                selection.role === "buy"
+                  ? "購"
+                  : selection.role === "free"
+                    ? "贈"
+                    : selection.role === "fixed"
+                      ? "組合"
+                      : "選";
+
+              return (
+                roleLabel +
+                "：" +
+                selection.name +
+                " × " +
+                selection.quantity
+              );
+            })
+            .join("、"),
+          quantity: item.quantity,
+          tags: "組合優惠",
+          combo: "Bundle Offer",
+          comboPlan: item.planLabel || "",
+          comboSelections: item.selections.map((selection) => ({
+            optionId: String(selection.productId),
+            productId: selection.productId,
+            role: selection.role,
+            name: selection.name,
+            quantity: selection.quantity,
+          })),
+        })),
+      ],
     };
 
     try {
@@ -4897,6 +5744,7 @@ const sevenSequenceGuideV377 = [
       setSubmitStatus("success");
       setSubmitMessage("");
       setCartItems([]);
+      setBundleCartItems([]);
       setCustomer({
         customerName: "",
         lineId: "",
@@ -5977,7 +6825,9 @@ const sevenSequenceGuideV377 = [
             </section>
           )}
 
-          {activeQuickFilterLayout && quickFilterPromoProducts.length > 0 && (
+          {commerceFilter !== "deals-combo" &&
+            activeQuickFilterLayout &&
+            quickFilterPromoProducts.length > 0 && (
             <section className="quick-filter-section-v364 promo">
               <div className="quick-filter-heading-v364">
                 <h3>{activeQuickFilterLayout.promoTitle}</h3>
@@ -5990,7 +6840,91 @@ const sevenSequenceGuideV377 = [
             </section>
           )}
 
-          {quickFilterRegularProducts.length > 0 ? (
+          {commerceFilter === "deals-combo" && (
+            bundleOffers.filter(
+              (offer) =>
+                offer.storefrontCategory === "\u672c\u6708\u512a\u60e0"
+            ).length > 0 ? (
+              <section className="quick-filter-section-v364 bundle-offer-section-v1">
+                <div className="quick-filter-heading-v364">
+                  <h3>組合優惠</h3>
+                </div>
+
+                <div className="home-product-grid collection-product-grid collection-grid-v22">
+                  {bundleOffers
+                    .filter(
+                      (offer) =>
+                        offer.storefrontCategory === "\u672c\u6708\u512a\u60e0"
+                    )
+                    .map((offer) => {
+                    return (
+                      <article
+                        className="product-card commerce-product-card shelf-card-v271 compact-commerce-card-v350 bundle-offer-card-v1"
+                        key={`bundle-offer-${offer.id}`}
+                      >
+                        {offer.coverImage ? (
+                          <div className="product-image">
+                            <img
+                              src={offer.coverImage}
+                              alt={offer.name}
+                              loading="lazy"
+                            />
+                          </div>
+                        ) : (
+                          <div className="product-image">
+                            <span>組合優惠</span>
+                          </div>
+                        )}
+
+                        <div className="product-info">
+                          <div className="product-card-title-zone-v365">
+                            <div className="product-card-title-slot-v364">
+                              <h3>{offer.name}</h3>
+                            </div>
+                          </div>
+
+                          <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
+                            {offer.cardOriginalPriceText ? (
+                              <p className="original-price">
+                                {offer.cardOriginalPriceText}
+                              </p>
+                            ) : null}
+
+                            {offer.cardPriceText ? (
+                              <p className="price">
+                                {offer.cardPriceText}
+                              </p>
+                            ) : null}
+                          </div>
+
+                          <div className="product-card-actions-v358">
+                            <button
+                              type="button"
+                              className="add-cart-button compact-add-cart-v350 cart-card-button-v358"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                openBundleOfferDetail(offer);
+                              }}
+                            >
+                              <span>查看詳情</span>
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : (
+              <div className="collection-empty-card collection-empty-v22">
+                <h3>目前沒有上架中的組合優惠</h3>
+                <p>請先到後台啟用組合優惠。</p>
+              </div>
+            )
+          )}
+
+          {commerceFilter !== "deals-combo" && (quickFilterRegularProducts.length > 0 ? (
             <section className="quick-filter-section-v364">
               {activeQuickFilterLayout && (
                 <div className="quick-filter-heading-v364">
@@ -6011,7 +6945,7 @@ const sevenSequenceGuideV377 = [
                 看本月主打優惠
               </button>
             </div>
-          ) : null}
+          ) : null)}
         </section>
       )}
 
@@ -6621,7 +7555,7 @@ const sevenSequenceGuideV377 = [
               </button>
             </div>
 
-            {cartItems.length > 0 ? (
+            {(cartItems.length > 0 || bundleCartItems.length > 0) ? (
               <>
                 <div className="checkout-step-strip checkout-step-strip-v355" aria-label="訂購流程">
                   <div className={cartStep >= 1 ? "active" : ""}>
@@ -6802,6 +7736,96 @@ const sevenSequenceGuideV377 = [
                                   onClick={() => removeFromCart(item.cartKey)}
                                 >
                                   刪除
+                                </button>
+                              </div>
+                            </div>
+                          </article>
+                        ))}
+
+                        {bundleCartItems.map((item) => (
+                          <article
+                            className="cart-item-row-v355"
+                            key={item.cartKey}
+                          >
+                            <div className="cart-item-image-v355">
+                              {item.image ? (
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                />
+                              ) : (
+                                <span>商品圖</span>
+                              )}
+                            </div>
+
+                            <div className="cart-item-copy-v355">
+                              <small>組合優惠</small>
+                              <h3>{item.name}</h3>
+
+                              <strong>
+                                {"NT$" + item.price.toLocaleString("zh-TW")}
+                              </strong>
+
+                              {item.selections.length > 0 && (
+                                <div className="cart-combo-details-v360">
+                                  <div>
+                                    {item.selections.map((selection, index) => (
+                                      <span
+                                        key={item.cartKey + "-" + selection.productId + "-" + selection.role + "-" + index}
+                                      >
+                                        {selection.role === "buy" ? "購：" : ""}
+                                        {selection.role === "free" ? "贈：" : ""}
+                                        {selection.name} × {selection.quantity}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="cart-item-actions-v355">
+                                <div
+                                  className="cart-quantity-v355"
+                                  aria-label={item.name + " 數量"}
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      updateBundleCartQuantity(
+                                        item.cartKey,
+                                        item.quantity - 1
+                                      )
+                                    }
+                                    aria-label="減少數量"
+                                  >
+                                    −
+                                  </button>
+
+                                  <span>{item.quantity}</span>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      updateBundleCartQuantity(
+                                        item.cartKey,
+                                        item.quantity + 1
+                                      )
+                                    }
+                                    aria-label="增加數量"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  className="cart-remove-v355"
+                                  onClick={() =>
+                                    removeBundleCartItem(
+                                      item.cartKey
+                                    )
+                                  }
+                                >
+                                  移除
                                 </button>
                               </div>
                             </div>
@@ -7305,6 +8329,277 @@ const sevenSequenceGuideV377 = [
                   ))}
                 </div>
               </section>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {selectedBundleOffer && (
+        <section
+          className="detail-backdrop bundle-offer-detail-v1"
+          onClick={closeBundleOfferDetail}
+        >
+          <div
+            className="detail-panel"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
+            <div className="detail-header">
+              <button
+                className="detail-close"
+                onClick={closeBundleOfferDetail}
+              >
+                ‹
+              </button>
+
+              <h2>商品詳情</h2>
+
+              <div style={{ width: 72 }} />
+            </div>
+
+            <div
+              className="detail-gallery-v291 detail-gallery-v355"
+              aria-label="商品圖片"
+            >
+              {selectedBundleOffer.coverImage ? (
+                <div className="detail-gallery-shell-v355">
+                  <div className="detail-gallery-track-v291 detail-gallery-track-v355">
+                    <figure className="detail-gallery-item-v291 detail-gallery-item-v355">
+                      <img
+                        src={selectedBundleOffer.coverImage}
+                        alt={selectedBundleOffer.name}
+                      />
+                    </figure>
+                  </div>
+                </div>
+              ) : (
+                <div className="image-placeholder detail-placeholder detail-placeholder-v291">
+                  <span>Jourdeness Castle</span>
+                  <strong>圖片更新中</strong>
+                </div>
+              )}
+            </div>
+
+            <div className="detail-content commerce-detail-content-v21">
+              <div className="detail-title-row commerce-detail-title-v21">
+                <div>
+                  <div className="detail-commerce-badge-row">
+                    <p className="series-label">
+                      {selectedBundleOffer.series || "組合優惠"}
+                    </p>
+
+                    <span className="detail-commerce-badge">
+                      組合優惠
+                    </span>
+                  </div>
+
+                  <h1>{selectedBundleOffer.name}</h1>
+
+                  {selectedBundleOffer.cardSubtitle ? (
+                    <p className="detail-description">
+                      {selectedBundleOffer.cardSubtitle}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+
+              <section
+                className="detail-price-hero-v273"
+                aria-label="優惠價格"
+              >
+                <div>
+                  <p>優惠價格</p>
+
+                  {selectedBundleOffer.cardOriginalPriceText ? (
+                    <span className="original-price">
+                      {selectedBundleOffer.cardOriginalPriceText}
+                    </span>
+                  ) : null}
+
+                  {selectedBundleOffer.cardPriceText ? (
+                    <strong className="price">
+                      {selectedBundleOffer.cardPriceText}
+                    </strong>
+                  ) : null}
+                </div>
+
+                <div className="detail-price-actions-v273">
+                  <button
+                    type="button"
+                    className="primary"
+                    onClick={() =>
+                      addBundleOfferToCart(
+                        selectedBundleOffer
+                      )
+                    }
+                  >
+                    加入購物車
+                  </button>
+                </div>
+              </section>
+
+              <section className="detail-info-block product-summary-card commerce-summary-v21">
+                <h3>商品資訊</h3>
+
+                <div className="product-info-lines product-info-lines-v316">
+                  {selectedBundleOffer.spec ? (
+                    <div className="product-info-row-v316 product-spec-row-v316">
+                      <span className="product-info-label-v316">
+                        規格／組合內容
+                      </span>
+
+                      <p>{selectedBundleOffer.spec}</p>
+                    </div>
+                  ) : null}
+
+                  {selectedBundleOffer.expiryNote ? (
+                    <div className="product-info-row-v316 product-expiry-row-v316">
+                      <span className="product-info-label-v316">
+                        效期
+                      </span>
+
+                      <p>{selectedBundleOffer.expiryNote}</p>
+                    </div>
+                  ) : null}
+                </div>
+
+                {selectedBundleOffer.intro ? (
+                  <p className="product-intro-text">
+                    {selectedBundleOffer.intro}
+                  </p>
+                ) : null}
+              </section>
+
+              <section
+                className="detail-service-grid-v21"
+                aria-label="購買服務提醒"
+              >
+                <div>
+                  <strong>滿額免運</strong>
+                  <span>滿 NT$3,000 享免運</span>
+                </div>
+
+                <div>
+                  <strong>宅配出貨</strong>
+                  <span>目前僅提供宅配</span>
+                </div>
+
+                <div>
+                  <strong>LINE 確認</strong>
+                  <span>庫存效期確認</span>
+                </div>
+              </section>
+
+              {/* Bundle Offer 03-07 */}
+
+              {(selectedBundleOffer.features?.length ?? 0) > 0 && (
+                <section className="detail-info-block">
+                  <h3>商品特色</h3>
+
+                  {selectedBundleOffer.features?.map(
+                    (bullet, index) => (
+                      <p
+                        key={`bundle-feature-${selectedBundleOffer.id}-${index}`}
+                      >
+                        ・{bullet}
+                      </p>
+                    )
+                  )}
+                </section>
+              )}
+
+              {(selectedBundleOffer.expandedInfo?.length ?? 0) > 0 ? (
+                <details className="detail-more-v377">
+                  <summary>
+                    <span>了解更多</span>
+                    <small>展開完整產品資訊</small>
+                  </summary>
+
+                  <div className="detail-more-content-v377">
+                    {selectedBundleOffer.expandedInfo?.map(
+                      (item, index) => (
+                        <section
+                          key={`bundle-more-${selectedBundleOffer.id}-${index}`}
+                        >
+                          <h4>{item.title}</h4>
+                          <p>{item.content}</p>
+                        </section>
+                      )
+                    )}
+                  </div>
+                </details>
+              ) : null}
+
+              {(selectedBundleOffer.suitableFor?.length ?? 0) > 0 && (
+                <section className="detail-info-block">
+                  <h3>適合需求</h3>
+
+                  <div className="detail-suitable-tags">
+                    {selectedBundleOffer.suitableFor?.map(
+                      (item, index) => (
+                        <span
+                          key={`bundle-suitable-${selectedBundleOffer.id}-${index}`}
+                        >
+                          {item}
+                        </span>
+                      )
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {selectedBundleOffer.usage ? (
+                <section className="detail-info-block">
+                  <h3>使用方式</h3>
+                  <p>{selectedBundleOffer.usage}</p>
+                </section>
+              ) : null}
+
+              {(selectedBundleOffer.gallery?.length ?? 0) > 0 && (
+                <section className="detail-info-block">
+                  <div className="related-heading related-heading-v22">
+                    <h3>更多商品圖片</h3>
+                    <span>查看更多商品與組合內容</span>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(2, minmax(0, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    {selectedBundleOffer.gallery?.map(
+                      (image, index) => (
+                        <figure
+                          key={`bundle-gallery-${selectedBundleOffer.id}-${index}`}
+                          style={{
+                            margin: 0,
+                            overflow: "hidden",
+                            borderRadius: 16,
+                            border:
+                              "1px solid rgba(170, 120, 90, 0.18)",
+                            background: "#fff",
+                          }}
+                        >
+                          <img
+                            src={image}
+                            alt={`${selectedBundleOffer.name} 圖片 ${index + 1}`}
+                            loading="lazy"
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "auto",
+                            }}
+                          />
+                        </figure>
+                      )
+                    )}
+                  </div>
+                </section>
+              )}
             </div>
           </div>
         </section>

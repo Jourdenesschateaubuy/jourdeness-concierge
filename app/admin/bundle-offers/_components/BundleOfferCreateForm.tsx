@@ -349,6 +349,11 @@ export default function BundleOfferCreateForm({
     setCoverPickerOpen(false);
   }
 
+  const sectionNumber = (createNumber: number) =>
+    mode === "edit"
+      ? createNumber - 1
+      : createNumber;
+
   async function handleSubmit() {
     setError("");
 
@@ -358,7 +363,7 @@ export default function BundleOfferCreateForm({
       return;
     }
 
-    if (!coverImage) {
+    if (mode !== "edit" && !coverImage) {
       setError("請從 Media Library 選擇組合優惠主圖。");
       return;
     }
@@ -604,6 +609,8 @@ export default function BundleOfferCreateForm({
         maxWidth: 1100,
       }}
     >
+      {mode !== "edit" && (
+        <>
       <section
         style={{
           border: "1px solid #eadfda",
@@ -725,6 +732,8 @@ export default function BundleOfferCreateForm({
         }
         onSelect={selectCoverImage}
       />
+        </>
+      )}
 
       <section
         style={{
@@ -794,6 +803,8 @@ export default function BundleOfferCreateForm({
         </div>
       </section>
 
+      {mode !== "edit" && (
+        <>
       <section
         style={{
           border: "1px solid #eadfda",
@@ -848,6 +859,8 @@ export default function BundleOfferCreateForm({
           </label>
         </div>
       </section>
+        </>
+      )}
 
       <section
         style={{
@@ -858,7 +871,7 @@ export default function BundleOfferCreateForm({
         }}
       >
         <h2>
-          3. {bundleType === "buy_get"
+          {sectionNumber(3)}. {bundleType === "buy_get"
             ? "選擇買送商品"
             : "從一般商品選擇"}
         </h2>
@@ -1151,7 +1164,7 @@ export default function BundleOfferCreateForm({
           background: "#fff",
         }}
       >
-        <h2>4. 組合內容</h2>
+        <h2>{sectionNumber(4)}. 組合內容</h2>
 
         {!selectedItems.length ? (
           <p>尚未選擇商品。</p>
@@ -1253,7 +1266,7 @@ export default function BundleOfferCreateForm({
             background: "#fff",
           }}
         >
-          <h2>5. 任選組合規則</h2>
+          <h2>{sectionNumber(5)}. 任選組合規則</h2>
 
           <div
             style={{
@@ -1305,8 +1318,8 @@ export default function BundleOfferCreateForm({
       >
         <h2>
           {bundleType === "mix_match"
-            ? "6. 設定優惠方案"
-            : "5. 設定優惠方案"}
+            ? `${sectionNumber(6)}. 設定優惠方案`
+            : `${sectionNumber(5)}. 設定優惠方案`}
         </h2>
 
         <p>
@@ -1492,8 +1505,8 @@ export default function BundleOfferCreateForm({
       >
         <h2>
           {bundleType === "mix_match"
-            ? "7. 建立前預覽"
-            : "6. 建立前預覽"}
+            ? `${sectionNumber(7)}. 建立前預覽`
+            : `${sectionNumber(6)}. 建立前預覽`}
         </h2>
 
         {bundleType === "buy_get" ? (

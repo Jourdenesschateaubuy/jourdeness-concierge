@@ -591,7 +591,27 @@ export default function BundleOfferManager({
                           textDecoration: "none",
                         }}
                       >
-                        編輯
+                        編輯組合
+                      </Link>
+
+<Link
+                        href={`/admin/bundle-offers/${offer.id}/card`}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minHeight: 36,
+                          padding: "0 12px",
+                          borderRadius: 9,
+                          border: "1px solid #d5b8bf",
+                          background: "#fff",
+                          color: "#7d2638",
+                          fontWeight: 700,
+                          fontSize: 12,
+                          textDecoration: "none",
+                        }}
+                      >
+                        編輯商品卡
                       </Link>
 
                       <button

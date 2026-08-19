@@ -31,6 +31,31 @@ export type BundleOfferPlanInput = {
   sortOrder?: number;
 };
 
+export type BundleOfferProductInfoInput = {
+  spec?: string;
+  expiryNote?: string;
+  intro?: string;
+  features?: string[];
+  expandedInfo?: Array<{
+    title: string;
+    content: string;
+  }>;
+  suitableFor?: string[];
+  usage?: string;
+  gallery?: string[];
+};
+
+export type BundleOfferCardInput = {
+  name: string;
+  coverImage?: string;
+  cardSubtitle?: string;
+  cardOriginalPriceText?: string;
+  cardPriceText?: string;
+  storefrontCategory?: string;
+  series?: string;
+  status: ProductStatus;
+};
+
 export type BundleOfferWriteInput = {
   name: string;
   bundleType: BundleType;
@@ -68,6 +93,22 @@ export type BundleOffer = {
   unitLabel: string;
   allowSameProduct: boolean;
   coverImage?: string;
+  cardSubtitle?: string;
+  cardOriginalPriceText?: string;
+  cardPriceText?: string;
+  storefrontCategory?: string;
+  series?: string;
+  spec?: string;
+  expiryNote?: string;
+  intro?: string;
+  features: string[];
+  expandedInfo: Array<{
+    title: string;
+    content: string;
+  }>;
+  suitableFor: string[];
+  usage?: string;
+  gallery: string[];
   status: ProductStatus;
   sortOrder: number;
   createdAt: string;
@@ -83,6 +124,22 @@ type BundleOfferRow = {
   unit_label: string;
   allow_same_product: boolean;
   cover_image: string | null;
+  card_subtitle: string | null;
+  card_original_price_text: string | null;
+  card_price_text: string | null;
+  storefront_category: string | null;
+  series: string | null;
+  spec: string | null;
+  expiry_note: string | null;
+  intro: string | null;
+  features: string[] | null;
+  expanded_info: Array<{
+    title: string;
+    content: string;
+  }> | null;
+  suitable_for: string[] | null;
+  usage: string | null;
+  gallery: string[] | null;
   status: ProductStatus;
   sort_order: number;
   created_at: Date | string;
@@ -130,6 +187,19 @@ function rowToBundleOfferBase(
     unitLabel: row.unit_label,
     allowSameProduct: row.allow_same_product,
     coverImage: optional(row.cover_image),
+    cardSubtitle: optional(row.card_subtitle),
+    cardOriginalPriceText: optional(row.card_original_price_text),
+    cardPriceText: optional(row.card_price_text),
+    storefrontCategory: optional(row.storefront_category),
+    series: optional(row.series),
+    spec: optional(row.spec),
+    expiryNote: optional(row.expiry_note),
+    intro: optional(row.intro),
+    features: row.features ?? [],
+    expandedInfo: row.expanded_info ?? [],
+    suitableFor: row.suitable_for ?? [],
+    usage: optional(row.usage),
+    gallery: row.gallery ?? [],
     status: row.status,
     sortOrder: row.sort_order,
     createdAt: new Date(row.created_at).toISOString(),
@@ -435,25 +505,19 @@ export async function updateBundleOffer(
           `
             UPDATE bundle_offers
             SET
-              name = $2,
-              bundle_type = $3,
-              unit_label = $4,
-              allow_same_product = $5,
-              cover_image = $6,
-              status = $7,
-              sort_order = $8,
+              bundle_type = $2,
+              unit_label = $3,
+              allow_same_product = $4,
+              sort_order = $5,
               updated_at = NOW()
             WHERE id = $1
             RETURNING *
           `,
           [
             id,
-            input.name,
             input.bundleType,
             input.unitLabel || "組",
             input.allowSameProduct ?? false,
-            input.coverImage || null,
-            input.status,
             input.sortOrder ?? 0,
           ]
         );
@@ -471,12 +535,17 @@ export async function updateBundleOffer(
         [id]
       );
 
+      const planCodes = input.plans.map(
+        (plan) => plan.code
+      );
+
       await client.query(
         `
           DELETE FROM bundle_offer_plans
           WHERE bundle_offer_id = $1
+            AND NOT (code = ANY($2::text[]))
         `,
-        [id]
+        [id, planCodes]
       );
 
       for (const item of input.items) {
@@ -518,6 +587,15 @@ export async function updateBundleOffer(
             VALUES (
               $1,$2,$3,$4,$5,$6,$7,$8,NOW()
             )
+            ON CONFLICT (bundle_offer_id, code)
+            DO UPDATE SET
+              label = EXCLUDED.label,
+              required_quantity = EXCLUDED.required_quantity,
+              buy_quantity = EXCLUDED.buy_quantity,
+              free_quantity = EXCLUDED.free_quantity,
+              price_amount = EXCLUDED.price_amount,
+              sort_order = EXCLUDED.sort_order,
+              updated_at = NOW()
           `,
           [
             id,
@@ -574,4 +652,135 @@ export async function deleteBundleOffer(id: number) {
   );
 
   return result.rows.length > 0;
+}
+
+
+export async function updateBundleOfferCard(
+  id: number,
+  input: BundleOfferCardInput
+) {
+  const name = input.name.trim();
+  const storefrontCategory =
+    input.storefrontCategory?.trim() || null;
+
+  if (!name) {
+    throw new Error("請輸入組合優惠名稱。");
+  }
+
+  if (input.status === "active" && !storefrontCategory) {
+    throw new Error(
+      "上架中的組合優惠必須設定前台主分類。"
+    );
+  }
+
+  const result = await dbQuery<BundleOfferRow>(
+    `
+      UPDATE bundle_offers
+      SET
+        name = $2,
+        cover_image = $3,
+        card_subtitle = $4,
+        card_original_price_text = $5,
+        card_price_text = $6,
+        storefront_category = $7,
+        series = $8,
+        status = $9,
+        updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+    `,
+    [
+      id,
+      name,
+      input.coverImage?.trim() || null,
+      input.cardSubtitle?.trim() || null,
+      input.cardOriginalPriceText?.trim() || null,
+      input.cardPriceText?.trim() || null,
+      storefrontCategory,
+      input.series?.trim() || null,
+      input.status,
+    ]
+  );
+
+  if (!result.rows[0]) {
+    return null;
+  }
+
+  return getBundleOffer(id);
+}
+
+
+export async function updateBundleOfferProductInfo(
+  id: number,
+  input: BundleOfferProductInfoInput
+) {
+  const features = Array.from(
+    new Set(
+      (input.features ?? [])
+        .map((item) => item.trim())
+        .filter(Boolean)
+    )
+  );
+
+  const suitableFor = Array.from(
+    new Set(
+      (input.suitableFor ?? [])
+        .map((item) => item.trim())
+        .filter(Boolean)
+    )
+  );
+
+  const gallery = Array.from(
+    new Set(
+      (input.gallery ?? [])
+        .map((item) => item.trim())
+        .filter(Boolean)
+    )
+  ).slice(0, 8);
+
+  const expandedInfo =
+    (input.expandedInfo ?? [])
+      .map((item) => ({
+        title: item.title.trim(),
+        content: item.content.trim(),
+      }))
+      .filter(
+        (item) =>
+          item.title || item.content
+      );
+
+  const result = await dbQuery<BundleOfferRow>(
+    `
+      UPDATE bundle_offers
+      SET
+        spec = $2,
+        expiry_note = $3,
+        intro = $4,
+        features = $5::jsonb,
+        expanded_info = $6::jsonb,
+        suitable_for = $7::jsonb,
+        usage = $8,
+        gallery = $9::jsonb,
+        updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+    `,
+    [
+      id,
+      input.spec?.trim() || null,
+      input.expiryNote?.trim() || null,
+      input.intro?.trim() || null,
+      JSON.stringify(features),
+      JSON.stringify(expandedInfo),
+      JSON.stringify(suitableFor),
+      input.usage?.trim() || null,
+      JSON.stringify(gallery),
+    ]
+  );
+
+  if (!result.rows[0]) {
+    return null;
+  }
+
+  return getBundleOffer(id);
 }
