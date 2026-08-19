@@ -56,6 +56,14 @@ type Props = {
 type SelectedItem = {
   productId: number;
   quantity: number;
+  role: "fixed" | "option" | "buy" | "free";
+};
+
+type MixMatchPlanDraft = {
+  code: string;
+  label: string;
+  requiredQuantity: string;
+  priceAmount: string;
 };
 
 export default function BundleOfferCreateForm({
@@ -92,22 +100,38 @@ export default function BundleOfferCreateForm({
         : "3"
     );
 
+  const [mixMatchPlans, setMixMatchPlans] =
+    useState<MixMatchPlanDraft[]>(
+      initialOffer?.bundleType === "mix_match" &&
+      initialOffer.plans.length > 0
+        ? initialOffer.plans.map((plan, index) => ({
+            code: plan.code || `plan-${index + 1}`,
+            label: plan.label || "",
+            requiredQuantity:
+              plan.requiredQuantity != null
+                ? String(plan.requiredQuantity)
+                : "",
+            priceAmount: String(plan.priceAmount),
+          }))
+        : [
+            {
+              code: "default",
+              label: "",
+              requiredQuantity:
+                initialPlan?.requiredQuantity != null
+                  ? String(initialPlan.requiredQuantity)
+                  : "3",
+              priceAmount:
+                initialPlan?.priceAmount != null
+                  ? String(initialPlan.priceAmount)
+                  : "",
+            },
+          ]
+    );
+
   const [allowSameProduct, setAllowSameProduct] =
     useState(initialOffer?.allowSameProduct ?? true);
 
-  const [buyProductId, setBuyProductId] =
-    useState<number | null>(
-      initialOffer?.items.find(
-        (item) => item.role === "buy"
-      )?.productId ?? null
-    );
-
-  const [freeProductId, setFreeProductId] =
-    useState<number | null>(
-      initialOffer?.items.find(
-        (item) => item.role === "free"
-      )?.productId ?? null
-    );
 
   const [buyQuantity, setBuyQuantity] =
     useState(
@@ -140,11 +164,22 @@ export default function BundleOfferCreateForm({
       .filter(
         (item) =>
           item.role === "fixed" ||
-          item.role === "option"
+          item.role === "option" ||
+          (
+            initialOffer.bundleType === "buy_get" &&
+            (
+              item.role === "buy" ||
+              item.role === "free"
+            )
+          )
       )
       .map((item) => ({
         productId: item.productId,
-        quantity: item.quantity,
+        quantity:
+          initialOffer.bundleType === "buy_get"
+            ? 1
+            : item.quantity,
+        role: item.role,
       })) ?? []
   );
 
@@ -191,9 +226,26 @@ export default function BundleOfferCreateForm({
       ? originalTotal - normalizedOfferPrice
       : 0;
 
-  function addProduct(productId: number) {
+  function addProduct(
+    productId: number,
+    role?: SelectedItem["role"]
+  ) {
+    const resolvedRole =
+      role ??
+      (bundleType === "fixed_bundle"
+        ? "fixed"
+        : bundleType === "mix_match"
+          ? "option"
+          : "buy");
+
     setSelectedItems((current) => {
-      if (current.some((item) => item.productId === productId)) {
+      if (
+        current.some(
+          (item) =>
+            item.productId === productId &&
+            item.role === resolvedRole
+        )
+      ) {
         return current;
       }
 
@@ -202,14 +254,24 @@ export default function BundleOfferCreateForm({
         {
           productId,
           quantity: 1,
+          role: resolvedRole,
         },
       ];
     });
   }
 
-  function removeProduct(productId: number) {
+  function removeProduct(
+    productId: number,
+    role?: SelectedItem["role"]
+  ) {
     setSelectedItems((current) =>
-      current.filter((item) => item.productId !== productId)
+      current.filter(
+        (item) =>
+          !(
+            item.productId === productId &&
+            (role === undefined || item.role === role)
+          )
+      )
     );
   }
 
@@ -231,6 +293,42 @@ export default function BundleOfferCreateForm({
     );
   }
 
+  function addMixMatchPlan() {
+    setMixMatchPlans((current) => [
+      ...current,
+      {
+        code: `plan-${Date.now()}`,
+        label: "",
+        requiredQuantity: "",
+        priceAmount: "",
+      },
+    ]);
+  }
+
+  function updateMixMatchPlan(
+    index: number,
+    patch: Partial<MixMatchPlanDraft>
+  ) {
+    setMixMatchPlans((current) =>
+      current.map((plan, planIndex) =>
+        planIndex === index
+          ? { ...plan, ...patch }
+          : plan
+      )
+    );
+  }
+
+  function removeMixMatchPlan(index: number) {
+    setMixMatchPlans((current) => {
+      if (current.length <= 1) {
+        return current;
+      }
+
+      return current.filter(
+        (_plan, planIndex) => planIndex !== index
+      );
+    });
+  }
   async function handleSubmit() {
     setError("");
 
@@ -248,21 +346,61 @@ export default function BundleOfferCreateForm({
       return;
     }
 
-    if (
-      bundleType === "buy_get" &&
-      (buyProductId === null || freeProductId === null)
-    ) {
-      setError("請選擇購買商品與贈送商品。");
-      return;
+    if (bundleType === "buy_get") {
+      const hasBuyProduct = selectedItems.some(
+        (item) => item.role === "buy"
+      );
+      const hasFreeProduct = selectedItems.some(
+        (item) => item.role === "free"
+      );
+
+      if (!hasBuyProduct || !hasFreeProduct) {
+        setError(
+          "買送活動請至少各選擇一個購買商品與贈送商品。"
+        );
+        return;
+      }
     }
 
     const normalizedPrice = Number(priceAmount);
 
     if (
-      !Number.isInteger(normalizedPrice) ||
-      normalizedPrice <= 0
+      bundleType !== "mix_match" &&
+      (
+        !Number.isInteger(normalizedPrice) ||
+        normalizedPrice <= 0
+      )
     ) {
       setError("優惠價請輸入大於 0 的整數。");
+      return;
+    }
+
+    const normalizedMixMatchPlans =
+      mixMatchPlans.map((plan, index) => ({
+        code:
+          plan.code.trim() ||
+          `plan-${index + 1}`,
+        label: plan.label.trim(),
+        requiredQuantity:
+          Number(plan.requiredQuantity),
+        priceAmount:
+          Number(plan.priceAmount),
+        sortOrder: index,
+      }));
+
+    if (
+      bundleType === "mix_match" &&
+      normalizedMixMatchPlans.some(
+        (plan) =>
+          !Number.isInteger(plan.requiredQuantity) ||
+          plan.requiredQuantity <= 0 ||
+          !Number.isInteger(plan.priceAmount) ||
+          plan.priceAmount <= 0
+      )
+    ) {
+      setError(
+        "每個任選方案的數量與優惠價都必須是大於 0 的整數。"
+      );
       return;
     }
 
@@ -345,15 +483,21 @@ export default function BundleOfferCreateForm({
                   sortOrder: index,
                 })),
 
-                plans: [
-                  {
-                    code: "default",
-                    label: `任選 ${mixMatchRequiredQuantity} 件`,
-                    requiredQuantity: mixMatchRequiredQuantity,
-                    priceAmount: normalizedPrice,
-                    sortOrder: 0,
-                  },
-                ],
+                plans: normalizedMixMatchPlans.map(
+                  (plan, index) => ({
+                    code:
+                      plan.code ||
+                      `plan-${index + 1}`,
+                    label:
+                      plan.label ||
+                      `任選 ${plan.requiredQuantity} ${unitLabel || "件"}`,
+                    requiredQuantity:
+                      plan.requiredQuantity,
+                    priceAmount:
+                      plan.priceAmount,
+                    sortOrder: index,
+                  })
+                ),
               }
             : {
                 name: name.trim(),
@@ -363,21 +507,18 @@ export default function BundleOfferCreateForm({
                 status,
                 sortOrder: 0,
 
-                items: [
-                  {
-                    productId: buyProductId as number,
-                    role: "buy",
-                    quantity: normalizedBuyQuantity,
-                    sortOrder: 0,
-                  },
-                  {
-                    productId: freeProductId as number,
-                    role: "free",
-                    quantity: normalizedFreeQuantity,
-                    sortOrder: 1,
-                  },
-                ],
-
+                items: selectedItems
+                  .filter(
+                    (item) =>
+                      item.role === "buy" ||
+                      item.role === "free"
+                  )
+                  .map((item, index) => ({
+                    productId: item.productId,
+                    role: item.role,
+                    quantity: 1,
+                    sortOrder: index,
+                  })),
                 plans: [
                   {
                     code: "default",
@@ -568,7 +709,7 @@ export default function BundleOfferCreateForm({
       >
         <h2>
           3. {bundleType === "buy_get"
-            ? "設定購買與贈送商品"
+            ? "選擇買送商品"
             : "從一般商品選擇"}
         </h2>
 
@@ -675,120 +816,179 @@ export default function BundleOfferCreateForm({
         </div>
           </>
         ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "minmax(0, 1fr) 140px minmax(0, 1fr) 140px",
-              gap: 16,
-              alignItems: "end",
-            }}
-          >
-            <label>
-              <div>
-                <strong>購買商品</strong>
-              </div>
+          <div>
+            <input
+              value={query}
+              onChange={(event) =>
+                setQuery(event.target.value)
+              }
+              placeholder="搜尋 P-編號、商品名稱、分類或系列"
+              style={{
+                width: "100%",
+                padding: 12,
+                marginBottom: 16,
+              }}
+            />
 
-              <select
-                value={buyProductId ?? ""}
-                onChange={(event) =>
-                  setBuyProductId(
-                    event.target.value
-                      ? Number(event.target.value)
-                      : null
-                  )
-                }
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  marginTop: 8,
-                }}
-              >
-                <option value="">請選擇購買商品</option>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                gap: 16,
+                marginBottom: 16,
+              }}
+            >
+              <label>
+                <div>
+                  <strong>購買數量</strong>
+                </div>
+                <input
+                  type="number"
+                  min={1}
+                  value={buyQuantity}
+                  onChange={(event) => setBuyQuantity(event.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: 12,
+                    marginTop: 8,
+                  }}
+                />
+              </label>
 
-                {products.map((product) => (
-                  <option
+              <label>
+                <div>
+                  <strong>贈送數量</strong>
+                </div>
+                <input
+                  type="number"
+                  min={1}
+                  value={freeQuantity}
+                  onChange={(event) => setFreeQuantity(event.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: 12,
+                    marginTop: 8,
+                  }}
+                />
+              </label>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gap: 12,
+                maxHeight: 420,
+                overflowY: "auto",
+              }}
+            >
+              {filteredProducts.map((product) => {
+                const selectedAsBuy = selectedItems.some(
+                  (item) =>
+                    item.productId === product.id &&
+                    item.role === "buy"
+                );
+
+                const selectedAsFree = selectedItems.some(
+                  (item) =>
+                    item.productId === product.id &&
+                    item.role === "free"
+                );
+
+                return (
+                  <div
                     key={product.id}
-                    value={product.id}
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "72px 1fr auto",
+                      gap: 16,
+                      alignItems: "center",
+                      border: "1px solid #eee",
+                      borderRadius: 14,
+                      padding: 12,
+                    }}
                   >
-                    {product.displayCode}　{product.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+                    {product.image ? (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        style={{
+                          width: 72,
+                          height: 72,
+                          objectFit: "contain",
+                          borderRadius: 10,
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: 72,
+                          height: 72,
+                          display: "grid",
+                          placeItems: "center",
+                          borderRadius: 10,
+                          background: "#f7f2ef",
+                          color: "#8a7670",
+                          fontSize: 12,
+                          textAlign: "center",
+                        }}
+                      >
+                        尚無圖片
+                      </div>
+                    )}
 
-            <label>
-              <div>
-                <strong>購買數量</strong>
-              </div>
+                    <div>
+                      <strong>
+                        {product.displayCode}
+                        {"　"}
+                        {product.name}
+                      </strong>
 
-              <input
-                type="number"
-                min={1}
-                value={buyQuantity}
-                onChange={(event) =>
-                  setBuyQuantity(event.target.value)
-                }
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  marginTop: 8,
-                }}
-              />
-            </label>
+                      <div>
+                        {product.category}
+                        {" · "}
+                        {product.series}
+                      </div>
 
-            <label>
-              <div>
-                <strong>贈送商品</strong>
-              </div>
+                      <div>{product.price}</div>
+                    </div>
 
-              <select
-                value={freeProductId ?? ""}
-                onChange={(event) =>
-                  setFreeProductId(
-                    event.target.value
-                      ? Number(event.target.value)
-                      : null
-                  )
-                }
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  marginTop: 8,
-                }}
-              >
-                <option value="">請選擇贈送商品</option>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: 8,
+                        flexWrap: "wrap",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        disabled={selectedAsBuy}
+                        onClick={() =>
+                          addProduct(product.id, "buy")
+                        }
+                      >
+                        {selectedAsBuy
+                          ? "已在購買池"
+                          : "加入購買池"}
+                      </button>
 
-                {products.map((product) => (
-                  <option
-                    key={product.id}
-                    value={product.id}
-                  >
-                    {product.displayCode}　{product.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              <div>
-                <strong>贈送數量</strong>
-              </div>
-
-              <input
-                type="number"
-                min={1}
-                value={freeQuantity}
-                onChange={(event) =>
-                  setFreeQuantity(event.target.value)
-                }
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  marginTop: 8,
-                }}
-              />
-            </label>
+                      <button
+                        type="button"
+                        disabled={selectedAsFree}
+                        onClick={() =>
+                          addProduct(product.id, "free")
+                        }
+                      >
+                        {selectedAsFree
+                          ? "已在贈送池"
+                          : "加入贈送池"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </section>
@@ -803,98 +1003,7 @@ export default function BundleOfferCreateForm({
       >
         <h2>4. 組合內容</h2>
 
-        {bundleType === "buy_get" ? (
-          buyProductId === null || freeProductId === null ? (
-            <p>請先選擇購買商品與贈送商品。</p>
-          ) : (
-            <div
-              style={{
-                display: "grid",
-                gap: 16,
-              }}
-            >
-              <div
-                style={{
-                  padding: 16,
-                  borderRadius: 14,
-                  background: "#f8f4f2",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 13,
-                    marginBottom: 6,
-                  }}
-                >
-                  購買商品
-                </div>
-
-                <strong>
-                  {
-                    products.find(
-                      (product) =>
-                        product.id === buyProductId
-                    )?.displayCode
-                  }
-                  {"　"}
-                  {
-                    products.find(
-                      (product) =>
-                        product.id === buyProductId
-                    )?.name
-                  }
-                  {" × "}
-                  {buyQuantity || "0"}
-                </strong>
-              </div>
-
-              <div
-                style={{
-                  textAlign: "center",
-                  fontSize: 22,
-                  fontWeight: 700,
-                }}
-              >
-                ＋
-              </div>
-
-              <div
-                style={{
-                  padding: 16,
-                  borderRadius: 14,
-                  background: "#f8f4f2",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 13,
-                    marginBottom: 6,
-                  }}
-                >
-                  贈送商品
-                </div>
-
-                <strong>
-                  {
-                    products.find(
-                      (product) =>
-                        product.id === freeProductId
-                    )?.displayCode
-                  }
-                  {"　"}
-                  {
-                    products.find(
-                      (product) =>
-                        product.id === freeProductId
-                    )?.name
-                  }
-                  {" × "}
-                  {freeQuantity || "0"}
-                </strong>
-              </div>
-            </div>
-          )
-        ) : !selectedItems.length ? (
+        {!selectedItems.length ? (
           <p>尚未選擇商品。</p>
         ) : (
           <div
@@ -913,7 +1022,7 @@ export default function BundleOfferCreateForm({
 
               return (
                 <div
-                  key={item.productId}
+                  key={`${item.productId}-${item.role}`}
                   style={{
                     display: "grid",
                     gridTemplateColumns:
@@ -955,14 +1064,25 @@ export default function BundleOfferCreateForm({
                         background: "#f8f4f2",
                       }}
                     >
-                      可選商品
+                      {bundleType === "buy_get"
+                        ? item.role === "buy"
+                          ? "購買候選"
+                          : item.role === "free"
+                            ? "贈送候選"
+                            : "可選商品"
+                        : "可選商品"}
                     </div>
                   )}
 
                   <button
                     type="button"
                     onClick={() =>
-                      removeProduct(item.productId)
+                      removeProduct(
+                        item.productId,
+                        bundleType === "buy_get"
+                          ? item.role
+                          : undefined
+                      )
                     }
                   >
                     移除
@@ -992,30 +1112,6 @@ export default function BundleOfferCreateForm({
               marginTop: 16,
             }}
           >
-            <label>
-              <div>
-                <strong>需選數量</strong>
-              </div>
-
-              <input
-                type="number"
-                min={1}
-                value={requiredQuantity}
-                onChange={(event) =>
-                  setRequiredQuantity(event.target.value)
-                }
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  marginTop: 8,
-                }}
-              />
-
-              <small>
-                例如：填 3，代表客人必須選滿 3 件。
-              </small>
-            </label>
-
             <label
               style={{
                 display: "flex",
@@ -1031,9 +1127,7 @@ export default function BundleOfferCreateForm({
                 }
               />
 
-              <span>
-                允許同款商品重複選擇
-              </span>
+              <span>允許同款商品重複選擇</span>
             </label>
 
             <div
@@ -1044,8 +1138,8 @@ export default function BundleOfferCreateForm({
               }}
             >
               {allowSameProduct
-                ? `客人可從目前選定商品中自由搭配，選滿 ${requiredQuantity || "指定"} 件；同一商品可重複。`
-                : `客人可從目前選定商品中自由搭配，選滿 ${requiredQuantity || "指定"} 件；每款最多選 1 件。`}
+                ? "顧客可從商品池自由搭配，同一商品可以重複選擇。"
+                : "顧客可從商品池自由搭配，每款商品最多選 1 件。"}
             </div>
           </div>
         </section>
@@ -1084,12 +1178,114 @@ export default function BundleOfferCreateForm({
               </div>
             </div>
           ) : bundleType === "mix_match" ? (
-            <div>
-              <strong>任選規則</strong>
-              <div style={{ fontSize: 18, marginTop: 6 }}>
-                任選 {requiredQuantity || "指定"} 件
-                {allowSameProduct ? "・可同款重複" : "・每款限 1 件"}
-              </div>
+            <div
+              style={{
+                display: "grid",
+                gap: 16,
+              }}
+            >
+              {mixMatchPlans.map((plan, index) => (
+                <div
+                  key={plan.code}
+                  style={{
+                    border: "1px solid #eadfda",
+                    borderRadius: 14,
+                    padding: 16,
+                    display: "grid",
+                    gap: 14,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: 12,
+                    }}
+                  >
+                    <strong>方案 {index + 1}</strong>
+
+                    <button
+                      type="button"
+                      disabled={mixMatchPlans.length <= 1}
+                      onClick={() =>
+                        removeMixMatchPlan(index)
+                      }
+                    >
+                      刪除方案
+                    </button>
+                  </div>
+
+                  <label>
+                    <div>
+                      <strong>任選數量</strong>
+                    </div>
+
+                    <input
+                      type="number"
+                      min={1}
+                      value={plan.requiredQuantity}
+                      onChange={(event) =>
+                        updateMixMatchPlan(index, {
+                          requiredQuantity:
+                            event.target.value,
+                        })
+                      }
+                      placeholder="例如：4"
+                      style={{
+                        width: "100%",
+                        padding: 12,
+                        marginTop: 8,
+                      }}
+                    />
+                  </label>
+
+                  <label>
+                    <div>
+                      <strong>優惠價（NT$）</strong>
+                    </div>
+
+                    <input
+                      type="number"
+                      min={1}
+                      value={plan.priceAmount}
+                      onChange={(event) =>
+                        updateMixMatchPlan(index, {
+                          priceAmount:
+                            event.target.value,
+                        })
+                      }
+                      placeholder="例如：1099"
+                      style={{
+                        width: "100%",
+                        padding: 12,
+                        marginTop: 8,
+                      }}
+                    />
+                  </label>
+
+                  <div
+                    style={{
+                      padding: 12,
+                      borderRadius: 10,
+                      background: "#f8f4f2",
+                    }}
+                  >
+                    任選{" "}
+                    {plan.requiredQuantity || "指定"}{" "}
+                    {unitLabel || "件"}
+                    {"　"}
+                    NT${plan.priceAmount || "尚未設定"}
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={addMixMatchPlan}
+              >
+                ＋ 新增方案
+              </button>
             </div>
           ) : (
             <div>
@@ -1151,10 +1347,10 @@ export default function BundleOfferCreateForm({
         </h2>
 
         {bundleType === "buy_get" ? (
-          buyProductId === null || freeProductId === null ? (
+          !selectedItems.some((item) => item.role === "buy") &&
+          !selectedItems.some((item) => item.role === "free") ? (
             <p>
-              選擇購買商品與贈送商品後，
-              這裡會顯示完整活動摘要。
+              選擇購買商品與贈送商品後，這裡會顯示完整活動摘要。
             </p>
           ) : (
             <div
@@ -1173,42 +1369,72 @@ export default function BundleOfferCreateForm({
               <div>買送活動</div>
 
               <div>
-                <strong>購買：</strong>
-                {
-                  products.find(
-                    (product) =>
-                      product.id === buyProductId
-                  )?.displayCode
-                }
-                {"　"}
-                {
-                  products.find(
-                    (product) =>
-                      product.id === buyProductId
-                  )?.name
-                }
-                {" × "}
-                {buyQuantity || "0"}
+                <strong>購買商品池：</strong>
               </div>
 
+              {selectedItems.some((item) => item.role === "buy") ? (
+                <div
+                  style={{
+                    display: "grid",
+                    gap: 6,
+                  }}
+                >
+                  {selectedItems
+                    .filter((item) => item.role === "buy")
+                    .map((item) => {
+                      const product = products.find(
+                        (candidate) =>
+                          candidate.id === item.productId
+                      );
+
+                      if (!product) return null;
+
+                      return (
+                        <div key={`${item.productId}-buy`}>
+                          {product.displayCode}
+                          {"　"}
+                          {product.name}
+                        </div>
+                      );
+                    })}
+                </div>
+              ) : (
+                <div>尚未選擇購買商品</div>
+              )}
+
               <div>
-                <strong>贈送：</strong>
-                {
-                  products.find(
-                    (product) =>
-                      product.id === freeProductId
-                  )?.displayCode
-                }
-                {"　"}
-                {
-                  products.find(
-                    (product) =>
-                      product.id === freeProductId
-                  )?.name
-                }
-                {" × "}
-                {freeQuantity || "0"}
+                <strong>贈送商品池：</strong>
               </div>
+
+              {selectedItems.some((item) => item.role === "free") ? (
+                <div
+                  style={{
+                    display: "grid",
+                    gap: 6,
+                  }}
+                >
+                  {selectedItems
+                    .filter((item) => item.role === "free")
+                    .map((item) => {
+                      const product = products.find(
+                        (candidate) =>
+                          candidate.id === item.productId
+                      );
+
+                      if (!product) return null;
+
+                      return (
+                        <div key={`${item.productId}-free`}>
+                          {product.displayCode}
+                          {"　"}
+                          {product.name}
+                        </div>
+                      );
+                    })}
+                </div>
+              ) : (
+                <div>尚未選擇贈送商品</div>
+              )}
 
               <div>
                 買送規則：
