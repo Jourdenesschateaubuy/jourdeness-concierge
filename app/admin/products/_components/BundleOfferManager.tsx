@@ -1,4 +1,5 @@
 "use client";
+import styles from "../../admin.module.css";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,6 +17,7 @@ type BundleOfferForManager = {
   bundleType: "fixed_bundle" | "mix_match" | "buy_get";
   unitLabel: string;
   allowSameProduct: boolean;
+  coverImage?: string;
   status: ProductStatus;
   sortOrder: number;
 
@@ -188,33 +190,10 @@ export default function BundleOfferManager({
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 18,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          flexWrap: "wrap",
-          alignItems: "end",
-        }}
-      >
-        <label
-          style={{
-            flex: "1 1 320px",
-          }}
-        >
-          <div
-            style={{
-              fontWeight: 700,
-              marginBottom: 6,
-            }}
-          >
-            搜尋組合優惠
-          </div>
+    <div>
+      <div className={styles.toolbar}>
+        <label className={styles.searchBox}>
+          <span>搜尋組合優惠</span>
 
           <input
             type="search"
@@ -223,36 +202,17 @@ export default function BundleOfferManager({
               setQuery(event.target.value)
             }
             placeholder="優惠名稱、商品編號、商品名稱…"
-            style={{
-              width: "100%",
-              padding: 11,
-            }}
           />
         </label>
 
-        <label
-          style={{
-            minWidth: 180,
-          }}
-        >
-          <div
-            style={{
-              fontWeight: 700,
-              marginBottom: 6,
-            }}
-          >
-            狀態
-          </div>
+        <label className={styles.selectBox}>
+          <span>狀態</span>
 
           <select
             value={status}
             onChange={(event) =>
               setStatus(event.target.value)
             }
-            style={{
-              width: "100%",
-              padding: 11,
-            }}
           >
             <option value="全部">全部狀態</option>
             <option value="active">上架中</option>
@@ -264,46 +224,54 @@ export default function BundleOfferManager({
           </select>
         </label>
 
-        <Link href="/admin/bundle-offers/new">
+        <Link
+          href="/admin/bundle-offers/new"
+          className={styles.primaryAction}
+        >
           ＋ 新增組合優惠
         </Link>
       </div>
 
-      <div>
+      <div className={styles.resultBar}>
         <strong>{filteredOffers.length}</strong>
+
         <span>
           {" / "}
           {bundleOffers.length} 筆組合優惠
         </span>
+
+        {(query || status !== "全部") ? (
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              setStatus("全部");
+            }}
+            style={{
+              marginLeft: 12,
+              border: "1px solid #ddd0d3",
+              borderRadius: 8,
+              background: "#fff",
+              color: "#765a60",
+              padding: "6px 10px",
+              cursor: "pointer",
+            }}
+          >
+            清除篩選
+          </button>
+        ) : null}
       </div>
 
-      <div style={{ overflowX: "auto" }}>
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-          }}
-        >
+      <div className={styles.tableWrap}>
+        <table className={styles.productTable}>
           <thead>
             <tr>
-              <th style={{ textAlign: "left" }}>
-                名稱
-              </th>
-              <th style={{ textAlign: "left" }}>
-                類型
-              </th>
-              <th style={{ textAlign: "left" }}>
-                組合內容
-              </th>
-              <th style={{ textAlign: "left" }}>
-                優惠價
-              </th>
-              <th style={{ textAlign: "left" }}>
-                狀態
-              </th>
-              <th style={{ textAlign: "left" }}>
-                操作
-              </th>
+              <th>組合優惠</th>
+              <th>類型</th>
+              <th>組合內容</th>
+              <th>優惠價</th>
+              <th>狀態</th>
+              <th>操作</th>
             </tr>
           </thead>
 
@@ -314,88 +282,247 @@ export default function BundleOfferManager({
               return (
                 <tr key={offer.id}>
                   <td>
-                    <strong>{offer.name}</strong>
-                    <div
-                      style={{
-                        fontSize: 12,
-                        opacity: 0.65,
-                      }}
-                    >
-                      Bundle ID {offer.id}
+                    <div className={styles.productCell}>
+                      <div
+                        className={styles.thumb}
+                        style={{
+                          width: 76,
+                          height: 80,
+                          overflow: "hidden",
+                          display: "grid",
+                          placeItems: "center",
+                          background: "#faf6f4",
+                        }}
+                      >
+                        {offer.coverImage ? (
+                          <img
+                            src={offer.coverImage}
+                            alt={offer.name}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              display: "block",
+                            }}
+                          />
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: 11,
+                              color: "#a18c90",
+                              textAlign: "center",
+                              lineHeight: 1.4,
+                            }}
+                          >
+                            尚無
+                            <br />
+                            圖片
+                          </span>
+                        )}
+                      </div>
+
+                      <div
+                        style={{
+                          minWidth: 0,
+                          display: "grid",
+                          gap: 5,
+                        }}
+                      >
+                        <strong
+                          style={{
+                            color: "#35282a",
+                            fontSize: 14,
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          {offer.name}
+                        </strong>
+
+                        <small
+                          style={{
+                            color: "#a08e91",
+                            fontSize: 11,
+                          }}
+                        >
+                          Bundle ID {offer.id}
+                        </small>
+                      </div>
                     </div>
                   </td>
 
                   <td>
-                    {typeLabel[offer.bundleType]}
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        minHeight: 28,
+                        padding: "4px 9px",
+                        borderRadius: 999,
+                        background: "#f7eff1",
+                        color: "#7d2638",
+                        fontWeight: 700,
+                        fontSize: 12,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {typeLabel[offer.bundleType]}
+                    </span>
                   </td>
 
                   <td>
-                    {offer.bundleType ===
-                    "buy_get" ? (
-                      <>
-                        {offer.items.map((item) => (
-                          <div key={item.id}>
-                            {item.role === "buy"
-                              ? "購買："
-                              : item.role === "free"
-                                ? "贈送："
-                                : ""}
-                            {
-                              item.product
-                                .displayCode
-                            }
-                            {"　"}
-                            {item.product.name}
-                            {" × "}
-                            {item.quantity}
-                          </div>
-                        ))}
-                      </>
-                    ) : offer.bundleType ===
-                      "mix_match" ? (
-                      <>
-                        {offer.items.map((item) => (
-                          <div key={item.id}>
-                            {
-                              item.product
-                                .displayCode
-                            }
-                            {"　"}
-                            {item.product.name}
-                          </div>
-                        ))}
+                    <div
+                      style={{
+                        display: "grid",
+                        gap: 6,
+                        minWidth: 310,
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      {offer.bundleType === "buy_get" ? (
+                        <>
+                          {offer.items.map((item) => (
+                            <div key={item.id}>
+                              <span
+                                style={{
+                                  display: "inline-block",
+                                  minWidth: 40,
+                                  marginRight: 7,
+                                  color:
+                                    item.role === "free"
+                                      ? "#9a6d20"
+                                      : "#7d2638",
+                                  fontWeight: 700,
+                                  fontSize: 11,
+                                }}
+                              >
+                                {item.role === "buy"
+                                  ? "購買"
+                                  : item.role === "free"
+                                    ? "贈送"
+                                    : ""}
+                              </span>
 
-                        {plan?.requiredQuantity ? (
-                          <small>
-                            任選{" "}
-                            {plan.requiredQuantity} 件
-                          </small>
-                        ) : null}
-                      </>
-                    ) : (
-                      <>
-                        {offer.items.map((item) => (
-                          <div key={item.id}>
-                            {
-                              item.product
-                                .displayCode
-                            }
-                            {"　"}
-                            {item.product.name}
-                            {" × "}
-                            {item.quantity}
-                          </div>
-                        ))}
-                      </>
-                    )}
+                              <span
+                                style={{
+                                  color: "#98868a",
+                                  marginRight: 8,
+                                  fontSize: 11,
+                                }}
+                              >
+                                {item.product.displayCode}
+                              </span>
+
+                              {item.product.name}
+
+                              <span
+                                style={{
+                                  marginLeft: 6,
+                                  color: "#98868a",
+                                }}
+                              >
+                                × {item.quantity}
+                              </span>
+                            </div>
+                          ))}
+
+                          {plan ? (
+                            <small
+                              style={{
+                                color: "#9b898c",
+                                marginTop: 2,
+                              }}
+                            >
+                              買 {plan.buyQuantity ?? 0}
+                              {" · "}
+                              送 {plan.freeQuantity ?? 0}
+                            </small>
+                          ) : null}
+                        </>
+                      ) : offer.bundleType === "mix_match" ? (
+                        <>
+                          {offer.items.map((item) => (
+                            <div key={item.id}>
+                              <span
+                                style={{
+                                  color: "#98868a",
+                                  marginRight: 8,
+                                  fontSize: 11,
+                                }}
+                              >
+                                {item.product.displayCode}
+                              </span>
+
+                              {item.product.name}
+                            </div>
+                          ))}
+
+                          {plan?.requiredQuantity ? (
+                            <small
+                              style={{
+                                color: "#7d2638",
+                                fontWeight: 700,
+                                marginTop: 2,
+                              }}
+                            >
+                              任選 {plan.requiredQuantity} 件
+                            </small>
+                          ) : null}
+                        </>
+                      ) : (
+                        <>
+                          {offer.items.map((item) => (
+                            <div key={item.id}>
+                              <span
+                                style={{
+                                  color: "#98868a",
+                                  marginRight: 8,
+                                  fontSize: 11,
+                                }}
+                              >
+                                {item.product.displayCode}
+                              </span>
+
+                              {item.product.name}
+
+                              <span
+                                style={{
+                                  marginLeft: 6,
+                                  color: "#98868a",
+                                }}
+                              >
+                                × {item.quantity}
+                              </span>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                    </div>
                   </td>
 
                   <td>
-                    <strong>
-                      {plan
-                        ? `NT$${plan.priceAmount.toLocaleString()}`
-                        : "—"}
-                    </strong>
+                    <div className={styles.priceCell}>
+                      <strong
+                        style={{
+                          fontSize: 15,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {plan
+                          ? `NT$${plan.priceAmount.toLocaleString()}`
+                          : "—"}
+                      </strong>
+
+                      {plan?.label ? (
+                        <span
+                          style={{
+                            color: "#a08e91",
+                            fontSize: 11,
+                          }}
+                        >
+                          {plan.label}
+                        </span>
+                      ) : null}
+                    </div>
                   </td>
 
                   <td>
@@ -410,16 +537,28 @@ export default function BundleOfferManager({
                           event.target.value as ProductStatus
                         )
                       }
+                      style={{
+                        minWidth: 105,
+                        minHeight: 38,
+                        padding: "0 10px",
+                        border: "1px solid #ded3d5",
+                        borderRadius: 9,
+                        background: "#fff",
+                        color: "#4a393c",
+                      }}
                     >
                       <option value="active">
                         上架中
                       </option>
+
                       <option value="inactive">
                         下架
                       </option>
+
                       <option value="coming_soon">
                         新品預告
                       </option>
+
                       <option value="sold_out">
                         售罄
                       </option>
@@ -430,12 +569,27 @@ export default function BundleOfferManager({
                     <div
                       style={{
                         display: "flex",
-                        gap: 10,
+                        gap: 8,
                         alignItems: "center",
+                        whiteSpace: "nowrap",
                       }}
                     >
                       <Link
                         href={`/admin/bundle-offers/${offer.id}`}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minHeight: 36,
+                          padding: "0 12px",
+                          borderRadius: 9,
+                          border: "1px solid #d5b8bf",
+                          background: "#fff",
+                          color: "#7d2638",
+                          fontWeight: 700,
+                          fontSize: 12,
+                          textDecoration: "none",
+                        }}
                       >
                         編輯
                       </Link>
@@ -451,6 +605,18 @@ export default function BundleOfferManager({
                             offer.name
                           )
                         }
+                        style={{
+                          minHeight: 36,
+                          padding: "0 12px",
+                          borderRadius: 9,
+                          border: "1px solid #e2d6d8",
+                          background: "#faf7f7",
+                          color: "#806d71",
+                          cursor:
+                            deletingId === offer.id
+                              ? "wait"
+                              : "pointer",
+                        }}
                       >
                         {deletingId === offer.id
                           ? "刪除中…"
@@ -465,13 +631,14 @@ export default function BundleOfferManager({
         </table>
 
         {filteredOffers.length === 0 ? (
-          <div
-            style={{
-              padding: 28,
-              textAlign: "center",
-            }}
-          >
-            目前沒有符合條件的組合優惠。
+          <div className={styles.emptyState}>
+            <strong>
+              找不到符合條件的組合優惠
+            </strong>
+
+            <p>
+              換一個名稱，或清除搜尋與狀態篩選後再試一次。
+            </p>
           </div>
         ) : null}
       </div>

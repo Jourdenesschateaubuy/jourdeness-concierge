@@ -3,6 +3,10 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import MediaPicker, {
+  type PickerMediaAsset,
+} from "../../website-studio/components/MediaPicker";
+
 type ProductOption = {
   id: number;
   displayCode: string;
@@ -26,6 +30,7 @@ type InitialBundleOffer = {
   bundleType: BundleType;
   unitLabel: string;
   allowSameProduct: boolean;
+  coverImage?: string;
   status: string;
   sortOrder: number;
 
@@ -82,6 +87,12 @@ export default function BundleOfferCreateForm({
 
   const [name, setName] =
     useState(initialOffer?.name ?? "");
+
+  const [coverImage, setCoverImage] =
+    useState(initialOffer?.coverImage ?? "");
+
+  const [coverPickerOpen, setCoverPickerOpen] =
+    useState(false);
 
   const [priceAmount, setPriceAmount] =
     useState(
@@ -329,12 +340,26 @@ export default function BundleOfferCreateForm({
       );
     });
   }
+  function selectCoverImage(
+    asset: PickerMediaAsset
+  ) {
+    setCoverImage(
+      `/api/studio/media/${asset.id}/file`
+    );
+    setCoverPickerOpen(false);
+  }
+
   async function handleSubmit() {
     setError("");
 
 
     if (!name.trim()) {
       setError("請輸入組合優惠名稱。");
+      return;
+    }
+
+    if (!coverImage) {
+      setError("請從 Media Library 選擇組合優惠主圖。");
       return;
     }
 
@@ -444,6 +469,7 @@ export default function BundleOfferCreateForm({
         bundleType === "fixed_bundle"
           ? {
               name: name.trim(),
+              coverImage,
               bundleType: "fixed_bundle",
               unitLabel: "組",
               allowSameProduct: false,
@@ -470,6 +496,7 @@ export default function BundleOfferCreateForm({
           : bundleType === "mix_match"
             ? {
                 name: name.trim(),
+                coverImage,
                 bundleType: "mix_match",
                 unitLabel: "件",
                 allowSameProduct,
@@ -501,6 +528,7 @@ export default function BundleOfferCreateForm({
               }
             : {
                 name: name.trim(),
+                coverImage,
                 bundleType: "buy_get",
                 unitLabel: "組",
                 allowSameProduct: false,
@@ -576,6 +604,128 @@ export default function BundleOfferCreateForm({
         maxWidth: 1100,
       }}
     >
+      <section
+        style={{
+          border: "1px solid #eadfda",
+          borderRadius: 18,
+          padding: 24,
+          background: "#fff",
+        }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "280px minmax(0, 1fr)",
+            gap: 24,
+            alignItems: "start",
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              overflow: "hidden",
+              aspectRatio: "1 / 1.06",
+              borderRadius: 16,
+              border: "1px solid #eadfda",
+              background: "#f8f2ee",
+              display: "grid",
+              placeItems: "center",
+            }}
+          >
+            {coverImage ? (
+              <img
+                src={coverImage}
+                alt={name || "組合優惠主圖"}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
+            ) : (
+              <span
+                style={{
+                  color: "#8d7770",
+                  fontSize: 14,
+                }}
+              >
+                尚未選擇圖片
+              </span>
+            )}
+          </div>
+
+          <div>
+            <h2
+              style={{
+                margin: "0 0 8px",
+                fontSize: 22,
+              }}
+            >
+              組合優惠主圖
+            </h2>
+
+            <p
+              style={{
+                margin: "0 0 18px",
+                color: "#76645e",
+                lineHeight: 1.7,
+              }}
+            >
+              圖片統一從 Media Library 選擇。
+              後台列表與商城前台使用同一張主圖。
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                flexWrap: "wrap",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  setCoverPickerOpen(true)
+                }
+              >
+                從 Media Library 選擇
+              </button>
+
+              {coverImage ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setCoverImage("")
+                  }
+                >
+                  清除圖片
+                </button>
+              ) : null}
+            </div>
+
+            <small
+              style={{
+                display: "block",
+                marginTop: 14,
+                color: "#8d7770",
+              }}
+            >
+              建議比例 1 : 1.06
+            </small>
+          </div>
+        </div>
+      </section>
+
+      <MediaPicker
+        open={coverPickerOpen}
+        title="選擇組合優惠主圖"
+        onClose={() =>
+          setCoverPickerOpen(false)
+        }
+        onSelect={selectCoverImage}
+      />
+
       <section
         style={{
           border: "1px solid #eadfda",
