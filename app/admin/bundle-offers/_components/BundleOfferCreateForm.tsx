@@ -178,10 +178,14 @@ export default function BundleOfferCreateForm({
           item.role === "option" ||
           (
             initialOffer.bundleType === "buy_get" &&
+            item.role === "buy"
+          ) ||
+          (
             (
-              item.role === "buy" ||
-              item.role === "free"
-            )
+              initialOffer.bundleType === "buy_get" ||
+              initialOffer.bundleType === "fixed_bundle"
+            ) &&
+            item.role === "free"
           )
       )
       .map((item) => ({
@@ -288,13 +292,15 @@ export default function BundleOfferCreateForm({
 
   function updateQuantity(
     productId: number,
+    role: SelectedItem["role"],
     quantity: number
   ) {
     const safeQuantity = Math.max(1, quantity);
 
     setSelectedItems((current) =>
       current.map((item) =>
-        item.productId === productId
+        item.productId === productId &&
+        item.role === role
           ? {
               ...item,
               quantity: safeQuantity,
@@ -370,7 +376,11 @@ export default function BundleOfferCreateForm({
 
     if (
       bundleType !== "buy_get" &&
-      !selectedItems.length
+      !selectedItems.some((item) =>
+        bundleType === "fixed_bundle"
+          ? item.role === "fixed"
+          : item.role === "option"
+      )
     ) {
       setError("請至少選擇一個一般商品。");
       return;
@@ -438,7 +448,10 @@ export default function BundleOfferCreateForm({
 
     try {
       const fixedRequiredQuantity = selectedItems.reduce(
-        (sum, item) => sum + item.quantity,
+        (sum, item) =>
+          item.role === "fixed"
+            ? sum + item.quantity
+            : sum,
         0
       );
 
@@ -481,16 +494,22 @@ export default function BundleOfferCreateForm({
               status,
               sortOrder: 0,
 
-              items: selectedItems.map((item, index) => ({
-                productId: item.productId,
-                role: "fixed",
-                quantity: item.quantity,
-                sortOrder: index,
-              })),
+              items: selectedItems
+                .filter(
+                  (item) =>
+                    item.role === "fixed" ||
+                    item.role === "free"
+                )
+                .map((item, index) => ({
+                  productId: item.productId,
+                  role: item.role,
+                  quantity: item.quantity,
+                  sortOrder: index,
+                })),
 
               plans: [
                 {
-                  code: "default",
+                  code: mode === "edit" && initialPlan ? initialPlan.code : "default",
                   label: name.trim(),
                   requiredQuantity: fixedRequiredQuantity,
                   priceAmount: normalizedPrice,
@@ -536,7 +555,7 @@ export default function BundleOfferCreateForm({
                 coverImage,
                 bundleType: "buy_get",
                 unitLabel: "組",
-                allowSameProduct: false,
+                allowSameProduct: mode === "edit" && initialOffer ? initialOffer.allowSameProduct : false,
                 status,
                 sortOrder: 0,
 
@@ -554,7 +573,7 @@ export default function BundleOfferCreateForm({
                   })),
                 plans: [
                   {
-                    code: "default",
+                    code: mode === "edit" && initialPlan ? initialPlan.code : "default",
                     label: `買 ${normalizedBuyQuantity} 送 ${normalizedFreeQuantity}`,
                     buyQuantity: normalizedBuyQuantity,
                     freeQuantity: normalizedFreeQuantity,
@@ -900,10 +919,24 @@ export default function BundleOfferCreateForm({
           }}
         >
           {filteredProducts.map((product) => {
+            const selectedRole =
+              bundleType === "fixed_bundle"
+                ? "fixed"
+                : "option";
+
             const selected = selectedItems.some(
               (item) =>
-                item.productId === product.id
+                item.productId === product.id &&
+                item.role === selectedRole
             );
+
+            const selectedAsFree =
+              bundleType === "fixed_bundle" &&
+              selectedItems.some(
+                (item) =>
+                  item.productId === product.id &&
+                  item.role === "free"
+              );
 
             return (
               <div
@@ -964,15 +997,44 @@ export default function BundleOfferCreateForm({
                   <div>{product.price}</div>
                 </div>
 
-                <button
-                  type="button"
-                  disabled={selected}
-                  onClick={() =>
-                    addProduct(product.id)
-                  }
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    flexWrap: "wrap",
+                    justifyContent: "flex-end",
+                  }}
                 >
-                  {selected ? "已選擇" : "加入組合"}
-                </button>
+                  <button
+                    type="button"
+                    disabled={selected}
+                    onClick={() =>
+                      addProduct(
+                        product.id,
+                        selectedRole
+                      )
+                    }
+                  >
+                    {selected ? "已加入" : "加入組合"}
+                  </button>
+
+                  {bundleType === "fixed_bundle" ? (
+                    <button
+                      type="button"
+                      disabled={selectedAsFree}
+                      onClick={() =>
+                        addProduct(
+                          product.id,
+                          "free"
+                        )
+                      }
+                    >
+                      {selectedAsFree
+                        ? "已加入贈品"
+                        : "加入贈品"}
+                    </button>
+                  ) : null}
+                </div>
               </div>
             );
           })}
@@ -1199,6 +1261,7 @@ export default function BundleOfferCreateForm({
                       {product.displayCode}
                       {"　"}
                       {product.name}
+                      {item.role === "free" ? "（贈品）" : ""}
                     </strong>
                   </div>
 
@@ -1210,6 +1273,7 @@ export default function BundleOfferCreateForm({
                       onChange={(event) =>
                         updateQuantity(
                           item.productId,
+                          item.role,
                           Number(event.target.value)
                         )
                       }
@@ -1242,7 +1306,8 @@ export default function BundleOfferCreateForm({
                     onClick={() =>
                       removeProduct(
                         item.productId,
-                        bundleType === "buy_get"
+                        bundleType === "buy_get" ||
+                        bundleType === "fixed_bundle"
                           ? item.role
                           : undefined
                       )
@@ -1658,10 +1723,11 @@ export default function BundleOfferCreateForm({
                 if (!product) return null;
 
                 return (
-                  <div key={item.productId}>
+                  <div key={`${item.productId}-${item.role}`}>
                     {product.displayCode}
                     {"　"}
                     {product.name}
+                    {item.role === "free" ? "（贈品）" : ""}
 
                     {bundleType === "fixed_bundle" ? (
                       <>
