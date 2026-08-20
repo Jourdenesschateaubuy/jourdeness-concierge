@@ -78,6 +78,13 @@ export default async function EditBundleOfferPage({
             freeQuantity: plan.freeQuantity,
             priceAmount: plan.priceAmount,
             sortOrder: plan.sortOrder ?? 0,
+            gifts: (plan.gifts ?? []).map((gift) => ({
+              productId: gift.productId,
+              name: gift.name,
+              quantity: gift.quantity,
+              unitLabel: gift.unitLabel,
+              sortOrder: gift.sortOrder ?? 0,
+            })),
           })),
         }}
         products={standardProducts.map((product) => ({

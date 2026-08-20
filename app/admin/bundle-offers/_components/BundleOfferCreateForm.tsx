@@ -49,6 +49,13 @@ type InitialBundleOffer = {
     freeQuantity?: number;
     priceAmount: number;
     sortOrder: number;
+    gifts?: Array<{
+      productId?: number;
+      name: string;
+      quantity: number;
+      unitLabel: string;
+      sortOrder: number;
+    }>;
   }>;
 };
 
@@ -64,11 +71,19 @@ type SelectedItem = {
   role: "fixed" | "option" | "buy" | "free";
 };
 
+type MixMatchPlanGiftDraft = {
+  productId?: number;
+  name: string;
+  quantity: string;
+  unitLabel: string;
+};
+
 type MixMatchPlanDraft = {
   code: string;
   label: string;
   requiredQuantity: string;
   priceAmount: string;
+  gifts: MixMatchPlanGiftDraft[];
 };
 
 export default function BundleOfferCreateForm({
@@ -123,6 +138,14 @@ export default function BundleOfferCreateForm({
                 ? String(plan.requiredQuantity)
                 : "",
             priceAmount: String(plan.priceAmount),
+            gifts: (plan.gifts ?? []).map(
+              (gift) => ({
+                productId: gift.productId,
+                name: gift.name,
+                quantity: String(gift.quantity),
+                unitLabel: gift.unitLabel,
+              })
+            ),
           }))
         : [
             {
@@ -136,6 +159,7 @@ export default function BundleOfferCreateForm({
                 initialPlan?.priceAmount != null
                   ? String(initialPlan.priceAmount)
                   : "",
+              gifts: [],
             },
           ]
     );
@@ -318,6 +342,7 @@ export default function BundleOfferCreateForm({
         label: "",
         requiredQuantity: "",
         priceAmount: "",
+        gifts: [],
       },
     ]);
   }
@@ -330,6 +355,69 @@ export default function BundleOfferCreateForm({
       current.map((plan, planIndex) =>
         planIndex === index
           ? { ...plan, ...patch }
+          : plan
+      )
+    );
+  }
+
+  function addMixMatchPlanGift(
+    planIndex: number
+  ) {
+    setMixMatchPlans((current) =>
+      current.map((plan, index) =>
+        index === planIndex
+          ? {
+              ...plan,
+              gifts: [
+                ...plan.gifts,
+                {
+                  name: "",
+                  quantity: "1",
+                  unitLabel: "組",
+                },
+              ],
+            }
+          : plan
+      )
+    );
+  }
+
+  function updateMixMatchPlanGift(
+    planIndex: number,
+    giftIndex: number,
+    patch: Partial<MixMatchPlanGiftDraft>
+  ) {
+    setMixMatchPlans((current) =>
+      current.map((plan, index) =>
+        index === planIndex
+          ? {
+              ...plan,
+              gifts: plan.gifts.map(
+                (gift, index) =>
+                  index === giftIndex
+                    ? { ...gift, ...patch }
+                    : gift
+              ),
+            }
+          : plan
+      )
+    );
+  }
+
+  function removeMixMatchPlanGift(
+    planIndex: number,
+    giftIndex: number
+  ) {
+    setMixMatchPlans((current) =>
+      current.map((plan, index) =>
+        index === planIndex
+          ? {
+              ...plan,
+              gifts: plan.gifts.filter(
+                (_gift, index) =>
+                  index !== giftIndex
+              ),
+            }
           : plan
       )
     );
@@ -426,6 +514,16 @@ export default function BundleOfferCreateForm({
         priceAmount:
           Number(plan.priceAmount),
         sortOrder: index,
+        gifts: plan.gifts.map(
+          (gift, giftIndex) => ({
+            productId: gift.productId,
+            name: gift.name.trim(),
+            quantity: Number(gift.quantity),
+            unitLabel:
+              gift.unitLabel.trim() || "件",
+            sortOrder: giftIndex,
+          })
+        ),
       }));
 
     if (
@@ -440,6 +538,25 @@ export default function BundleOfferCreateForm({
     ) {
       setError(
         "每個任選方案的數量與優惠價都必須是大於 0 的整數。"
+      );
+      return;
+    }
+
+    if (
+      bundleType === "mix_match" &&
+      normalizedMixMatchPlans.some(
+        (plan) =>
+          plan.gifts.some(
+            (gift) =>
+              !gift.name ||
+              !Number.isInteger(gift.quantity) ||
+              gift.quantity <= 0 ||
+              !gift.unitLabel
+          )
+      )
+    ) {
+      setError(
+        "方案贈品名稱、數量與單位請填寫完整，數量必須是大於 0 的整數。"
       );
       return;
     }
@@ -522,7 +639,8 @@ export default function BundleOfferCreateForm({
                 name: name.trim(),
                 coverImage,
                 bundleType: "mix_match",
-                unitLabel: "件",
+                unitLabel:
+                  unitLabel.trim() || "件",
                 allowSameProduct,
                 status,
                 sortOrder: 0,
@@ -547,6 +665,7 @@ export default function BundleOfferCreateForm({
                     priceAmount:
                       plan.priceAmount,
                     sortOrder: index,
+                    gifts: plan.gifts,
                   })
                 ),
               }
@@ -1494,6 +1613,155 @@ export default function BundleOfferCreateForm({
 
                   <div
                     style={{
+                      borderTop: "1px solid #eadfda",
+                      paddingTop: 14,
+                      display: "grid",
+                      gap: 12,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: 12,
+                      }}
+                    >
+                      <strong>方案贈品（可選）</strong>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          addMixMatchPlanGift(index)
+                        }
+                      >
+                        ＋ 新增贈品
+                      </button>
+                    </div>
+
+                    {plan.gifts.length === 0 ? (
+                      <div
+                        style={{
+                          fontSize: 14,
+                          color: "#777",
+                        }}
+                      >
+                        此方案目前沒有贈品
+                      </div>
+                    ) : (
+                      plan.gifts.map(
+                        (gift, giftIndex) => (
+                          <div
+                            key={`${plan.code}-gift-${giftIndex}`}
+                            style={{
+                              border: "1px solid #eadfda",
+                              borderRadius: 10,
+                              padding: 12,
+                              display: "grid",
+                              gap: 10,
+                            }}
+                          >
+                            <label>
+                              <div>贈品名稱</div>
+
+                              <input
+                                value={gift.name}
+                                onChange={(event) =>
+                                  updateMixMatchPlanGift(
+                                    index,
+                                    giftIndex,
+                                    {
+                                      name:
+                                        event.target.value,
+                                    }
+                                  )
+                                }
+                                placeholder="例如：面膜 10片"
+                                style={{
+                                  width: "100%",
+                                  padding: 10,
+                                  marginTop: 6,
+                                }}
+                              />
+                            </label>
+
+                            <div
+                              style={{
+                                display: "grid",
+                                gridTemplateColumns:
+                                  "1fr 1fr",
+                                gap: 10,
+                              }}
+                            >
+                              <label>
+                                <div>數量</div>
+
+                                <input
+                                  type="number"
+                                  min={1}
+                                  value={gift.quantity}
+                                  onChange={(event) =>
+                                    updateMixMatchPlanGift(
+                                      index,
+                                      giftIndex,
+                                      {
+                                        quantity:
+                                          event.target.value,
+                                      }
+                                    )
+                                  }
+                                  style={{
+                                    width: "100%",
+                                    padding: 10,
+                                    marginTop: 6,
+                                  }}
+                                />
+                              </label>
+
+                              <label>
+                                <div>單位</div>
+
+                                <input
+                                  value={gift.unitLabel}
+                                  onChange={(event) =>
+                                    updateMixMatchPlanGift(
+                                      index,
+                                      giftIndex,
+                                      {
+                                        unitLabel:
+                                          event.target.value,
+                                      }
+                                    )
+                                  }
+                                  placeholder="例如：組"
+                                  style={{
+                                    width: "100%",
+                                    padding: 10,
+                                    marginTop: 6,
+                                  }}
+                                />
+                              </label>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeMixMatchPlanGift(
+                                  index,
+                                  giftIndex
+                                )
+                              }
+                            >
+                              刪除贈品
+                            </button>
+                          </div>
+                        )
+                      )
+                    )}
+                  </div>
+
+                  <div
+                    style={{
                       padding: 12,
                       borderRadius: 10,
                       background: "#f8f4f2",
@@ -1504,6 +1772,27 @@ export default function BundleOfferCreateForm({
                     {unitLabel || "件"}
                     {"　"}
                     NT${plan.priceAmount || "尚未設定"}
+
+                    {plan.gifts.length > 0 ? (
+                      <div
+                        style={{
+                          marginTop: 6,
+                          fontSize: 14,
+                        }}
+                      >
+                        贈品：
+                        {plan.gifts
+                          .map(
+                            (gift) =>
+                              (gift.name || "未命名贈品") +
+                              " × " +
+                              (gift.quantity || "?") +
+                              " " +
+                              (gift.unitLabel || "")
+                          )
+                          .join("、")}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               ))}

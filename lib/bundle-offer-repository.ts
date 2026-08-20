@@ -21,6 +21,14 @@ export type BundleOfferItemInput = {
   sortOrder?: number;
 };
 
+export type BundleOfferPlanGiftInput = {
+  productId?: number;
+  name: string;
+  quantity: number;
+  unitLabel: string;
+  sortOrder?: number;
+};
+
 export type BundleOfferPlanInput = {
   code: string;
   label: string;
@@ -29,6 +37,7 @@ export type BundleOfferPlanInput = {
   freeQuantity?: number;
   priceAmount: number;
   sortOrder?: number;
+  gifts?: BundleOfferPlanGiftInput[];
 };
 
 export type BundleOfferProductInfoInput = {
@@ -82,9 +91,16 @@ export type BundleOfferItem = BundleOfferItemInput & {
   product: BundleOfferItemProduct;
 };
 
-export type BundleOfferPlan = BundleOfferPlanInput & {
-  id: number;
-};
+export type BundleOfferPlanGift =
+  BundleOfferPlanGiftInput & {
+    id: number;
+  };
+
+export type BundleOfferPlan =
+  Omit<BundleOfferPlanInput, "gifts"> & {
+    id: number;
+    gifts: BundleOfferPlanGift[];
+  };
 
 export type BundleOffer = {
   id: number;
@@ -173,6 +189,16 @@ type BundleOfferPlanRow = {
   sort_order: number;
 };
 
+type BundleOfferPlanGiftRow = {
+  id: number | string;
+  bundle_offer_plan_id: number | string;
+  product_id: number | null;
+  name: string;
+  quantity: number;
+  unit_label: string;
+  sort_order: number;
+};
+
 function optional(value: string | null) {
   return value ?? undefined;
 }
@@ -227,8 +253,23 @@ function rowToBundleItem(
   };
 }
 
+function rowToBundlePlanGift(
+  row: BundleOfferPlanGiftRow
+): BundleOfferPlanGift {
+  return {
+    id: Number(row.id),
+    productId:
+      row.product_id ?? undefined,
+    name: row.name,
+    quantity: row.quantity,
+    unitLabel: row.unit_label,
+    sortOrder: row.sort_order,
+  };
+}
+
 function rowToBundlePlan(
-  row: BundleOfferPlanRow
+  row: BundleOfferPlanRow,
+  gifts: BundleOfferPlanGift[] = []
 ): BundleOfferPlan {
   return {
     id: Number(row.id),
@@ -242,6 +283,7 @@ function rowToBundlePlan(
       row.free_quantity ?? undefined,
     priceAmount: row.price_amount,
     sortOrder: row.sort_order,
+    gifts,
   };
 }
 
@@ -288,49 +330,97 @@ async function validateStandardProducts(
 async function loadBundleOfferRelations(
   bundleOfferId: number
 ) {
-  const [itemsResult, plansResult] = await Promise.all([
-    dbQuery<BundleOfferItemRow>(
-      `
-        SELECT
-          item.id,
-          item.bundle_offer_id,
-          item.product_id,
-          item.role,
-          item.quantity,
-          item.sort_order,
+  const [itemsResult, plansResult] =
+    await Promise.all([
+      dbQuery<BundleOfferItemRow>(
+        `
+          SELECT
+            item.id,
+            item.bundle_offer_id,
+            item.product_id,
+            item.role,
+            item.quantity,
+            item.sort_order,
 
-          product.display_code AS product_display_code,
-          product.name AS product_name,
-          product.image AS product_image,
-          product.price AS product_price,
-          product.status AS product_status
+            product.display_code AS product_display_code,
+            product.name AS product_name,
+            product.image AS product_image,
+            product.price AS product_price,
+            product.status AS product_status
 
-        FROM bundle_offer_items AS item
-        JOIN products AS product
-          ON product.id = item.product_id
+          FROM bundle_offer_items AS item
+          JOIN products AS product
+            ON product.id = item.product_id
 
-        WHERE item.bundle_offer_id = $1
+          WHERE item.bundle_offer_id = $1
 
-        ORDER BY
-          item.sort_order ASC,
-          item.id ASC
-      `,
-      [bundleOfferId]
-    ),
-    dbQuery<BundleOfferPlanRow>(
-      `
-        SELECT *
-        FROM bundle_offer_plans
-        WHERE bundle_offer_id = $1
-        ORDER BY sort_order ASC, id ASC
-      `,
-      [bundleOfferId]
-    ),
-  ]);
+          ORDER BY
+            item.sort_order ASC,
+            item.id ASC
+        `,
+        [bundleOfferId]
+      ),
+      dbQuery<BundleOfferPlanRow>(
+        `
+          SELECT *
+          FROM bundle_offer_plans
+          WHERE bundle_offer_id = $1
+          ORDER BY sort_order ASC, id ASC
+        `,
+        [bundleOfferId]
+      ),
+    ]);
+
+  const planIds =
+    plansResult.rows.map(
+      (plan) => Number(plan.id)
+    );
+
+  const giftRows =
+    planIds.length > 0
+      ? (
+          await dbQuery<BundleOfferPlanGiftRow>(
+            `
+              SELECT *
+              FROM bundle_offer_plan_gifts
+              WHERE bundle_offer_plan_id =
+                ANY($1::bigint[])
+              ORDER BY
+                bundle_offer_plan_id ASC,
+                sort_order ASC,
+                id ASC
+            `,
+            [planIds]
+          )
+        ).rows
+      : [];
+
+  const giftsByPlanId =
+    new Map<number, BundleOfferPlanGift[]>();
+
+  for (const row of giftRows) {
+    const planId =
+      Number(row.bundle_offer_plan_id);
+
+    const gifts =
+      giftsByPlanId.get(planId) ?? [];
+
+    gifts.push(rowToBundlePlanGift(row));
+
+    giftsByPlanId.set(planId, gifts);
+  }
 
   return {
-    items: itemsResult.rows.map(rowToBundleItem),
-    plans: plansResult.rows.map(rowToBundlePlan),
+    items:
+      itemsResult.rows.map(rowToBundleItem),
+
+    plans:
+      plansResult.rows.map((row) =>
+        rowToBundlePlan(
+          row,
+          giftsByPlanId.get(Number(row.id)) ?? []
+        )
+      ),
   };
 }
 
@@ -385,9 +475,18 @@ export async function getBundleOffer(id: number) {
 export async function createBundleOffer(
   input: BundleOfferWriteInput
 ) {
-  await validateStandardProducts(
-    input.items.map((item) => item.productId)
-  );
+  await validateStandardProducts([
+    ...input.items.map(
+      (item) => item.productId
+    ),
+    ...input.plans.flatMap((plan) =>
+      (plan.gifts ?? []).flatMap((gift) =>
+        gift.productId == null
+          ? []
+          : [gift.productId]
+      )
+    ),
+  ]);
 
   return withDbClient(async (client) => {
     await client.query("BEGIN");
@@ -448,34 +547,68 @@ export async function createBundleOffer(
       }
 
       for (const plan of input.plans) {
-        await client.query(
-          `
-            INSERT INTO bundle_offer_plans (
-              bundle_offer_id,
-              code,
-              label,
-              required_quantity,
-              buy_quantity,
-              free_quantity,
-              price_amount,
-              sort_order,
-              updated_at
-            )
-            VALUES (
-              $1,$2,$3,$4,$5,$6,$7,$8,NOW()
-            )
-          `,
-          [
-            bundleOfferId,
-            plan.code,
-            plan.label,
-            plan.requiredQuantity ?? null,
-            plan.buyQuantity ?? null,
-            plan.freeQuantity ?? null,
-            plan.priceAmount,
-            plan.sortOrder ?? 0,
-          ]
-        );
+        const planResult =
+          await client.query<{
+            id: number | string;
+          }>(
+            `
+              INSERT INTO bundle_offer_plans (
+                bundle_offer_id,
+                code,
+                label,
+                required_quantity,
+                buy_quantity,
+                free_quantity,
+                price_amount,
+                sort_order,
+                updated_at
+              )
+              VALUES (
+                $1,$2,$3,$4,$5,$6,$7,$8,NOW()
+              )
+              RETURNING id
+            `,
+            [
+              bundleOfferId,
+              plan.code,
+              plan.label,
+              plan.requiredQuantity ?? null,
+              plan.buyQuantity ?? null,
+              plan.freeQuantity ?? null,
+              plan.priceAmount,
+              plan.sortOrder ?? 0,
+            ]
+          );
+
+        const planId =
+          Number(planResult.rows[0].id);
+
+        for (const gift of plan.gifts ?? []) {
+          await client.query(
+            `
+              INSERT INTO bundle_offer_plan_gifts (
+                bundle_offer_plan_id,
+                product_id,
+                name,
+                quantity,
+                unit_label,
+                sort_order,
+                updated_at
+              )
+              VALUES (
+                $1,$2,$3,$4,$5,$6,NOW()
+              )
+            `,
+            [
+              planId,
+              gift.productId ?? null,
+              gift.name,
+              gift.quantity,
+              gift.unitLabel,
+              gift.sortOrder ?? 0,
+            ]
+          );
+        }
       }
 
       await client.query("COMMIT");
@@ -492,9 +625,18 @@ export async function updateBundleOffer(
   id: number,
   input: BundleOfferWriteInput
 ) {
-  await validateStandardProducts(
-    input.items.map((item) => item.productId)
-  );
+  await validateStandardProducts([
+    ...input.items.map(
+      (item) => item.productId
+    ),
+    ...input.plans.flatMap((plan) =>
+      (plan.gifts ?? []).flatMap((gift) =>
+        gift.productId == null
+          ? []
+          : [gift.productId]
+      )
+    ),
+  ]);
 
   return withDbClient(async (client) => {
     await client.query("BEGIN");
@@ -571,43 +713,87 @@ export async function updateBundleOffer(
       }
 
       for (const plan of input.plans) {
-        await client.query(
-          `
-            INSERT INTO bundle_offer_plans (
-              bundle_offer_id,
-              code,
-              label,
-              required_quantity,
-              buy_quantity,
-              free_quantity,
-              price_amount,
-              sort_order,
-              updated_at
-            )
-            VALUES (
-              $1,$2,$3,$4,$5,$6,$7,$8,NOW()
-            )
-            ON CONFLICT (bundle_offer_id, code)
-            DO UPDATE SET
-              label = EXCLUDED.label,
-              required_quantity = EXCLUDED.required_quantity,
-              buy_quantity = EXCLUDED.buy_quantity,
-              free_quantity = EXCLUDED.free_quantity,
-              price_amount = EXCLUDED.price_amount,
-              sort_order = EXCLUDED.sort_order,
-              updated_at = NOW()
-          `,
-          [
-            id,
-            plan.code,
-            plan.label,
-            plan.requiredQuantity ?? null,
-            plan.buyQuantity ?? null,
-            plan.freeQuantity ?? null,
-            plan.priceAmount,
-            plan.sortOrder ?? 0,
-          ]
-        );
+        const planResult =
+          await client.query<{
+            id: number | string;
+          }>(
+            `
+              INSERT INTO bundle_offer_plans (
+                bundle_offer_id,
+                code,
+                label,
+                required_quantity,
+                buy_quantity,
+                free_quantity,
+                price_amount,
+                sort_order,
+                updated_at
+              )
+              VALUES (
+                $1,$2,$3,$4,$5,$6,$7,$8,NOW()
+              )
+              ON CONFLICT (bundle_offer_id, code)
+              DO UPDATE SET
+                label = EXCLUDED.label,
+                required_quantity = EXCLUDED.required_quantity,
+                buy_quantity = EXCLUDED.buy_quantity,
+                free_quantity = EXCLUDED.free_quantity,
+                price_amount = EXCLUDED.price_amount,
+                sort_order = EXCLUDED.sort_order,
+                updated_at = NOW()
+              RETURNING id
+            `,
+            [
+              id,
+              plan.code,
+              plan.label,
+              plan.requiredQuantity ?? null,
+              plan.buyQuantity ?? null,
+              plan.freeQuantity ?? null,
+              plan.priceAmount,
+              plan.sortOrder ?? 0,
+            ]
+          );
+
+        const planId =
+          Number(planResult.rows[0].id);
+
+        if (plan.gifts !== undefined) {
+          await client.query(
+            `
+              DELETE FROM bundle_offer_plan_gifts
+              WHERE bundle_offer_plan_id = $1
+            `,
+            [planId]
+          );
+
+          for (const gift of plan.gifts) {
+            await client.query(
+              `
+                INSERT INTO bundle_offer_plan_gifts (
+                  bundle_offer_plan_id,
+                  product_id,
+                  name,
+                  quantity,
+                  unit_label,
+                  sort_order,
+                  updated_at
+                )
+                VALUES (
+                  $1,$2,$3,$4,$5,$6,NOW()
+                )
+              `,
+              [
+                planId,
+                gift.productId ?? null,
+                gift.name,
+                gift.quantity,
+                gift.unitLabel,
+                gift.sortOrder ?? 0,
+              ]
+            );
+          }
+        }
       }
 
       await client.query("COMMIT");
