@@ -1458,7 +1458,19 @@ const sevenSequenceGuideV377 = [
     精油: { filter: "quick-essential", label: "精油" },
   };
 
-  const collectionSeriesChips = seriesList.filter((series) => series !== "全部").slice(0, 14);
+  const collectionSeriesChips =
+    selectedCategory === "本月優惠"
+      ? [
+          "組合優惠",
+          "買一送一",
+          "任選優惠",
+        ]
+      : seriesList
+          .filter(
+            (series) =>
+              series !== "全部"
+          )
+          .slice(0, 14);
 
   const hotCollectionProductIds = [34, 1, 58, 59, 55, 67, 54, 119, 2, 3, 53, 56, 69, 112, 57, 35, 36, 9, 10, 68, 48, 49, 46, 47, 40, 41, 32, 70, 71, 113, 74, 79, 85, 51, 108];
 
@@ -1546,6 +1558,77 @@ const sevenSequenceGuideV377 = [
   const quickFilterRegularProducts = activeQuickFilterLayout
     ? collectionProducts.filter((product) => !quickFilterPromoIdSet.has(product.id))
     : collectionProducts;
+
+  const monthlyBundleOffers =
+    bundleOffers;
+
+  const collectionBundleOffers =
+    commerceFilter === "deals-combo" ||
+    commerceFilter === "quick-monthly"
+      ? monthlyBundleOffers
+      : selectedCategory ===
+          "本月優惠"
+        ? selectedSeries ===
+            "買一送一"
+          ? monthlyBundleOffers.filter(
+              (offer) =>
+                offer.bundleType ===
+                "buy_get"
+            )
+          : selectedSeries ===
+              "任選優惠"
+            ? monthlyBundleOffers.filter(
+                (offer) =>
+                  offer.bundleType ===
+                  "mix_match"
+              )
+            : monthlyBundleOffers
+        : [];
+
+  const bundleOnlyCollectionView =
+    commerceFilter ===
+      "deals-combo" ||
+    (
+      selectedCategory ===
+        "本月優惠" &&
+      (
+        selectedSeries ===
+          "組合優惠" ||
+        selectedSeries ===
+          "買一送一" ||
+        selectedSeries ===
+          "任選優惠"
+      )
+    );
+
+  const showBundleOfferCollectionSection =
+    commerceFilter ===
+      "deals-combo" ||
+    commerceFilter ===
+      "quick-monthly" ||
+    selectedCategory ===
+      "本月優惠";
+
+  const bundleCollectionHeading =
+    selectedCategory ===
+      "本月優惠" &&
+    selectedSeries !==
+      "全部"
+      ? selectedSeries
+      : "組合優惠";
+
+  const collectionRegularProductsForRender =
+    selectedCategory ===
+      "本月優惠" &&
+    selectedSeries ===
+      "全部"
+      ? quickFilterRegularProducts.filter(
+          (product) =>
+            !isQuickFilterComboProduct(
+              product
+            )
+        )
+      : quickFilterRegularProducts;
 
   const collectionFeaturedProducts: Product[] = [];
   const cartUpsellProducts = getCartUpsellProducts();
@@ -8327,7 +8410,7 @@ const sevenSequenceGuideV377 = [
             </section>
           )}
 
-          {commerceFilter !== "deals-combo" &&
+          {!bundleOnlyCollectionView &&
             activeQuickFilterLayout &&
             quickFilterPromoProducts.length > 0 && (
             <section className="quick-filter-section-v364 promo">
@@ -8342,112 +8425,184 @@ const sevenSequenceGuideV377 = [
             </section>
           )}
 
-          {commerceFilter === "deals-combo" && (
-            bundleOffers.filter(
-              (offer) =>
-                offer.storefrontCategory === "\u672c\u6708\u512a\u60e0"
-            ).length > 0 ? (
-              <section className="quick-filter-section-v364 bundle-offer-section-v1">
-                <div className="quick-filter-heading-v364">
-                  <h3>組合優惠</h3>
-                </div>
+          {showBundleOfferCollectionSection &&
+            (
+              collectionBundleOffers.length > 0
+                ? (
+                  <section className="quick-filter-section-v364 bundle-offer-section-v1">
+                    <div className="quick-filter-heading-v364">
+                      <h3>
+                        {
+                          bundleCollectionHeading
+                        }
+                      </h3>
+                    </div>
 
-                <div className="home-product-grid collection-product-grid collection-grid-v22">
-                  {bundleOffers
-                    .filter(
-                      (offer) =>
-                        offer.storefrontCategory === "\u672c\u6708\u512a\u60e0"
-                    )
-                    .map((offer) => {
-                    return (
-                      <article
-                        className="product-card commerce-product-card shelf-card-v271 compact-commerce-card-v350 bundle-offer-card-v1"
-                        key={`bundle-offer-${offer.id}`}
-                      >
-                        {offer.coverImage ? (
-                          <div className="product-image">
-                            <img
-                              src={offer.coverImage}
-                              alt={offer.name}
-                              loading="lazy"
-                            />
-                          </div>
-                        ) : (
-                          <div className="product-image">
-                            <span>組合優惠</span>
-                          </div>
-                        )}
+                    <div className="home-product-grid collection-product-grid collection-grid-v22">
+                      {collectionBundleOffers.map(
+                        (offer) => (
+                          <article
+                            className="product-card commerce-product-card shelf-card-v271 compact-commerce-card-v350 bundle-offer-card-v1"
+                            key={
+                              "bundle-offer-" +
+                              offer.id
+                            }
+                          >
+                            {offer.coverImage ? (
+                              <div className="product-image">
+                                <img
+                                  src={
+                                    offer.coverImage
+                                  }
+                                  alt={
+                                    offer.name
+                                  }
+                                  loading="lazy"
+                                />
+                              </div>
+                            ) : (
+                              <div className="product-image">
+                                <span>
+                                  組合優惠
+                                </span>
+                              </div>
+                            )}
 
-                        <div className="product-info">
-                          <div className="product-card-title-zone-v365">
-                            <div className="product-card-title-slot-v364">
-                              <h3>{offer.name}</h3>
+                            <div className="product-info">
+                              <div className="product-card-title-zone-v365">
+                                <div className="product-card-title-slot-v364">
+                                  <h3>
+                                    {
+                                      offer.name
+                                    }
+                                  </h3>
+                                </div>
+                              </div>
+
+                              <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
+                                {offer.cardOriginalPriceText ? (
+                                  <p className="original-price">
+                                    {
+                                      offer.cardOriginalPriceText
+                                    }
+                                  </p>
+                                ) : null}
+
+                                {offer.cardPriceText ? (
+                                  <p className="price">
+                                    {
+                                      offer.cardPriceText
+                                    }
+                                  </p>
+                                ) : null}
+                              </div>
+
+                              <div className="product-card-actions-v358">
+                                <button
+                                  type="button"
+                                  className="add-cart-button compact-add-cart-v350 cart-card-button-v358"
+                                  onClick={(
+                                    event
+                                  ) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+
+                                    openBundleOfferDetail(
+                                      offer
+                                    );
+                                  }}
+                                >
+                                  <span>
+                                    查看詳情
+                                  </span>
+                                </button>
+                              </div>
                             </div>
-                          </div>
+                          </article>
+                        )
+                      )}
+                    </div>
+                  </section>
+                )
+                : bundleOnlyCollectionView
+                  ? (
+                    <div className="collection-empty-card collection-empty-v22">
+                      <h3>
+                        目前沒有上架中的
+                        {
+                          bundleCollectionHeading
+                        }
+                      </h3>
+                      <p>
+                        目前沒有符合這個優惠分類的活動。
+                      </p>
+                    </div>
+                  )
+                  : null
+            )}
 
-                          <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
-                            {offer.cardOriginalPriceText ? (
-                              <p className="original-price">
-                                {offer.cardOriginalPriceText}
-                              </p>
-                            ) : null}
+          {!bundleOnlyCollectionView &&
+            (
+              collectionRegularProductsForRender.length >
+              0
+                ? (
+                  <section className="quick-filter-section-v364">
+                    {activeQuickFilterLayout && (
+                      <div className="quick-filter-heading-v364">
+                        <h3>
+                          {
+                            activeQuickFilterLayout.regularTitle
+                          }
+                        </h3>
+                      </div>
+                    )}
 
-                            {offer.cardPriceText ? (
-                              <p className="price">
-                                {offer.cardPriceText}
-                              </p>
-                            ) : null}
-                          </div>
+                    <div className="home-product-grid collection-product-grid collection-grid-v22">
+                      {collectionRegularProductsForRender.map(
+                        (product) => (
+                          <ProductCard
+                            product={
+                              product
+                            }
+                            key={
+                              "collection-" +
+                              product.id
+                            }
+                          />
+                        )
+                      )}
+                    </div>
+                  </section>
+                )
+                : quickFilterPromoProducts.length ===
+                      0 &&
+                    collectionBundleOffers.length ===
+                      0
+                  ? (
+                    <div className="collection-empty-card collection-empty-v22">
+                      <h3>
+                        目前這個分類暫時沒有商品
+                      </h3>
 
-                          <div className="product-card-actions-v358">
-                            <button
-                              type="button"
-                              className="add-cart-button compact-add-cart-v350 cart-card-button-v358"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                openBundleOfferDetail(offer);
-                              }}
-                            >
-                              <span>查看詳情</span>
-                            </button>
-                          </div>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              </section>
-            ) : (
-              <div className="collection-empty-card collection-empty-v22">
-                <h3>目前沒有上架中的組合優惠</h3>
-                <p>請先到後台啟用組合優惠。</p>
-              </div>
-            )
-          )}
+                      <p>
+                        可以返回選單切換其他分類，或點右上角搜尋商品。
+                      </p>
 
-          {commerceFilter !== "deals-combo" && (quickFilterRegularProducts.length > 0 ? (
-            <section className="quick-filter-section-v364">
-              {activeQuickFilterLayout && (
-                <div className="quick-filter-heading-v364">
-                  <h3>{activeQuickFilterLayout.regularTitle}</h3>
-                </div>
-              )}
-              <div className="home-product-grid collection-product-grid collection-grid-v22">
-                {quickFilterRegularProducts.map((product) => (
-                  <ProductCard product={product} key={`collection-${product.id}`} />
-                ))}
-              </div>
-            </section>
-          ) : quickFilterPromoProducts.length === 0 ? (
-            <div className="collection-empty-card collection-empty-v22">
-              <h3>目前這個分類暫時沒有商品</h3>
-              <p>可以返回選單切換其他分類，或點右上角搜尋商品。</p>
-              <button type="button" onClick={() => handleQuickSearchTerm("組合優惠")}>
-                看本月主打優惠
-              </button>
-            </div>
-          ) : null)}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleQuickSearchTerm(
+                            "組合優惠"
+                          )
+                        }
+                      >
+                        看本月主打優惠
+                      </button>
+                    </div>
+                  )
+                  : null
+            )}
+
         </section>
       )}
 
