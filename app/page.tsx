@@ -4262,6 +4262,147 @@ const sevenSequenceGuideV377 = [
       return;
     }
 
+    if (offer.bundleType === "fixed_bundle") {
+      const fixedItems = offer.items.filter(
+        (item) => item.role === "fixed"
+      );
+
+      const freeItems = offer.items.filter(
+        (item) => item.role === "free"
+      );
+
+      const supportedItems = [
+        ...fixedItems,
+        ...freeItems,
+      ];
+
+      if (
+        fixedItems.length === 0 ||
+        supportedItems.length !==
+          offer.items.length
+      ) {
+        setCartNotice(
+          "此固定組合的商品內容設定不完整。"
+        );
+        return;
+      }
+
+      if (
+        supportedItems.some(
+          (item) =>
+            item.product.status !== "active" ||
+            !Number.isFinite(item.quantity) ||
+            item.quantity <= 0
+        )
+      ) {
+        setCartNotice(
+          "此固定組合包含目前無法購買的商品。"
+        );
+        return;
+      }
+
+      const fixedQuantity =
+        fixedItems.reduce(
+          (total, item) =>
+            total +
+            Math.max(
+              1,
+              Math.floor(item.quantity)
+            ),
+          0
+        );
+
+      if (
+        plan.requiredQuantity != null &&
+        plan.requiredQuantity !==
+          fixedQuantity
+      ) {
+        setCartNotice(
+          "此固定組合的方案數量與商品內容不一致。"
+        );
+        return;
+      }
+
+      const selections:
+        BundleCartSelection[] =
+        supportedItems.map((item) => ({
+          productId: item.productId,
+          role: item.role,
+          name: item.product.name,
+          quantity: Math.max(
+            1,
+            Math.floor(item.quantity)
+          ),
+          image:
+            item.product.image ||
+            undefined,
+        }));
+
+      const cartKey =
+        "bundle-" +
+        offer.id +
+        "-plan-" +
+        plan.id +
+        "-fixed";
+
+      setBundleCartItems(
+        (currentItems) => {
+          const existing =
+            currentItems.find(
+              (item) =>
+                item.cartKey ===
+                cartKey
+            );
+
+          if (existing) {
+            return currentItems.map(
+              (item) =>
+                item.cartKey ===
+                cartKey
+                  ? {
+                      ...item,
+                      quantity:
+                        item.quantity +
+                        1,
+                    }
+                  : item
+            );
+          }
+
+          const nextItem:
+            BundleCartItem = {
+              cartKey,
+              bundleOfferId:
+                offer.id,
+              name: offer.name,
+              image:
+                offer.coverImage,
+              quantity: 1,
+              planId: plan.id,
+              planLabel:
+                plan.label,
+              price:
+                plan.priceAmount!,
+              displayPriceText:
+                offer.cardPriceText,
+              selections,
+            };
+
+          return [
+            ...currentItems,
+            nextItem,
+          ];
+        }
+      );
+
+      setCartNotice(
+        "已加入購物車"
+      );
+      setSubmitStatus("idle");
+      setSubmitMessage("");
+      return;
+    }
+
     if (offer.bundleType !== "buy_get") {
       setCartNotice("此組合類型將於下一階段接上選擇功能。");
       return;
@@ -5283,6 +5424,170 @@ const sevenSequenceGuideV377 = [
           fixed_bundle / mix_match 接上後，
           再擴充這裡的驗證規則。
         */
+        if (offer.bundleType === "fixed_bundle") {
+          const fixedItems =
+            offer.items.filter(
+              (item) =>
+                item.role ===
+                "fixed"
+            );
+
+          const freeItems =
+            offer.items.filter(
+              (item) =>
+                item.role ===
+                "free"
+            );
+
+          const supportedItems = [
+            ...fixedItems,
+            ...freeItems,
+          ];
+
+          if (
+            fixedItems.length === 0 ||
+            supportedItems.length !==
+              offer.items.length ||
+            supportedItems.some(
+              (item) =>
+                item.product.status !==
+                  "active" ||
+                !Number.isFinite(
+                  item.quantity
+                ) ||
+                item.quantity <= 0
+            )
+          ) {
+            invalidNames.push(
+              cartItem.name
+            );
+            return;
+          }
+
+          const fixedQuantity =
+            fixedItems.reduce(
+              (total, item) =>
+                total +
+                Math.max(
+                  1,
+                  Math.floor(
+                    item.quantity
+                  )
+                ),
+              0
+            );
+
+          if (
+            plan.requiredQuantity !=
+              null &&
+            plan.requiredQuantity !==
+              fixedQuantity
+          ) {
+            invalidNames.push(
+              cartItem.name
+            );
+            return;
+          }
+
+          const expectedSelections:
+            BundleCartSelection[] =
+            supportedItems.map(
+              (item) => ({
+                productId:
+                  item.productId,
+                role: item.role,
+                name:
+                  item.product.name,
+                quantity:
+                  Math.max(
+                    1,
+                    Math.floor(
+                      item.quantity
+                    )
+                  ),
+                image:
+                  item.product.image ||
+                  undefined,
+              })
+            );
+
+          const selectionsMatch =
+            cartItem.selections
+              .length ===
+              expectedSelections.length &&
+            expectedSelections.every(
+              (expected) => {
+                const actual =
+                  cartItem.selections.find(
+                    (selection) =>
+                      selection.role ===
+                        expected.role &&
+                      selection.productId ===
+                        expected.productId
+                  );
+
+                return (
+                  actual?.quantity ===
+                  expected.quantity
+                );
+              }
+            );
+
+          if (
+            !selectionsMatch
+          ) {
+            invalidNames.push(
+              cartItem.name
+            );
+            return;
+          }
+
+          const refreshedItem:
+            BundleCartItem = {
+              ...cartItem,
+              name: offer.name,
+              image:
+                offer.coverImage ||
+                undefined,
+              planLabel:
+                plan.label,
+              price:
+                latestPrice,
+              displayPriceText:
+                offer.cardPriceText,
+              selections:
+                expectedSelections,
+            };
+
+          const itemChanged =
+            cartItem.name !==
+              refreshedItem.name ||
+            cartItem.image !==
+              refreshedItem.image ||
+            cartItem.planLabel !==
+              refreshedItem.planLabel ||
+            cartItem.price !==
+              refreshedItem.price ||
+            cartItem.displayPriceText !==
+              refreshedItem.displayPriceText ||
+            JSON.stringify(
+              cartItem.selections
+            ) !==
+              JSON.stringify(
+                refreshedItem.selections
+              );
+
+          if (itemChanged) {
+            changed = true;
+          }
+
+          refreshedItems.push(
+            refreshedItem
+          );
+
+          return;
+        }
+
         if (offer.bundleType !== "buy_get") {
           invalidNames.push(cartItem.name);
           return;
