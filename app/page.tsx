@@ -1562,6 +1562,21 @@ const sevenSequenceGuideV377 = [
   const monthlyBundleOffers =
     bundleOffers;
 
+  const categoryBundleOffers =
+    selectedCategory === "臉部保養" ||
+    selectedCategory === "身體洗護" ||
+    selectedCategory === "健康補給"
+      ? bundleOffers.filter(
+          (offer) =>
+            offer.storefrontCategory ===
+              selectedCategory &&
+            (
+              selectedSeries === "全部" ||
+              offer.series === selectedSeries
+            )
+        )
+      : [];
+
   const collectionBundleOffers =
     commerceFilter === "deals-combo" ||
     commerceFilter === "quick-monthly"
@@ -1583,8 +1598,7 @@ const sevenSequenceGuideV377 = [
                   "mix_match"
               )
             : monthlyBundleOffers
-        : [];
-
+        : categoryBundleOffers;
   const bundleOnlyCollectionView =
     commerceFilter ===
       "deals-combo" ||
@@ -1607,8 +1621,8 @@ const sevenSequenceGuideV377 = [
     commerceFilter ===
       "quick-monthly" ||
     selectedCategory ===
-      "本月優惠";
-
+      "本月優惠" ||
+    categoryBundleOffers.length > 0;
   const bundleCollectionHeading =
     selectedCategory ===
       "本月優惠" &&
