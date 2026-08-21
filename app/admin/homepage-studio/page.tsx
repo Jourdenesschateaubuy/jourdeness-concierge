@@ -2,6 +2,7 @@
 import HomepageDraftPublishBar from "./HomepageDraftPublishBar";
 import SiteStudioSectionManager from "./SiteStudioSectionManager";
 import SecondaryHeroProductManager from "./SecondaryHeroProductManager";
+import TopRankingFixedManager from "./TopRankingFixedManager";
 
 import {
   getSiteStudioDraftConfig,
@@ -9,6 +10,9 @@ import {
 import {
   listDatabaseProducts,
 } from "../../../lib/product-repository";
+import {
+  listBundleOffers,
+} from "../../../lib/bundle-offer-repository";
 
 export const dynamic = "force-dynamic";
 
@@ -16,11 +20,13 @@ export default async function HomepageStudioPage() {
   const [
     config,
     allProducts,
+    bundleOffers,
   ] = await Promise.all([
     getSiteStudioDraftConfig(),
     listDatabaseProducts({
       includeInactive: true,
     }),
+    listBundleOffers(),
   ]);
 
   const sections = config.sections
@@ -78,9 +84,34 @@ export default async function HomepageStudioPage() {
             description="750 × 900 px｜圖片固定"
           />
 
-          <FixedCard
-            title="TOP 熱銷排行"
-            description="TOP 1–6｜位置與版型固定"
+          <TopRankingFixedManager
+            initialRankings={
+              config.rankings
+            }
+            products={
+              allProducts.map(
+                (product) => ({
+                  id: product.id,
+                  displayCode:
+                    product.displayCode,
+                  name: product.name,
+                  cardName:
+                    product.cardName || "",
+                  status:
+                    product.status,
+                })
+              )
+            }
+            bundleOffers={
+              bundleOffers.map(
+                (offer) => ({
+                  id: offer.id,
+                  name: offer.name,
+                  status:
+                    offer.status,
+                })
+              )
+            }
           />
 
           <FixedCard

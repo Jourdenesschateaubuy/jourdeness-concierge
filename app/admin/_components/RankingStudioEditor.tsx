@@ -21,6 +21,22 @@ type StorefrontProductOption = {
   cardName?: string;
 };
 
+type BundleOfferOption = {
+  id: number;
+  name: string;
+  status?: string;
+};
+
+function bundleOfferStatusLabel(
+  status?: string
+) {
+  if (status === "active") return "上架中";
+  if (status === "inactive") return "下架";
+  if (status === "coming_soon") return "新品預告";
+  if (status === "sold_out") return "售罄";
+  return status || "未設定";
+}
+
 type RankingStudioEditorProps = {
   rank: number;
   onDraftChange?: (
@@ -46,6 +62,8 @@ export default function RankingStudioEditor({
     );
   const [products, setProducts] =
     useState<StorefrontProductOption[]>([]);
+  const [bundleOffers, setBundleOffers] =
+    useState<BundleOfferOption[]>([]);
   const [loading, setLoading] =
     useState(true);
   const [saving, setSaving] =
@@ -156,6 +174,55 @@ export default function RankingStudioEditor({
       cancelled = true;
     };
   }, [rank]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadBundleOffers() {
+      try {
+        const response = await fetch(
+          "/api/admin/bundle-offers",
+          { cache: "no-store" }
+        );
+
+        const payload =
+          await readJsonResponse<{
+            bundleOffers?: BundleOfferOption[];
+            error?: string;
+          }>(
+            response,
+            "組合優惠清單讀取失敗"
+          );
+
+        if (!response.ok) {
+          throw new Error(
+            payload.error ||
+              "組合優惠清單讀取失敗"
+          );
+        }
+
+        if (!cancelled) {
+          setBundleOffers(
+            Array.isArray(
+              payload.bundleOffers
+            )
+              ? payload.bundleOffers
+              : []
+          );
+        }
+      } catch {
+        if (!cancelled) {
+          setBundleOffers([]);
+        }
+      }
+    }
+
+    void loadBundleOffers();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (draft) {
@@ -306,12 +373,32 @@ export default function RankingStudioEditor({
     );
   }
 
+  const targetType =
+    draft.targetType === "bundle_offer"
+      ? "bundle_offer"
+      : "product";
+
+  const targetId =
+    Number.isInteger(draft.targetId) &&
+    Number(draft.targetId) > 0
+      ? Number(draft.targetId)
+      : draft.actionProductId;
+
   const selectedProduct =
-    products.find(
-      (product) =>
-        product.id ===
-        draft.actionProductId
-    );
+    targetType === "product"
+      ? products.find(
+          (product) =>
+            product.id === targetId
+        )
+      : undefined;
+
+  const selectedBundleOffer =
+    targetType === "bundle_offer"
+      ? bundleOffers.find(
+          (offer) =>
+            offer.id === targetId
+        )
+      : undefined;
 
   return (
     <form
@@ -324,7 +411,7 @@ export default function RankingStudioEditor({
           <h2>TOP {rank}</h2>
           <small>
             整張排行榜卡片點擊後，
-            直接開啟指定商品詳情。
+            直接開啟指定的一般商品或組合優惠。
           </small>
         </div>
 
@@ -422,59 +509,139 @@ export default function RankingStudioEditor({
         </div>
 
         <label className={styles.field}>
-          <span>指定商品</span>
-          <select
-            value={draft.actionProductId}
-            onChange={(event) => {
-              const productId = Number(
-                event.target.value
-              );
+          <span>連結類型</span>
 
-              update(
-                "actionProductId",
-                productId
-              );
-              update(
-                "displayProductId",
-                productId
-              );
+          <select
+            value={targetType}
+            onChange={(event) => {
+              const nextType =
+                event.target.value ===
+                "bundle_offer"
+                  ? "bundle_offer"
+                  : "product";
+
+              setDraft((current) => {
+                if (!current) return current;
+
+                const nextTargetId =
+                  nextType ===
+                  "bundle_offer"
+                    ? bundleOffers[0]?.id ??
+                      current.targetId ??
+                      current.actionProductId
+                    : products[0]?.id ??
+                      current.targetId ??
+                      current.actionProductId;
+
+                return {
+                  ...current,
+                  targetType: nextType,
+                  targetId: nextTargetId,
+                };
+              });
+
+              setMessage("");
+              setError("");
             }}
           >
-            {products.map((product) => (
-              <option
-                key={product.id}
-                value={product.id}
-              >
-                #{product.id}{" "}
-                {product.cardName ||
-                  product.name}
-              </option>
-            ))}
+            <option value="product">
+              一般商品
+            </option>
+
+            <option value="bundle_offer">
+              組合優惠
+            </option>
           </select>
         </label>
 
-        <label
-          className={styles.toggleRow}
-        >
-          <span>顯示此排名</span>
-          <input
-            type="checkbox"
-            checked={draft.visible}
-            onChange={(event) =>
-              update(
-                "visible",
-                event.target.checked
-              )
-            }
-          />
+        <label className={styles.field}>
+          <span>指定內容</span>
+
+          <select
+            value={targetId}
+            onChange={(event) => {
+              const nextTargetId =
+                Number(
+                  event.target.value
+                );
+
+              setDraft((current) => {
+                if (!current) return current;
+
+                if (
+                  targetType ===
+                  "product"
+                ) {
+                  return {
+                    ...current,
+                    targetType:
+                      "product",
+                    targetId:
+                      nextTargetId,
+                    actionProductId:
+                      nextTargetId,
+                    displayProductId:
+                      nextTargetId,
+                  };
+                }
+
+                return {
+                  ...current,
+                  targetType:
+                    "bundle_offer",
+                  targetId:
+                    nextTargetId,
+                };
+              });
+
+              setMessage("");
+              setError("");
+            }}
+          >
+            {targetType === "product"
+              ? products.map(
+                  (product) => (
+                    <option
+                      key={product.id}
+                      value={product.id}
+                    >
+                      #{product.id}{" "}
+                      {product.cardName ||
+                        product.name}
+                    </option>
+                  )
+                )
+              : bundleOffers.map(
+                  (offer) => (
+                    <option
+                      key={offer.id}
+                      value={offer.id}
+                    >
+                      #{offer.id}{" "}
+                      {offer.name}
+                      {" ｜ "}
+                      {bundleOfferStatusLabel(
+                        offer.status
+                      )}
+                    </option>
+                  )
+                )}
+          </select>
         </label>
 
         <div className={styles.noteBox}>
           目前指定：
-          {selectedProduct
-            ? selectedProduct.cardName ||
-              selectedProduct.name
-            : `商品 #${draft.actionProductId}`}
+          {targetType ===
+          "bundle_offer"
+            ? selectedBundleOffer
+              ? `組合優惠 #${selectedBundleOffer.id} ${selectedBundleOffer.name}（${bundleOfferStatusLabel(
+                  selectedBundleOffer.status
+                )}）`
+              : `組合優惠 #${targetId}`
+            : selectedProduct
+              ? `一般商品 #${selectedProduct.id} ${selectedProduct.cardName ||
+                  selectedProduct.name}`
+              : `一般商品 #${targetId}`}
         </div>
       </section>
 

@@ -18,6 +18,8 @@ export type SiteStudioHero = {
 
 export type SiteStudioRankingItem = {
   rank: number;
+  targetType?: "product" | "bundle_offer";
+  targetId?: number;
   displayProductId: number;
   actionProductId: number;
   action: "detail" | "combo";

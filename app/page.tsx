@@ -5764,12 +5764,48 @@ const sevenSequenceGuideV377 = [
   }
 
   function renderTopRankingCardV378(item: SiteStudioRankingItem) {
-    const actionProduct = products.find(
-      (product) =>
-        product.id === item.actionProductId
-    );
+    const targetType =
+      item.targetType === "bundle_offer"
+        ? "bundle_offer"
+        : "product";
 
-    if (!actionProduct) return null;
+    const targetId =
+      typeof item.targetId === "number" &&
+      Number.isInteger(item.targetId) &&
+      item.targetId > 0
+        ? item.targetId
+        : item.actionProductId;
+
+    const actionProduct =
+      targetType === "product"
+        ? products.find(
+            (product) =>
+              product.id === targetId
+          )
+        : undefined;
+
+    const actionBundleOffer =
+      targetType === "bundle_offer"
+        ? bundleOffers.find(
+            (offer) =>
+              offer.id === targetId
+          )
+        : undefined;
+
+    if (
+      targetType === "product" &&
+      !actionProduct
+    ) {
+      return null;
+    }
+
+    if (
+      targetType === "bundle_offer" &&
+      !actionBundleOffer &&
+      !(isAdminMode && isAdminEditMode)
+    ) {
+      return null;
+    }
 
     const handleAction = () => {
       if (
@@ -5784,7 +5820,23 @@ const sevenSequenceGuideV377 = [
         return;
       }
 
-      openProductDetail(actionProduct);
+      if (
+        targetType === "bundle_offer"
+      ) {
+        if (actionBundleOffer) {
+          openBundleOfferDetail(
+            actionBundleOffer
+          );
+        }
+
+        return;
+      }
+
+      if (actionProduct) {
+        openProductDetail(
+          actionProduct
+        );
+      }
     };
 
     return (
