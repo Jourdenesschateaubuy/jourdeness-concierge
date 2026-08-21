@@ -119,6 +119,15 @@ type StorefrontBundleOfferItem = {
   };
 };
 
+type StorefrontBundleOfferPlanGift = {
+  id: number;
+  productId?: number;
+  name: string;
+  quantity: number;
+  unitLabel: string;
+  sortOrder?: number;
+};
+
 type StorefrontBundleOfferPlan = {
   id: number;
   code: string;
@@ -129,6 +138,7 @@ type StorefrontBundleOfferPlan = {
   priceAmount?: number | null;
   note?: string | null;
   sortOrder?: number;
+  gifts?: StorefrontBundleOfferPlanGift[];
 };
 
 type StorefrontBundleOffer = {
@@ -165,6 +175,13 @@ type BundleCartSelection = {
   image?: string;
 };
 
+type BundleCartGift = {
+  productId?: number;
+  name: string;
+  quantity: number;
+  unitLabel: string;
+};
+
 type BundleCartItem = {
   cartKey: string;
   bundleOfferId: number;
@@ -176,6 +193,7 @@ type BundleCartItem = {
   price: number;
   displayPriceText?: string;
   selections: BundleCartSelection[];
+  gifts?: BundleCartGift[];
 };
 function Home() {
   const [products, setProducts] = useState<StorefrontProduct[]>(
@@ -298,6 +316,63 @@ function getComboConfig(productId: number): ComboConfig | null {
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<Product | null>(null);
   const [selectedBundleOffer, setSelectedBundleOffer] =
     useState<StorefrontBundleOffer | null>(null);
+  const [bundleMixMatchOffer, setBundleMixMatchOffer] =
+    useState<StorefrontBundleOffer | null>(null);
+  const [bundleMixMatchPlanId, setBundleMixMatchPlanId] =
+    useState<number | null>(null);
+  const [
+    bundleMixMatchDraftSelections,
+    setBundleMixMatchDraftSelections,
+  ] = useState<Record<number, number>>({});
+
+  const activeBundleMixMatchPlan =
+    bundleMixMatchOffer
+      ? bundleMixMatchOffer.plans.find(
+          (plan) =>
+            plan.id === bundleMixMatchPlanId
+        ) ??
+        bundleMixMatchOffer.plans[0] ??
+        null
+      : null;
+
+  const bundleMixMatchSelectedCount =
+    Object.values(
+      bundleMixMatchDraftSelections
+    ).reduce(
+      (total, quantity) =>
+        total + quantity,
+      0
+    );
+
+  const bundleMixMatchRequiredQuantity =
+    Math.max(
+      0,
+      Math.floor(
+        activeBundleMixMatchPlan
+          ?.requiredQuantity ?? 0
+      )
+    );
+
+  const bundleMixMatchPlanPrice =
+    typeof activeBundleMixMatchPlan
+      ?.priceAmount === "number"
+      ? activeBundleMixMatchPlan
+          .priceAmount
+      : 0;
+
+  const bundleMixMatchCanConfirm =
+    Boolean(
+      bundleMixMatchOffer &&
+        activeBundleMixMatchPlan
+    ) &&
+    bundleMixMatchRequiredQuantity > 0 &&
+    Number.isFinite(
+      bundleMixMatchPlanPrice
+    ) &&
+    bundleMixMatchPlanPrice > 0 &&
+    bundleMixMatchSelectedCount ===
+      bundleMixMatchRequiredQuantity;
+
   const [detailHistoryActive, setDetailHistoryActive] = useState(false);
   const [cartReturnProduct, setCartReturnProduct] = useState<Product | null>(null);
   const [cartStep, setCartStep] = useState<1 | 2>(1);
@@ -4247,9 +4322,490 @@ const sevenSequenceGuideV377 = [
     setSubmitMessage("");
   }
 
+
+  function createEmptyBundleMixMatchDraft(
+    offer: StorefrontBundleOffer
+  ) {
+    const draft: Record<number, number> = {};
+
+    offer.items
+      .filter(
+        (item) =>
+          item.role === "option"
+      )
+      .forEach((item) => {
+        draft[item.productId] = 0;
+      });
+
+    return draft;
+  }
+
+  function openBundleMixMatchPicker(
+    offer: StorefrontBundleOffer
+  ) {
+    if (
+      offer.bundleType !== "mix_match"
+    ) {
+      return;
+    }
+
+    const optionItems =
+      offer.items.filter(
+        (item) =>
+          item.role === "option"
+      );
+
+    const validPlans =
+      offer.plans.filter((plan) => {
+        const requiredQuantity =
+          Math.max(
+            0,
+            Math.floor(
+              plan.requiredQuantity ??
+                0
+            )
+          );
+
+        const price =
+          typeof plan.priceAmount ===
+          "number"
+            ? plan.priceAmount
+            : 0;
+
+        return (
+          requiredQuantity > 0 &&
+          Number.isFinite(price) &&
+          price > 0 &&
+          (
+            offer.allowSameProduct ||
+            requiredQuantity <=
+              optionItems.length
+          )
+        );
+      });
+
+    if (
+      optionItems.length === 0 ||
+      optionItems.length !==
+        offer.items.length ||
+      optionItems.some(
+        (item) =>
+          item.product.status !==
+          "active"
+      ) ||
+      validPlans.length === 0
+    ) {
+      setCartNotice(
+        "此任選優惠目前無法購買，請確認方案與商品設定。"
+      );
+      return;
+    }
+
+    setBundleMixMatchOffer(offer);
+    setBundleMixMatchPlanId(
+      validPlans[0].id
+    );
+    setBundleMixMatchDraftSelections(
+      createEmptyBundleMixMatchDraft(
+        offer
+      )
+    );
+    setSubmitStatus("idle");
+    setSubmitMessage("");
+  }
+
+  function closeBundleMixMatchPicker() {
+    setBundleMixMatchOffer(null);
+    setBundleMixMatchPlanId(null);
+    setBundleMixMatchDraftSelections({});
+  }
+
+  function selectBundleMixMatchPlan(
+    planId: number
+  ) {
+    if (
+      !bundleMixMatchOffer ||
+      bundleMixMatchPlanId === planId
+    ) {
+      return;
+    }
+
+    const plan =
+      bundleMixMatchOffer.plans.find(
+        (item) =>
+          item.id === planId
+      );
+
+    if (!plan) return;
+
+    const requiredQuantity =
+      Math.max(
+        0,
+        Math.floor(
+          plan.requiredQuantity ?? 0
+        )
+      );
+
+    const price =
+      typeof plan.priceAmount ===
+      "number"
+        ? plan.priceAmount
+        : 0;
+
+    const optionCount =
+      bundleMixMatchOffer.items.filter(
+        (item) =>
+          item.role === "option"
+      ).length;
+
+    if (
+      requiredQuantity <= 0 ||
+      !Number.isFinite(price) ||
+      price <= 0 ||
+      (
+        !bundleMixMatchOffer
+          .allowSameProduct &&
+        requiredQuantity >
+          optionCount
+      )
+    ) {
+      return;
+    }
+
+    setBundleMixMatchPlanId(planId);
+
+    setBundleMixMatchDraftSelections(
+      createEmptyBundleMixMatchDraft(
+        bundleMixMatchOffer
+      )
+    );
+  }
+
+  function updateBundleMixMatchQuantity(
+    productId: number,
+    delta: number
+  ) {
+    if (
+      !bundleMixMatchOffer ||
+      !activeBundleMixMatchPlan
+    ) {
+      return;
+    }
+
+    const requiredQuantity =
+      Math.max(
+        0,
+        Math.floor(
+          activeBundleMixMatchPlan
+            .requiredQuantity ?? 0
+        )
+      );
+
+    if (requiredQuantity <= 0) {
+      return;
+    }
+
+    setBundleMixMatchDraftSelections(
+      (current) => {
+        const currentQuantity =
+          current[productId] ?? 0;
+
+        const currentTotal =
+          Object.values(current).reduce(
+            (total, quantity) =>
+              total + quantity,
+            0
+          );
+
+        if (
+          delta > 0 &&
+          currentTotal >=
+            requiredQuantity
+        ) {
+          return current;
+        }
+
+        if (
+          delta > 0 &&
+          !bundleMixMatchOffer
+            .allowSameProduct &&
+          currentQuantity >= 1
+        ) {
+          return current;
+        }
+
+        let nextQuantity =
+          Math.max(
+            0,
+            currentQuantity + delta
+          );
+
+        if (
+          !bundleMixMatchOffer
+            .allowSameProduct
+        ) {
+          nextQuantity =
+            Math.min(
+              nextQuantity,
+              1
+            );
+        }
+
+        if (
+          nextQuantity ===
+          currentQuantity
+        ) {
+          return current;
+        }
+
+        return {
+          ...current,
+          [productId]: nextQuantity,
+        };
+      }
+    );
+  }
+
+  function confirmBundleMixMatchSelection() {
+    if (
+      !bundleMixMatchOffer ||
+      !activeBundleMixMatchPlan ||
+      !bundleMixMatchCanConfirm
+    ) {
+      return;
+    }
+
+    const optionItems =
+      bundleMixMatchOffer.items.filter(
+        (item) =>
+          item.role === "option"
+      );
+
+    const optionByProductId =
+      new Map(
+        optionItems.map((item) => [
+          item.productId,
+          item,
+        ])
+      );
+
+    const selections:
+      BundleCartSelection[] = [];
+
+    for (
+      const [
+        rawProductId,
+        quantity,
+      ] of Object.entries(
+        bundleMixMatchDraftSelections
+      )
+    ) {
+      const productId =
+        Number(rawProductId);
+
+      const item =
+        optionByProductId.get(
+          productId
+        );
+
+      if (
+        !item ||
+        quantity <= 0
+      ) {
+        continue;
+      }
+
+      selections.push({
+        productId,
+        role: "option",
+        name: item.product.name,
+        quantity,
+        image:
+          item.product.image ||
+          undefined,
+      });
+    }
+
+    selections.sort(
+      (a, b) =>
+        a.productId -
+        b.productId
+    );
+
+    const selectedQuantity =
+      selections.reduce(
+        (total, selection) =>
+          total +
+          selection.quantity,
+        0
+      );
+
+    if (
+      selectedQuantity !==
+        bundleMixMatchRequiredQuantity ||
+      selections.some(
+        (selection) => {
+          const item =
+            optionByProductId.get(
+              selection.productId
+            );
+
+          return (
+            !item ||
+            item.product.status !==
+              "active" ||
+            (
+              !bundleMixMatchOffer
+                .allowSameProduct &&
+              selection.quantity > 1
+            )
+          );
+        }
+      )
+    ) {
+      setCartNotice(
+        "任選內容已變更，請重新選擇。"
+      );
+
+      closeBundleMixMatchPicker();
+      return;
+    }
+
+    const selectionKey =
+      selections
+        .map(
+          (selection) =>
+            selection.productId +
+            "x" +
+            selection.quantity
+        )
+        .join("-");
+
+    const cartKey =
+      "bundle-" +
+      bundleMixMatchOffer.id +
+      "-plan-" +
+      activeBundleMixMatchPlan.id +
+      "-mix-" +
+      selectionKey;
+
+    const gifts: BundleCartGift[] =
+      (
+        activeBundleMixMatchPlan
+          .gifts ?? []
+      )
+        .filter(
+          (gift) =>
+            typeof gift.name ===
+              "string" &&
+            gift.name.trim() &&
+            Number.isFinite(
+              gift.quantity
+            ) &&
+            gift.quantity > 0 &&
+            typeof gift.unitLabel ===
+              "string" &&
+            gift.unitLabel.trim()
+        )
+        .map((gift) => ({
+          productId:
+            typeof gift.productId ===
+              "number" &&
+            Number.isInteger(
+              gift.productId
+            ) &&
+            gift.productId > 0
+              ? gift.productId
+              : undefined,
+          name: gift.name.trim(),
+          quantity: Math.max(
+            1,
+            Math.floor(
+              gift.quantity
+            )
+          ),
+          unitLabel:
+            gift.unitLabel.trim(),
+        }));
+
+    setBundleCartItems(
+      (currentItems) => {
+        const existing =
+          currentItems.find(
+            (item) =>
+              item.cartKey ===
+              cartKey
+          );
+
+        if (existing) {
+          return currentItems.map(
+            (item) =>
+              item.cartKey ===
+              cartKey
+                ? {
+                    ...item,
+                    quantity:
+                      item.quantity +
+                      1,
+                  }
+                : item
+          );
+        }
+
+        const nextItem:
+          BundleCartItem = {
+          cartKey,
+          bundleOfferId:
+            bundleMixMatchOffer.id,
+          name:
+            bundleMixMatchOffer.name,
+          image:
+            bundleMixMatchOffer
+              .coverImage,
+          quantity: 1,
+          planId:
+            activeBundleMixMatchPlan.id,
+          planLabel:
+            activeBundleMixMatchPlan
+              .label,
+          price:
+            bundleMixMatchPlanPrice,
+          displayPriceText:
+            bundleMixMatchOffer
+              .cardPriceText,
+          selections,
+          gifts,
+        };
+
+        return [
+          ...currentItems,
+          nextItem,
+        ];
+      }
+    );
+
+    setCartNotice(
+      "已加入購物車"
+    );
+    setSubmitStatus("idle");
+    setSubmitMessage("");
+
+    closeBundleMixMatchPicker();
+  }
+
   function addBundleOfferToCart(
     offer: StorefrontBundleOffer
   ) {
+    if (
+      offer.bundleType ===
+      "mix_match"
+    ) {
+      openBundleMixMatchPicker(
+        offer
+      );
+      return;
+    }
+
     const plan = offer.plans.find(
       (item) =>
         typeof item.priceAmount === "number" &&
@@ -5051,6 +5607,77 @@ const sevenSequenceGuideV377 = [
             return;
           }
 
+          const rawGifts: Array<Record<string, any>> =
+            Array.isArray(savedItem?.gifts)
+              ? savedItem.gifts
+              : [];
+
+          const gifts: BundleCartGift[] =
+            rawGifts
+              .map((gift) => {
+                const giftName =
+                  typeof gift?.name === "string"
+                    ? gift.name.trim()
+                    : "";
+
+                const giftQuantity =
+                  Number(gift?.quantity);
+
+                const unitLabel =
+                  typeof gift?.unitLabel === "string"
+                    ? gift.unitLabel.trim()
+                    : "";
+
+                const rawProductId =
+                  gift?.productId;
+
+                const productId =
+                  rawProductId == null
+                    ? undefined
+                    : Number(rawProductId);
+
+                if (
+                  !giftName ||
+                  !Number.isFinite(
+                    giftQuantity
+                  ) ||
+                  giftQuantity <= 0 ||
+                  !unitLabel ||
+                  (
+                    productId !== undefined &&
+                    (
+                      !Number.isInteger(
+                        productId
+                      ) ||
+                      productId <= 0
+                    )
+                  )
+                ) {
+                  return null;
+                }
+
+                const restoredGift:
+                  BundleCartGift = {
+                  productId,
+                  name: giftName,
+                  quantity: Math.max(
+                    1,
+                    Math.floor(
+                      giftQuantity
+                    )
+                  ),
+                  unitLabel,
+                };
+
+                return restoredGift;
+              })
+              .filter(
+                (
+                  gift
+                ): gift is BundleCartGift =>
+                  gift !== null
+              );
+
           const cartKey =
             typeof savedItem?.cartKey === "string" &&
             savedItem.cartKey.trim()
@@ -5084,6 +5711,7 @@ const sevenSequenceGuideV377 = [
                 ? savedItem.displayPriceText
                 : undefined,
             selections,
+            gifts,
           });
         });
 
@@ -5225,6 +5853,12 @@ const sevenSequenceGuideV377 = [
           name: selection.name,
           quantity: selection.quantity,
           image: selection.image,
+        })),
+        gifts: (item.gifts ?? []).map((gift) => ({
+          productId: gift.productId,
+          name: gift.name,
+          quantity: gift.quantity,
+          unitLabel: gift.unitLabel,
         })),
       })),
     };
@@ -5588,6 +6222,252 @@ const sevenSequenceGuideV377 = [
           return;
         }
 
+        if (offer.bundleType === "mix_match") {
+          const optionItems =
+            offer.items.filter(
+              (item) =>
+                item.role === "option"
+            );
+
+          if (
+            optionItems.length === 0 ||
+            optionItems.length !==
+              offer.items.length ||
+            optionItems.some(
+              (item) =>
+                item.product.status !==
+                "active"
+            )
+          ) {
+            invalidNames.push(
+              cartItem.name
+            );
+            return;
+          }
+
+          const requiredQuantity =
+            Math.max(
+              0,
+              Math.floor(
+                plan.requiredQuantity ??
+                  0
+              )
+            );
+
+          if (
+            requiredQuantity <= 0 ||
+            (
+              !offer.allowSameProduct &&
+              requiredQuantity >
+                optionItems.length
+            )
+          ) {
+            invalidNames.push(
+              cartItem.name
+            );
+            return;
+          }
+
+          const optionByProductId =
+            new Map(
+              optionItems.map(
+                (item) => [
+                  item.productId,
+                  item,
+                ]
+              )
+            );
+
+          if (
+            cartItem.selections.length ===
+              0 ||
+            cartItem.selections.some(
+              (selection) =>
+                selection.role !==
+                  "option" ||
+                !optionByProductId.has(
+                  selection.productId
+                ) ||
+                !Number.isFinite(
+                  selection.quantity
+                ) ||
+                selection.quantity <=
+                  0 ||
+                (
+                  !offer.allowSameProduct &&
+                  selection.quantity >
+                    1
+                )
+            )
+          ) {
+            invalidNames.push(
+              cartItem.name
+            );
+            return;
+          }
+
+          const uniqueProductIds =
+            new Set(
+              cartItem.selections.map(
+                (selection) =>
+                  selection.productId
+              )
+            );
+
+          if (
+            uniqueProductIds.size !==
+              cartItem.selections.length
+          ) {
+            invalidNames.push(
+              cartItem.name
+            );
+            return;
+          }
+
+          const selectedQuantity =
+            cartItem.selections.reduce(
+              (total, selection) =>
+                total +
+                Math.floor(
+                  selection.quantity
+                ),
+              0
+            );
+
+          if (
+            selectedQuantity !==
+              requiredQuantity
+          ) {
+            invalidNames.push(
+              cartItem.name
+            );
+            return;
+          }
+
+          const refreshedSelections:
+            BundleCartSelection[] =
+            cartItem.selections
+              .map((selection) => {
+                const option =
+                  optionByProductId.get(
+                    selection.productId
+                  )!;
+
+                return {
+                  productId:
+                    option.productId,
+                  role:
+                    "option" as const,
+                  name:
+                    option.product.name,
+                  quantity:
+                    Math.floor(
+                      selection.quantity
+                    ),
+                  image:
+                    option.product.image ||
+                    undefined,
+                };
+              })
+              .sort(
+                (a, b) =>
+                  a.productId -
+                  b.productId
+              );
+
+          const expectedGifts:
+            BundleCartGift[] =
+            (plan.gifts ?? [])
+              .filter(
+                (gift) =>
+                  typeof gift.name ===
+                    "string" &&
+                  gift.name.trim() &&
+                  Number.isFinite(
+                    gift.quantity
+                  ) &&
+                  gift.quantity > 0 &&
+                  typeof gift.unitLabel ===
+                    "string" &&
+                  gift.unitLabel.trim()
+              )
+              .map((gift) => ({
+                productId:
+                  typeof gift.productId ===
+                    "number" &&
+                  Number.isInteger(
+                    gift.productId
+                  ) &&
+                  gift.productId > 0
+                    ? gift.productId
+                    : undefined,
+                name:
+                  gift.name.trim(),
+                quantity:
+                  Math.max(
+                    1,
+                    Math.floor(
+                      gift.quantity
+                    )
+                  ),
+                unitLabel:
+                  gift.unitLabel.trim(),
+              }));
+
+          const refreshedItem:
+            BundleCartItem = {
+            ...cartItem,
+            name: offer.name,
+            image:
+              offer.coverImage ||
+              undefined,
+            planLabel:
+              plan.label,
+            price:
+              latestPrice,
+            displayPriceText:
+              offer.cardPriceText,
+            selections:
+              refreshedSelections,
+            gifts:
+              expectedGifts,
+          };
+
+          const itemChanged =
+            cartItem.name !==
+              refreshedItem.name ||
+            cartItem.image !==
+              refreshedItem.image ||
+            cartItem.planLabel !==
+              refreshedItem.planLabel ||
+            cartItem.price !==
+              refreshedItem.price ||
+            cartItem.displayPriceText !==
+              refreshedItem.displayPriceText ||
+            JSON.stringify(
+              cartItem.selections
+            ) !==
+              JSON.stringify(
+                refreshedItem.selections
+              ) ||
+            JSON.stringify(
+              cartItem.gifts ?? []
+            ) !==
+              JSON.stringify(
+                refreshedItem.gifts ?? []
+              );
+
+          if (itemChanged) {
+            changed = true;
+          }
+
+          refreshedItems.push(
+            refreshedItem
+          );
+
+          return;
+        }
+
         if (offer.bundleType !== "buy_get") {
           invalidNames.push(cartItem.name);
           return;
@@ -5884,6 +6764,14 @@ const sevenSequenceGuideV377 = [
           })
           .join("\n");
 
+        const giftDetails =
+          (item.gifts ?? [])
+            .map(
+              (gift) =>
+                `贈：${gift.name} × ${gift.quantity}${gift.unitLabel}`
+            )
+            .join("\n");
+
         const priceText =
           "NT$" +
           item.price.toLocaleString("zh-TW");
@@ -5895,6 +6783,7 @@ const sevenSequenceGuideV377 = [
             : "",
           `價格：${priceText}`,
           selectionDetails,
+          giftDetails,
         ]
           .filter(Boolean)
           .join("\n");
@@ -5993,8 +6882,8 @@ const sevenSequenceGuideV377 = [
             "NT$" +
             item.price.toLocaleString("zh-TW"),
           comboPrice: item.price,
-          description: item.selections
-            .map((selection) => {
+          description: [
+            ...item.selections.map((selection) => {
               const roleLabel =
                 selection.role === "buy"
                   ? "購"
@@ -6011,8 +6900,16 @@ const sevenSequenceGuideV377 = [
                 " × " +
                 selection.quantity
               );
-            })
-            .join("、"),
+            }),
+            ...(item.gifts ?? []).map(
+              (gift) =>
+                "贈：" +
+                gift.name +
+                " × " +
+                gift.quantity +
+                gift.unitLabel
+            ),
+          ].join("、"),
           quantity: item.quantity,
           tags: "組合優惠",
           combo: "Bundle Offer",
@@ -6023,6 +6920,13 @@ const sevenSequenceGuideV377 = [
             role: selection.role,
             name: selection.name,
             quantity: selection.quantity,
+          })),
+          bundleGifts: (item.gifts ?? []).map((gift) => ({
+            productId:
+              gift.productId ?? null,
+            name: gift.name,
+            quantity: gift.quantity,
+            unitLabel: gift.unitLabel,
           })),
         })),
       ],
@@ -6746,6 +7650,247 @@ const sevenSequenceGuideV377 = [
           </div>
         </section>
       )}
+
+
+      {bundleMixMatchOffer &&
+        activeBundleMixMatchPlan && (
+          <section
+            className="combo-picker-backdrop-v360"
+            onClick={
+              closeBundleMixMatchPicker
+            }
+            role="presentation"
+          >
+            <div
+              className="combo-picker-panel-v360"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="bundle-mix-match-title-v1"
+              onClick={(event) =>
+                event.stopPropagation()
+              }
+            >
+              <header className="combo-picker-header-v360">
+                <div>
+                  <small>
+                    選擇任選優惠
+                  </small>
+
+                  <h2 id="bundle-mix-match-title-v1">
+                    {
+                      bundleMixMatchOffer.name
+                    }
+                  </h2>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={
+                    closeBundleMixMatchPicker
+                  }
+                  aria-label="關閉任選商品"
+                >
+                  ×
+                </button>
+              </header>
+
+              {bundleMixMatchOffer
+                .plans.length > 1 ? (
+                <div
+                  className="combo-plan-grid-v360"
+                  aria-label="選擇優惠方案"
+                >
+                  {bundleMixMatchOffer.plans.map(
+                    (plan) => (
+                      <button
+                        type="button"
+                        className={
+                          plan.id ===
+                          activeBundleMixMatchPlan.id
+                            ? "active"
+                            : ""
+                        }
+                        key={plan.id}
+                        onClick={() =>
+                          selectBundleMixMatchPlan(
+                            plan.id
+                          )
+                        }
+                      >
+                        <strong>
+                          {plan.label}
+                        </strong>
+
+                        <span>
+                          {"NT$" +
+                            Number(
+                              plan.priceAmount ??
+                                0
+                            ).toLocaleString(
+                              "zh-TW"
+                            )}
+                        </span>
+                      </button>
+                    )
+                  )}
+                </div>
+              ) : null}
+
+              <div className="combo-picker-progress-v360">
+                <div>
+                  <span>已選</span>
+
+                  <strong>
+                    {
+                      bundleMixMatchSelectedCount
+                    }
+                    ／
+                    {
+                      bundleMixMatchRequiredQuantity
+                    }
+                  </strong>
+
+                  <span>
+                    {
+                      bundleMixMatchOffer.unitLabel
+                    }
+                  </span>
+                </div>
+
+                <em>
+                  {bundleMixMatchCanConfirm
+                    ? "已選滿，可以加入購物車"
+                    : "還要選 " +
+                      Math.max(
+                        0,
+                        bundleMixMatchRequiredQuantity -
+                          bundleMixMatchSelectedCount
+                      ) +
+                      " " +
+                      bundleMixMatchOffer.unitLabel}
+                </em>
+              </div>
+
+              <div className="combo-option-list-v360">
+                {bundleMixMatchOffer.items
+                  .filter(
+                    (item) =>
+                      item.role ===
+                      "option"
+                  )
+                  .map((item) => {
+                    const quantity =
+                      bundleMixMatchDraftSelections[
+                        item.productId
+                      ] ?? 0;
+
+                    const reachedLimit =
+                      bundleMixMatchSelectedCount >=
+                        bundleMixMatchRequiredQuantity ||
+                      (!bundleMixMatchOffer.allowSameProduct &&
+                        quantity >= 1);
+
+                    return (
+                      <article
+                        key={item.id}
+                        className="combo-option-row-v360"
+                      >
+                        <div>
+                          <h3>
+                            {
+                              item.product
+                                .name
+                            }
+                          </h3>
+
+                          <p>
+                            {bundleMixMatchOffer.allowSameProduct
+                              ? "可重複選擇"
+                              : "每款限選 1 " +
+                                bundleMixMatchOffer.unitLabel}
+                          </p>
+                        </div>
+
+                        <div className="combo-option-quantity-v360">
+                          <button
+                            type="button"
+                            disabled={
+                              quantity <= 0
+                            }
+                            onClick={() =>
+                              updateBundleMixMatchQuantity(
+                                item.productId,
+                                -1
+                              )
+                            }
+                            aria-label={
+                              "減少 " +
+                              item.product.name
+                            }
+                          >
+                            −
+                          </button>
+
+                          <strong>
+                            {quantity}
+                          </strong>
+
+                          <button
+                            type="button"
+                            disabled={
+                              reachedLimit
+                            }
+                            onClick={() =>
+                              updateBundleMixMatchQuantity(
+                                item.productId,
+                                1
+                              )
+                            }
+                            aria-label={
+                              "增加 " +
+                              item.product.name
+                            }
+                          >
+                            ＋
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+              </div>
+
+              <footer className="combo-picker-footer-v360">
+                <div>
+                  <span>
+                    {
+                      activeBundleMixMatchPlan.label
+                    }
+                  </span>
+
+                  <strong>
+                    {"NT$" +
+                      bundleMixMatchPlanPrice.toLocaleString(
+                        "zh-TW"
+                      )}
+                  </strong>
+                </div>
+
+                <button
+                  type="button"
+                  className="combo-picker-confirm-v360"
+                  disabled={
+                    !bundleMixMatchCanConfirm
+                  }
+                  onClick={
+                    confirmBundleMixMatchSelection
+                  }
+                >
+                  加入購物車
+                </button>
+              </footer>
+            </div>
+          </section>
+        )}
 
       {isSearchOpen && (
         <section className="search-panel search-page-view search-dropdown-v342" aria-label="商品搜尋頁面">
@@ -8132,7 +9277,29 @@ const sevenSequenceGuideV377 = [
                                       >
                                         {selection.role === "buy" ? "購：" : ""}
                                         {selection.role === "free" ? "贈：" : ""}
+                                        {selection.role === "option" ? "選：" : ""}
                                         {selection.name} × {selection.quantity}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {(item.gifts?.length ?? 0) > 0 && (
+                                <div className="cart-combo-details-v360">
+                                  <div>
+                                    {item.gifts?.map((gift, index) => (
+                                      <span
+                                        key={
+                                          item.cartKey +
+                                          "-gift-" +
+                                          (gift.productId ?? "text") +
+                                          "-" +
+                                          index
+                                        }
+                                      >
+                                        贈：{gift.name} × {gift.quantity}
+                                        {gift.unitLabel}
                                       </span>
                                     ))}
                                   </div>
@@ -8791,7 +9958,10 @@ const sevenSequenceGuideV377 = [
                       )
                     }
                   >
-                    加入購物車
+                    {selectedBundleOffer.bundleType ===
+                    "mix_match"
+                      ? "選擇搭配"
+                      : "加入購物車"}
                   </button>
                 </div>
               </section>
