@@ -34,7 +34,6 @@ import {
 } from "../lib/storefront-core";
 import type {
   CartItem,
-  ComboConfig,
   CustomerForm,
   LineProfile,
   MainCategory,
@@ -202,88 +201,8 @@ function Home() {
     useState<HomepageStorefrontSection[]>([]);
   const [bundleOffers, setBundleOffers] =
     useState<StorefrontBundleOffer[]>([]);
-function getComboConfig(productId: number): ComboConfig | null {
-    const product = products.find((item) => item.id === productId);
-    const databaseConfig = product?.comboConfig;
 
-    if (databaseConfig) {
-      return databaseConfig;
-    }
 
-    if (
-      product?.productType !== "combo" &&
-      product?.category !== "組合價"
-    ) {
-      return null;
-    }
-
-    const values = [...product.price.matchAll(/([\d,]+)/g)]
-      .map((match) => Number(match[1].replace(/,/g, "")))
-      .filter((value) => Number.isFinite(value) && value > 0);
-    const price = values.at(-1) ?? 0;
-
-    return {
-      productId,
-      type: "fixed_bundle",
-      unitLabel: "組",
-      allowSameProduct: false,
-      options: [],
-      plans: [
-        {
-          id: "fixed-bundle",
-          label: "固定套組",
-          requiredQuantity: 1,
-          price,
-          priceLabel: price ? `$${price.toLocaleString("zh-TW")}` : "",
-        },
-      ],
-    };
-  }
-
-  function getComboPriceParts(config: ComboConfig) {
-    const unitLabel = config.unitLabel?.trim() || "件";
-
-    if (config.type === "fixed_bundle") {
-      const plan = config.plans.find(
-        (item) => Number.isFinite(item.price) && item.price > 0
-      );
-      return plan ? [`組合價 $${plan.price.toLocaleString("zh-TW")}`] : [];
-    }
-
-    const parts: string[] = [];
-
-    if (
-      typeof config.singleUnitPrice === "number" &&
-      Number.isFinite(config.singleUnitPrice) &&
-      config.singleUnitPrice > 0
-    ) {
-      parts.push(
-        `單${unitLabel} $${config.singleUnitPrice.toLocaleString("zh-TW")}`
-      );
-    } else if (config.singlePriceLabel?.trim()) {
-      parts.push(config.singlePriceLabel.trim());
-    }
-
-    for (const plan of config.plans) {
-      if (!Number.isFinite(plan.price) || plan.price <= 0) continue;
-      const formatted = `$${plan.price.toLocaleString("zh-TW")}`;
-
-      if (config.type === "buy_get") {
-        const buyQuantity =
-          plan.buyQuantity ?? Math.max(plan.requiredQuantity - 1, 1);
-        const freeQuantity = plan.freeQuantity ?? 1;
-        parts.push(`買${buyQuantity}送${freeQuantity} ${formatted}`);
-      } else {
-        parts.push(`任選${plan.requiredQuantity}${unitLabel} ${formatted}`);
-      }
-    }
-
-    return parts;
-  }
-
-  function isFixedBundle(product: Product) {
-    return getComboConfig(product.id)?.type === "fixed_bundle";
-  }
   const [selectedCategory, setSelectedCategory] =
     useState<MainCategory>("本月優惠");
   const [selectedSeries, setSelectedSeries] = useState("全部");
@@ -1028,7 +947,7 @@ function getComboConfig(productId: number): ComboConfig | null {
     const fullText = `${product.name} ${product.category} ${product.series} ${product.description} ${product.price}`;
     const tags = getProductTags(product);
 
-    if (selectedSeries === "組合優惠") return product.category === "組合價" || hasComboPrice(product) || tags.includes("組合優惠") || fullText.includes("組合");
+    if (selectedSeries === "組合優惠") return product.category === "組合價" || tags.includes("組合優惠") || fullText.includes("組合");
     if (selectedSeries === "買一送一") return fullText.includes("買一送一") || fullText.includes("1+1") || fullText.includes("買一送二");
     if (selectedSeries === "任選優惠") return fullText.includes("任選");
 
@@ -1479,7 +1398,7 @@ const sevenSequenceGuideV377 = [
   const activeQuickFilterLayout = quickFilterLayouts[commerceFilter] ?? null;
 
   function isQuickFilterComboProduct(product: Product) {
-    return product.category === "組合價" || Boolean(getComboConfig(product.id));
+    return product.category === "組合價";
   }
 
   const quickFilterPromoProducts = activeQuickFilterLayout
@@ -1825,13 +1744,13 @@ const sevenSequenceGuideV377 = [
       case "quick-essential":
         return essentialOilProductIdsV359.has(product.id) && !isComingSoon(product);
       case "deals-all":
-        return product.category === "組合價" || hasComboPrice(product);
+        return product.category === "組合價";
       case "v3-featured":
         return [34, 1, 51, 58, 59, 55, 50, 54, 119, 2, 3, 56].includes(product.id);
       case "deals-monthly":
         return product.category === "組合價" && product.series.includes("本月主打");
       case "deals-combo":
-        return product.category === "組合價" || Boolean(getComboConfig(product.id));
+        return product.category === "組合價";
       case "deals-bogo":
         return fullText.includes("買一送一") || fullText.includes("買一送二") || fullText.includes("1+1");
       case "deals-pick":
@@ -2210,11 +2129,6 @@ const sevenSequenceGuideV377 = [
   }
 
   function displayPrice(product: Product) {
-    const comboConfig = getComboConfig(product.id);
-    if (comboConfig) {
-      const parts = getComboPriceParts(comboConfig);
-      if (parts.length > 0) return parts.join("｜");
-    }
 
     if (hasInquiryPrice(product)) return "售價請洽小幫手";
 
@@ -2344,13 +2258,6 @@ const sevenSequenceGuideV377 = [
     target.style.display = "none";
   }
 
-  function hasComboPrice(product: Product) {
-    return (
-      product.productType === "combo" ||
-      Boolean(product.comboConfig) ||
-      product.category === "組合價"
-    );
-  }
 
   function isExpiringDeal(product: Product) {
     return expiringProductIds.has(product.id);
@@ -2584,7 +2491,6 @@ const sevenSequenceGuideV377 = [
     if (fullText.includes("贈")) return "贈品組";
     if (fullText.includes("任選")) return "任選優惠";
     if (product.category === "組合價") return "回購優惠";
-    if (hasComboPrice(product)) return "有組合價";
     if (hasInquiryPrice(product)) return "LINE 詢價";
 
     return product.series;
@@ -2614,7 +2520,6 @@ const sevenSequenceGuideV377 = [
       ...getSuitableItems(product),
       ...getDetailBullets(product),
       ...getProductTags(product),
-      hasComboPrice(product) ? "組合價 有組合價 優惠 任選" : "",
       isExpiringDeal(product) ? "即期 限量優惠 特價" : "",
       hasInquiryPrice(product) ? "LINE詢價 詢價" : "",
     ].join(" ");
@@ -3339,10 +3244,7 @@ const sevenSequenceGuideV377 = [
             const product = item.productId
               ? products.find((candidate) => candidate.id === item.productId)
               : null;
-            const comboConfig = product ? getComboConfig(product.id) : null;
-            const priceParts = comboConfig
-              ? getComboPriceParts(comboConfig)
-              : item.price.split("｜").map((part) => part.trim()).filter(Boolean);
+            const priceParts = item.price.split("｜").map((part) => part.trim()).filter(Boolean);
             const offerImage = product?.image ?? null;
             const unavailable = product ? isCartDisabled(product) : false;
 
@@ -3401,11 +3303,7 @@ const sevenSequenceGuideV377 = [
                   >
                     {product && unavailable
                       ? getUnavailableLabel(product)
-                      : comboConfig?.type === "fixed_bundle"
-                        ? "查看組合"
-                        : comboConfig
-                          ? "選擇搭配"
-                          : "查看優惠"}
+                      : "查看優惠"}
                   </button>
                 </div>
               </article>
@@ -3527,9 +3425,6 @@ const sevenSequenceGuideV377 = [
       return "目前售價由 LINE 小幫手確認，送出資料後會協助回覆。";
     }
 
-    if (hasComboPrice(product)) {
-      return "若有組合價活動，客服會協助確認最適合的優惠方案。";
-    }
 
     return "實際優惠與庫存依 LINE 小幫手確認為準。";
   }
@@ -3678,9 +3573,6 @@ const sevenSequenceGuideV377 = [
     if (tags.includes("面膜保養")) bullets.push("適合想做集中保養或加強型保養時搭配使用。");
     if (tags.includes("男士保養")) bullets.push("適合男士日常清潔、保濕與清爽保養需求。");
 
-    if (hasComboPrice(product)) {
-      bullets.push("此品項可留意組合價，送出資料後客服會協助確認最適合的優惠方案。");
-    }
 
     if (bullets.length === 0) {
       bullets.push("加入購物車後由 LINE 小幫手確認庫存、價格與適合搭配品項。");
@@ -6363,9 +6255,7 @@ const sevenSequenceGuideV377 = [
         tags: displayTags(item.product).join("、"),
         combo: item.comboSelections
           ? "任選組合"
-          : hasComboPrice(item.product)
-            ? "有組合價"
-            : "",
+          : "",
         comboPlan: item.comboPlanLabel || "",
         comboSelections: item.comboSelections ?? [],
       })),
@@ -7288,10 +7178,9 @@ const sevenSequenceGuideV377 = [
 
                         <div className="search-result-tags">
                           {isExpiringDeal(product) && <span>限量優惠</span>}
-                          {hasComboPrice(product) && <span>有組合價</span>}
                           {displayTags(product)
                             .filter((tag) => tag !== "有組合價")
-                            .slice(0, isExpiringDeal(product) || hasComboPrice(product) ? 1 : 2)
+                            .slice(0, isExpiringDeal(product) ? 1 : 2)
                             .map((tag) => (
                               <span key={`search-${product.id}-${tag}`}>{tag}</span>
                             ))}
@@ -9013,12 +8902,7 @@ const sevenSequenceGuideV377 = [
                       ? "新品預告"
                       : isSoldOut(selectedDetailProduct)
                         ? "補貨中"
-                        : getComboConfig(selectedDetailProduct.id)?.type ===
-                            "fixed_bundle"
-                          ? "加入購物車"
-                          : getComboConfig(selectedDetailProduct.id)
-                            ? "選擇搭配"
-                            : "加入購物車"}
+                        : "加入購物車"}
                   </button>
                   <button type="button" onClick={openCartFromDetail}>
                     購物車 {cartTotalQuantity}
