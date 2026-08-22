@@ -2317,17 +2317,6 @@ const additionalProductsV359: Product[] = [
 
 const additionalProductsV378: Product[] = [
   {
-    id: 120,
-    name: "龍血求麗精華液＋肌可佳膠原蛋白彈潤原液",
-    category: "組合價",
-    series: "龍血系列",
-    price: "組合價 $ 1,290",
-    image: "/api/studio/media/33/file",
-    gallery: ["/api/studio/media/33/file", "/api/studio/media/28/file"],
-    description: "龍血求麗精華液 30mL ＋ 肌可佳膠原蛋白彈潤原液 30mL，限定組合價 $1,290。龍血求麗精華液目前不提供單買。",
-    expiryNote: "龍血求麗精華液效期：2026年12月；實際日期依商品包裝或 LINE 小幫手確認為準。",
-  },
-  {
     id: 121,
     name: "龍血求麗修護霜",
     category: "保養品",
@@ -4687,22 +4676,6 @@ export const productContentOverridesV376: Record<number, Partial<Product>> = {
     intro: "玫瑰超微晶萃系列滋養型精華油，結合玫瑰相關植萃與滋養油相，適合乾燥、缺水與想提升柔嫩光澤感的膚況。",
     features: ["滋養油相質地，加強乾燥肌膚潤澤。", "適合晚間或乾燥季節加強保養。", "可依膚況搭配同系列活膚液與瞬效霜。"],
     suitableFor: ["乾燥缺水", "高級養護", "滋養光澤"],
-  },
-  120: {
-    cardName: "龍血求麗精華液＋肌可佳膠原蛋白彈潤原液",
-    cardSubtitle: "30mL＋30mL・限定雙精華組合",
-    spec: "龍血求麗精華液 30mL ＋ 肌可佳膠原蛋白彈潤原液 30mL",
-    intro: "龍血求麗精華液搭配肌可佳膠原蛋白彈潤原液的限定雙精華組合，適合日常加強保濕、柔嫩與彈潤感保養。",
-    features: [
-      "龍血求麗精華液 30mL，作為龍血系列集中型精華保養。",
-      "肌可佳膠原蛋白彈潤原液 30mL，適合加強澎潤、保濕與肌膚彈性感。",
-      "兩款精華固定搭配，組合價 $1,290；龍血求麗精華液目前不提供單買。",
-    ],
-    suitableFor: ["龍血系列", "乾燥缺水", "彈潤保養", "限定組合"],
-    usage: "可依個人保養習慣分別使用；化妝水後取適量精華均勻塗抹於臉部與頸部，再銜接乳液或乳霜。",
-    notice: "使用後若有不適請停止使用；避免接觸眼睛與黏膜。實際庫存與效期依賣場顯示或 LINE 小幫手確認為準。",
-    expiryNote: "龍血求麗精華液效期：2026年12月；實際日期依商品包裝或 LINE 小幫手確認為準。",
-    priceNote: "限定組合價 $1,290。龍血求麗精華液目前不提供單買，需搭配肌可佳膠原蛋白彈潤原液 30mL。",
   },
   121: {
     cardName: "龍血求麗修護霜",
