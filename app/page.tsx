@@ -1667,9 +1667,6 @@ const sevenSequenceGuideV377 = [
   const selectedDetailGalleryImages = selectedDetailProduct
     ? getDetailGalleryImages(selectedDetailProduct)
     : [];
-  const selectedDetailComboOffers = selectedDetailProduct
-    ? getProductComboOffers(selectedDetailProduct)
-    : [];
 
   function getStudioSection(
     key: SiteStudioSectionKey
@@ -2174,10 +2171,6 @@ const sevenSequenceGuideV377 = [
     setExpandedDrawerGroup((current) => (current === group ? null : group));
   }
 
-  function goToComboSection() {
-    jumpToCategory("本月優惠", "全部");
-    openCollectionPage();
-  }
 
   function openRelatedDetail(product: Product) {
     openProductDetail(product);
@@ -3717,77 +3710,20 @@ const sevenSequenceGuideV377 = [
     return product.series;
   }
 
-  function getProductComboOffers(product: Product) {
-    if (
-      product.productType === "combo" ||
-      Boolean(product.comboConfig)
-    ) {
-      return [];
-    }
 
-    return products
-      .filter((candidate) => {
-        if (
-          candidate.id === product.id ||
-          candidate.productType !== "combo"
-        ) {
-          return false;
-        }
-
-        const config = getComboConfig(candidate.id);
-        if (!config) return false;
-
-        return config.options.some(
-          (option) => option.productId === product.id
-        );
-      })
-      .sort((a, b) => {
-        const statusRank = (item: StorefrontProduct) => {
-          if (item.status === "active") return 0;
-          if (item.status === "sold_out") return 1;
-          if (item.status === "coming_soon") return 2;
-          return 3;
-        };
-
-        return statusRank(a) - statusRank(b) || a.id - b.id;
-      })
-      .slice(0, 4);
-  }
-
-  function getComboOfferSummary(product: Product) {
-    const config = getComboConfig(product.id);
-    if (!config) return displayPrice(product);
-
-    const planLabels = config.plans
-      .filter(
-        (plan) => Number.isFinite(plan.price) && plan.price > 0
-      )
-      .map(
-        (plan) =>
-          `${plan.label} ${
-            plan.priceLabel ||
-            `$${plan.price.toLocaleString("zh-TW")}`
-          }`
-      );
-
-    return planLabels.length > 0
-      ? planLabels.join("／")
-      : displayPrice(product);
-  }
 
   function getRelatedProducts(product: Product) {
     const manualRelatedIds: Record<number, number[]> = {
-  15: [16, 57],
-  16: [15, 57],
-  35: [59, 36, 9, 10],
-  36: [59, 35, 46],
-  46: [68, 47, 48, 49],
-  2: [69, 3, 56],
-  3: [69, 2, 1]
-};
+      15: [16, 57],
+      16: [15, 57],
+      35: [36, 9],
+      36: [35, 46],
+      46: [47, 48, 49],
+      2: [3],
+      3: [2],
+    };
 
     const manual = getProductsByIds(manualRelatedIds[product.id] ?? []);
-    const structuredComboOffers = getProductComboOffers(product);
 
     const sameSeries = products.filter(
       (item) =>
@@ -3796,10 +3732,6 @@ const sevenSequenceGuideV377 = [
         item.series === product.series
     );
 
-    const comboMatches = products.filter((item) => {
-      if (item.id === product.id || item.category !== "組合價") return false;
-      return item.name.includes(product.name.slice(0, 4)) || item.description.includes(product.name.slice(0, 4));
-    });
 
     const sameCategory = products.filter(
       (item) =>
@@ -3810,9 +3742,7 @@ const sevenSequenceGuideV377 = [
 
     const seen = new Set<number>();
     return [
-      ...structuredComboOffers,
       ...manual,
-      ...comboMatches,
       ...sameSeries,
       ...sameCategory,
     ]
@@ -3898,10 +3828,6 @@ const sevenSequenceGuideV377 = [
     const comingSoon = isComingSoon(product);
     const unavailable = isCartDisabled(product);
     const inquiry = hasInquiryPrice(product);
-    const comboConfig = getComboConfig(product.id);
-    const selectableCombo = Boolean(
-      comboConfig && comboConfig.type !== "fixed_bundle"
-    );
 
     return (
       <article
@@ -4078,23 +4004,16 @@ const sevenSequenceGuideV377 = [
                   return;
                 }
 
-                if (selectableCombo) {
-                  openProductDetail(product);
-                  return;
-                }
-
                 addToCart(product);
               }}
               disabled={unavailable}
               aria-label={
                 unavailable
                   ? `${product.name}目前無法加入購物車`
-                  : selectableCombo
-                    ? `查看 ${product.name} 商品詳情`
-                    : `將 ${product.name} 加入購物車`
+                  : `將 ${product.name} 加入購物車`
               }
             >
-              {!unavailable && !selectableCombo && (
+              {!unavailable && (
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M3 4h2l1.8 10.1a2 2 0 0 0 2 1.7h7.7a2 2 0 0 0 1.9-1.4L21 7H7" />
                   <circle cx="10" cy="20" r="1.4" />
@@ -4106,9 +4025,7 @@ const sevenSequenceGuideV377 = [
                   ? "新品預告"
                   : soldOut
                     ? "補貨中"
-                    : selectableCombo
-                      ? "查看詳情"
-                      : "加入"}
+                    : "加入"}
               </span>
             </button>
           </div>
@@ -9068,54 +8985,8 @@ const sevenSequenceGuideV377 = [
                   </span>
                 ))}
 
-                {hasComboPrice(selectedDetailProduct) && (
-                  <button
-                    type="button"
-                    className="combo-badge"
-                    onClick={() => {
-                      setSelectedDetailProduct(null);
-                      goToComboSection();
-                    }}
-                  >
-                    有組合價
-                  </button>
-                )}
               </div>
 
-              {selectedDetailComboOffers.length > 0 && (
-                <section
-                  className="detail-combo-offers-v390"
-                  aria-label="此商品可使用的組合優惠"
-                >
-                  <div className="detail-combo-offers-heading-v390">
-                    <div>
-                      <span>COMBO OFFER</span>
-                      <h3>此商品有組合優惠</h3>
-                    </div>
-                    <small>選擇組合通常比單買更優惠</small>
-                  </div>
-
-                  <div className="detail-combo-offers-list-v390">
-                    {selectedDetailComboOffers.map((comboProduct) => (
-                      <button
-                        type="button"
-                        key={`detail-combo-offer-${selectedDetailProduct.id}-${comboProduct.id}`}
-                        onClick={() => openRelatedDetail(comboProduct)}
-                      >
-                        <div>
-                          <strong>{getCardName(comboProduct)}</strong>
-                          <span>{getComboOfferSummary(comboProduct)}</span>
-                        </div>
-                        <em>
-                          {isSoldOut(comboProduct)
-                            ? "查看補貨狀態"
-                            : "查看組合優惠 →"}
-                        </em>
-                      </button>
-                    ))}
-                  </div>
-                </section>
-              )}
 
               <section className="detail-price-hero-v273" aria-label="價格與加入購物車">
                 <div>
