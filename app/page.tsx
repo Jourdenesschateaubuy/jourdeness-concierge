@@ -947,7 +947,7 @@ function Home() {
     const fullText = `${product.name} ${product.category} ${product.series} ${product.description} ${product.price}`;
     const tags = getProductTags(product);
 
-    if (selectedSeries === "組合優惠") return product.category === "組合價" || tags.includes("組合優惠") || fullText.includes("組合");
+    if (selectedSeries === "組合優惠") return false;
     if (selectedSeries === "買一送一") return fullText.includes("買一送一") || fullText.includes("1+1") || fullText.includes("買一送二");
     if (selectedSeries === "任選優惠") return fullText.includes("任選");
 
@@ -1072,28 +1072,28 @@ const sevenSequenceGuideV377 = [
   const searchPreviewProducts = normalizedSearchQuery ? filteredProducts : [];
   const searchRemainingCount = 0;
 
-  const featuredProductIds = [34, 1, 51, 58, 59, 55, 67, 54, 119, 2, 3, 56];
+  const featuredProductIds = [34, 2, 3];
   const featuredProducts = featuredProductIds
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([34, 58, 59, 55, 67, 54, 119, 56]);
+  const homeComboProducts = getProductsByIds([34]);
   const homeClearanceProducts: Product[] = [];
-  const homeDragonBloodProducts = getProductsByIds([34, 120, 59, 67]);
+  const homeDragonBloodProducts = getProductsByIds([34]);
   const homeWaterGlowProducts = getProductsByIds([40, 41, 63]);
   const homeTeaControlProducts = getProductsByIds([32, 42, 45]);
-  const homeBrighteningProducts = getProductsByIds([68, 48, 49]);
+  const homeBrighteningProducts = getProductsByIds([48, 49]);
   const homeFirmingProducts = getProductsByIds([11, 12, 13, 14, 61, 65]);
-  const homeMaskProducts = getProductsByIds([55]);
-  const homeHealthProducts = getProductsByIds([58, 1]);
-  const homeDailyLifeProducts = getProductsByIds([67, 54, 70, 71, 113]);
+  const homeMaskProducts = getProductsByIds([]);
+  const homeHealthProducts = getProductsByIds([]);
+  const homeDailyLifeProducts = getProductsByIds([70, 71, 113]);
 
-  const campaignHeroProducts = getProductsByIds([34, 58, 51]);
-  const campaignSpotlightProducts = getProductsByIds([34, 58, 59, 55, 67]);
+  const campaignHeroProducts = getProductsByIds([34]);
+  const campaignSpotlightProducts = getProductsByIds([34]);
 
   const heroTopProduct = products.find((product) => product.id === 34);
-  const heroSecondaryProducts = getProductsByIds([58, 67]);
-  const heroComboProducts = getProductsByIds([34, 58, 59, 55, 67]);
+  const heroSecondaryProducts = getProductsByIds([]);
+  const heroComboProducts = getProductsByIds([34]);
   const heroSeriesEntries: {
     title: string;
     text: string;
@@ -1115,7 +1115,7 @@ const sevenSequenceGuideV377 = [
       text: "蔓越莓／高鈣任選、玻尿酸益生菌組合",
       category: "健康補給",
       series: "益生菌系列",
-      product: products.find((product) => product.id === 1),
+      product: products.find((product) => [123, 124].includes(product.id)),
     },
     {
       title: "精油香氛",
@@ -1194,49 +1194,49 @@ const sevenSequenceGuideV377 = [
       title: "龍血潔顏慕絲＋卸妝油",
       description: "潔顏 × 卸妝一次補齊",
       price: "1＋1 $1,080",
-      productId: 59 as number | null,
+      productId: null as number | null,
     },
     {
       badge: "頭皮髮品",
       title: "龍血洗髮精＋阿甘甦醒髮根養護液",
       description: "洗髮 × 髮根養護日常組合",
       price: "1＋1 $1,500",
-      productId: 112 as number | null,
+      productId: null as number | null,
     },
     {
       badge: "亮白保養",
       title: "櫻の雪傳明酸美白三件組",
       description: "精華液30mL＋乳液100mL，贈化妝水150mL",
       price: "組合價 $1,780",
-      productId: 68 as number | null,
+      productId: null as number | null,
     },
     {
       badge: "口腔護理",
       title: "齒齦保健牙膏",
       description: "薰衣草舒緩／龍血修護自由搭配",
       price: "買二送一・共3支 $500",
-      productId: 54 as number | null,
+      productId: null as number | null,
     },
     {
       badge: "手部保養",
       title: "護手霜三款自由配",
       description: "薰衣草／櫻之雪／茶樹自由搭配",
       price: "買二送一・共3支 $580",
-      productId: 108 as number | null,
+      productId: null as number | null,
     },
     {
       badge: "洗沐香氛",
       title: "龍血香氛皂自由配",
       description: "日常洗沐香氣自由搭配",
       price: "單入 $290｜任選4入 $799",
-      productId: 67 as number | null,
+      productId: null as number | null,
     },
     {
       badge: "身體舒壓",
       title: "石墨烯電氣石精油貼布",
       description: "涼感／溫感自由搭配",
       price: "單盒 $500｜任選4盒 $1,099｜任選10盒 $2,500",
-      productId: 51 as number | null,
+      productId: null as number | null,
     },
     {
       badge: "龍血修護",
@@ -1332,7 +1332,7 @@ const sevenSequenceGuideV377 = [
           )
           .slice(0, 14);
 
-  const hotCollectionProductIds = [34, 1, 58, 59, 55, 67, 54, 119, 2, 3, 53, 56, 69, 112, 57, 35, 36, 9, 10, 68, 48, 49, 46, 47, 40, 41, 32, 70, 71, 113, 74, 79, 85, 51, 108];
+  const hotCollectionProductIds = [34, 2, 3, 53, 57, 35, 36, 9, 48, 49, 46, 47, 40, 41, 32, 70, 71, 113, 74, 79, 85];
 
   const collectionProducts = normalizedSearchQuery
     ? filteredProducts
@@ -1354,39 +1354,36 @@ const sevenSequenceGuideV377 = [
     promoTitle: string;
     regularTitle: string;
     promoIds?: number[];
-    separateCombos?: boolean;
   };
 
   const quickFilterLayouts: Record<string, QuickFilterLayout> = {
     "quick-monthly": {
       promoTitle: "優惠組合",
       regularTitle: "其他本月優惠",
-      separateCombos: true,
     },
     "quick-patch": {
       promoTitle: "貼布優惠組合",
       regularTitle: "貼布單品",
-      promoIds: [51],
+      promoIds: [],
     },
     "quick-probiotic": {
       promoTitle: "益生菌優惠組合",
       regularTitle: "益生菌商品",
-      promoIds: [1],
+      promoIds: [],
     },
     "quick-dragon": {
       promoTitle: "龍血優惠組合",
       regularTitle: "龍血系列商品",
-      separateCombos: true,
     },
     "quick-mask": {
       promoTitle: "面膜優惠組合",
       regularTitle: "全部面膜",
-      promoIds: [55],
+      promoIds: [],
     },
     "quick-soap": {
       promoTitle: "香氛皂優惠組合",
       regularTitle: "香氛皂單品",
-      promoIds: [67],
+      promoIds: [],
     },
     "quick-essential": {
       promoTitle: "",
@@ -1397,17 +1394,11 @@ const sevenSequenceGuideV377 = [
 
   const activeQuickFilterLayout = quickFilterLayouts[commerceFilter] ?? null;
 
-  function isQuickFilterComboProduct(product: Product) {
-    return product.category === "組合價";
-  }
 
   const quickFilterPromoProducts = activeQuickFilterLayout
     ? collectionProducts.filter((product) => {
         if (activeQuickFilterLayout.promoIds?.length) {
           return activeQuickFilterLayout.promoIds.includes(product.id);
-        }
-        if (activeQuickFilterLayout.separateCombos) {
-          return isQuickFilterComboProduct(product);
         }
         return false;
       })
@@ -1498,9 +1489,7 @@ const sevenSequenceGuideV377 = [
       "全部"
       ? quickFilterRegularProducts.filter(
           (product) =>
-            !isQuickFilterComboProduct(
-              product
-            )
+            true
         )
       : quickFilterRegularProducts;
 
@@ -1694,18 +1683,13 @@ const sevenSequenceGuideV377 = [
     const externalVendors: string[] = [];
 
     const isExternal =
-      product.category === "外部廠商" ||
-      (product.category === "組合價" &&
-        externalVendors.some((vendor) => product.series.includes(vendor) || fullText.includes(vendor)));
+      product.category === "外部廠商";
 
     const isLife =
-      ["牙膏", "肥皂", "護唇膏", "精油", "貼布"].includes(product.category) ||
-      (product.category === "組合價" &&
-        ["牙膏組合", "貼布組合", "肥皂組合", "香氛組合", "護唇膏組合"].some((series) => product.series.includes(series)));
+      ["牙膏", "肥皂", "護唇膏", "精油", "貼布"].includes(product.category);
 
     const isHealth =
-      product.category === "保健食品" ||
-      (product.category === "組合價" && product.series.includes("保健食品組合"));
+      product.category === "保健食品";
 
     const isMask =
       product.series.includes("面膜") ||
@@ -1713,19 +1697,17 @@ const sevenSequenceGuideV377 = [
       product.description.includes("面膜");
 
     const isWashHair =
-      product.category === "洗沐" ||
-      (product.category === "組合價" && product.series.includes("洗沐組合"));
+      product.category === "洗沐";
 
     switch (filter) {
       case "quick-monthly":
         return isFeaturedProductV31(product) && !isComingSoon(product);
       case "quick-patch":
-        return [30, 31, 51].includes(product.id) && !isComingSoon(product);
+        return [30, 31].includes(product.id) && !isComingSoon(product);
       case "quick-probiotic":
         return (
           !isComingSoon(product) &&
-          (product.id === 1 ||
-            ["益生菌", "BC-HA", "BC-CA", "蔓越莓", "高鈣", "玻尿酸益生菌"].some((keyword) =>
+          (["益生菌", "BC-HA", "BC-CA", "蔓越莓", "高鈣", "玻尿酸益生菌"].some((keyword) =>
               fullText.includes(keyword)
             ))
         );
@@ -1735,22 +1717,22 @@ const sevenSequenceGuideV377 = [
           (fullText.includes("龍血") || product.series.includes("龍血"))
         );
       case "quick-mask":
-        return !isComingSoon(product) && (isMask || product.id === 55);
+        return !isComingSoon(product) && (isMask);
       case "quick-soap":
         return (
           !isComingSoon(product) &&
-          (product.id === 67 || ["皂", "肥皂", "香氛皂", "手工皂"].some((keyword) => fullText.includes(keyword)))
+          (["皂", "肥皂", "香氛皂", "手工皂"].some((keyword) => fullText.includes(keyword)))
         );
       case "quick-essential":
         return essentialOilProductIdsV359.has(product.id) && !isComingSoon(product);
       case "deals-all":
-        return product.category === "組合價";
+        return false;
       case "v3-featured":
-        return [34, 1, 51, 58, 59, 55, 50, 54, 119, 2, 3, 56].includes(product.id);
+        return [34, 50, 2, 3].includes(product.id);
       case "deals-monthly":
-        return product.category === "組合價" && product.series.includes("本月主打");
+        return false;
       case "deals-combo":
-        return product.category === "組合價";
+        return false;
       case "deals-bogo":
         return fullText.includes("買一送一") || fullText.includes("買一送二") || fullText.includes("1+1");
       case "deals-pick":
@@ -1758,7 +1740,7 @@ const sevenSequenceGuideV377 = [
 
 
       case "need-hot":
-        return [34, 1, 51, 58, 59, 55, 50, 54, 119, 2, 3, 56].includes(product.id);
+        return [34, 50, 2, 3].includes(product.id);
       case "need-dragon":
         return fullText.includes("龍血") || product.series.includes("龍血");
       case "need-cleansing":
@@ -1794,7 +1776,7 @@ const sevenSequenceGuideV377 = [
       case "wash-scalp":
         return isWashHair && (fullText.includes("頭皮") || fullText.includes("髮根") || fullText.includes("養護"));
       case "wash-combo":
-        return product.category === "組合價" && product.series.includes("洗沐組合");
+        return false;
 
       case "health-all":
         return isHealth && !isExternal;
@@ -1816,7 +1798,7 @@ const sevenSequenceGuideV377 = [
       case "mask-repair":
         return isMask && (fullText.includes("修護") || fullText.includes("龍血") || fullText.includes("舒緩"));
       case "mask-combo":
-        return product.category === "組合價" && product.series.includes("面膜組合");
+        return false;
 
       case "life-all":
         return isLife;
@@ -1851,7 +1833,7 @@ const sevenSequenceGuideV377 = [
   }
 
   function getHomeSectionIdByCategory(category: MainCategory, series = "全部") {
-    if (category === "本月優惠" || category === "本月精選" || category === "組合價") return "home-combo-products";
+    if (category === "本月優惠" || category === "本月精選") return "home-combo-products";
     if (category === "健康補給" || category === "健康保健" || category === "保健食品") return "home-health-products";
 
     if (
@@ -2145,9 +2127,7 @@ const sevenSequenceGuideV377 = [
     const label =
       product.category === "外部廠商"
         ? "售價"
-        : product.category === "組合價"
-          ? "活動價"
-          : "產地價";
+        : "產地價";
 
     return `${label} $ ${formatted}`;
   }
@@ -2366,8 +2346,6 @@ const sevenSequenceGuideV377 = [
 
   function getTopPickBadge(product: Product) {
     if (product.id === 34) return "TOP 1";
-    if (product.id === 1) return "TOP 2";
-    if (product.id === 51) return "TOP 3";
     return "";
   }
 
@@ -2381,20 +2359,13 @@ const sevenSequenceGuideV377 = [
     };
 
     if (product.id === 34) push("爆水保濕", "買一送一");
-    if (product.id === 1) push("任選補給", "日常補給");
-    if (product.id === 51) push("爆款貼布", "任選優惠");
-    if (product.id === 55 || fullText.includes("水搖滾")) push("爆水面膜", "水潤補給");
-    if (product.id === 54) push("口腔補貨", "任選優惠");
+    if (fullText.includes("水搖滾")) push("爆水面膜", "水潤補給");
     if (product.id === 50) push("香氛皂", "4入優惠");
-    if (product.id === 58) push("菌相補給", "2盒組");
-    if (product.id === 59) push("洗卸組", "1+1優惠");
     if (product.id === 53) push("口腔補貨", "贈品組");
-    if (product.id === 56) push("魚油補給", "買一送一");
     if (product.id === 2) push("晶亮補給", "3C族");
     if (product.id === 3) push("美妍飲", "膠原補給");
     if ([74, 75, 78, 96].includes(product.id)) push("單方精油", "任選優惠");
     if ([97, 98, 99].includes(product.id)) push("香氛儀式", "產地價");
-    if (product.id === 108) push("買二送一", "護手補貨");
     if ([101, 102, 103, 104, 105, 106, 107].includes(product.id)) push("居家舒壓", "身體保養");
     if (product.id === 100) push("擴香配件", "買一送一");
     if (isComingSoon(product)) push("新品預告");
@@ -2413,20 +2384,11 @@ const sevenSequenceGuideV377 = [
   function getSalesCardSubtitle(product: Product) {
     const fullText = `${product.name} ${product.series} ${product.category} ${product.price} ${product.description}`;
     if (product.id === 34) return "爆水保濕回購組";
-    if (product.id === 10) return "龍血修護乳・買一送一";
     if (product.id === 121) return "龍血修護霜・第二件5折";
-    if (product.id === 1) return "蔓越莓／補鈣益生菌";
-    if (product.id === 51) return "涼感 / 溫感爆款貼布任選";
-    if (product.id === 55) return "爆水面膜・桶裝回購";
-    if (product.id === 54) return "口腔清新補貨組";
     if (product.id === 50) return "薰衣草香氛皂・洗沐儀式感";
-    if (product.id === 58) return "日常菌相補給 2盒組";
-    if (product.id === 59) return "龍血洗卸 1+1 清潔組";
     if (product.id === 53) return "潔口液 3罐贈牙膏";
-    if (product.id === 56) return "魚油日常補給買一送一";
     if (product.id === 2) return "3C族晶亮營養補給";
     if (product.id === 3) return "美妍膠原飲補貨";
-    if (product.id === 108) return "護手霜買二送一補貨組";
     if ([101, 102, 103, 104, 105, 106, 107].includes(product.id)) return "居家舒壓工具補貨";
     if ([74, 75, 78, 96].includes(product.id)) return "單方精油任選更划算";
     if ([97, 98, 99].includes(product.id)) return "日常香氛儀式感";
@@ -2490,7 +2452,6 @@ const sevenSequenceGuideV377 = [
     if (fullText.includes("買一送一")) return "買一送一";
     if (fullText.includes("贈")) return "贈品組";
     if (fullText.includes("任選")) return "任選優惠";
-    if (product.category === "組合價") return "回購優惠";
     if (hasInquiryPrice(product)) return "LINE 詢價";
 
     return product.series;
@@ -3440,10 +3401,9 @@ const sevenSequenceGuideV377 = [
   }
 
   function shouldShowExpiryInfo(product: Product) {
-    if ([50, 67, 114, 115, 116, 117, 118, 101, 102, 103, 104, 105, 106, 107].includes(product.id)) return false;
+    if ([50, 114, 115, 116, 117, 118, 101, 102, 103, 104, 105, 106, 107].includes(product.id)) return false;
 
     const expirableCategories: MainCategory[] = [
-      "組合價",
       "保養品",
       "保健食品",
       "洗沐",
@@ -3583,14 +3543,12 @@ const sevenSequenceGuideV377 = [
 
   function getShelfBrandLabel(product: Product) {
     if (product.category === "外部廠商") return product.series;
-    if (product.category === "組合價") return "組合優惠";
     return "佐登妮絲";
   }
 
   function getPriceModeLabel(product: Product) {
     if (isComingSoon(product)) return "新品預告";
     if (product.category === "外部廠商") return "售價";
-    if (product.category === "組合價") return "活動價";
     if (hasInquiryPrice(product)) return "產地價洽詢";
     if (product.price.includes("售價") || product.price.trim().startsWith("$")) return "售價";
     return "產地價";
@@ -3598,7 +3556,6 @@ const sevenSequenceGuideV377 = [
 
   function getShelfTypeLabel(product: Product) {
     if (product.category === "外部廠商") return "外部品牌";
-    if (product.category === "組合價") return "優惠組合";
     return product.series;
   }
 
@@ -7179,7 +7136,6 @@ const sevenSequenceGuideV377 = [
                         <div className="search-result-tags">
                           {isExpiringDeal(product) && <span>限量優惠</span>}
                           {displayTags(product)
-                            .filter((tag) => tag !== "有組合價")
                             .slice(0, isExpiringDeal(product) ? 1 : 2)
                             .map((tag) => (
                               <span key={`search-${product.id}-${tag}`}>{tag}</span>
