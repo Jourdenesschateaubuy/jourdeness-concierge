@@ -4487,8 +4487,7 @@ const sevenSequenceGuideV377 = [
         offer.items.length ||
       optionItems.some(
         (item) =>
-          item.product.status !==
-          "active"
+          !["active", "inactive"].includes(item.product.status)
       ) ||
       validPlans.length === 0
     ) {
@@ -4749,8 +4748,7 @@ const sevenSequenceGuideV377 = [
 
           return (
             !item ||
-            item.product.status !==
-              "active" ||
+            !["active", "inactive"].includes(item.product.status) ||
             (
               !bundleMixMatchOffer
                 .allowSameProduct &&
@@ -4943,7 +4941,7 @@ const sevenSequenceGuideV377 = [
       if (
         supportedItems.some(
           (item) =>
-            item.product.status !== "active" ||
+            !["active", "inactive"].includes(item.product.status) ||
             !Number.isFinite(item.quantity) ||
             item.quantity <= 0
         )
@@ -6181,8 +6179,7 @@ const sevenSequenceGuideV377 = [
               offer.items.length ||
             supportedItems.some(
               (item) =>
-                item.product.status !==
-                  "active" ||
+                !["active", "inactive"].includes(item.product.status) ||
                 !Number.isFinite(
                   item.quantity
                 ) ||
@@ -6332,8 +6329,7 @@ const sevenSequenceGuideV377 = [
               offer.items.length ||
             optionItems.some(
               (item) =>
-                item.product.status !==
-                "active"
+                !["active", "inactive"].includes(item.product.status)
             )
           ) {
             invalidNames.push(
@@ -6590,8 +6586,8 @@ const sevenSequenceGuideV377 = [
         const freeItem = freeItems[0];
 
         if (
-          buyItem.product.status !== "active" ||
-          freeItem.product.status !== "active"
+          !["active", "inactive"].includes(buyItem.product.status) ||
+          !["active", "inactive"].includes(freeItem.product.status)
         ) {
           invalidNames.push(cartItem.name);
           return;
