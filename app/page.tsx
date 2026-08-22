@@ -14,7 +14,6 @@ import {
   MASK_BUCKET_PRODUCT_IDS_V361,
   MASK_BUCKET_UNIT_PRICE_V361,
   ORDER_WEB_APP_URL,
-  buildCartPromotionSuggestionsV366,
   buildComboCartKey,
   buildSimpleCartKey,
   calculateFlexibleComboPricingV369,
@@ -24,7 +23,6 @@ import {
   expiryNotesV315,
   getMaskBucketQuantityV361,
   getMaskPromotionNoticeV361,
-  getSimpleCartQuantityV366,
   hasFlexibleSinglePricingV373,
   isSevenSequenceOilV354,
   productContentOverrides,
@@ -39,7 +37,6 @@ import {
 } from "../lib/storefront-core";
 import type {
   CartItem,
-  CartPromotionSuggestionV366,
   ComboConfig,
   ComboSelection,
   CustomerForm,
@@ -1681,9 +1678,6 @@ const sevenSequenceGuideV377 = [
         total + item.quantity,
       0
     ) + bundleCartTotalQuantity;
-  const cartPromotionSuggestionsV366 =
-    buildCartPromotionSuggestionsV366(cartItems, getComboConfig);
-
   function getEstimatedUnitPrice(product: Product) {
     const match = product.price.match(/\$\s*([\d,]+)/);
     return match ? Number(match[1].replace(/,/g, "")) : 0;
@@ -5212,132 +5206,6 @@ const sevenSequenceGuideV377 = [
       MASK_BUCKET_PRODUCT_IDS_V361.has(product.id)
         ? getMaskPromotionNoticeV361(nextMaskQuantity)
         : "已加入購物車"
-    );
-    setSubmitStatus("idle");
-    setSubmitMessage("");
-  }
-
-  function applyCartPromotionV366(
-    suggestion: CartPromotionSuggestionV366
-  ) {
-    const comboProduct = products.find(
-      (product) => product.id === suggestion.comboProductId
-    );
-    if (!comboProduct || isCartDisabled(comboProduct)) {
-      setCartNotice(
-        comboProduct && isSoldOut(comboProduct)
-          ? "此優惠組合目前補貨中。"
-          : "此優惠組合目前無法加入購物車。"
-      );
-      return;
-    }
-
-    const comboConfig = suggestion.comboPlanId
-      ? getComboConfig(suggestion.comboProductId)
-      : null;
-    const comboPlan =
-      comboConfig && suggestion.comboPlanId
-        ? comboConfig.plans.find(
-            (plan) => plan.id === suggestion.comboPlanId
-          ) ?? null
-        : null;
-
-    if (suggestion.comboPlanId && (!comboConfig || !comboPlan)) return;
-
-    setCartItems((currentItems) => {
-      const canApply = suggestion.allocations.every(
-        (allocation) =>
-          getSimpleCartQuantityV366(currentItems, allocation.productId) >=
-          allocation.quantity
-      );
-      if (!canApply) return currentItems;
-
-      const remainingToConsume = new Map(
-        suggestion.allocations.map((allocation) => [
-          allocation.productId,
-          allocation.quantity,
-        ])
-      );
-
-      const nextItems: CartItem[] = [];
-      for (const item of currentItems) {
-        const remaining = remainingToConsume.get(item.product.id) ?? 0;
-        const isSimpleEligibleItem =
-          remaining > 0 &&
-          item.cartKey === buildSimpleCartKey(item.product.id) &&
-          !item.comboSelections;
-
-        if (!isSimpleEligibleItem) {
-          nextItems.push(item);
-          continue;
-        }
-
-        const consumed = Math.min(item.quantity, remaining);
-        const nextQuantity = item.quantity - consumed;
-        remainingToConsume.set(item.product.id, remaining - consumed);
-
-        if (nextQuantity > 0) {
-          nextItems.push({ ...item, quantity: nextQuantity });
-        }
-      }
-
-      if (comboConfig && comboPlan) {
-        const selections = suggestion.comboSelections ?? [];
-        const cartKey = buildComboCartKey(
-          comboProduct.id,
-          comboPlan.id,
-          selections
-        );
-        const comboPlanLabel = `${comboPlan.label} ${comboPlan.priceLabel}`;
-        const existingItem = nextItems.find(
-          (item) => item.cartKey === cartKey
-        );
-
-        if (existingItem) {
-          return nextItems.map((item) =>
-            item.cartKey === cartKey
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          );
-        }
-
-        return [
-          ...nextItems,
-          {
-            cartKey,
-            product: comboProduct,
-            quantity: 1,
-            comboPlanId: comboPlan.id,
-            comboPlanLabel,
-            comboSelections: selections,
-            comboPrice: comboPlan.price,
-          },
-        ];
-      }
-
-      const cartKey = buildSimpleCartKey(comboProduct.id);
-      const existingItem = nextItems.find(
-        (item) => item.cartKey === cartKey
-      );
-
-      if (existingItem) {
-        return nextItems.map((item) =>
-          item.cartKey === cartKey
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-
-      return [
-        ...nextItems,
-        { cartKey, product: comboProduct, quantity: 1 },
-      ];
-    });
-
-    setCartNotice(
-      `已套用「${suggestion.title}」，現省 NT$${suggestion.savings.toLocaleString(
-        "zh-TW"
-      )}`
     );
     setSubmitStatus("idle");
     setSubmitMessage("");
@@ -9253,60 +9121,6 @@ const sevenSequenceGuideV377 = [
                         <h3>商品明細</h3>
                         <button type="button" onClick={clearCart}>清空</button>
                       </div>
-
-                      {cartPromotionSuggestionsV366.length > 0 && (
-                        <section
-                          className="cart-promotion-suggestions-v366"
-                          aria-label="可套用組合優惠"
-                        >
-                          <div className="cart-promotion-head-v366">
-                            <div>
-                              <small>SMART DEAL</small>
-                              <strong>找到可套用的組合優惠</strong>
-                            </div>
-                            <span>不會自動改價</span>
-                          </div>
-
-                          <div className="cart-promotion-list-v366">
-                            {cartPromotionSuggestionsV366.map((suggestion, index) => (
-                              <article
-                                className={`cart-promotion-card-v366 ${index === 0 ? "best" : ""}`}
-                                key={suggestion.id}
-                              >
-                                <div className="cart-promotion-copy-v366">
-                                  <div className="cart-promotion-badges-v366">
-                                    <span>{index === 0 ? "最省方案" : "可套用優惠"}</span>
-                                    <em>現省 NT${suggestion.savings.toLocaleString("zh-TW")}</em>
-                                  </div>
-                                  <strong>{suggestion.title}</strong>
-                                  <p>{suggestion.detail}</p>
-                                  {suggestion.comboSelections && suggestion.comboSelections.length > 0 && (
-                                    <div className="cart-promotion-selection-v366">
-                                      {suggestion.comboSelections.map((selection) => (
-                                        <span key={`${suggestion.id}-${selection.optionId}`}>
-                                          {selection.name} × {selection.quantity}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  )}
-                                  <div className="cart-promotion-price-v366">
-                                    <b>優惠價 NT${suggestion.bundlePrice.toLocaleString("zh-TW")}</b>
-                                    {suggestion.note && <span>{suggestion.note}</span>}
-                                  </div>
-                                </div>
-
-                                <button
-                                  type="button"
-                                  className="cart-promotion-apply-v366"
-                                  onClick={() => applyCartPromotionV366(suggestion)}
-                                >
-                                  套用組合優惠
-                                </button>
-                              </article>
-                            ))}
-                          </div>
-                        </section>
-                      )}
 
                       {maskBucketQuantityV361 > 0 && (
                         <section
@@ -26096,187 +25910,6 @@ const sevenSequenceGuideV377 = [
         /* =====================================================
            V3.6.6：購物車組合優惠偵測與手動套用
         ===================================================== */
-        .cart-promotion-suggestions-v366 {
-          margin: 0 0 12px !important;
-          padding: 12px !important;
-          border: 1px solid rgba(154, 48, 66, 0.18) !important;
-          border-radius: 16px !important;
-          background: linear-gradient(180deg, #fffaf7 0%, #f8eee8 100%) !important;
-          box-shadow: 0 7px 18px rgba(77, 55, 38, 0.055) !important;
-        }
-
-        .cart-promotion-head-v366 {
-          display: flex !important;
-          align-items: flex-start !important;
-          justify-content: space-between !important;
-          gap: 10px !important;
-          margin-bottom: 10px !important;
-        }
-
-        .cart-promotion-head-v366 > div {
-          display: grid !important;
-          gap: 2px !important;
-        }
-
-        .cart-promotion-head-v366 small {
-          color: #9a3042 !important;
-          font-size: 9px !important;
-          font-weight: 950 !important;
-          letter-spacing: 0.08em !important;
-        }
-
-        .cart-promotion-head-v366 strong {
-          color: #4a2e22 !important;
-          font-size: 16px !important;
-          font-weight: 950 !important;
-          line-height: 1.3 !important;
-        }
-
-        .cart-promotion-head-v366 > span {
-          flex: 0 0 auto !important;
-          padding: 4px 7px !important;
-          border-radius: 999px !important;
-          background: rgba(154, 48, 66, 0.08) !important;
-          color: #7f2635 !important;
-          font-size: 10px !important;
-          font-weight: 900 !important;
-        }
-
-        .cart-promotion-list-v366 {
-          display: grid !important;
-          gap: 8px !important;
-        }
-
-        .cart-promotion-card-v366 {
-          display: grid !important;
-          grid-template-columns: minmax(0, 1fr) auto !important;
-          align-items: center !important;
-          gap: 10px !important;
-          padding: 10px !important;
-          border: 1px solid rgba(74, 46, 34, 0.1) !important;
-          border-radius: 13px !important;
-          background: #fff !important;
-        }
-
-        .cart-promotion-card-v366.best {
-          border-color: rgba(154, 48, 66, 0.34) !important;
-          box-shadow: inset 0 0 0 1px rgba(154, 48, 66, 0.08) !important;
-        }
-
-        .cart-promotion-copy-v366 {
-          min-width: 0 !important;
-          display: grid !important;
-          gap: 4px !important;
-        }
-
-        .cart-promotion-badges-v366 {
-          display: flex !important;
-          flex-wrap: wrap !important;
-          align-items: center !important;
-          gap: 5px !important;
-        }
-
-        .cart-promotion-badges-v366 span,
-        .cart-promotion-badges-v366 em {
-          display: inline-flex !important;
-          align-items: center !important;
-          min-height: 20px !important;
-          padding: 2px 6px !important;
-          border-radius: 999px !important;
-          font-size: 9px !important;
-          font-weight: 950 !important;
-          font-style: normal !important;
-          line-height: 1 !important;
-        }
-
-        .cart-promotion-badges-v366 span {
-          background: #9a3042 !important;
-          color: #fff !important;
-        }
-
-        .cart-promotion-badges-v366 em {
-          background: rgba(200, 155, 60, 0.14) !important;
-          color: #7a5a1a !important;
-        }
-
-        .cart-promotion-copy-v366 > strong {
-          color: #4a2e22 !important;
-          font-size: 13px !important;
-          font-weight: 950 !important;
-          line-height: 1.35 !important;
-        }
-
-        .cart-promotion-copy-v366 p {
-          margin: 0 !important;
-          color: #6a4a3a !important;
-          font-size: 11px !important;
-          font-weight: 700 !important;
-          line-height: 1.45 !important;
-        }
-
-        .cart-promotion-selection-v366 {
-          display: flex !important;
-          flex-wrap: wrap !important;
-          gap: 4px 7px !important;
-        }
-
-        .cart-promotion-selection-v366 span {
-          color: #9a826c !important;
-          font-size: 10px !important;
-          font-weight: 800 !important;
-          line-height: 1.3 !important;
-        }
-
-        .cart-promotion-price-v366 {
-          display: flex !important;
-          flex-wrap: wrap !important;
-          align-items: center !important;
-          gap: 4px 8px !important;
-        }
-
-        .cart-promotion-price-v366 b {
-          color: #9a3042 !important;
-          font-size: 12px !important;
-          font-weight: 950 !important;
-        }
-
-        .cart-promotion-price-v366 span {
-          color: #7a5a1a !important;
-          font-size: 10px !important;
-          font-weight: 850 !important;
-        }
-
-        .cart-promotion-apply-v366 {
-          flex: 0 0 auto !important;
-          min-height: 38px !important;
-          padding: 0 12px !important;
-          border: 0 !important;
-          border-radius: 11px !important;
-          background: #9a3042 !important;
-          color: #fff !important;
-          font-size: 11px !important;
-          font-weight: 950 !important;
-          white-space: nowrap !important;
-          cursor: pointer !important;
-        }
-
-        .cart-promotion-apply-v366:hover,
-        .cart-promotion-apply-v366:focus-visible {
-          background: #7f2635 !important;
-        }
-
-        @media (max-width: 520px) {
-          .cart-promotion-card-v366 {
-            grid-template-columns: 1fr !important;
-          }
-
-          .cart-promotion-apply-v366 {
-            width: 100% !important;
-          }
-        }
-
-
-
         /* V3.7.1：桌機版沿用手機商城的單一內容流，避免主視覺 100vw 與內容容器互相錯位形成左右分割。 */
         @media (min-width: 760px) {
           html,
