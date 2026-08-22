@@ -14,16 +14,13 @@ import {
   MASK_BUCKET_PRODUCT_IDS_V361,
   MASK_BUCKET_UNIT_PRICE_V361,
   ORDER_WEB_APP_URL,
-  buildComboCartKey,
   buildSimpleCartKey,
-  calculateFlexibleComboPricingV369,
   calculateMaskPromotionV361,
   categoryConfig,
   expiringProductIds,
   expiryNotesV315,
   getMaskBucketQuantityV361,
   getMaskPromotionNoticeV361,
-  hasFlexibleSinglePricingV373,
   isSevenSequenceOilV354,
   productContentOverrides,
   productContentOverridesV362,
@@ -38,7 +35,6 @@ import {
 import type {
   CartItem,
   ComboConfig,
-  ComboSelection,
   CustomerForm,
   LineProfile,
   MainCategory,
@@ -394,10 +390,6 @@ function getComboConfig(productId: number): ComboConfig | null {
   const [lineBindingMessage, setLineBindingMessage] = useState("");
   const [lineCopyMessage, setLineCopyMessage] = useState("");
   const [hasRestoredSavedDraft, setHasRestoredSavedDraft] = useState(false);
-  const [comboPickerProduct, setComboPickerProduct] = useState<Product | null>(null);
-  const [comboPlanId, setComboPlanId] = useState("");
-  const [comboDraftSelections, setComboDraftSelections] = useState<Record<string, number>>({});
-  const [comboEditingItemKey, setComboEditingItemKey] = useState<string | null>(null);
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [isAdminEditMode, setIsAdminEditMode] = useState(false);
   const [managedProductId, setManagedProductId] = useState<number | null>(null);
@@ -830,34 +822,6 @@ function getComboConfig(productId: number): ComboConfig | null {
     };
   }, []);
 
-  const activeComboConfig = comboPickerProduct
-    ? getComboConfig(comboPickerProduct.id)
-    : null;
-  const activeComboPlan = activeComboConfig
-    ? activeComboConfig.plans.find((plan) => plan.id === comboPlanId) ??
-      activeComboConfig.plans[0]
-    : null;
-  const comboSelectedCount = Object.values(comboDraftSelections).reduce(
-    (total, quantity) => total + quantity,
-    0
-  );
-  const isFlexibleComboV369 = Boolean(
-    activeComboConfig && hasFlexibleSinglePricingV373(activeComboConfig)
-  );
-  const comboMaxQuantityV369 = activeComboConfig
-    ? isFlexibleComboV369
-      ? Math.max(...activeComboConfig.plans.map((plan) => plan.requiredQuantity))
-      : activeComboPlan?.requiredQuantity ?? 0
-    : 0;
-  const flexibleComboPricingV369 =
-    activeComboConfig && isFlexibleComboV369
-      ? calculateFlexibleComboPricingV369(activeComboConfig, comboDraftSelections)
-      : null;
-  const comboCanConfirmV369 = isFlexibleComboV369
-    ? comboSelectedCount > 0
-    : Boolean(activeComboPlan) &&
-      comboSelectedCount === activeComboPlan?.requiredQuantity;
-
   useEffect(() => {
     setDetailGalleryIndex(0);
 
@@ -866,26 +830,6 @@ function getComboConfig(productId: number): ComboConfig | null {
     }, 0);
   }, [selectedDetailProduct?.id]);
 
-  useEffect(() => {
-    if (!comboPickerProduct) return;
-
-    const previousOverflow = document.body.style.overflow;
-
-    function handleComboPickerKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setComboPickerProduct(null);
-        setComboEditingItemKey(null);
-      }
-    }
-
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleComboPickerKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleComboPickerKeyDown);
-    };
-  }, [comboPickerProduct]);
 
   // V3.7.0：以 Header 實際底部位置決定分類頁起點，避免不同手機寬度造成露底縫隙。
   useEffect(() => {
@@ -4173,247 +4117,6 @@ const sevenSequenceGuideV377 = [
     );
   }
 
-  function createEmptyComboDraft(config: ComboConfig) {
-    return Object.fromEntries(config.options.map((option) => [option.id, 0]));
-  }
-
-  function openComboPicker(product: Product, editingItem?: CartItem) {
-    if (isAdminMode && isAdminEditMode && !editingItem) {
-      setManagedProductId(product.id);
-      return;
-    }
-
-    const config = getComboConfig(product.id);
-    if (!config) return;
-
-    const plan =
-      (editingItem?.comboPlanId
-        ? config.plans.find((item) => item.id === editingItem.comboPlanId)
-        : null) ?? config.plans[0];
-    const draft = createEmptyComboDraft(config);
-
-    editingItem?.comboSelections?.forEach((selection) => {
-      if (Object.prototype.hasOwnProperty.call(draft, selection.optionId)) {
-        draft[selection.optionId] = selection.quantity;
-      }
-    });
-
-    setComboPickerProduct(product);
-    setComboPlanId(plan.id);
-    setComboDraftSelections(draft);
-    setComboEditingItemKey(editingItem?.cartKey ?? null);
-    setSubmitStatus("idle");
-    setSubmitMessage("");
-  }
-
-  function closeComboPicker() {
-    setComboPickerProduct(null);
-    setComboPlanId("");
-    setComboDraftSelections({});
-    setComboEditingItemKey(null);
-  }
-
-  function selectComboPlan(planId: string) {
-    if (!activeComboConfig || planId === comboPlanId) return;
-    setComboPlanId(planId);
-    setComboDraftSelections(createEmptyComboDraft(activeComboConfig));
-  }
-
-  function updateComboDraftQuantity(optionId: string, delta: number) {
-    if (!activeComboConfig || !activeComboPlan) return;
-
-    setComboDraftSelections((current) => {
-      const currentQuantity = current[optionId] ?? 0;
-      const currentTotal = Object.values(current).reduce(
-        (total, quantity) => total + quantity,
-        0
-      );
-      const quantityLimit = isFlexibleComboV369
-        ? comboMaxQuantityV369
-        : activeComboPlan.requiredQuantity;
-
-      if (delta > 0 && currentTotal >= quantityLimit) {
-        return current;
-      }
-
-      const nextQuantity = Math.max(currentQuantity + delta, 0);
-      if (nextQuantity === currentQuantity) return current;
-
-      return {
-        ...current,
-        [optionId]: nextQuantity,
-      };
-    });
-  }
-
-  function confirmComboSelection() {
-    if (!comboPickerProduct || !activeComboConfig || !activeComboPlan) return;
-
-    if (isCartDisabled(comboPickerProduct)) {
-      setCartNotice(
-        isSoldOut(comboPickerProduct)
-          ? "此組合目前補貨中，暫時無法加入購物車。"
-          : "此組合目前尚未開放購買。"
-      );
-      closeComboPicker();
-      return;
-    }
-
-    if (!comboCanConfirmV369) return;
-
-    const selections: ComboSelection[] = activeComboConfig.options
-      .map((option) => ({
-        optionId: option.id,
-        name: option.name,
-        quantity: comboDraftSelections[option.id] ?? 0,
-      }))
-      .filter((selection) => selection.quantity > 0);
-    const effectivePlanId = isFlexibleComboV369
-      ? `flex-${comboSelectedCount}-${flexibleComboPricingV369?.price ?? 0}`
-      : activeComboPlan.id;
-    const effectivePlanLabel = isFlexibleComboV369
-      ? flexibleComboPricingV369?.label ?? `彈性選購 ${comboSelectedCount} ${activeComboConfig.unitLabel}`
-      : activeComboPlan.label;
-    const effectivePriceLabel = isFlexibleComboV369
-      ? flexibleComboPricingV369?.priceLabel ?? "$0"
-      : activeComboPlan.priceLabel;
-    const effectivePrice = isFlexibleComboV369
-      ? flexibleComboPricingV369?.price ?? 0
-      : activeComboPlan.price;
-    const cartKey = buildComboCartKey(
-      comboPickerProduct.id,
-      effectivePlanId,
-      selections
-    );
-    const comboPlanLabel = `${effectivePlanLabel} ${effectivePriceLabel}`;
-    const editingKey = comboEditingItemKey;
-
-    setCartItems((currentItems) => {
-      if (editingKey) {
-        const editingItem = currentItems.find((item) => item.cartKey === editingKey);
-        if (!editingItem) return currentItems;
-
-        if (editingKey === cartKey) {
-          return currentItems.map((item) =>
-            item.cartKey === editingKey
-              ? {
-                  ...item,
-                  comboPlanId: effectivePlanId,
-                  comboPlanLabel,
-                  comboSelections: selections,
-                  comboPrice: effectivePrice,
-                }
-              : item
-          );
-        }
-
-        const itemsWithoutEditing = currentItems.filter(
-          (item) => item.cartKey !== editingKey
-        );
-        const matchingItem = itemsWithoutEditing.find(
-          (item) => item.cartKey === cartKey
-        );
-
-        if (matchingItem) {
-          return itemsWithoutEditing.map((item) =>
-            item.cartKey === cartKey
-              ? { ...item, quantity: item.quantity + editingItem.quantity }
-              : item
-          );
-        }
-
-        return [
-          ...itemsWithoutEditing,
-          {
-            cartKey,
-            product: comboPickerProduct,
-            quantity: editingItem.quantity,
-            comboPlanId: effectivePlanId,
-            comboPlanLabel,
-            comboSelections: selections,
-            comboPrice: effectivePrice,
-          },
-        ];
-      }
-
-      const existingItem = currentItems.find((item) => item.cartKey === cartKey);
-      if (existingItem) {
-        return currentItems.map((item) =>
-          item.cartKey === cartKey
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-
-      return [
-        ...currentItems,
-        {
-          cartKey,
-          product: comboPickerProduct,
-          quantity: 1,
-          comboPlanId: effectivePlanId,
-          comboPlanLabel,
-          comboSelections: selections,
-          comboPrice: effectivePrice,
-        },
-      ];
-    });
-
-    setCartNotice(editingKey ? "組合內容已更新" : "已加入購物車");
-    closeComboPicker();
-  }
-
-  function addFixedBundleToCart(
-    product: Product,
-    config: ComboConfig
-  ) {
-    const plan = config.plans.find(
-      (item) => Number.isFinite(item.price) && item.price > 0
-    );
-
-    if (!plan) {
-      setCartNotice("這個固定套組尚未設定價格。");
-      return;
-    }
-
-    const selections: ComboSelection[] = config.options.map((option) => ({
-      optionId: option.id,
-      name: option.name,
-      quantity: option.quantity ?? 1,
-    }));
-    const cartKey = buildComboCartKey(product.id, plan.id, selections);
-    const comboPlanLabel = `${plan.label} $${plan.price.toLocaleString("zh-TW")}`;
-
-    setCartItems((currentItems) => {
-      const existing = currentItems.find((item) => item.cartKey === cartKey);
-      if (existing) {
-        return currentItems.map((item) =>
-          item.cartKey === cartKey
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-
-      return [
-        ...currentItems,
-        {
-          cartKey,
-          product,
-          quantity: 1,
-          comboPlanId: plan.id,
-          comboPlanLabel,
-          comboSelections: selections,
-          comboPrice: plan.price,
-        },
-      ];
-    });
-
-    setCartNotice("已加入購物車");
-    setSubmitStatus("idle");
-    setSubmitMessage("");
-  }
-
-
   function createEmptyBundleMixMatchDraft(
     offer: StorefrontBundleOffer
   ) {
@@ -5170,17 +4873,6 @@ const sevenSequenceGuideV377 = [
       return;
     }
 
-    const comboConfig = getComboConfig(product.id);
-    if (comboConfig?.type === "fixed_bundle") {
-      addFixedBundleToCart(product, comboConfig);
-      return;
-    }
-
-    if (comboConfig) {
-      openComboPicker(product);
-      return;
-    }
-
     const cartKey = buildSimpleCartKey(product.id);
 
     setCartItems((currentItems) => {
@@ -5383,14 +5075,19 @@ const sevenSequenceGuideV377 = [
 
         if (savedLegacyItems.length > 0) {
           const restoredCart: CartItem[] = [];
-          let skippedLegacyCombo = false;
 
           savedLegacyItems.forEach((savedItem) => {
             const productId = Number(savedItem?.id);
             const quantity = Number(savedItem?.quantity);
-            const product = products.find((item) => item.id === productId);
+            const product = products.find(
+              (item) => item.id === productId
+            );
 
-            if (!product || !Number.isFinite(quantity) || quantity <= 0) {
+            if (
+              !product ||
+              !Number.isFinite(quantity) ||
+              quantity <= 0
+            ) {
               return;
             }
 
@@ -5398,93 +5095,18 @@ const sevenSequenceGuideV377 = [
               Math.max(Math.floor(quantity), 1),
               99
             );
-            const comboConfig = getComboConfig(productId);
-
-            if (!comboConfig) {
-              restoredCart.push({
-                cartKey: buildSimpleCartKey(productId),
-                product,
-                quantity: safeQuantity,
-              });
-              return;
-            }
-
-            const planId =
-              typeof savedItem?.comboPlanId === "string"
-                ? savedItem.comboPlanId
-                : "";
-            const plan = comboConfig.plans.find((item) => item.id === planId);
-            const rawSelections: Array<Partial<ComboSelection>> = Array.isArray(
-              savedItem?.comboSelections
-            )
-              ? savedItem.comboSelections
-              : [];
-
-            if (!plan || rawSelections.length === 0) {
-              skippedLegacyCombo = true;
-              return;
-            }
-
-            const quantityByOption = new Map<string, number>();
-            rawSelections.forEach((selection) => {
-              const optionId =
-                typeof selection?.optionId === "string"
-                  ? selection.optionId
-                  : "";
-              const optionQuantity = Number(selection?.quantity);
-
-              if (
-                !comboConfig.options.some((option) => option.id === optionId) ||
-                !Number.isFinite(optionQuantity) ||
-                optionQuantity <= 0
-              ) {
-                return;
-              }
-
-              quantityByOption.set(
-                optionId,
-                (quantityByOption.get(optionId) ?? 0) +
-                  Math.floor(optionQuantity)
-              );
-            });
-
-            const selections: ComboSelection[] = comboConfig.options
-              .map((option) => ({
-                optionId: option.id,
-                name: option.name,
-                quantity: quantityByOption.get(option.id) ?? 0,
-              }))
-              .filter((selection) => selection.quantity > 0);
-            const selectedTotal = selections.reduce(
-              (total, selection) => total + selection.quantity,
-              0
-            );
-
-            if (selectedTotal !== plan.requiredQuantity) {
-              skippedLegacyCombo = true;
-              return;
-            }
 
             restoredCart.push({
-              cartKey: buildComboCartKey(productId, plan.id, selections),
+              cartKey: buildSimpleCartKey(productId),
               product,
               quantity: safeQuantity,
-              comboPlanId: plan.id,
-              comboPlanLabel: `${plan.label} ${plan.priceLabel}`,
-              comboSelections: selections,
-              comboPrice: plan.price,
             });
           });
 
           if (restoredCart.length > 0) {
             setCartItems(restoredCart);
           }
-
-          if (skippedLegacyCombo) {
-            setCartNotice("任選商品已更新，請重新選擇組合內容");
-          }
         }
-
 
         const restoredBundleCart: BundleCartItem[] = [];
 
@@ -7443,176 +7065,6 @@ const sevenSequenceGuideV377 = [
         </div>
       )}
 
-      {comboPickerProduct && activeComboConfig && activeComboPlan && (
-        <section
-          className="combo-picker-backdrop-v360"
-          onClick={closeComboPicker}
-          role="presentation"
-        >
-          <div
-            className="combo-picker-panel-v360"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="combo-picker-title-v360"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <header className="combo-picker-header-v360">
-              <div>
-                <small>{comboEditingItemKey ? "修改組合" : "選擇組合內容"}</small>
-                <h2 id="combo-picker-title-v360">{getCardName(comboPickerProduct)}</h2>
-              </div>
-              <button
-                type="button"
-                onClick={closeComboPicker}
-                aria-label="關閉組合選擇"
-              >
-                ×
-              </button>
-            </header>
-
-            {isFlexibleComboV369 ? (
-              <div className="combo-price-guide-v369" aria-label="單買與組合優惠價格">
-                <div>
-                  <strong>單買</strong>
-                  <span>{activeComboConfig.singlePriceLabel ?? "依品項單價"}</span>
-                </div>
-                {activeComboConfig.plans.map((plan) => (
-                  <div key={plan.id}>
-                    <strong>{plan.label}</strong>
-                    <span>{plan.priceLabel}</span>
-                  </div>
-                ))}
-              </div>
-            ) : activeComboConfig.plans.length > 1 ? (
-              <div className="combo-plan-grid-v360" aria-label="選擇優惠方案">
-                {activeComboConfig.plans.map((plan) => (
-                  <button
-                    type="button"
-                    className={plan.id === activeComboPlan.id ? "active" : ""}
-                    key={plan.id}
-                    onClick={() => selectComboPlan(plan.id)}
-                  >
-                    <strong>{plan.label}</strong>
-                    <span>{plan.priceLabel}</span>
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
-            <div className="combo-picker-progress-v360">
-              <div>
-                <span>已選</span>
-                <strong>
-                  {isFlexibleComboV369
-                    ? `${comboSelectedCount}／${comboMaxQuantityV369}`
-                    : `${comboSelectedCount}／${activeComboPlan.requiredQuantity}`}
-                </strong>
-                <span>{activeComboConfig.unitLabel}</span>
-              </div>
-              <em>
-                {isFlexibleComboV369
-                  ? comboSelectedCount === 0
-                    ? `至少選 1 ${activeComboConfig.unitLabel}即可購買`
-                    : `${flexibleComboPricingV369?.label ?? "單買"}・${flexibleComboPricingV369?.priceLabel ?? ""}`
-                  : comboSelectedCount === activeComboPlan.requiredQuantity
-                    ? "已選滿，可以加入購物車"
-                    : `還要選 ${activeComboPlan.requiredQuantity - comboSelectedCount} ${activeComboConfig.unitLabel}`}
-              </em>
-            </div>
-
-            <div className="combo-option-list-v360">
-              {activeComboConfig.options.map((option) => {
-                const quantity = comboDraftSelections[option.id] ?? 0;
-                const reachedLimit =
-                  comboSelectedCount >=
-                  (isFlexibleComboV369
-                    ? comboMaxQuantityV369
-                    : activeComboPlan.requiredQuantity);
-
-                return (
-                  <article key={option.id} className="combo-option-row-v360">
-                    <div>
-                      <h3>{option.name}</h3>
-                      <p>{option.singlePriceLabel ?? "選擇數量"}</p>
-                    </div>
-                    <div className="combo-option-quantity-v360">
-                      <button
-                        type="button"
-                        disabled={quantity <= 0}
-                        onClick={() => updateComboDraftQuantity(option.id, -1)}
-                        aria-label={`減少 ${option.name}`}
-                      >
-                        −
-                      </button>
-                      <strong>{quantity}</strong>
-                      <button
-                        type="button"
-                        disabled={reachedLimit}
-                        onClick={() => updateComboDraftQuantity(option.id, 1)}
-                        aria-label={`增加 ${option.name}`}
-                      >
-                        ＋
-                      </button>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-
-            {(activeComboConfig.note ||
-              (isFlexibleComboV369
-                ? flexibleComboPricingV369?.note
-                : activeComboPlan.note)) && (
-              <div className="combo-picker-note-v360">
-                {activeComboConfig.note && <p>{activeComboConfig.note}</p>}
-                {(isFlexibleComboV369
-                  ? flexibleComboPricingV369?.note
-                  : activeComboPlan.note) && (
-                  <strong>
-                    {isFlexibleComboV369
-                      ? flexibleComboPricingV369?.note
-                      : activeComboPlan.note}
-                  </strong>
-                )}
-              </div>
-            )}
-
-            <footer className="combo-picker-footer-v360">
-              <div>
-                <span>
-                  {isFlexibleComboV369
-                    ? flexibleComboPricingV369?.label ?? "請選擇商品"
-                    : activeComboPlan.label}
-                </span>
-                <strong>
-                  {isFlexibleComboV369
-                    ? flexibleComboPricingV369?.priceLabel ?? "$0"
-                    : activeComboPlan.priceLabel}
-                </strong>
-              </div>
-              <button
-                type="button"
-                className="combo-picker-confirm-v360"
-                disabled={
-                  !comboCanConfirmV369 ||
-                  Boolean(comboPickerProduct && isCartDisabled(comboPickerProduct))
-                }
-                onClick={confirmComboSelection}
-              >
-                {comboPickerProduct && isSoldOut(comboPickerProduct)
-                  ? "補貨中"
-                  : comboPickerProduct && isComingSoon(comboPickerProduct)
-                    ? "新品預告"
-                    : comboEditingItemKey
-                      ? "儲存修改"
-                      : "加入購物車"}
-              </button>
-            </footer>
-          </div>
-        </section>
-      )}
-
-
       {bundleMixMatchOffer &&
         activeBundleMixMatchPlan && (
           <section
@@ -9173,24 +8625,6 @@ const sevenSequenceGuideV377 = [
                                 maskPromotionV361.savings > 0 && (
                                   <span className="mask-promo-line-tag-v361">已納入面膜自動優惠</span>
                                 )}
-
-                              {item.comboSelections && (
-                                <div className="cart-combo-details-v360">
-                                  <div>
-                                    {item.comboSelections.map((selection) => (
-                                      <span key={`${item.cartKey}-${selection.optionId}`}>
-                                        {selection.name} × {selection.quantity}
-                                      </span>
-                                    ))}
-                                  </div>
-                                  <button
-                                    type="button"
-                                    onClick={() => openComboPicker(item.product, item)}
-                                  >
-                                    修改組合
-                                  </button>
-                                </div>
-                              )}
 
                               <div className="cart-item-actions-v355">
                                 <div className="cart-quantity-v355" aria-label={`${item.product.name} 數量`}>
