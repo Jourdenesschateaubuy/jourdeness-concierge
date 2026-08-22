@@ -859,16 +859,16 @@ function getComboConfig(productId: number): ComboConfig | null {
   const seriesList = categoryConfig[selectedCategory] ?? ["全部"];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
-  const monthlyOfferIdsV316 = new Set([34, 1, 51, 54, 55, 58, 59, 67, 68, 108, 112, 119, 120, 121]);
+  const monthlyOfferIdsV316 = new Set([34, 121]);
 
   // V3.7.0：這些單品仍保留在資料層與既有購物車相容邏輯中，
   // 但前台商品卡統一由對應「自由配」商品承接，避免同一商品重複出現兩張卡。
   const consolidatedChoiceOptionProductIdsV370 = new Set([
-    15, 16,            // 龍血洗髮精／沐浴乳 -> 119
-    18, 19,            // 牙膏 -> 54
-    30, 31,            // 石墨烯貼布 -> 51
-    38, 39,            // 35片面膜 -> 55
-    50, 114, 115, 116, // 四款香氛皂皆由「龍血香氛皂自由配」ID 67 承接
+    15, 16,            // Bundle Offer 15
+    18, 19,            // Bundle Offer 16
+    30, 31,            // Bundle Offer 9
+    38, 39,            // Bundle Offer 21
+    50, 114, 115, 116, // Bundle Offer 12
   ]);
 
   function isConsolidatedChoiceOptionProductV370(product: Product) {
@@ -878,21 +878,21 @@ function getComboConfig(productId: number): ComboConfig | null {
   // V3.6.8：漢堡分類改採固定商品歸屬，不再用「龍血／薰衣草／茶樹」等模糊關鍵字判斷主分類。
   // 本月優惠是額外活動入口；每個在售商品仍會落在一個用途主分類，確保可由漢堡選單找到。
   const faceCareProductIdsV368 = new Set([
-    4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+    4, 5, 6, 7, 8, 9, 11, 12, 13, 14,
     32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45,
-    47, 48, 49, 55, 59, 61, 62, 63, 64, 65, 68, 110, 111, 120, 121,
+    47, 48, 49, 61, 62, 63, 64, 65, 110, 111, 121,
   ]);
   const bodyCareProductIdsV368 = new Set([
-    15, 16, 17, 18, 19, 30, 31, 50, 51, 54, 57, 60, 66, 67,
-    72, 73, 101, 102, 103, 104, 105, 106, 107, 108, 112, 114, 115, 116, 119,
+    15, 16, 17, 18, 19, 30, 31, 50, 57, 60, 66,
+    72, 73, 101, 102, 103, 104, 105, 106, 107, 114, 115, 116,
   ]);
-  const healthProductIdsV368 = new Set([1, 2, 3, 58, 69, 109]);
+  const healthProductIdsV368 = new Set([2, 3, 109]);
 
-  const oralCareProductIdsV368 = new Set([18, 19, 54]);
-  const handmadeSoapProductIdsV368 = new Set([50, 67, 114, 115, 116]);
-  const hairBodyWashProductIdsV368 = new Set([15, 16, 17, 57, 112, 119]);
-  const bodyMoistureProductIdsV368 = new Set([60, 66, 72, 73, 108]);
-  const bodyRelaxProductIdsV368 = new Set([30, 31, 51, 101, 102, 103, 104, 105, 106, 107]);
+  const oralCareProductIdsV368 = new Set([18, 19]);
+  const handmadeSoapProductIdsV368 = new Set([50, 114, 115, 116]);
+  const hairBodyWashProductIdsV368 = new Set([15, 16, 17, 57]);
+  const bodyMoistureProductIdsV368 = new Set([60, 66, 72, 73]);
+  const bodyRelaxProductIdsV368 = new Set([30, 31, 101, 102, 103, 104, 105, 106, 107]);
   const moisturizingRepairProductIdsV355 = new Set([34, 37, 38, 64, 121]);
   const premiumCareProductIdsV355 = new Set([11, 12, 13, 14, 33, 111, 8, 61, 62, 121]);
   const essentialOilProductIdsV359 = new Set([
