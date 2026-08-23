@@ -155,14 +155,6 @@ function issueForProduct(
   };
 }
 
-function comboPlanPriceSummary(product: DatabaseProduct) {
-  const config = product.comboConfig;
-  if (!config) return [];
-
-  return config.plans
-    .map((plan) => Number(plan.price))
-    .filter((price) => Number.isFinite(price) && price > 0);
-}
 
 export async function buildProductHealthReport(input: {
   products: DatabaseProduct[];
@@ -171,7 +163,6 @@ export async function buildProductHealthReport(input: {
 }): Promise<ProductHealthReport> {
   const { products, categories, series } = input;
   const issues: ProductHealthIssue[] = [];
-  const productsById = new Map(products.map((product) => [product.id, product]));
   const categoryNames = new Set(categories.map((category) => category.name));
   const seriesByName = new Map<string, CatalogSeries[]>();
   const seriesPairKeys = new Set<string>();
@@ -207,7 +198,7 @@ export async function buildProductHealthReport(input: {
           code: "duplicate-display-code",
           title: "商品編號重複",
           detail: `${code} 同時被 ${owners.length} 筆商品使用。`,
-          suggestion: "請保留其中一筆編號，其他商品重新產生新的 P／C 編號。",
+          suggestion: "請保留其中一筆編號，其他商品重新產生新的 P 編號。",
         })
       );
     }
@@ -250,7 +241,7 @@ export async function buildProductHealthReport(input: {
 
   for (const product of products) {
     const displayCode = normalized(product.displayCode).toUpperCase();
-    const expectedPrefix = product.productType === "combo" ? "C-" : "P-";
+    const expectedPrefix = "P-";
     const effectiveCategory = normalized(product.storefrontCategory) || normalized(product.category);
     const productSeries = normalized(product.series);
 
@@ -260,8 +251,8 @@ export async function buildProductHealthReport(input: {
           severity: "error",
           code: "missing-display-code",
           title: "缺少商品編號",
-          detail: "這筆商品沒有 P-xxxx 或 C-xxxx 顯示編號。",
-          suggestion: "重新產生符合商品類型的顯示編號。",
+          detail: "這筆商品沒有 P-xxxx 顯示編號。",
+          suggestion: "重新產生 P-xxxx 顯示編號。",
         })
       );
     } else if (!displayCode.startsWith(expectedPrefix)) {
@@ -270,7 +261,7 @@ export async function buildProductHealthReport(input: {
           severity: "error",
           code: "wrong-display-code-prefix",
           title: "商品編號類型不一致",
-          detail: `${product.productType === "combo" ? "組合商品" : "一般商品"}目前使用 ${displayCode}。`,
+          detail: `商品目前使用 ${displayCode}。`,
           suggestion: `此商品應使用 ${expectedPrefix} 開頭的編號。`,
         })
       );
@@ -318,191 +309,8 @@ export async function buildProductHealthReport(input: {
       );
     }
 
-    if (product.productType === "standard" && product.comboConfig) {
-      issues.push(
-        issueForProduct(product, {
-          severity: "error",
-          code: "standard-has-combo-config",
-          title: "一般商品誤帶組合設定",
-          detail: "商品類型是一般商品，但資料內仍有 comboConfig。",
-          suggestion: "移除組合設定，或將商品類型改成組合商品。",
-        })
-      );
-    }
 
-    if (product.productType === "combo") {
-      const config = product.comboConfig;
-
-      if (!config) {
-        issues.push(
-          issueForProduct(product, {
-            severity: "error",
-            code: "combo-missing-config",
-            title: "組合商品缺少方案",
-            detail: "商品類型是組合商品，但沒有 comboConfig。",
-            suggestion: "進入組合價格與方案，建立固定套組、任選或買幾送幾方案。",
-          })
-        );
-      } else {
-        if (config.productId !== product.id) {
-          issues.push(
-            issueForProduct(product, {
-              severity: "error",
-              code: "combo-product-id-mismatch",
-              title: "組合設定連到錯誤商品",
-              detail: `comboConfig.productId 是 ${config.productId}，但商品 DB ID 是 ${product.id}。`,
-              suggestion: "重新儲存組合設定，使 productId 與目前商品一致。",
-            })
-          );
-        }
-
-        if (!Array.isArray(config.options) || config.options.length === 0) {
-          issues.push(
-            issueForProduct(product, {
-              severity: "error",
-              code: "combo-missing-options",
-              title: "組合內容是空的",
-              detail: "目前方案沒有任何可販售品項或固定套組內容。",
-              suggestion: "至少新增一個組合內容品項。",
-            })
-          );
-        }
-
-        if (!Array.isArray(config.plans) || config.plans.length === 0) {
-          issues.push(
-            issueForProduct(product, {
-              severity: "error",
-              code: "combo-missing-plans",
-              title: "組合價格是空的",
-              detail: "目前沒有任何組合方案與正式價格。",
-              suggestion: "至少新增一個有效方案與價格。",
-            })
-          );
-        }
-
-        const duplicateOptionIds = config.options
-          .map((option) => option.id.trim())
-          .filter((optionId, index, all) => optionId && all.indexOf(optionId) !== index);
-
-        if (duplicateOptionIds.length > 0) {
-          issues.push(
-            issueForProduct(product, {
-              severity: "error",
-              code: "duplicate-combo-option-id",
-              title: "組合內容代碼重複",
-              detail: `重複代碼：${Array.from(new Set(duplicateOptionIds)).join("、")}。`,
-              suggestion: "讓每個組合內容使用不同的 option id。",
-            })
-          );
-        }
-
-        const duplicatePlanIds = config.plans
-          .map((plan) => plan.id.trim())
-          .filter((planId, index, all) => planId && all.indexOf(planId) !== index);
-
-        if (duplicatePlanIds.length > 0) {
-          issues.push(
-            issueForProduct(product, {
-              severity: "error",
-              code: "duplicate-combo-plan-id",
-              title: "組合方案代碼重複",
-              detail: `重複代碼：${Array.from(new Set(duplicatePlanIds)).join("、")}。`,
-              suggestion: "讓每個組合方案使用不同的 plan id。",
-            })
-          );
-        }
-
-        for (const option of config.options) {
-          if (option.productId === undefined) continue;
-
-          if (option.productId === product.id) {
-            issues.push(
-              issueForProduct(product, {
-                severity: "error",
-                code: `combo-self-link-${option.id}`,
-                title: "組合內容自我連結",
-                detail: `「${option.name}」連回組合商品自己（DB #${product.id}）。`,
-                suggestion: "移除自我 productId；買一送一同品項可保留文字內容。",
-              })
-            );
-            continue;
-          }
-
-          const linkedProduct = productsById.get(option.productId);
-
-          if (!linkedProduct) {
-            issues.push(
-              issueForProduct(product, {
-                severity: "error",
-                code: `missing-combo-product-${option.id}`,
-                title: "組合內容商品不存在",
-                detail: `「${option.name}」連到不存在的 DB #${option.productId}。`,
-                suggestion: "改連到現有一般商品，或移除失效連結。",
-              })
-            );
-          } else if (linkedProduct.productType === "combo") {
-            issues.push(
-              issueForProduct(product, {
-                severity: "warning",
-                code: `nested-combo-product-${option.id}`,
-                title: "組合內容連到另一個組合商品",
-                detail: `「${option.name}」目前連到 ${linkedProduct.displayCode} ${linkedProduct.name}。`,
-                suggestion: "確認是否真的需要巢狀組合；一般情況應連到 P 編號商品。",
-              })
-            );
-          }
-        }
-
-        for (const plan of config.plans) {
-          if (
-            !Number.isFinite(plan.price) ||
-            plan.price <= 0 ||
-            !Number.isInteger(plan.requiredQuantity) ||
-            plan.requiredQuantity <= 0
-          ) {
-            issues.push(
-              issueForProduct(product, {
-                severity: "error",
-                code: `invalid-combo-plan-${plan.id || "blank"}`,
-                title: "組合方案數量或價格無效",
-                detail: `方案「${plan.label || plan.id || "未命名"}」的數量為 ${plan.requiredQuantity}、價格為 ${plan.price}。`,
-                suggestion: "數量需為正整數，價格需大於 0。",
-              })
-            );
-          }
-        }
-
-        if (product.salePriceAmount !== undefined) {
-          issues.push(
-            issueForProduct(product, {
-              severity: "warning",
-              code: "combo-has-standard-sale-price",
-              title: "組合商品仍帶一般售價",
-              detail: `salePriceAmount 目前為 $${product.salePriceAmount.toLocaleString("zh-TW")}。`,
-              suggestion: "組合商品價格應只放在組合價格與方案；重新儲存組合方案即可清除。",
-            })
-          );
-        }
-
-        const cardPriceValues = moneyValues(product.price);
-        const planPrices = comboPlanPriceSummary(product);
-        const missingCardPrices = planPrices.filter(
-          (price) => !cardPriceValues.includes(price)
-        );
-
-        if (planPrices.length > 0 && missingCardPrices.length > 0) {
-          issues.push(
-            issueForProduct(product, {
-              severity: "warning",
-              code: "combo-card-price-mismatch",
-              title: "商品卡價格與組合方案不一致",
-              detail: `商品卡目前顯示「${product.price}」，但方案包含 ${missingCardPrices.map((price) => `$${price.toLocaleString("zh-TW")}`).join("、")}。`,
-              suggestion: "重新儲存組合方案，讓商品卡價格摘要由正式方案自動產生。",
-            })
-          );
-        }
-      }
-    } else {
+    {
       const legacySalePrice = primaryMoneyValue(product.price);
       const legacyOriginalPrice = primaryMoneyValue(product.originalPrice);
       const salePrice = product.salePriceAmount ?? legacySalePrice;

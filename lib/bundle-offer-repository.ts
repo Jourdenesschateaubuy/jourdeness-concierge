@@ -287,23 +287,22 @@ function rowToBundlePlan(
   };
 }
 
-async function validateStandardProducts(
+async function validateProducts(
   productIds: number[]
 ) {
   const uniqueIds = Array.from(new Set(productIds));
 
   if (!uniqueIds.length) {
     throw new Error(
-      "組合優惠至少需要選擇一個一般商品。"
+      "組合優惠至少需要選擇一個商品。"
     );
   }
 
   const result = await dbQuery<{
     id: number;
-    product_type: string;
   }>(
     `
-      SELECT id, product_type
+      SELECT id
       FROM products
       WHERE id = ANY($1::int[])
     `,
@@ -313,16 +312,6 @@ async function validateStandardProducts(
   if (result.rows.length !== uniqueIds.length) {
     throw new Error(
       "組合優惠包含不存在的商品。"
-    );
-  }
-
-  const invalid = result.rows.filter(
-    (row) => row.product_type !== "standard"
-  );
-
-  if (invalid.length) {
-    throw new Error(
-      "組合優惠只能引用一般商品，不能引用其他組合商品。"
     );
   }
 }
@@ -475,7 +464,7 @@ export async function getBundleOffer(id: number) {
 export async function createBundleOffer(
   input: BundleOfferWriteInput
 ) {
-  await validateStandardProducts([
+  await validateProducts([
     ...input.items.map(
       (item) => item.productId
     ),
@@ -625,7 +614,7 @@ export async function updateBundleOffer(
   id: number,
   input: BundleOfferWriteInput
 ) {
-  await validateStandardProducts([
+  await validateProducts([
     ...input.items.map(
       (item) => item.productId
     ),
@@ -840,7 +829,6 @@ export async function deleteBundleOffer(id: number) {
   return result.rows.length > 0;
 }
 
-
 export async function updateBundleOfferCard(
   id: number,
   input: BundleOfferCardInput
@@ -894,7 +882,6 @@ export async function updateBundleOfferCard(
 
   return getBundleOffer(id);
 }
-
 
 export async function updateBundleOfferProductInfo(
   id: number,

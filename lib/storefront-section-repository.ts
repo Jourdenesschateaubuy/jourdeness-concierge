@@ -67,7 +67,6 @@ type SectionItemRow = {
   item_updated_at: Date | string;
 
   display_code: string;
-  product_type: "standard" | "combo";
   sku: string | null;
   name: string;
   category: string;
@@ -93,7 +92,6 @@ type SectionItemRow = {
   notice: string | null;
   gallery: string[] | null;
   expanded_info: DatabaseProduct["expandedInfo"] | null;
-  combo_config: DatabaseProduct["comboConfig"] | null;
   status: ProductStatus;
   product_sort_order: number;
   product_created_at: Date | string;
@@ -134,7 +132,6 @@ function mapItem(row: SectionItemRow): StorefrontSectionItem {
     product: {
       id: row.product_id,
       displayCode: row.display_code,
-      productType: row.product_type,
       sku: row.sku ?? undefined,
       name: row.name,
       category: row.category as DatabaseProduct["category"],
@@ -173,12 +170,7 @@ function mapItem(row: SectionItemRow): StorefrontSectionItem {
       notice: row.notice ?? undefined,
       gallery: row.gallery ?? [],
       expandedInfo: row.expanded_info ?? [],
-      comboConfig: row.combo_config
-        ? {
-            ...row.combo_config,
-            productId: row.product_id,
-          }
-        : undefined,
+
       status: row.status,
       sortOrder: row.product_sort_order,
       createdAt: new Date(
@@ -252,7 +244,6 @@ export async function listStorefrontSectionItems(
         i.updated_at AS item_updated_at,
 
         p.display_code,
-        p.product_type,
         p.sku,
         p.name,
         p.category,
@@ -278,7 +269,6 @@ export async function listStorefrontSectionItems(
         p.notice,
         p.gallery,
         p.expanded_info,
-        p.combo_config,
         p.status,
         p.sort_order AS product_sort_order,
         p.created_at AS product_created_at,
@@ -740,4 +730,3 @@ export async function deleteHomepageStorefrontSection(
     }
   });
 }
-

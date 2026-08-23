@@ -21,7 +21,6 @@ import { CSS } from "@dnd-kit/utilities";
 import type {
   DatabaseProduct,
   ProductStatus,
-  ProductType,
 } from "../../../../lib/product-repository";
 
 import {
@@ -50,7 +49,9 @@ const statusLabel: Record<ProductStatus, string> = {
   sold_out: "售罄",
 };
 
-const productTypeLabel: Record<ProductType, string> = {
+type ManagerTab = "standard" | "combo";
+
+const managerTabLabel: Record<ManagerTab, string> = {
   standard: "一般商品",
   combo: "組合優惠",
 };
@@ -160,11 +161,7 @@ function SortableProductRow({
       </td>
 
       <td>
-        {product.productType === "combo" ? (
-          <span className={styles.comboBadge}>組合商品</span>
-        ) : (
-          <span className={styles.muted}>一般商品</span>
-        )}
+        <span className={styles.muted}>一般商品</span>
       </td>
 
       <td>
@@ -199,7 +196,7 @@ function SortableProductRow({
       <td>
         <div className={actionStyles.rowActions}>
           <Link href={`/admin/products/${product.id}/edit`}>
-            {product.productType === "combo" ? "編輯方案" : "編輯"}
+            編輯
           </Link>
 
           <form
@@ -267,7 +264,7 @@ export default function ProductManager({
 }) {
   const [orderedProducts, setOrderedProducts] =
     useState<DatabaseProduct[]>(products);
-  const [activeType, setActiveType] = useState<ProductType>("standard");
+  const [activeType, setActiveType] = useState<ManagerTab>("standard");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("全部");
   const [status, setStatus] = useState("全部");
@@ -284,22 +281,14 @@ export default function ProductManager({
     })
   );
 
-  const typeProducts = useMemo(
-    () =>
-      orderedProducts.filter(
-        (product) => product.productType === activeType
-      ),
-    [activeType, orderedProducts]
-  );
+  const typeProducts = orderedProducts;
 
   const counts = useMemo(
     () => ({
-      standard: orderedProducts.filter(
-        (product) => product.productType === "standard"
-      ).length,
+      standard: orderedProducts.length,
       combo: bundleOffers.length,
     }),
-    [bundleOffers.length, orderedProducts]
+    [bundleOffers.length, orderedProducts.length]
   );
 
   const categories = useMemo(
@@ -339,7 +328,6 @@ export default function ProductManager({
           product.spec ?? "",
           product.price,
           product.status,
-          productTypeLabel[product.productType],
         ].join(" ")
       );
 
@@ -347,7 +335,7 @@ export default function ProductManager({
     });
   }, [category, query, status, typeProducts]);
 
-  function switchType(nextType: ProductType) {
+  function switchType(nextType: ManagerTab) {
     setActiveType(nextType);
     setQuery("");
     setCategory("全部");
@@ -372,9 +360,7 @@ export default function ProductManager({
       return;
     }
 
-    const currentTypeProducts = orderedProducts.filter(
-      (product) => product.productType === activeType
-    );
+    const currentTypeProducts = orderedProducts;
     const oldIndex = currentTypeProducts.findIndex(
       (product) => product.id === Number(active.id)
     );
@@ -389,14 +375,8 @@ export default function ProductManager({
       oldIndex,
       newIndex
     );
-    let replacementIndex = 0;
     const previousProducts = orderedProducts;
-    const nextProducts = orderedProducts.map((product) => {
-      if (product.productType !== activeType) return product;
-      const replacement = movedTypeProducts[replacementIndex];
-      replacementIndex += 1;
-      return replacement;
-    });
+    const nextProducts = movedTypeProducts;
 
     setOrderedProducts(nextProducts);
     setSortMessage("正在儲存排序…");
@@ -425,7 +405,7 @@ export default function ProductManager({
       <div className={actionStyles.topActions}>
         <div>
           <strong>{orderedProducts.length} 筆商品</strong>
-          <span>內部 DB ID 保留；後台改用 P／C 顯示編號</span>
+          <span>內部 DB ID 保留；後台使用 P 顯示編號</span>
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -467,7 +447,7 @@ export default function ProductManager({
               cursor: "pointer",
             }}
           >
-            {productTypeLabel[type]}　{counts[type]}
+            {managerTabLabel[type]}　{counts[type]}
           </button>
         ))}
       </div>
@@ -519,7 +499,7 @@ export default function ProductManager({
 
       <div className={styles.resultBar}>
         <strong>{filteredProducts.length}</strong>
-        <span> / {typeProducts.length} 筆{productTypeLabel[activeType]}</span>
+        <span> / {typeProducts.length} 筆{managerTabLabel[activeType]}</span>
 
         {hasActiveFilter && (
           <button
@@ -548,7 +528,7 @@ export default function ProductManager({
             ? "搜尋或篩選中，暫停拖曳排序"
             : isSavingOrder
               ? "正在儲存排序…"
-              : sortMessage || `拖曳 ☰ 調整${productTypeLabel[activeType]}順序`}
+              : sortMessage || `拖曳 ☰ 調整${managerTabLabel[activeType]}順序`}
         </span>
       </div>
 

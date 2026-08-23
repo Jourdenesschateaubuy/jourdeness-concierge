@@ -12,7 +12,6 @@ import ProductImageUploader from "./ProductImageUploader";
 import MediaPicker, {
   type PickerMediaAsset,
 } from "../../website-studio/components/MediaPicker";
-import ComboConfigEditor from "./ComboConfigEditor";
 import { updateProductEditorAction } from "../actions";
 import styles from "./product-card-edit-form.module.css";
 
@@ -23,14 +22,14 @@ type Props = {
   returnTo?: string;
 };
 
-type Tab = "card" | "combo" | "detail";
+type Tab = "card" | "detail";
 
 type ExpandedItem = {
   title: string;
   content: string;
 };
 
-const categories = Object.keys(categoryConfig);
+const categories = Object.keys(categoryConfig).filter((category) => category !== "組合價");
 
 function normalizeOriginalPriceInput(value: string) {
   const match = value.trim().match(/^原價\s*\$\s*([\d,]+)$/);
@@ -66,63 +65,11 @@ function formatSellingPricePreview(
   const label =
     category === "外部廠商"
       ? "售價"
-      : category === "組合價"
-        ? "活動價"
-        : "產地價";
+      : "產地價";
 
   return `${label} $ ${formatted}`;
 }
 
-function formatComboPriceSummary(product: DatabaseProduct) {
-  const config = product.comboConfig;
-
-  if (!config) return "";
-
-  const unitLabel = config.unitLabel?.trim() || "件";
-
-  if (config.type === "fixed_bundle") {
-    const plan = config.plans.find(
-      (item) => Number.isFinite(item.price) && item.price > 0
-    );
-    return plan
-      ? `組合價 $${plan.price.toLocaleString("en-US")}`
-      : "尚未設定固定套組價格";
-  }
-
-  const parts: string[] = [];
-
-  if (
-    typeof config.singleUnitPrice === "number" &&
-    Number.isFinite(config.singleUnitPrice) &&
-    config.singleUnitPrice > 0
-  ) {
-    parts.push(
-      `單${unitLabel} $${config.singleUnitPrice.toLocaleString("en-US")}`
-    );
-  }
-
-  for (const plan of config.plans) {
-    if (!Number.isFinite(plan.price) || plan.price <= 0) {
-      continue;
-    }
-
-    const formattedPrice = plan.price.toLocaleString("en-US");
-
-    if (config.type === "buy_get") {
-      const buyQuantity =
-        plan.buyQuantity ?? Math.max(plan.requiredQuantity - 1, 1);
-      const freeQuantity = plan.freeQuantity ?? 1;
-
-      parts.push(`買${buyQuantity}送${freeQuantity} $${formattedPrice}`);
-    } else {
-      parts.push(
-        `任選${plan.requiredQuantity}${unitLabel} $${formattedPrice}`
-      );
-    }
-  }
-
-  return parts.join("｜");
-}
 
 const statusLabels: Record<ProductStatus, string> = {
   active: "上架中",
@@ -238,8 +185,6 @@ export default function ProductCardEditForm({
     useState(false);
   const [draggingGalleryIndex, setDraggingGalleryIndex] =
     useState<number | null>(null);
-  const hasCombo = Boolean(product.comboConfig);
-  const comboPriceSummary = formatComboPriceSummary(product);
 
   const [name, setName] = useState(product.name ?? "");
   const [originalPrice, setOriginalPrice] = useState(
@@ -383,9 +328,7 @@ return (
       <div
         className={styles.tabs}
         style={{
-          gridTemplateColumns: hasCombo
-            ? "repeat(3, minmax(0, 1fr))"
-            : "repeat(2, minmax(0, 1fr))",
+          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
         }}
       >
         <button
@@ -396,15 +339,6 @@ return (
           商品卡
         </button>
 
-        {hasCombo && (
-          <button
-            type="button"
-            className={tab === "combo" ? styles.activeTab : ""}
-            onClick={() => setTab("combo")}
-          >
-            組合價格與方案
-          </button>
-        )}
 
         <button
           type="button"
@@ -500,34 +434,7 @@ return (
                 ) : null}
               </label>
 
-              {hasCombo ? (
-                <label>
-                  <span>組合方案價格</span>
-                  <textarea
-                    rows={3}
-                    readOnly
-                    value={comboPriceSummary || "尚未設定組合方案"}
-                  />
-                  <small>
-                    組合商品價格只能在「組合價格與方案」修改。
-                  </small>
-                  <button
-                    type="button"
-                    onClick={() => setTab("combo")}
-                    style={{
-                      minHeight: 40,
-                      border: "1px solid #d9c9cc",
-                      borderRadius: 9,
-                      background: "#fff",
-                      color: "#7d2638",
-                      fontWeight: 850,
-                      cursor: "pointer",
-                    }}
-                  >
-                    前往組合價格與方案
-                  </button>
-                </label>
-              ) : (
+              {(
                 <label>
                   <span>售價（NT$）</span>
                   <input
@@ -592,9 +499,7 @@ return (
             )}
 
             <b>
-              {hasCombo
-                ? comboPriceSummary || "尚未設定組合方案"
-                : price
+              {price
                   ? formatSellingPricePreview(price, category)
                   : "尚未設定售價"}
             </b>
@@ -606,14 +511,6 @@ return (
         </div>
       )}
 
-      {hasCombo && product.comboConfig && (
-        <div hidden={tab !== "combo"}>
-          <ComboConfigEditor
-            productId={product.id}
-            initialConfig={product.comboConfig}
-          />
-        </div>
-      )}
 
       {tab === "detail" && (
         <div className={styles.panel}>
@@ -1262,9 +1159,7 @@ return (
           label={
             returnTo === "/admin/products/health"
               ? "儲存並重新健檢"
-              : tab === "combo"
-                ? "儲存組合價格與方案"
-                : "儲存變更"
+              : "儲存變更"
           }
         />
       </div>

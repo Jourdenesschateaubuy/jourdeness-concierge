@@ -9,9 +9,7 @@ export default async function NewBundleOfferPage() {
     includeInactive: true,
   });
 
-  const standardProducts = products.filter(
-    (product) => product.productType === "standard"
-  );
+  const availableProducts = products;
 
   return (
     <div className={styles.page}>
@@ -30,7 +28,7 @@ export default async function NewBundleOfferPage() {
       </header>
 
       <BundleOfferCreateForm
-        products={standardProducts.map((product) => ({
+        products={availableProducts.map((product) => ({
           id: product.id,
           displayCode: product.displayCode,
           name: product.name,

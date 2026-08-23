@@ -24,7 +24,6 @@ export default async function EditProductPage({
   const product = await getDatabaseProduct(id);
   if (!product) notFound();
 
-  const isCombo = product.productType === "combo";
 
   return (
     <div className={styles.page}>
@@ -33,7 +32,7 @@ export default async function EditProductPage({
           <p className={styles.eyebrow}>
             {product.displayCode} · PRODUCT EDITOR
           </p>
-          <h1>{isCombo ? "編輯組合商品" : "編輯一般商品"}</h1>
+          <h1>編輯一般商品</h1>
           <p>
             內部資料庫 ID #{product.id} 保留不變；後台以 {product.displayCode} 管理。
           </p>
@@ -61,7 +60,7 @@ export default async function EditProductPage({
       <ProductCardEditForm
         product={product}
         action={updateProductAction}
-        initialTab={tab === "combo" && isCombo ? "combo" : "card"}
+        initialTab={tab === "detail" ? "detail" : "card"}
         returnTo={from === "health" ? "/admin/products/health" : undefined}
       />
     </div>

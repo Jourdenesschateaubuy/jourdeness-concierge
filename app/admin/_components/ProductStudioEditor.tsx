@@ -8,7 +8,6 @@ import {
 } from "react";
 
 import { readJsonResponse } from "../../../lib/http-json";
-import type { ComboConfig } from "../../../lib/storefront-core";
 import MediaPicker, {
   type PickerMediaAsset,
 } from "../website-studio/components/MediaPicker";
@@ -23,7 +22,6 @@ type ProductStatus =
 type StudioProduct = {
   id: number;
   displayCode?: string;
-  productType?: "standard" | "combo";
   name: string;
   cardName?: string | null;
   cardSubtitle?: string | null;
@@ -33,7 +31,6 @@ type StudioProduct = {
   status?: ProductStatus;
   image?: string | null;
   category?: string | null;
-  comboConfig?: ComboConfig | null;
 };
 
 type ProductCardForm = {
@@ -77,7 +74,7 @@ function cleanMoneyForEditor(
   const label =
     kind === "original"
       ? "(?:原價)?"
-      : "(?:產地價|售價|活動價|組合價)?";
+      : "(?:產地價|售價|活動價)?";
 
   const match = clean.match(
     new RegExp(
@@ -95,97 +92,7 @@ function normalizeMoneyForPreview(
   return cleanMoneyForEditor(value, kind);
 }
 
-function createFixedBundleFallback(product: StudioProduct): ComboConfig | null {
-  if (product.productType !== "combo" && product.category !== "組合價") return null;
 
-  const values = [...product.price.matchAll(/([\d,]+)/g)]
-    .map((match) => Number(match[1].replace(/,/g, "")))
-    .filter((value) => Number.isFinite(value) && value > 0);
-  const price = values.at(-1) ?? 0;
-
-  return {
-    productId: product.id,
-    type: "fixed_bundle",
-    unitLabel: "組",
-    options: [],
-    plans: [
-      {
-        id: "fixed-bundle",
-        label: "固定套組",
-        requiredQuantity: 1,
-        price,
-        priceLabel: price ? `$${price.toLocaleString("zh-TW")}` : "",
-      },
-    ],
-  };
-}
-
-function formatComboPriceSummary(
-  config: ComboConfig
-) {
-  const unitLabel =
-    config.unitLabel?.trim() || "件";
-
-  if (config.type === "fixed_bundle") {
-    const plan = config.plans.find(
-      (item) => Number.isFinite(item.price) && item.price > 0
-    );
-    return plan
-      ? `組合價 $${plan.price.toLocaleString("en-US")}`
-      : "尚未設定固定套組價格";
-  }
-
-  const parts: string[] = [];
-
-  if (
-    typeof config.singleUnitPrice === "number" &&
-    Number.isFinite(config.singleUnitPrice) &&
-    config.singleUnitPrice > 0
-  ) {
-    parts.push(
-      `單${unitLabel} $${config.singleUnitPrice.toLocaleString("en-US")}`
-    );
-  } else if (
-    config.singlePriceLabel?.trim()
-  ) {
-    parts.push(
-      config.singlePriceLabel.trim()
-    );
-  }
-
-  for (const plan of config.plans) {
-    if (
-      !Number.isFinite(plan.price) ||
-      plan.price <= 0
-    ) {
-      continue;
-    }
-
-    const formattedPrice =
-      plan.price.toLocaleString("en-US");
-
-    if (config.type === "buy_get") {
-      const buyQuantity =
-        plan.buyQuantity ??
-        Math.max(
-          plan.requiredQuantity - 1,
-          1
-        );
-      const freeQuantity =
-        plan.freeQuantity ?? 1;
-
-      parts.push(
-        `買${buyQuantity}送${freeQuantity} $${formattedPrice}`
-      );
-    } else {
-      parts.push(
-        `任選${plan.requiredQuantity}${unitLabel} $${formattedPrice}`
-      );
-    }
-  }
-
-  return parts.join("｜");
-}
 
 function productToForm(
   product: StudioProduct
@@ -304,20 +211,7 @@ export default function ProductStudioEditor({
     );
   }, [form, product]);
 
-  const comboConfig = useMemo(() => {
-    if (!product) return null;
 
-    return (
-      product.comboConfig ??
-      createFixedBundleFallback(product) ??
-      null
-    );
-  }, [product]);
-
-  const hasCombo = Boolean(comboConfig);
-  const comboPriceSummary = comboConfig
-    ? formatComboPriceSummary(comboConfig)
-    : "";
 
   useEffect(() => {
     if (!form || loading) return;
@@ -329,19 +223,15 @@ export default function ProductStudioEditor({
           form.originalPrice,
           "original"
         ),
-      price: hasCombo
-        ? comboPriceSummary ||
-          product?.price ||
-          form.price
-        : normalizeMoneyForPreview(
+      price: normalizeMoneyForPreview(
             form.price,
             "selling"
           ),
     });
   }, [
-    comboPriceSummary,
+
     form,
-    hasCombo,
+
     loading,
     onDraftChange,
     product,
@@ -386,7 +276,7 @@ export default function ProductStudioEditor({
     }
 
     if (
-      !hasCombo &&
+      !false &&
       !form.price.trim()
     ) {
       setError("請輸入目前售價");
@@ -405,11 +295,7 @@ export default function ProductStudioEditor({
             form.originalPrice,
             "original"
           ),
-        price: hasCombo
-          ? product?.price ||
-            comboPriceSummary ||
-            form.price
-          : normalizeMoneyForPreview(
+        price: normalizeMoneyForPreview(
               form.price,
               "selling"
             ),
@@ -648,34 +534,7 @@ export default function ProductStudioEditor({
               </small>
             </label>
 
-            {hasCombo ? (
-              <div className={styles.field}>
-                <span>組合方案價格</span>
-                <textarea
-                  rows={4}
-                  readOnly
-                  value={
-                    comboPriceSummary ||
-                    "尚未設定組合方案"
-                  }
-                />
-                <small>
-                  組合商品價格只能在「組合價格與方案」修改，
-                  這裡不提供售價輸入。
-                </small>
-                <button
-                  type="button"
-                  className={styles.fullEditorLink}
-                  onClick={() =>
-                    window.location.assign(
-                      `/admin/products/${productId}/edit?tab=combo`
-                    )
-                  }
-                >
-                  編輯組合價格與方案
-                </button>
-              </div>
-            ) : (
+            {(
               <label className={styles.field}>
                 <span>目前售價</span>
                 <input
@@ -740,9 +599,7 @@ export default function ProductStudioEditor({
       </section>
 
       <div className={styles.noteBox}>
-        {hasCombo
-          ? "這裡可修改組合商品卡的名稱、圖片、原價、補充文字與顯示狀態；組合售價請到「組合價格與方案」修改。"
-          : "這裡只修改商品卡上的名稱、圖片、價格與顯示狀態。商品詳細內容使用「商品詳情」開啟。"}
+        {"這裡只修改商品卡上的名稱、圖片、價格與顯示狀態。商品詳細內容使用「商品詳情」開啟。"}
       </div>
 
       {error ? (

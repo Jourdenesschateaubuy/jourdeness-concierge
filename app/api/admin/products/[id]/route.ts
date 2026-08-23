@@ -5,11 +5,9 @@ import {
   getDatabaseProduct,
   updateDatabaseProduct,
 } from "../../../../../lib/product-repository";
-import type { ComboConfig } from "../../../../../lib/storefront-core";
 import { deleteUploadedImage } from "../../../../../lib/upload-storage";
 import {
   extractPrimaryMoneyAmount,
-  formatComboCardPrice,
   formatOriginalPriceText,
   formatStandardPriceText,
   normalizeMoneyAmount,
@@ -348,9 +346,9 @@ export async function PATCH(
 
   if ("price" in body && !("salePriceAmount" in body)) {
     nextProduct.salePriceAmount =
-      existingProduct.productType === "combo"
-        ? undefined
-        : extractPrimaryMoneyAmount(String(nextProduct.price ?? ""));
+      extractPrimaryMoneyAmount(
+        String(nextProduct.price ?? "")
+      );
   }
 
   if ("originalPrice" in body && !("originalPriceAmount" in body)) {
@@ -387,42 +385,20 @@ export async function PATCH(
       expandedInfo;
   }
 
-
-  if ("comboConfig" in body) {
-    const comboConfig = body.comboConfig as ComboConfig | null;
-
-    if (
-      comboConfig !== null &&
-      (typeof comboConfig !== "object" ||
-        !Array.isArray(comboConfig.options) ||
-        !Array.isArray(comboConfig.plans))
-    ) {
-      return NextResponse.json(
-        { error: "組合價格與方案格式不正確" },
-        { status: 400 }
-      );
-    }
-
-    nextProduct.comboConfig = comboConfig ?? undefined;
-  }
-  const nextComboConfig = nextProduct.comboConfig as ComboConfig | undefined;
-
-  if (nextComboConfig) {
-    nextProduct.salePriceAmount = undefined;
-    nextProduct.price = formatComboCardPrice(
-      nextComboConfig,
-      String(nextProduct.price ?? "")
+  const salePriceAmount =
+    normalizeMoneyAmount(
+      nextProduct.salePriceAmount
     );
-  } else {
-    const salePriceAmount = normalizeMoneyAmount(nextProduct.salePriceAmount);
 
-    if (salePriceAmount) {
-      nextProduct.salePriceAmount = salePriceAmount;
-      nextProduct.price = formatStandardPriceText(
+  if (salePriceAmount) {
+    nextProduct.salePriceAmount =
+      salePriceAmount;
+
+    nextProduct.price =
+      formatStandardPriceText(
         salePriceAmount,
         String(nextProduct.category ?? "")
       );
-    }
   }
 
   const originalPriceAmount = normalizeMoneyAmount(

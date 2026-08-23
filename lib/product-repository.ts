@@ -1,8 +1,6 @@
-import type { ComboConfig, MainCategory, Product } from "./storefront-core";
+import type { MainCategory, Product } from "./storefront-core";
 import { dbQuery, withDbClient } from "./db";
 import { extractPrimaryMoneyAmount } from "./product-pricing";
-
-export type ProductType = "standard" | "combo";
 
 export type ProductStatus =
   | "active"
@@ -12,7 +10,6 @@ export type ProductStatus =
 
 export type DatabaseProduct = Product & {
   displayCode: string;
-  productType: ProductType;
   sku?: string;
   status: ProductStatus;
   sortOrder: number;
@@ -46,7 +43,6 @@ export type ProductWriteInput = {
   notice?: string;
   gallery: string[];
   expandedInfo: NonNullable<Product["expandedInfo"]>;
-  comboConfig?: ComboConfig;
   status: ProductStatus;
   sortOrder: number;
 };
@@ -54,7 +50,6 @@ export type ProductWriteInput = {
 type ProductRow = {
   id: number;
   display_code: string;
-  product_type: ProductType;
   sku: string | null;
   name: string;
   category: string;
@@ -80,7 +75,6 @@ type ProductRow = {
   notice: string | null;
   gallery: string[] | null;
   expanded_info: Product["expandedInfo"] | null;
-  combo_config: ComboConfig | null;
   status: ProductStatus;
   sort_order: number;
   created_at: Date | string;
@@ -95,7 +89,6 @@ function rowToProduct(row: ProductRow): DatabaseProduct {
   return {
     id: row.id,
     displayCode: row.display_code,
-    productType: row.product_type,
     sku: optional(row.sku),
     name: row.name,
     category: row.category as MainCategory,
@@ -127,12 +120,6 @@ function rowToProduct(row: ProductRow): DatabaseProduct {
     notice: optional(row.notice),
     gallery: row.gallery ?? [],
     expandedInfo: row.expanded_info ?? [],
-    comboConfig: row.combo_config
-      ? {
-          ...row.combo_config,
-          productId: row.id,
-        }
-      : undefined,
     status: row.status,
     sortOrder: row.sort_order,
     createdAt: new Date(row.created_at).toISOString(),
@@ -167,8 +154,7 @@ export async function getDatabaseProduct(id: number) {
 }
 
 export async function createDatabaseProduct(
-  input: ProductWriteInput,
-  productType: "product" | "combo" = "product"
+  input: ProductWriteInput
 ) {
   return withDbClient(async (client) => {
     await client.query("BEGIN");
@@ -181,77 +167,55 @@ export async function createDatabaseProduct(
       );
       const id = Number(idResult.rows[0]?.id ?? 1);
 
-      const normalizedProductType: ProductType =
-        productType === "combo" ? "combo" : "standard";
-
       const displayCodeResult =
-        normalizedProductType === "combo"
-          ? await client.query<{ sequence_value: string }>(
-              `SELECT nextval('product_combo_code_seq')::text AS sequence_value`
-            )
-          : await client.query<{ sequence_value: string }>(
-              `SELECT nextval('product_standard_code_seq')::text AS sequence_value`
-            );
+        await client.query<{ sequence_value: string }>(
+          `SELECT nextval('product_standard_code_seq')::text AS sequence_value`
+        );
 
       const displayCodeNumber = Number(
         displayCodeResult.rows[0]?.sequence_value ?? 1
       );
-      const displayCode = `${
-        normalizedProductType === "combo" ? "C" : "P"
-      }-${String(displayCodeNumber).padStart(4, "0")}`;
 
-      const comboConfig = input.comboConfig
-        ? {
-            ...input.comboConfig,
-            productId: id,
-          }
-        : normalizedProductType === "combo"
-          ? {
-              productId: id,
-              type: "fixed_bundle" as const,
-              unitLabel: "組",
-              allowSameProduct: false,
-              options: [],
-              plans: [],
-            }
-          : undefined;
+      const displayCode = `P-${String(displayCodeNumber).padStart(
+        4,
+        "0"
+      )}`;
 
       const salePriceAmount =
-        normalizedProductType === "combo"
-          ? null
-          : input.salePriceAmount ??
-            extractPrimaryMoneyAmount(input.price) ??
-            null;
+        input.salePriceAmount ??
+        extractPrimaryMoneyAmount(input.price) ??
+        null;
+
       const originalPriceAmount =
         input.originalPriceAmount ??
         extractPrimaryMoneyAmount(input.originalPrice) ??
         null;
+
       const promotionText =
         input.promotionText || input.priceNote || null;
 
       const result = await client.query<ProductRow>(
         `
           INSERT INTO products (
-            id, display_code, product_type,
+            id, display_code,
             sku, name, category, series, storefront_category,
             sale_price_amount, original_price_amount, promotion_text,
             original_price, price, image, description,
             card_name, card_subtitle, spec, intro, price_note,
             expiry_note, internal_expiry_date,
             features, suitable_for, usage, notice, gallery,
-            expanded_info, combo_config, status, sort_order, updated_at
+            expanded_info, status, sort_order, updated_at
           )
           VALUES (
-          $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,
-          $18,$19,$20,$21,$22,$23::jsonb,$24::jsonb,$25,$26,$27::jsonb,
-          $28::jsonb,$29::jsonb,$30,$31,NOW()
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,
+            $18,$19,$20,$21,$22::jsonb,$23::jsonb,$24,$25,$26::jsonb,
+            $27::jsonb,$28,$29,NOW()
           )
           RETURNING *
         `,
         [
           id,
           displayCode,
-          normalizedProductType,
           input.sku || null,
           input.name,
           input.category,
@@ -277,7 +241,6 @@ export async function createDatabaseProduct(
           input.notice || null,
           JSON.stringify(input.gallery ?? []),
           JSON.stringify(input.expandedInfo ?? []),
-          comboConfig ? JSON.stringify(comboConfig) : null,
           input.status,
           input.sortOrder,
         ]
@@ -296,15 +259,16 @@ export async function updateDatabaseProduct(
   id: number,
   input: ProductWriteInput
 ) {
-  const salePriceAmount = input.comboConfig
-    ? null
-    : input.salePriceAmount ??
-      extractPrimaryMoneyAmount(input.price) ??
-      null;
+  const salePriceAmount =
+    input.salePriceAmount ??
+    extractPrimaryMoneyAmount(input.price) ??
+    null;
+
   const originalPriceAmount =
     input.originalPriceAmount ??
     extractPrimaryMoneyAmount(input.originalPrice) ??
     null;
+
   const promotionText =
     input.promotionText || input.priceNote || null;
 
@@ -337,9 +301,8 @@ export async function updateDatabaseProduct(
         notice = $24,
         gallery = $25::jsonb,
         expanded_info = $26::jsonb,
-        combo_config = COALESCE($27::jsonb, combo_config),
-        status = $28,
-        sort_order = $29,
+        status = $27,
+        sort_order = $28,
         updated_at = NOW()
       WHERE id = $1
       RETURNING *
@@ -371,7 +334,6 @@ export async function updateDatabaseProduct(
       input.notice || null,
       JSON.stringify(input.gallery ?? []),
       JSON.stringify(input.expandedInfo ?? []),
-      input.comboConfig ? JSON.stringify(input.comboConfig) : null,
       input.status,
       input.sortOrder,
     ]
@@ -387,7 +349,6 @@ export type ProductPartialUpdateInput = Omit<
   salePriceAmount?: number | null;
   originalPriceAmount?: number | null;
   promotionText?: string | null;
-  comboConfig?: ComboConfig | null;
 };
 
 export async function updateDatabaseProductPartial(
@@ -483,12 +444,6 @@ export async function updateDatabaseProductPartial(
       patch.expandedInfo !== undefined
         ? patch.expandedInfo
         : existing.expandedInfo ?? [],
-    comboConfig:
-      patch.comboConfig === null
-        ? undefined
-        : patch.comboConfig !== undefined
-          ? patch.comboConfig
-          : existing.comboConfig,
     status:
       patch.status !== undefined
         ? patch.status

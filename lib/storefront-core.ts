@@ -33,7 +33,6 @@ export type MainCategory = keyof typeof categoryConfig;
 export type Product = {
   id: number;
   displayCode?: string;
-  productType?: "standard" | "combo";
   name: string;
   category: MainCategory;
   series: string;
@@ -64,44 +63,6 @@ export type Product = {
     title: string;
     content: string;
   }>;
-  comboConfig?: ComboConfig;
-};
-
-export type ComboOption = {
-  id: string;
-  name: string;
-  productId?: number;
-  quantity?: number;
-  singleUnitPrice?: number;
-  singlePriceLabel?: string;
-};
-
-export type ComboPlan = {
-  id: string;
-  label: string;
-  requiredQuantity: number;
-  price: number;
-  priceLabel: string;
-  note?: string;
-  buyQuantity?: number;
-  freeQuantity?: number;
-  bonusGift?: {
-    name: string;
-    quantity: number;
-    unitLabel?: string;
-  };
-};
-
-export type ComboConfig = {
-  productId: number;
-  type?: "fixed_bundle" | "mix_match" | "buy_get";
-  unitLabel: string;
-  allowSameProduct?: boolean;
-  options: ComboOption[];
-  plans: ComboPlan[];
-  note?: string;
-  singleUnitPrice?: number;
-  singlePriceLabel?: string;
 };
 
 export type ComboSelection = {
@@ -1641,7 +1602,6 @@ const comingSoonRollerProducts: Product[] = [
   }
 ];
 
-
 const additionalProductsV359: Product[] = [
   {
     id: 119,
@@ -1871,7 +1831,6 @@ function normalizeProductForV354(product: Product): Product {
   return updates[product.id] ? { ...product, ...updates[product.id] } : product;
 }
 
-
 function normalizeProductForV359(product: Product): Product {
   const updates: Record<number, Partial<Product>> = {
     15: {
@@ -1995,7 +1954,6 @@ function normalizeProductForV362(product: Product): Product {
   return updates[product.id] ? { ...product, ...updates[product.id] } : product;
 }
 
-
 function normalizeProductForV376(product: Product): Product {
   const updates: Record<number, Partial<Product>> = {
     3: {
@@ -2083,7 +2041,13 @@ export const products: Product[] = [...allProducts, ...comingSoonRollerProducts,
   .map(normalizeProductForV362)
   .map(normalizeProductForV376)
   .map(normalizeProductForV377)
-  .filter((product) => ![20, 21, 22, 23, 24, 25, 52].includes(product.id));
+  .filter(
+    (product) =>
+      ![
+        1, 10, 20, 21, 22, 23, 24, 25, 51, 52, 54,
+        55, 56, 58, 59, 67, 68, 69, 108, 112, 119, 120,
+      ].includes(product.id)
+  );
 
 export const productContentOverrides: Record<number, Partial<Product>> = {
   1: {
@@ -3607,7 +3571,6 @@ export const productContentOverridesV362: Record<number, Partial<Product>> = {
   },
 };
 
-
 export const productContentOverridesV376: Record<number, Partial<Product>> = {
   2: {
     cardName: "EC晶眸葉黃素",
@@ -4199,10 +4162,6 @@ export const skinFilters = [
 
 export type SkinFilter = (typeof skinFilters)[number];
 
-export const comboProductIds = new Set<number>([
-  1, 10, 51, 54, 55, 56, 58, 59, 67, 68, 69, 100, 108, 112, 119, 120,
-]);
-
 export const expiringProductIds = new Set<number>([38, 74]);
 
 export const expiryNotesV315: Record<number, string> = {
@@ -4291,22 +4250,15 @@ export const expiryNotesV315: Record<number, string> = {
   93: "效期：2029.04.05。實際效期以商品包裝標示為準。"
 };
 
-
-
 export const productImageFallbacks: Record<number, string[]> = {
   30: ["/api/studio/media/23/file"],
   31: ["/api/studio/media/101/file"],
   18: [
 
-
-
-
     "/api/studio/media/125/file",
   ],
   19: [
     "/api/studio/media/16/file",
-
-
 
     "/api/studio/media/125/file",
   ],

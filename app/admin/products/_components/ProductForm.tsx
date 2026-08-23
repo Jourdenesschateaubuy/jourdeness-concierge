@@ -1,13 +1,11 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import {  useState } from "react";
 import Link from "next/link";
 
 import { categoryConfig } from "../../../../lib/storefront-core";
-import type { ComboConfig } from "../../../../lib/storefront-core";
 import type { DatabaseProduct } from "../../../../lib/product-repository";
 
-import ComboConfigEditor from "./ComboConfigEditor";
 import ProductImageUploader from "./ProductImageUploader";
 import styles from "./product-form.module.css";
 
@@ -15,12 +13,13 @@ type ProductFormProps = {
   product?: DatabaseProduct;
   action: (formData: FormData) => void | Promise<void>;
   submitLabel: string;
-  productType?: "product" | "combo";
 };
 
-type Tab = "card" | "combo" | "detail" | "manage";
+type Tab = "card" | "detail" | "manage";
 
-const categories = Object.keys(categoryConfig);
+const categories = Object.keys(categoryConfig).filter(
+  (category) => category !== "組合價"
+);
 
 function normalizeOriginalPriceInput(value: string) {
   const match = value.trim().match(/^原價\s*\$\s*([\d,]+)$/);
@@ -35,24 +34,12 @@ function normalizeSellingPriceInput(value: string) {
   return match ? match[1].replace(/,/g, "") : value;
 }
 
-function createEmptyComboConfig(productId: number): ComboConfig {
-  return {
-    productId,
-    type: "fixed_bundle",
-    unitLabel: "件",
-    allowSameProduct: true,
-    options: [],
-    plans: [],
-  };
-}
 
 export default function ProductForm({
   product,
   action,
   submitLabel,
-  productType = "product",
 }: ProductFormProps) {
-  const isCombo = productType === "combo";
   const [tab, setTab] = useState<Tab>("card");
 
   const initialOriginalPrice = String(
@@ -66,10 +53,9 @@ export default function ProductForm({
   const [originalPrice, setOriginalPrice] = useState(initialOriginalPrice);
 
   const defaultStorefrontCategory =
-    product?.storefrontCategory ??
-    (isCombo && categories.includes("本月優惠")
-      ? "本月優惠"
-      : categories[0] ?? "臉部保養");
+  product?.storefrontCategory ??
+  categories[0] ??
+  "臉部保養";
 
   const [storefrontCategory, setStorefrontCategory] = useState(
     defaultStorefrontCategory
@@ -78,16 +64,9 @@ export default function ProductForm({
     product?.status ?? "active"
   );
 
-  const comboConfig = useMemo(
-    () =>
-      product?.comboConfig ??
-      createEmptyComboConfig(product?.id ?? 0),
-    [product]
-  );
 
   return (
     <form action={action} className={styles.form}>
-      <input type="hidden" name="productType" value={productType} />
 
       {product ? (
         <input type="hidden" name="id" value={product.id} />
@@ -96,15 +75,13 @@ export default function ProductForm({
       <input
         type="hidden"
         name="category"
-        value={isCombo ? "組合價" : storefrontCategory}
+        value={storefrontCategory}
       />
 
       <div
         className={styles.tabs}
         style={{
-          gridTemplateColumns: isCombo
-            ? "repeat(4, minmax(0, 1fr))"
-            : "repeat(3, minmax(0, 1fr))",
+          gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
         }}
       >
         <button
@@ -115,15 +92,6 @@ export default function ProductForm({
           商品卡
         </button>
 
-        {isCombo ? (
-          <button
-            type="button"
-            className={tab === "combo" ? styles.activeTab : ""}
-            onClick={() => setTab("combo")}
-          >
-            組合價格與方案
-          </button>
-        ) : null}
 
         <button
           type="button"
@@ -214,12 +182,7 @@ export default function ProductForm({
               ) : null}
             </label>
 
-            {isCombo ? (
-              <div className={styles.positionNote}>
-                組合商品的真正售價統一在「組合價格與方案」設定，
-                商品卡不再提供另一個售價欄位。
-              </div>
-            ) : (
+            {(
               <label>
                 <span>售價（NT$）*</span>
                 <input
@@ -249,14 +212,6 @@ export default function ProductForm({
         </section>
       </div>
 
-      {isCombo ? (
-        <div hidden={tab !== "combo"} className={styles.panel}>
-          <ComboConfigEditor
-            productId={product?.id ?? 0}
-            initialConfig={comboConfig}
-          />
-        </div>
-      ) : null}
 
       <div hidden={tab !== "detail"} className={styles.panel}>
         <section className={styles.section}>
@@ -345,9 +300,7 @@ export default function ProductForm({
                   <span>商品類型</span>
                   <input
                     value={
-                      product.productType === "combo"
-                        ? "組合商品"
-                        : "一般商品"
+                      "一般商品"
                     }
                     readOnly
                   />
@@ -355,8 +308,7 @@ export default function ProductForm({
               </>
             ) : (
               <div className={`${styles.span2} ${styles.positionNote}`}>
-                建立後系統會自動分配：一般商品 P-xxxx／組合商品 C-xxxx。
-                內部資料庫 ID 不會重新編號。
+                建立後系統會自動分配 P-xxxx 商品編號。內部資料庫 ID 不會重新編號。
               </div>
             )}
 

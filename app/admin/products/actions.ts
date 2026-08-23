@@ -19,7 +19,7 @@ import {
   deleteUploadedImage,
 } from "../../../lib/upload-storage";
 import {
-  formatComboCardPrice,
+
   formatOriginalPriceText,
   formatStandardPriceText,
   normalizeMoneyAmount,
@@ -82,61 +82,12 @@ function parseSortOrder(value: string) {
   return Number.isFinite(number) ? number : 0;
 }
 
-function parseComboConfig(
-  formData: FormData
-): ProductWriteInput["comboConfig"] {
-  const raw = stringValue(formData, "comboConfig");
-  if (!raw) return undefined;
-
-  try {
-    const parsed = JSON.parse(raw) as ProductWriteInput["comboConfig"];
-
-    if (
-      !parsed ||
-      typeof parsed !== "object" ||
-      !parsed.unitLabel ||
-      !Array.isArray(parsed.options) ||
-      !Array.isArray(parsed.plans) ||
-      parsed.plans.length === 0
-    ) {
-      throw new Error("invalid combo config");
-    }
-
-    const mode = parsed.type ?? "mix_match";
-    const validPlans = parsed.plans.every(
-      (plan) =>
-        Number.isFinite(plan.price) &&
-        plan.price > 0 &&
-        Number.isFinite(plan.requiredQuantity) &&
-        plan.requiredQuantity > 0
-    );
-
-    if (!validPlans) {
-      throw new Error("invalid combo price");
-    }
-
-    if (
-      mode !== "fixed_bundle" &&
-      parsed.options.length === 0
-    ) {
-      throw new Error("missing combo options");
-    }
-
-    return parsed;
-  } catch {
-    throw new Error("組合價設定格式無效");
-  }
-}
-
-
 function productInputFromForm(
-  formData: FormData,
-  productType: "product" | "combo" = "product"
+  formData: FormData
 ): ProductWriteInput {
   const name = stringValue(formData, "name");
   const category = stringValue(formData, "category");
   const image = stringValue(formData, "image");
-  const comboConfig = parseComboConfig(formData);
   const rawSalePrice = stringValue(formData, "price");
   const rawOriginalPrice = stringValue(formData, "originalPrice");
   const promotionText = optionalString(formData, "priceNote");
@@ -146,9 +97,7 @@ function productInputFromForm(
   );
   const status = parseStatus(stringValue(formData, "status"));
   const salePriceAmount =
-    productType === "combo"
-      ? undefined
-      : normalizeMoneyAmount(rawSalePrice);
+    normalizeMoneyAmount(rawSalePrice);
   const originalPriceAmount = normalizeMoneyAmount(rawOriginalPrice);
 
   if (!name) throw new Error("商品名稱不能空白");
@@ -161,18 +110,12 @@ function productInputFromForm(
     );
   }
 
-  if (productType === "combo" && !comboConfig) {
-    throw new Error("請完成組合價格與方案設定");
-  }
-
-  if (productType !== "combo" && !salePriceAmount) {
+  if (!salePriceAmount) {
     throw new Error("售價請填入大於 0 的整數");
   }
 
   const price =
-    productType === "combo" && comboConfig
-      ? formatComboCardPrice(comboConfig, rawSalePrice)
-      : formatStandardPriceText(salePriceAmount as number, category);
+    formatStandardPriceText(salePriceAmount as number, category);
 
   return {
     sku: optionalString(formData, "sku"),
@@ -200,7 +143,7 @@ function productInputFromForm(
     notice: optionalString(formData, "notice"),
     gallery: stringValues(formData, "gallery"),
     expandedInfo: expandedInfoValues(formData),
-    comboConfig,
+
     status,
     sortOrder: parseSortOrder(stringValue(formData, "sortOrder")),
   };
@@ -209,14 +152,8 @@ function productInputFromForm(
 export async function createProductAction(formData: FormData) {
   await requireAdmin();
 
-  const productType =
-    stringValue(formData, "productType") === "combo"
-      ? "combo"
-      : "product";
-
   const product = await createDatabaseProduct(
-    productInputFromForm(formData, productType),
-    productType
+    productInputFromForm(formData)
   );
 
   revalidatePath("/admin");
@@ -266,10 +203,7 @@ export async function updateProductAction(formData: FormData) {
     throw new Error("找不到這筆商品");
   }
 
-  const input = productInputFromForm(
-    formData,
-    existingProduct.productType === "combo" ? "combo" : "product"
-  );
+  const input = productInputFromForm(formData);
 
   const product = await updateDatabaseProduct(id, input);
 
@@ -297,7 +231,6 @@ export async function updateProductAction(formData: FormData) {
   redirect(`/admin/products/${id}/edit?saved=updated#save-status`);
 }
 
-
 export async function updateProductEditorAction(
   formData: FormData
 ) {
@@ -316,30 +249,7 @@ export async function updateProductEditorAction(
     throw new Error("找不到這筆商品");
   }
 
-  if (editorTab === "combo") {
-    const comboConfig = parseComboConfig(formData);
-
-    if (!comboConfig) {
-      throw new Error("缺少組合價設定");
-    }
-
-    const normalizedComboConfig = {
-      ...comboConfig,
-      productId: id,
-    };
-
-    const product = await updateDatabaseProductPartial(id, {
-      comboConfig: normalizedComboConfig,
-      price: formatComboCardPrice(
-        normalizedComboConfig,
-        existingProduct.price
-      ),
-    });
-
-    if (!product) {
-      throw new Error("找不到這筆商品");
-    }
-  } else if (editorTab === "detail") {
+  if (editorTab === "detail") {
     const category = stringValue(formData, "category");
     const storefrontCategory = stringValue(
       formData,
@@ -370,11 +280,8 @@ export async function updateProductEditorAction(
   } else {
     const name = stringValue(formData, "name");
     const image = stringValue(formData, "image");
-    const hasCombo = existingProduct.productType === "combo";
     const rawSalePrice = stringValue(formData, "price");
-    const salePriceAmount = hasCombo
-      ? undefined
-      : normalizeMoneyAmount(rawSalePrice);
+    const salePriceAmount = normalizeMoneyAmount(rawSalePrice);
     const originalPriceAmount = normalizeMoneyAmount(
       stringValue(formData, "originalPrice")
     );
@@ -385,7 +292,7 @@ export async function updateProductEditorAction(
       throw new Error("商品名稱不能空白");
     }
 
-    if (!hasCombo && !salePriceAmount) {
+    if (!salePriceAmount) {
       throw new Error("售價請填入大於 0 的整數");
     }
 
@@ -408,9 +315,7 @@ export async function updateProductEditorAction(
       originalPriceAmount: originalPriceAmount ?? null,
       originalPrice: formatOriginalPriceText(originalPriceAmount) ?? "",
       promotionText: promotionText ?? null,
-      ...(hasCombo
-        ? {}
-        : {
+      ...({
             salePriceAmount,
             price: formatStandardPriceText(
               salePriceAmount as number,
@@ -451,7 +356,7 @@ export async function updateProductEditorAction(
   }
 
   const safeTab =
-    editorTab === "combo" || editorTab === "detail"
+    editorTab === "detail"
       ? editorTab
       : "card";
 
