@@ -17,7 +17,7 @@ export default async function AdminProductsPage() {
     <div className={styles.page}>
       <header className={styles.pageHeader}>
         <div>
-          <p className={styles.eyebrow}>PRODUCTS · NEON POSTGRES</p>
+          <p className={styles.eyebrow}>PRODUCT MANAGEMENT</p>
           <h1>商品管理</h1>
           <p>
             一般商品使用 P 編號，組合商品使用 C 編號；資料庫內部 ID 保留不變。

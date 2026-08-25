@@ -1,0 +1,342 @@
+.manager {
+  width: 100%;
+}
+
+
+/* ===============================
+   Toolbar
+   =============================== */
+
+.manager > div:first-child {
+  display: grid !important;
+  grid-template-columns:
+    minmax(320px, 1fr)
+    180px
+    auto !important;
+  gap: 14px !important;
+  align-items: end !important;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee3e5;
+}
+
+.manager > div:first-child label span {
+  color: #725d62;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.manager > div:first-child input,
+.manager > div:first-child select {
+  box-sizing: border-box;
+  min-height: 46px !important;
+  border: 1px solid #ded2d5 !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  color: #432f34 !important;
+}
+
+.manager > div:first-child input:focus,
+.manager > div:first-child select:focus {
+  border-color: #9d4056 !important;
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(139, 41, 64, 0.08) !important;
+}
+
+
+/* 新增組合優惠 */
+
+.manager > div:first-child > a {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px !important;
+  padding: 0 20px !important;
+  border: 1px solid #8b2940 !important;
+  border-radius: 12px !important;
+  background: #8b2940 !important;
+  color: #fff !important;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow:
+    0 8px 18px rgba(139, 41, 64, 0.12);
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease;
+}
+
+.manager > div:first-child > a:hover {
+  transform: translateY(-1px);
+  border-color: #742236 !important;
+  background: #742236 !important;
+}
+
+
+/* ===============================
+   Result bar
+   =============================== */
+
+.manager > div:nth-child(2) {
+  padding: 15px 2px !important;
+  color: #806e72 !important;
+}
+
+.manager > div:nth-child(2) strong {
+  color: #8b2940 !important;
+  font-size: 17px !important;
+}
+
+.manager > div:nth-child(2) button {
+  border: 1px solid #ddcfd3 !important;
+  border-radius: 9px !important;
+  background: #fff !important;
+  color: #765a60 !important;
+}
+
+
+/* ===============================
+   Table container
+   =============================== */
+
+.manager > div:nth-child(3) {
+  overflow: auto !important;
+  border: 1px solid #eadfe1 !important;
+  border-radius: 18px !important;
+  background: #fff;
+}
+
+.manager table {
+  min-width: 1080px;
+}
+
+
+/* Header */
+
+.manager thead {
+  background:
+    linear-gradient(
+      180deg,
+      #faf6f6 0%,
+      #f8f2f3 100%
+    );
+}
+
+.manager th {
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+  color: #745d63 !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em;
+}
+
+
+/* Rows */
+
+.manager td {
+  padding-top: 17px !important;
+  padding-bottom: 17px !important;
+  vertical-align: middle !important;
+}
+
+.manager tbody tr {
+  transition:
+    background 130ms ease;
+}
+
+.manager tbody tr:hover {
+  background: #fffafa !important;
+}
+
+
+/* ===============================
+   第一欄：優惠資訊
+   =============================== */
+
+.manager td:first-child {
+  min-width: 235px;
+}
+
+.manager td:first-child > div {
+  gap: 14px !important;
+}
+
+.manager td:first-child > div > div:first-child {
+  flex: 0 0 auto;
+  border: 1px solid #eee4e2;
+  border-radius: 14px !important;
+  background: #fbf7f5 !important;
+}
+
+.manager td:first-child strong {
+  color: #38262b !important;
+  font-size: 14px !important;
+  line-height: 1.5;
+}
+
+.manager td:first-child small {
+  color: #aa969b !important;
+  font-size: 10px !important;
+  letter-spacing: 0.03em;
+}
+
+
+/* ===============================
+   類型
+   =============================== */
+
+.manager td:nth-child(2) {
+  min-width: 90px;
+}
+
+
+/* ===============================
+   組合內容
+   =============================== */
+
+.manager td:nth-child(3) {
+  color: #58474b;
+  font-size: 13px;
+}
+
+.manager td:nth-child(3) > div {
+  min-width: 285px !important;
+}
+
+
+/* ===============================
+   價格
+   =============================== */
+
+.manager td:nth-child(4) {
+  min-width: 115px;
+}
+
+.manager td:nth-child(4) strong {
+  color: #8b2940 !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+.manager td:nth-child(4) span {
+  color: #a49296 !important;
+  font-size: 11px !important;
+}
+
+
+/* ===============================
+   狀態
+   =============================== */
+
+.manager td:nth-child(5) select {
+  box-sizing: border-box;
+  min-width: 108px !important;
+  min-height: 38px !important;
+  padding: 0 10px !important;
+  border: 1px solid #ddcfd3 !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: #523c42 !important;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.manager td:nth-child(5) select:focus {
+  border-color: #9b4055 !important;
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(139, 41, 64, 0.08);
+}
+
+
+/* ===============================
+   操作
+   =============================== */
+
+.manager td:nth-child(6) {
+  min-width: 260px;
+}
+
+.manager td:nth-child(6) > div {
+  gap: 7px !important;
+}
+
+.manager td:nth-child(6) a,
+.manager td:nth-child(6) button {
+  box-sizing: border-box;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px !important;
+  padding: 0 12px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+}
+
+
+/* 編輯組合：主要按鈕 */
+
+.manager td:nth-child(6) a:first-of-type {
+  border: 1px solid #8b2940 !important;
+  background: #8b2940 !important;
+  color: #fff !important;
+}
+
+.manager td:nth-child(6) a:first-of-type:hover {
+  background: #742236 !important;
+}
+
+
+/* 商品卡：次要按鈕 */
+
+.manager td:nth-child(6) a:nth-of-type(2) {
+  border: 1px solid #d9bec5 !important;
+  background: #fff !important;
+  color: #7d2638 !important;
+}
+
+.manager td:nth-child(6) a:nth-of-type(2):hover {
+  border-color: #8b2940 !important;
+  background: #faf1f3 !important;
+}
+
+
+/* 刪除 */
+
+.manager td:nth-child(6) button {
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: #9c7b82 !important;
+  cursor: pointer;
+}
+
+.manager td:nth-child(6) button:hover:not(:disabled) {
+  border-color: #ead8dc !important;
+  background: #fff7f8 !important;
+  color: #a33d54 !important;
+}
+
+
+/* ===============================
+   Responsive
+   =============================== */
+
+@media (max-width: 980px) {
+  .manager > div:first-child {
+    grid-template-columns:
+      minmax(0, 1fr)
+      160px !important;
+  }
+
+  .manager > div:first-child > a {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}

@@ -16,7 +16,7 @@ export default async function BundleOffersPage() {
       <header className={styles.pageHeader}>
         <div>
           <p className={styles.eyebrow}>
-            BUNDLE OFFERS · NEON POSTGRES
+            BUNDLE OFFER MANAGEMENT
           </p>
 
           <h1>組合優惠管理</h1>

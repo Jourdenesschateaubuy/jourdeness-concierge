@@ -1,5 +1,6 @@
 "use client";
 import styles from "../../admin.module.css";
+import bundleStyles from "./bundle-offer-manager.module.css";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -190,7 +191,7 @@ export default function BundleOfferManager({
   }
 
   return (
-    <div>
+    <div className={bundleStyles.manager}>
       <div className={styles.toolbar}>
         <label className={styles.searchBox}>
           <span>搜尋組合優惠</span>

@@ -404,52 +404,145 @@ export default function ProductManager({
     <section className={styles.panel}>
       <div className={actionStyles.topActions}>
         <div>
-          <strong>{orderedProducts.length} 筆商品</strong>
-          <span>內部 DB ID 保留；後台使用 P 顯示編號</span>
+          <strong>
+            {activeType === "combo"
+              ? `${bundleOffers.length} 筆組合優惠`
+              : `${orderedProducts.length} 筆商品`}
+          </strong>
+
+          <span>
+            {activeType === "combo"
+              ? "固定組合、任選組合與買送活動集中管理"
+              : "內部 DB ID 保留；後台使用 P 顯示編號"}
+          </span>
         </div>
 
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <Link href="/admin/products/health">
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            flexWrap: "wrap",
+            alignItems: "center",
+          }}
+        >
+          <Link
+            href="/admin/products/health"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              minHeight: 38,
+              padding: "0 13px",
+              border: "1px solid #dfd3d6",
+              borderRadius: 10,
+              background: "#fff",
+              color: "#725c62",
+              fontSize: 12,
+              fontWeight: 700,
+              textDecoration: "none",
+            }}
+          >
             商品資料健檢
           </Link>
-          <Link href="/admin/products/new?type=product">
+
+          <Link
+            href="/admin/products/new?type=product"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              minHeight: 38,
+              padding: "0 13px",
+              border: "1px solid #d4b5bd",
+              borderRadius: 10,
+              background: "#fff",
+              color: "#7d2638",
+              fontSize: 12,
+              fontWeight: 800,
+              textDecoration: "none",
+            }}
+          >
             ＋ 新增一般商品
-          </Link>
-          <Link href="/admin/bundle-offers/new">
-            ＋ 新增組合優惠
           </Link>
         </div>
       </div>
 
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-          gap: 10,
-          marginBottom: 18,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          flexWrap: "wrap",
+          marginBottom: 20,
+          paddingBottom: 18,
+          borderBottom: "1px solid #eee3e5",
         }}
       >
-        {(["standard", "combo"] as const).map((type) => (
-          <button
-            key={type}
-            type="button"
-            onClick={() => switchType(type)}
-            style={{
-              minHeight: 52,
-              borderRadius: 12,
-              border:
-                activeType === type
-                  ? "2px solid #7d2638"
-                  : "1px solid #d9c9cc",
-              background: activeType === type ? "#fff7f8" : "#fff",
-              color: "#5f2330",
-              fontWeight: 900,
-              cursor: "pointer",
-            }}
-          >
-            {managerTabLabel[type]}　{counts[type]}
-          </button>
-        ))}
+        <span
+          style={{
+            marginRight: 4,
+            color: "#8f7a7f",
+            fontSize: 11,
+            fontWeight: 800,
+            letterSpacing: "0.08em",
+          }}
+        >
+          商品類型
+        </span>
+
+        {(["standard", "combo"] as const).map((type) => {
+          const selected = activeType === type;
+
+          return (
+            <button
+              key={type}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => switchType(type)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                minHeight: 40,
+                padding: "0 15px",
+                borderRadius: 999,
+                border: selected
+                  ? "1px solid #8b2940"
+                  : "1px solid #dfd3d6",
+                background: selected
+                  ? "#8b2940"
+                  : "#fff",
+                color: selected
+                  ? "#fff"
+                  : "#624b51",
+                fontWeight: 800,
+                cursor: "pointer",
+                boxShadow: selected
+                  ? "0 7px 16px rgba(139, 41, 64, 0.13)"
+                  : "none",
+              }}
+            >
+              <span>{managerTabLabel[type]}</span>
+
+              <span
+                style={{
+                  minWidth: 24,
+                  padding: "2px 7px",
+                  borderRadius: 999,
+                  background: selected
+                    ? "rgba(255,255,255,0.18)"
+                    : "#f7eff1",
+                  color: selected
+                    ? "#fff"
+                    : "#8b2940",
+                  fontSize: 11,
+                  fontWeight: 900,
+                  textAlign: "center",
+                }}
+              >
+                {counts[type]}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {activeType === "combo" ? (

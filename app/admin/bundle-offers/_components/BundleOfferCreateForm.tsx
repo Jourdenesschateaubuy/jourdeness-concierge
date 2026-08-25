@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import styles from "./bundle-offer-create-form.module.css";
+
 import MediaPicker, {
   type PickerMediaAsset,
 } from "../../website-studio/components/MediaPicker";
@@ -740,13 +742,7 @@ export default function BundleOfferCreateForm({
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 24,
-        maxWidth: 1100,
-      }}
-    >
+    <div className={styles.page}>
       {mode !== "edit" && (
         <>
       <section
@@ -881,17 +877,27 @@ export default function BundleOfferCreateForm({
           background: "#fff",
         }}
       >
-        <h2>1. 選擇優惠類型</h2>
+        <div className={styles.sectionHeader}>
+          <div>
+            <span className={styles.sectionEyebrow}>
+              OFFER TYPE
+            </span>
+            <h2>1. 選擇優惠類型</h2>
+          </div>
 
-        <div
-          style={{
-            display: "grid",
-            gap: 12,
-            gridTemplateColumns:
-              "repeat(auto-fit, minmax(220px, 1fr))",
-          }}
-        >
-          <label>
+          <span className={styles.sectionHint}>
+            選擇最符合本次活動的促銷方式
+          </span>
+        </div>
+
+        <div className={styles.typeGrid}>
+          <label
+            className={`${styles.typeCard} ${
+              bundleType === "fixed_bundle"
+                ? styles.typeCardActive
+                : ""
+            }`}
+          >
             <input
               type="radio"
               name="bundleType"
@@ -900,14 +906,25 @@ export default function BundleOfferCreateForm({
                 setBundleType("fixed_bundle")
               }
             />
-            {" "}
+
+            <span className={styles.typeIndex}>
+              01
+            </span>
+
             <strong>固定組合</strong>
+
             <div>
               指定商品與數量，客人不能更換內容。
             </div>
           </label>
 
-          <label>
+          <label
+            className={`${styles.typeCard} ${
+              bundleType === "mix_match"
+                ? styles.typeCardActive
+                : ""
+            }`}
+          >
             <input
               type="radio"
               name="bundleType"
@@ -916,14 +933,25 @@ export default function BundleOfferCreateForm({
                 setBundleType("mix_match")
               }
             />
-            {" "}
+
+            <span className={styles.typeIndex}>
+              02
+            </span>
+
             <strong>任選組合</strong>
+
             <div>
               從指定商品中自由選滿數量。
             </div>
           </label>
 
-          <label>
+          <label
+            className={`${styles.typeCard} ${
+              bundleType === "buy_get"
+                ? styles.typeCardActive
+                : ""
+            }`}
+          >
             <input
               type="radio"
               name="bundleType"
@@ -932,8 +960,13 @@ export default function BundleOfferCreateForm({
                 setBundleType("buy_get")
               }
             />
-            {" "}
+
+            <span className={styles.typeIndex}>
+              03
+            </span>
+
             <strong>買送活動</strong>
+
             <div>
               購買指定商品並搭配贈品。
             </div>
@@ -1060,6 +1093,7 @@ export default function BundleOfferCreateForm({
             return (
               <div
                 key={product.id}
+                className={styles.productCard}
                 style={{
                   display: "grid",
                   gridTemplateColumns:
@@ -1241,6 +1275,7 @@ export default function BundleOfferCreateForm({
                 return (
                   <div
                     key={product.id}
+                    className={styles.productCard}
                     style={{
                       display: "grid",
                       gridTemplateColumns:
@@ -1367,6 +1402,7 @@ export default function BundleOfferCreateForm({
               return (
                 <div
                   key={`${item.productId}-${item.role}`}
+                  className={styles.selectedItemRow}
                   style={{
                     display: "grid",
                     gridTemplateColumns:
@@ -1534,6 +1570,7 @@ export default function BundleOfferCreateForm({
               {mixMatchPlans.map((plan, index) => (
                 <div
                   key={plan.code}
+                  className={styles.planCard}
                   style={{
                     border: "1px solid #eadfda",
                     borderRadius: 14,
@@ -1653,6 +1690,7 @@ export default function BundleOfferCreateForm({
                         (gift, giftIndex) => (
                           <div
                             key={`${plan.code}-gift-${giftIndex}`}
+                            className={styles.giftCard}
                             style={{
                               border: "1px solid #eadfda",
                               borderRadius: 10,
@@ -1761,6 +1799,7 @@ export default function BundleOfferCreateForm({
                   </div>
 
                   <div
+                    className={styles.planSummary}
                     style={{
                       padding: 12,
                       borderRadius: 10,
@@ -1799,6 +1838,7 @@ export default function BundleOfferCreateForm({
 
               <button
                 type="button"
+                className={styles.addPlanButton}
                 onClick={addMixMatchPlan}
               >
                 ＋ 新增方案
@@ -1812,31 +1852,32 @@ export default function BundleOfferCreateForm({
               </div>
             </div>
           )}
+          {bundleType !== "mix_match" ? (
+            <label>
+              <div>
+                <strong>
+                  {bundleType === "buy_get"
+                    ? "活動售價（NT$）"
+                    : "組合優惠價（NT$）"}
+                </strong>
+              </div>
 
-          <label>
-            <div>
-              <strong>
-                {bundleType === "buy_get"
-                  ? "活動售價（NT$）"
-                  : "組合優惠價（NT$）"}
-              </strong>
-            </div>
-
-            <input
-              type="number"
-              min={1}
-              value={priceAmount}
-              onChange={(event) =>
-                setPriceAmount(event.target.value)
-              }
-              placeholder="例如：960"
-              style={{
-                width: "100%",
-                padding: 12,
-                marginTop: 8,
-              }}
-            />
-          </label>
+              <input
+                type="number"
+                min={1}
+                value={priceAmount}
+                onChange={(event) =>
+                  setPriceAmount(event.target.value)
+                }
+                placeholder="例如：960"
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  marginTop: 8,
+                }}
+              />
+            </label>
+          ) : null}
 
           {bundleType === "fixed_bundle" && savings > 0 ? (
             <div>
