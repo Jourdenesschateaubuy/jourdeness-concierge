@@ -37,7 +37,7 @@ function formatOrderTime(value: string) {
     return value;
   }
 
-  // Google Apps Script 回傳 ISO UTC；台灣全年固定 UTC+8。
+  // 訂單時間依日期字串解析後，以台灣時間顯示。
   // 手動組字串，避免 Server / Browser 的 Intl 格式差異造成 hydration error。
   const taipeiTime = new Date(
     date.getTime() + 8 * 60 * 60 * 1000

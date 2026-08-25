@@ -13,7 +13,6 @@ import {
   LINE_PROFILE_STORAGE_KEY,
   MASK_BUCKET_PRODUCT_IDS_V361,
   MASK_BUCKET_UNIT_PRICE_V361,
-  ORDER_WEB_APP_URL,
   buildSimpleCartKey,
   calculateMaskPromotionV361,
   categoryConfig,
@@ -5275,18 +5274,6 @@ const sevenSequenceGuideV377 = [
     };
   }, [isProfileOpen]);
 
-  function formatTaiwanOrderTime(date: Date) {
-    return new Intl.DateTimeFormat("zh-TW", {
-      timeZone: "Asia/Taipei",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    }).format(date);
-  }
 
   function createOrderNumber(date: Date) {
     const taipeiParts = new Intl.DateTimeFormat("en-CA", {
@@ -6064,7 +6051,6 @@ const sevenSequenceGuideV377 = [
     setSubmitMessage("");
 
     const orderCreatedAt = new Date();
-    const orderTime = formatTaiwanOrderTime(orderCreatedAt);
     const orderNumber = createOrderNumber(orderCreatedAt);
     const customerNote = customer.note.trim();
     const noteWithAddress = [
@@ -6073,217 +6059,14 @@ const sevenSequenceGuideV377 = [
     ]
       .filter(Boolean)
       .join("\n");
-    const lineContactText = [
-      lineProfile ? `${lineProfile.displayName}｜${lineProfile.userId}` : "",
-      customer.lineId.trim() ? `手填：${customer.lineId.trim()}` : "",
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    const productItemsText = cartItems
-      .map((item) => {
-        const comboDetails = item.comboSelections
-          ?.map(
-            (selection) =>
-              `－${selection.name} × ${selection.quantity}`
-          )
-          .join("\n");
 
 
-        return `${item.product.name} × ${item.quantity}｜${getCartItemDisplayPrice(item)}${
-          comboDetails ? `\n${comboDetails}` : ""
-        }`;
-      })
-      .join("\n");
 
-    const bundleItemsText = bundleCartItems
-      .map((item) => {
-        const selectionDetails = item.selections
-          .map((selection) => {
-            const roleLabel =
-              selection.role === "buy"
-                ? "購"
-                : selection.role === "free"
-                  ? "贈"
-                  : selection.role === "fixed"
-                    ? "組合"
-                    : "選";
 
-            return `${roleLabel}：${selection.name} × ${selection.quantity}`;
-          })
-          .join("\n");
 
-        const giftDetails =
-          (item.gifts ?? [])
-            .map(
-              (gift) =>
-                `贈：${gift.name} × ${gift.quantity}${gift.unitLabel}`
-            )
-            .join("\n");
-
-        const priceText =
-          "NT$" +
-          item.price.toLocaleString("zh-TW");
-
-        return [
-          `${item.name} × ${item.quantity}`,
-          item.planLabel
-            ? `方案：${item.planLabel}`
-            : "",
-          `價格：${priceText}`,
-          selectionDetails,
-          giftDetails,
-        ]
-          .filter(Boolean)
-          .join("\n");
-      })
-      .join("\n");
-    const maskPromotionOrderText = maskBucketQuantityV361 > 0
-      ? [
-          `35片面膜自動優惠｜${maskPromotionV361.label}`,
-          `優惠後 NT$${maskPromotionV361.totalPrice.toLocaleString("zh-TW")}`,
-          maskPromotionV361.savings > 0
-            ? `現省 NT$${maskPromotionV361.savings.toLocaleString("zh-TW")}`
-            : "",
-          maskPromotionV361.giftSheetCount > 0
-            ? `加贈面膜 ${maskPromotionV361.giftSheetCount} 片`
-            : "",
-        ]
-          .filter(Boolean)
-          .join("｜")
-      : "";
-    const itemsText = [productItemsText, bundleItemsText, maskPromotionOrderText]
-      .filter(Boolean)
-      .join("\n");
-
-    const sheetHeaders = [
-      "訂單時間",
-      "訂單編號",
-      "姓名",
-      "LINE ID",
-      "電話",
-      "取貨方式",
-      "商品內容",
-      "備註",
-      "狀態",
-    ];
-
-    const sheetRow = {
-      訂單時間: orderTime,
-      訂單編號: orderNumber,
-      姓名: customer.customerName.trim(),
-      "LINE ID": lineContactText,
-      電話: customer.phone.trim(),
-      取貨方式: "宅配",
-      商品內容: itemsText,
-      備註: noteWithAddress,
-      狀態: "待確認",
-    };
-
-    const payload = {
-      orderTime,
-      orderNumber,
-      status: "待確認",
-      sheetHeaders,
-      sheetRow,
-      customerName: customer.customerName.trim(),
-      lineId: customer.lineId.trim(),
-      lineDisplayName: lineProfile?.displayName || "",
-      lineUserId: lineProfile?.userId || "",
-      linePictureUrl: lineProfile?.pictureUrl || "",
-      lineContactText,
-      phone: customer.phone.trim(),
-      deliveryMethod: "宅配",
-      address: customer.address.trim(),
-      note: noteWithAddress,
-      itemsText,
-      items: [
-        ...cartItems.map((item) => ({
-        id: item.product.id,
-        name: item.product.name,
-        category: item.product.category,
-        series: item.product.series,
-        originalPrice: hasKnownOriginalPrice(item.product)
-          ? item.product.originalPrice
-          : "",
-        price: getCartItemDisplayPrice(item),
-        description: item.product.description,
-        quantity: item.quantity,
-        tags: displayTags(item.product).join("、"),
-        combo: item.comboSelections
-          ? "任選組合"
-          : "",
-        comboPlan: item.comboPlanLabel || "",
-        comboSelections: item.comboSelections ?? [],
-      })),
-
-        ...bundleCartItems.map((item) => ({
-          id: item.bundleOfferId,
-          bundleOfferId: item.bundleOfferId,
-          bundlePlanId: item.planId,
-          name: item.name,
-          category: "組合優惠",
-          series: "組合優惠",
-          originalPrice: "",
-          price:
-            "NT$" +
-            item.price.toLocaleString("zh-TW"),
-          comboPrice: item.price,
-          description: [
-            ...item.selections.map((selection) => {
-              const roleLabel =
-                selection.role === "buy"
-                  ? "購"
-                  : selection.role === "free"
-                    ? "贈"
-                    : selection.role === "fixed"
-                      ? "組合"
-                      : "選";
-
-              return (
-                roleLabel +
-                "：" +
-                selection.name +
-                " × " +
-                selection.quantity
-              );
-            }),
-            ...(item.gifts ?? []).map(
-              (gift) =>
-                "贈：" +
-                gift.name +
-                " × " +
-                gift.quantity +
-                gift.unitLabel
-            ),
-          ].join("、"),
-          quantity: item.quantity,
-          tags: "組合優惠",
-          combo: "Bundle Offer",
-          comboPlan: item.planLabel || "",
-          comboSelections: item.selections.map((selection) => ({
-            optionId: String(selection.productId),
-            productId: selection.productId,
-            role: selection.role,
-            name: selection.name,
-            quantity: selection.quantity,
-          })),
-          bundleGifts: (item.gifts ?? []).map((gift) => ({
-            productId:
-              gift.productId ?? null,
-            name: gift.name,
-            quantity: gift.quantity,
-            unitLabel: gift.unitLabel,
-          })),
-        })),
-      ],
-    };
 
     try {
-      // 將 JSON 中所有非 ASCII 字元轉成 \uXXXX。
-      // 內容仍是合法 JSON，Google Apps Script JSON.parse 後會自動還原中文，
-      // 同時避免任何瀏覽器、擴充功能或傳輸層把中文誤當成 ByteString。
-      await fetch("/api/orders", {
+      const orderResponse = await fetch("/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -6368,18 +6151,12 @@ const sevenSequenceGuideV377 = [
         }),
       });
 
+      if (!orderResponse.ok) {
+        throw new Error("訂單建立失敗");
+      }
 
-      const asciiPayload = JSON.stringify(payload).replace(
-        /[^\x20-\x7E]/g,
-        (character) =>
-          `\\u${character.charCodeAt(0).toString(16).padStart(4, "0")}`
-      );
 
-      await fetch(ORDER_WEB_APP_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: asciiPayload,
-      });
+
 
       window.localStorage.removeItem(CART_STORAGE_KEY);
       window.localStorage.removeItem(CUSTOMER_DRAFT_STORAGE_KEY);

@@ -4,7 +4,7 @@ import {
   getCatalogSeries,
 } from "../../../lib/catalog-repository";
 import { listDatabaseProducts } from "../../../lib/product-repository";
-import { ORDER_WEB_APP_URL } from "../../../lib/storefront-core";
+import { listOrders } from "../../../lib/order-repository";
 import styles from "./dashboard.module.css";
 
 export const dynamic = "force-dynamic";
@@ -15,43 +15,6 @@ const statusLabel = {
   coming_soon: "新品預告",
   sold_out: "售罄",
 } as const;
-
-type DashboardOrder = {
-  "訂單時間": string;
-  "訂單編號": string;
-  "姓名": string;
-  "LINE ID": string;
-  "電話": string;
-  "取貨方式": string;
-  "商品內容": string;
-  "備註": string;
-  "狀態": string;
-  _row: number;
-};
-
-async function loadDashboardOrders() {
-  try {
-    const response = await fetch(ORDER_WEB_APP_URL, {
-      cache: "no-store",
-      redirect: "follow",
-    });
-
-    if (!response.ok) {
-      return [] as DashboardOrder[];
-    }
-
-    const payload = (await response.json()) as {
-      ok?: boolean;
-      orders?: DashboardOrder[];
-    };
-
-    return payload.ok && Array.isArray(payload.orders)
-      ? payload.orders
-      : [];
-  } catch {
-    return [] as DashboardOrder[];
-  }
-}
 
 function formatUpdatedAt(value: string) {
   return new Intl.DateTimeFormat("zh-TW", {
@@ -74,7 +37,7 @@ export default async function AdminDashboardPage() {
     getCatalogSeries({
       includeInactive: true,
     }),
-    loadDashboardOrders(),
+    listOrders(),
   ]);
 
   const activeProducts = products.filter(
@@ -102,15 +65,15 @@ export default async function AdminDashboardPage() {
   ).length;
 
   const pendingOrders = orders.filter(
-    (order) => order["狀態"] === "待確認"
+    (order) => order.status === "待確認"
   ).length;
 
   const processingOrders = orders.filter(
-    (order) => order["狀態"] === "處理中"
+    (order) => order.status === "處理中"
   ).length;
 
   const completedOrders = orders.filter(
-    (order) => order["狀態"] === "已完成"
+    (order) => order.status === "已完成"
   ).length;
 
   const recentProducts = [...products]
@@ -479,8 +442,3 @@ export default async function AdminDashboardPage() {
     </main>
   );
 }
-
-
-
-
-

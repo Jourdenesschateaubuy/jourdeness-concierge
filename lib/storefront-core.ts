@@ -118,9 +118,6 @@ declare global {
 }
 
 // V3.3.0：主視覺改為單張滿版圖片，首頁主要區塊去卡片化，活動入口改為流動式橫列。
-export const ORDER_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycby0y2ZUqvK1NirASTytkDcuQEkYSfSOIqpmmzDilxQfqaYDVPwxPmOjlX2337aQeyfzQg/exec";
-
 export const CART_STORAGE_KEY = "jourdeness_saved_cart_v2";
 export const CUSTOMER_DRAFT_STORAGE_KEY = "jourdeness_customer_draft_v1";
 export const LINE_PROFILE_STORAGE_KEY = "jourdeness_line_profile_v1";
