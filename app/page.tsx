@@ -6042,18 +6042,6 @@ const sevenSequenceGuideV377 = [
     const orderCreatedAt = new Date();
     const orderNumber = createOrderNumber(orderCreatedAt);
     const customerNote = customer.note.trim();
-    const noteWithAddress = [
-      `宅配地址：${customer.address.trim()}`,
-      customerNote ? `備註：${customerNote}` : "",
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-
-
-
-
-
     try {
       const orderResponse = await fetch("/api/orders", {
         method: "POST",
@@ -6068,6 +6056,12 @@ const sevenSequenceGuideV377 = [
           lineId:
             customer.lineId.trim(),
 
+          lineUserId:
+            lineProfile?.userId ?? "",
+
+          lineDisplayName:
+            lineProfile?.displayName ?? "",
+
           phone:
             customer.phone.trim(),
 
@@ -6078,7 +6072,15 @@ const sevenSequenceGuideV377 = [
             customer.address.trim(),
 
           note:
-            noteWithAddress,
+            customerNote,
+
+          totalAmount:
+            Math.max(
+              0,
+              Math.round(
+                cartEstimatedSubtotal
+              )
+            ),
 
           items: [
             ...cartItems.map((item) => ({
@@ -6125,6 +6127,9 @@ const sevenSequenceGuideV377 = [
               detail: {
                 bundlePlanId:
                   item.planId,
+
+                bundlePlanLabel:
+                  item.planLabel,
 
                 selections:
                   item.selections,
