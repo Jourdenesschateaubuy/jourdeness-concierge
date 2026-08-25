@@ -6283,6 +6283,92 @@ const sevenSequenceGuideV377 = [
       // 將 JSON 中所有非 ASCII 字元轉成 \uXXXX。
       // 內容仍是合法 JSON，Google Apps Script JSON.parse 後會自動還原中文，
       // 同時避免任何瀏覽器、擴充功能或傳輸層把中文誤當成 ByteString。
+      await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderNumber,
+          customerName:
+            customer.customerName.trim(),
+
+          lineId:
+            customer.lineId.trim(),
+
+          phone:
+            customer.phone.trim(),
+
+          deliveryMethod:
+            "宅配",
+
+          address:
+            customer.address.trim(),
+
+          note:
+            noteWithAddress,
+
+          items: [
+            ...cartItems.map((item) => ({
+              itemType: "product",
+              productId:
+                item.product.id,
+
+              name:
+                item.product.name,
+
+              quantity:
+                item.quantity,
+
+              unitPrice:
+                Number(
+                  getCartItemDisplayPrice(item)
+                    .replace(/[^\d]/g, "")
+                ) || 0,
+
+              detail: {
+                category:
+                  item.product.category,
+
+                series:
+                  item.product.series,
+
+                comboSelections:
+                  item.comboSelections ?? [],
+              },
+            })),
+
+            ...bundleCartItems.map((item) => ({
+              itemType: "bundle",
+
+              bundleOfferId:
+                item.bundleOfferId,
+
+              name:
+                item.name,
+
+              quantity:
+                item.quantity,
+
+              unitPrice:
+                item.price,
+
+              detail: {
+                bundlePlanId:
+                  item.planId,
+
+                selections:
+                  item.selections,
+
+                gifts:
+                  item.gifts ?? [],
+              },
+            })),
+          ],
+        }),
+      });
+
+
       const asciiPayload = JSON.stringify(payload).replace(
         /[^\x20-\x7E]/g,
         (character) =>

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export type GoogleSheetOrder = {
+export type AdminOrder = {
   "訂單時間": string;
   "訂單編號": string;
   "姓名": string;
@@ -13,11 +13,10 @@ export type GoogleSheetOrder = {
   "商品內容": string;
   "備註": string;
   "狀態": string;
-  _row: number;
 };
 
 type Props = {
-  orders: GoogleSheetOrder[];
+  orders: AdminOrder[];
   loadError?: string;
 };
 
@@ -104,6 +103,43 @@ export default function OrdersClient({
   const [lastRefreshAt, setLastRefreshAt] =
     useState<Date | null>(null);
 
+
+  async function handleStatusUpdate(
+    order: AdminOrder,
+    newStatus: string
+  ) {
+    try {
+      const response = await fetch(
+        "/api/admin/orders/status",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            orderNumber:
+              order["訂單編號"],
+            status: newStatus,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!result.ok) {
+        alert(
+          result.message ||
+          "更新失敗"
+        );
+        return;
+      }
+
+      router.refresh();
+
+    } catch (error) {
+      alert("更新狀態失敗");
+    }
+  }
   useEffect(() => {
     setLastRefreshAt(new Date());
   }, []);
@@ -141,6 +177,7 @@ export default function OrdersClient({
     filteredOrders[0] ??
     null;
 
+
   useEffect(() => {
     if (!autoRefreshEnabled) {
       return;
@@ -168,7 +205,7 @@ export default function OrdersClient({
           <p style={styles.eyebrow}>ORDER MANAGER</p>
           <h1 style={styles.title}>訂單管理</h1>
           <p style={styles.subtitle}>
-            Google Sheet 訂單同步 · 第一版唯讀管理
+            商城訂單管理 · 即時更新訂單狀態
           </p>
         </div>
 
@@ -272,7 +309,7 @@ export default function OrdersClient({
               return (
                 <button
                   type="button"
-                  key={`${order["訂單編號"]}-${order._row}`}
+                  key={order["訂單編號"]}
                   onClick={() =>
                     setSelectedOrderNumber(
                       order["訂單編號"]
@@ -331,14 +368,38 @@ export default function OrdersClient({
                   </h2>
                 </div>
 
-                <span
+                <select
+                  value={
+                    selected["狀態"] || "待確認"
+                  }
+                  onChange={(event) =>
+                    void handleStatusUpdate(
+                      selected,
+                      event.target.value
+                    )
+                  }
+                  aria-label="變更訂單狀態"
+                  title="點擊變更訂單狀態"
                   style={{
                     ...styles.statusBadge,
                     ...statusTone(selected["狀態"]),
+                    cursor: "pointer",
+                    font: "inherit",
                   }}
                 >
-                  {selected["狀態"] || "待確認"}
-                </span>
+                  <option value="待確認">
+                    待確認
+                  </option>
+                  <option value="處理中">
+                    處理中
+                  </option>
+                  <option value="已完成">
+                    已完成
+                  </option>
+                  <option value="已取消">
+                    已取消
+                  </option>
+                </select>
               </div>
 
               <div style={styles.detailGrid}>
@@ -364,10 +425,6 @@ export default function OrdersClient({
                   label="取貨方式"
                   value={selected["取貨方式"]}
                 />
-                <DetailItem
-                  label="Google Sheet 列"
-                  value={String(selected._row)}
-                />
               </div>
 
               <section style={styles.detailSection}>
@@ -385,9 +442,7 @@ export default function OrdersClient({
               </section>
 
               <div style={styles.readOnlyNotice}>
-                v1 為唯讀模式。下一階段才加入
-                「待確認 → 處理中 → 已完成 → 已取消」
-                狀態回寫。
+                點擊右上角狀態按鈕，即可直接變更訂單狀態。
               </div>
             </>
           ) : (
