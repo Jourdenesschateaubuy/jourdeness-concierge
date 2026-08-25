@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 
 // Jourdeness storefront build: V3.8.6 — 龍血玫瑰皂改為自由配選項，不再單獨顯示商品卡。
@@ -1076,7 +1076,6 @@ const sevenSequenceGuideV377 = [
     .map((id) => products.find((product) => product.id === id))
     .filter(Boolean) as Product[];
 
-  const homeComboProducts = getProductsByIds([34]);
   const homeClearanceProducts: Product[] = [];
   const homeDragonBloodProducts = getProductsByIds([34]);
   const homeWaterGlowProducts = getProductsByIds([40, 41, 63]);
@@ -1092,7 +1091,6 @@ const sevenSequenceGuideV377 = [
 
   const heroTopProduct = products.find((product) => product.id === 34);
   const heroSecondaryProducts = getProductsByIds([]);
-  const heroComboProducts = getProductsByIds([34]);
   const heroSeriesEntries: {
     title: string;
     text: string;
@@ -1535,11 +1533,11 @@ const sevenSequenceGuideV377 = [
   }
 
   function getCartItemUnitPrice(item: CartItem) {
-    return item.comboPrice ?? getEstimatedUnitPrice(item.product);
+    return getEstimatedUnitPrice(item.product);
   }
 
   function getCartItemDisplayPrice(item: CartItem) {
-    return item.comboPlanLabel ?? displayPrice(item.product);
+    return displayPrice(item.product);
   }
 
   const cartRegularSubtotalV361 = cartItems.reduce(
@@ -5182,10 +5180,6 @@ const sevenSequenceGuideV377 = [
         id: item.product.id,
         quantity: item.quantity,
         cartKey: item.cartKey,
-        comboPlanId: item.comboPlanId,
-        comboPlanLabel: item.comboPlanLabel,
-        comboSelections: item.comboSelections,
-        comboPrice: item.comboPrice,
       })),
       bundleCartItems: bundleCartItems.map((item) => ({
         cartKey: item.cartKey,
@@ -5390,12 +5384,7 @@ const sevenSequenceGuideV377 = [
           return;
         }
 
-        /*
-          目前正式可下單的 Bundle 路徑
-          只有 buy_get。
-          fixed_bundle / mix_match 接上後，
-          再擴充這裡的驗證規則。
-        */
+
         if (offer.bundleType === "fixed_bundle") {
           const fixedItems =
             offer.items.filter(
@@ -6115,9 +6104,6 @@ const sevenSequenceGuideV377 = [
 
                 series:
                   item.product.series,
-
-                comboSelections:
-                  item.comboSelections ?? [],
               },
             })),
 

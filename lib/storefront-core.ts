@@ -65,20 +65,10 @@ export type Product = {
   }>;
 };
 
-export type ComboSelection = {
-  optionId: string;
-  name: string;
-  quantity: number;
-};
-
 export type CartItem = {
   cartKey: string;
   product: Product;
   quantity: number;
-  comboPlanId?: string;
-  comboPlanLabel?: string;
-  comboSelections?: ComboSelection[];
-  comboPrice?: number;
 };
 
 export type CustomerForm = {
@@ -123,13 +113,6 @@ export const CUSTOMER_DRAFT_STORAGE_KEY = "jourdeness_customer_draft_v1";
 export const LINE_PROFILE_STORAGE_KEY = "jourdeness_line_profile_v1";
 export const LINE_LIFF_ID = process.env.NEXT_PUBLIC_LINE_LIFF_ID || "";
 export const LIFF_SDK_SRC = "https://static.line-scdn.net/liff/edge/2/sdk.js";
-
-type FlexibleComboPricingV369 = {
-  price: number;
-  label: string;
-  priceLabel: string;
-  note?: string;
-};
 
 export function buildSimpleCartKey(productId: number) {
   return `product-${productId}`;
