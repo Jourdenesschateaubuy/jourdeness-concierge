@@ -20,10 +20,36 @@ import {
 } from "../actions";
 import styles from "./category-manager.module.css";
 
+type CategoryProduct = {
+  id: number;
+  displayCode: string;
+  name: string;
+  category: string;
+  storefrontCategory: string;
+  series: string;
+  status: string;
+};
+
 type Props = {
   categories: CatalogCategory[];
   series: CatalogSeries[];
+  products: CategoryProduct[];
 };
+
+function productStatusLabel(status: string) {
+  switch (status) {
+    case "active":
+      return "上架中";
+    case "inactive":
+      return "下架";
+    case "coming_soon":
+      return "新品預告";
+    case "sold_out":
+      return "售罄";
+    default:
+      return status || "—";
+  }
+}
 
 function orderLabel(index: number) {
   return String(index + 1).padStart(2, "0");
@@ -37,7 +63,11 @@ function moveItem<T>(items: T[], from: number, to: number) {
   return next;
 }
 
-export default function CategoryManager({ categories, series }: Props) {
+export default function CategoryManager({
+  categories,
+  series,
+  products,
+}: Props) {
   const router = useRouter();
   const [localCategories, setLocalCategories] = useState(categories);
   const [localSeries, setLocalSeries] = useState(series);
@@ -72,6 +102,36 @@ export default function CategoryManager({ categories, series }: Props) {
     }
     return map;
   }, [localSeries]);
+
+  const productsByCategory = useMemo(() => {
+    const map = new Map<string, CategoryProduct[]>();
+
+    for (const product of products) {
+      const categoryName =
+        product.storefrontCategory.trim() ||
+        product.category.trim();
+
+      if (!categoryName) continue;
+
+      const list =
+        map.get(categoryName) ?? [];
+
+      list.push(product);
+      map.set(categoryName, list);
+    }
+
+    for (const list of map.values()) {
+      list.sort((a, b) =>
+        a.displayCode.localeCompare(
+          b.displayCode,
+          "zh-TW",
+          { numeric: true }
+        )
+      );
+    }
+
+    return map;
+  }, [products]);
 
   function run(task: () => Promise<unknown>, success: string) {
     setMessage("");
@@ -179,8 +239,14 @@ export default function CategoryManager({ categories, series }: Props) {
 
       <div className={styles.categoryList}>
         {localCategories.map((category, categoryIndex) => {
-          const children = seriesByCategory.get(category.id) ?? [];
-          const expanded = expandedId === category.id;
+          const children =
+            seriesByCategory.get(category.id) ?? [];
+
+          const categoryProducts =
+            productsByCategory.get(category.name) ?? [];
+
+          const expanded =
+            expandedId === category.id;
 
           return (
             <article
@@ -391,6 +457,124 @@ export default function CategoryManager({ categories, series }: Props) {
                         </div>
                       </div>
                     ))}
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop: 22,
+                      paddingTop: 18,
+                      borderTop: "1px solid #eadfe1",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: 16,
+                        marginBottom: 12,
+                      }}
+                    >
+                      <div>
+                        <strong>
+                          {category.name}・分類商品
+                        </strong>
+
+                        <div
+                          style={{
+                            marginTop: 4,
+                            color: "#8a7479",
+                            fontSize: 13,
+                          }}
+                        >
+                          僅供查看，方便確認哪些商品仍使用此分類。
+                        </div>
+                      </div>
+
+                      <strong
+                        style={{
+                          color: "#8b2940",
+                        }}
+                      >
+                        {categoryProducts.length} 件
+                      </strong>
+                    </div>
+
+                    {categoryProducts.length === 0 ? (
+                      <div
+                        style={{
+                          padding: "16px 18px",
+                          border: "1px dashed #decfd2",
+                          borderRadius: 12,
+                          background: "#fff",
+                          color: "#8a7479",
+                        }}
+                      >
+                        此分類目前沒有商品
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          border: "1px solid #eadfe1",
+                          borderRadius: 12,
+                          background: "#fff",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {categoryProducts.map(
+                          (product) => (
+                            <div
+                              key={product.id}
+                              style={{
+                                display: "grid",
+                                gridTemplateColumns:
+                                  "100px minmax(240px, 1fr) 180px 100px",
+                                gap: 14,
+                                alignItems: "center",
+                                minHeight: 54,
+                                padding: "10px 16px",
+                                borderBottom:
+                                  "1px solid #f1e8ea",
+                              }}
+                            >
+                              <strong
+                                style={{
+                                  color: "#8b2940",
+                                  fontSize: 13,
+                                }}
+                              >
+                                {product.displayCode}
+                              </strong>
+
+                              <strong>
+                                {product.name}
+                              </strong>
+
+                              <span
+                                style={{
+                                  color: "#756469",
+                                  fontSize: 13,
+                                }}
+                              >
+                                {product.series ||
+                                  "未指定系列"}
+                              </span>
+
+                              <span
+                                style={{
+                                  color: "#756469",
+                                  fontSize: 13,
+                                }}
+                              >
+                                {productStatusLabel(
+                                  product.status
+                                )}
+                              </span>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
