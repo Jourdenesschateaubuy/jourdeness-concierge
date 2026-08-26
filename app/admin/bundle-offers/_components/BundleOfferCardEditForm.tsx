@@ -274,7 +274,7 @@ function addGalleryImage(
       !storefrontCategory
     ) {
       throw new Error(
-        "上架中的組合優惠必須設定前台主分類。"
+        "上架中的組合優惠必須設定前台分類。"
       );
     }
 
@@ -1500,17 +1500,8 @@ function addGalleryImage(
                 }
               >
                 <label>
-                  <span>商品分類</span>
-
-                  <input
-                    value="組合優惠"
-                    readOnly
-                  />
-                </label>
-
-                <label>
                   <span>
-                    前台主分類 *
+                    前台分類 *
                   </span>
 
                   <select
@@ -1527,7 +1518,7 @@ function addGalleryImage(
                     }
                   >
                     <option value="">
-                      請選擇前台主分類
+                      請選擇前台分類
                     </option>
 
                     {categories.map(

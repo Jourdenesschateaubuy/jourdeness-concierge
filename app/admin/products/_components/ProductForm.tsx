@@ -313,7 +313,7 @@ export default function ProductForm({
             )}
 
             <label>
-              <span>前台主分類 *</span>
+              <span>前台分類 *</span>
               <select
                 name="storefrontCategory"
                 required
@@ -395,7 +395,7 @@ export default function ProductForm({
         <div className={styles.positionNote}>
           {status === "active" ? (
             <>
-              上架中的商品必須設定「前台主分類」；儲存後會出現在該商城分類與系列中。
+              上架中的商品必須設定「前台分類」；儲存後會出現在該商城分類與系列中。
             </>
           ) : (
             <>

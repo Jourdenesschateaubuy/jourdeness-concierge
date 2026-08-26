@@ -1093,24 +1093,7 @@ return (
 
             <div className={styles.twoColumns}>
               <label>
-                <span>商品分類</span>
-                <select
-                  name="category"
-                  value={category}
-                  onChange={(event) =>
-                    setCategory(event.target.value)
-                  }
-                >
-                  {categories.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                <span>前台主分類 *</span>
+                <span>前台分類 *</span>
                 <select
                   name="storefrontCategory"
                   required
