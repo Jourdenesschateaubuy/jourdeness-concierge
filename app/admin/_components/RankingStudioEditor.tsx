@@ -14,6 +14,7 @@ import type {
   SiteStudioRankingItem,
 } from "../../../lib/site-studio-types";
 import styles from "./site-content-studio-editor.module.css";
+import WebsiteMediaPicker from "../website-studio/components/MediaPicker";
 
 type StorefrontProductOption = {
   id: number;
@@ -72,6 +73,10 @@ export default function RankingStudioEditor({
     useState("");
   const [error, setError] =
     useState("");
+  const [
+    mediaPickerOpen,
+    setMediaPickerOpen,
+  ] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -479,9 +484,60 @@ export default function RankingStudioEditor({
                 }
               />
               <small>
-                請從 Media Library 選擇圖片。
+                可直接輸入圖片網址，
+                或從 Media Library 選擇。
               </small>
             </label>
+
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                flexWrap: "wrap",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  setMediaPickerOpen(true)
+                }
+                style={{
+                  border: 0,
+                  borderRadius: 999,
+                  padding: "10px 16px",
+                  background: "#8c2940",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontWeight: 900,
+                }}
+              >
+                從 Media Library 選擇
+              </button>
+
+              {draft.image ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    update(
+                      "image",
+                      ""
+                    )
+                  }
+                  style={{
+                    border:
+                      "1px solid rgba(140,41,64,.18)",
+                    borderRadius: 999,
+                    padding: "10px 16px",
+                    background: "#fff",
+                    color: "#8c2940",
+                    cursor: "pointer",
+                    fontWeight: 800,
+                  }}
+                >
+                  清除圖片
+                </button>
+              ) : null}
+            </div>
 
             <div
               className={styles.metaBox}
@@ -493,6 +549,20 @@ export default function RankingStudioEditor({
             </div>
           </div>
         </div>
+
+        <WebsiteMediaPicker
+          open={mediaPickerOpen}
+          title={`選擇 TOP ${rank} 排行榜圖片`}
+          onClose={() =>
+            setMediaPickerOpen(false)
+          }
+          onSelect={(asset) => {
+            update(
+              "image",
+              `/api/studio/media/${asset.id}/file`
+            );
+          }}
+        />
       </section>
 
       <section className={styles.section}>
