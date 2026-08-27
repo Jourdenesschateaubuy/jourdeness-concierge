@@ -91,10 +91,12 @@ export async function listMediaAssets({
   search = "",
   mimePrefix = "",
   limit = 100,
+  active = true,
 }: {
   search?: string;
   mimePrefix?: string;
   limit?: number;
+  active?: boolean;
 } = {}): Promise<MediaListResult> {
   const safeLimit = Math.max(
     1,
@@ -152,7 +154,7 @@ export async function listMediaAssets({
         ) latest_job
           ON TRUE
 
-        WHERE media_assets.is_active = TRUE
+        WHERE media_assets.is_active = $4
           AND (
             $1 = ''
             OR media_assets.original_name
@@ -181,6 +183,7 @@ export async function listMediaAssets({
         search.trim(),
         mimePrefix.trim(),
         safeLimit,
+        active,
       ]
     );
 
@@ -409,6 +412,21 @@ export async function archiveMediaAsset(
       UPDATE media_assets
       SET
         is_active = FALSE,
+        updated_at = NOW()
+      WHERE id = $1
+    `,
+    [id]
+  );
+}
+
+export async function restoreMediaAsset(
+  id: number
+) {
+  await dbQuery(
+    `
+      UPDATE media_assets
+      SET
+        is_active = TRUE,
         updated_at = NOW()
       WHERE id = $1
     `,

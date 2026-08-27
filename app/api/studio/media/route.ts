@@ -75,6 +75,10 @@ export async function GET(
           "limit"
         ) || 120
       ),
+      active:
+        url.searchParams.get(
+          "status"
+        ) !== "trash",
     });
 
   return NextResponse.json(

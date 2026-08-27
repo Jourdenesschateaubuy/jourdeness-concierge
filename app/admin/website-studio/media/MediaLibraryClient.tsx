@@ -10,6 +10,10 @@ import type {
   MediaAsset,
 } from "../../../../lib/cms/modules/media/types";
 
+type LibraryView =
+  | "library"
+  | "trash";
+
 function bytesLabel(
   value: number
 ) {
@@ -60,6 +64,16 @@ export default function MediaLibraryClient({
   const [assets, setAssets] =
     useState(initialAssets);
 
+  const [
+    trashAssets,
+    setTrashAssets,
+  ] = useState<MediaAsset[]>([]);
+
+  const [view, setView] =
+    useState<LibraryView>(
+      "library"
+    );
+
   const [search, setSearch] =
     useState("");
 
@@ -77,12 +91,21 @@ export default function MediaLibraryClient({
   const [archiving, setArchiving] =
     useState(false);
 
+  const [restoring, setRestoring] =
+    useState(false);
+
   const [hydrated, setHydrated] =
     useState(false);
 
   useEffect(() => {
     setHydrated(true);
+    void refresh("trash");
   }, []);
+
+  const currentAssets =
+    view === "trash"
+      ? trashAssets
+      : assets;
 
   const filtered =
     useMemo(() => {
@@ -94,16 +117,14 @@ export default function MediaLibraryClient({
           );
 
       if (!needle) {
-        return assets;
+        return currentAssets;
       }
 
-      return assets.filter(
+      return currentAssets.filter(
         (asset) =>
           [
             asset.title,
             asset.originalName,
-            asset.altText,
-            asset.tags.join(" "),
           ]
             .join(" ")
             .toLocaleLowerCase(
@@ -111,34 +132,71 @@ export default function MediaLibraryClient({
             )
             .includes(needle)
       );
-    }, [assets, search]);
+    }, [
+      currentAssets,
+      search,
+    ]);
 
   const selected =
-    assets.find(
+    currentAssets.find(
       (asset) =>
         asset.id === selectedId
     ) ?? null;
 
-  async function refresh() {
+  async function refresh(
+    target:
+      LibraryView = "library"
+  ) {
+    const url =
+      target === "trash"
+        ? "/api/studio/media?status=trash&limit=200"
+        : "/api/studio/media?limit=200";
+
     const response =
       await fetch(
-        "/api/studio/media?limit=200",
+        url,
         {
           cache: "no-store",
         }
       );
 
     if (!response.ok) {
-      return;
+      return [] as MediaAsset[];
     }
 
     const data =
       await response.json();
 
-    setAssets(
+    const next =
       Array.isArray(data.assets)
         ? data.assets
-        : []
+        : [];
+
+    if (target === "trash") {
+      setTrashAssets(next);
+    } else {
+      setAssets(next);
+    }
+
+    return next as MediaAsset[];
+  }
+
+  async function changeView(
+    nextView: LibraryView
+  ) {
+    if (nextView === view) {
+      return;
+    }
+
+    setView(nextView);
+    setSearch("");
+    setMessage("");
+
+    const next =
+      await refresh(nextView);
+
+    setSelectedId(
+      next[0]?.id ?? null
     );
   }
 
@@ -360,6 +418,18 @@ export default function MediaLibraryClient({
         );
 
       setAssets(remaining);
+
+      setTrashAssets(
+        (current) => [
+          selected,
+          ...current.filter(
+            (asset) =>
+              asset.id !==
+              selected.id
+          ),
+        ]
+      );
+
       setSelectedId(
         remaining[0]?.id ??
           null
@@ -376,6 +446,89 @@ export default function MediaLibraryClient({
       );
     } finally {
       setArchiving(false);
+    }
+  }
+
+  async function restoreSelected() {
+    if (
+      !selected ||
+      view !== "trash" ||
+      restoring
+    ) {
+      return;
+    }
+
+    const ok =
+      window.confirm(
+        `確定要將「${selected.title || selected.originalName}」還原到 Media Library 嗎？`
+      );
+
+    if (!ok) {
+      return;
+    }
+
+    setRestoring(true);
+    setMessage(
+      "正在還原圖片…"
+    );
+
+    try {
+      const response =
+        await fetch(
+          `/api/studio/media/${selected.id}/restore`,
+          {
+            method: "POST",
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "還原圖片失敗。"
+        );
+      }
+
+      const remaining =
+        trashAssets.filter(
+          (asset) =>
+            asset.id !==
+            selected.id
+        );
+
+      setTrashAssets(
+        remaining
+      );
+
+      setAssets(
+        (current) => [
+          selected,
+          ...current.filter(
+            (asset) =>
+              asset.id !==
+              selected.id
+          ),
+        ]
+      );
+
+      setSelectedId(
+        remaining[0]?.id ??
+          null
+      );
+
+      setMessage(
+        "圖片已還原到 Media Library。"
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "還原圖片失敗。"
+      );
+    } finally {
+      setRestoring(false);
     }
   }
 
@@ -400,14 +553,60 @@ export default function MediaLibraryClient({
                 event.target.value
               )
             }
-            placeholder="搜尋名稱、Alt 或標籤"
+            placeholder="搜尋圖片名稱"
             style={styles.search}
           />
         </div>
 
+        <div style={styles.tabs}>
+          <button
+            type="button"
+            onClick={() =>
+              void changeView(
+                "library"
+              )
+            }
+            style={{
+              ...styles.tabButton,
+              ...(view === "library"
+                ? styles.tabButtonActive
+                : {}),
+            }}
+          >
+            圖片庫
+            {" "}
+            {assets.length}
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              void changeView(
+                "trash"
+              )
+            }
+            style={{
+              ...styles.tabButton,
+              ...(view === "trash"
+                ? styles.tabButtonActive
+                : {}),
+            }}
+          >
+            回收桶
+            {" "}
+            {trashAssets.length}
+          </button>
+        </div>
+
         <form
           onSubmit={upload}
-          style={styles.uploadBox}
+          style={{
+            ...styles.uploadBox,
+            display:
+              view === "library"
+                ? "grid"
+                : "none",
+          }}
         >
           <input
             type="file"
@@ -532,7 +731,10 @@ export default function MediaLibraryClient({
             <form
               key={selected.id}
               onSubmit={
-                saveMetadata
+                view === "library"
+                  ? saveMetadata
+                  : (event) =>
+                      event.preventDefault()
               }
               style={styles.form}
             >
@@ -634,55 +836,96 @@ export default function MediaLibraryClient({
                 readOnly
               />
 
-              <button
-                type="submit"
-                style={styles.primaryButton}
-              >
-                儲存圖片資料
-              </button>
+              {view === "library" ? (
+                <>
+                  <button
+                    type="submit"
+                    style={
+                      styles.primaryButton
+                    }
+                  >
+                    儲存圖片資料
+                  </button>
 
-              <button
-                type="button"
-                onClick={queuePublish}
-                style={styles.primaryButton}
-              >
-                加入發布佇列
-              </button>
+                  <button
+                    type="button"
+                    onClick={
+                      queuePublish
+                    }
+                    style={
+                      styles.primaryButton
+                    }
+                  >
+                    加入發布佇列
+                  </button>
 
-              <div
-                style={
-                  styles.dangerZone
-                }
-              >
-                <strong>
-                  圖片清理
-                </strong>
+                  <div
+                    style={
+                      styles.dangerZone
+                    }
+                  >
+                    <strong>
+                      圖片清理
+                    </strong>
 
-                <small>
-                  移除後不再出現在
-                  Media Library；
-                  已經被商品、TOP
-                  或首頁使用的圖片
-                  仍會保留顯示。
-                </small>
+                    <small>
+                      移除後會進入回收桶。
+                      已經被商品、TOP
+                      或首頁使用的圖片
+                      仍會保留顯示。
+                    </small>
 
-                <button
-                  type="button"
-                  onClick={
-                    archiveSelected
-                  }
-                  disabled={
-                    archiving
-                  }
+                    <button
+                      type="button"
+                      onClick={
+                        archiveSelected
+                      }
+                      disabled={
+                        archiving
+                      }
+                      style={
+                        styles.dangerButton
+                      }
+                    >
+                      {archiving
+                        ? "移除中…"
+                        : "移到回收桶"}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div
                   style={
-                    styles.dangerButton
+                    styles.restoreZone
                   }
                 >
-                  {archiving
-                    ? "移除中…"
-                    : "從 Media Library 移除"}
-                </button>
-              </div>
+                  <strong>
+                    回收桶
+                  </strong>
+
+                  <small>
+                    這張圖片目前已從
+                    Media Library 移除。
+                  </small>
+
+                  <button
+                    type="button"
+                    onClick={
+                      restoreSelected
+                    }
+                    disabled={
+                      restoring
+                    }
+                    style={
+                      styles.restoreButton
+                    }
+                  >
+                    {restoring
+                      ? "還原中…"
+                      : "還原到 Media Library"}
+                  </button>
+                </div>
+              )}
             </form>
           </>
         )}
@@ -930,5 +1173,53 @@ const styles: Record<
   emptyInspector: {
     padding: 24,
     color: "#796a6e",
+  },
+
+  tabs: {
+    display: "flex",
+    gap: 8,
+    marginBottom: 14,
+  },
+
+  tabButton: {
+    border:
+      "1px solid rgba(140,41,64,.16)",
+    borderRadius: 999,
+    padding: "9px 15px",
+    background: "#fff",
+    color: "#796a6e",
+    cursor: "pointer",
+    fontWeight: 900,
+  },
+
+  tabButtonActive: {
+    border: "1px solid #8c2940",
+    background: "#8c2940",
+    color: "#fff",
+  },
+
+  restoreZone: {
+    display: "grid",
+    gap: 8,
+    marginTop: 8,
+    padding: 12,
+    border:
+      "1px solid rgba(47,111,78,.18)",
+    borderRadius: 12,
+    background:
+      "rgba(47,111,78,.04)",
+    color: "#315d45",
+    lineHeight: 1.5,
+  },
+
+  restoreButton: {
+    border:
+      "1px solid rgba(47,111,78,.25)",
+    borderRadius: 999,
+    padding: "10px 14px",
+    background: "#fff",
+    color: "#315d45",
+    cursor: "pointer",
+    fontWeight: 900,
   },
 };
