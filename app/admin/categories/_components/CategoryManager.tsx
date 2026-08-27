@@ -26,6 +26,7 @@ type CategoryProduct = {
   name: string;
   category: string;
   storefrontCategory: string;
+  catalogCategoryIds: number[];
   series: string;
   status: string;
 };
@@ -104,20 +105,52 @@ export default function CategoryManager({
   }, [localSeries]);
 
   const productsByCategory = useMemo(() => {
-    const map = new Map<string, CategoryProduct[]>();
+    const map =
+      new Map<number, CategoryProduct[]>();
 
     for (const product of products) {
-      const categoryName =
-        product.storefrontCategory.trim() ||
-        product.category.trim();
+      const categoryIds =
+        new Set(
+          product.catalogCategoryIds.filter(
+            (id) =>
+              Number.isInteger(id) &&
+              id > 0
+          )
+        );
 
-      if (!categoryName) continue;
+      // 相容極舊資料：
+      // 若尚未建立 relation row，才退回舊文字分類。
+      if (categoryIds.size === 0) {
+        const legacyName =
+          product.storefrontCategory.trim() ||
+          product.category.trim();
 
-      const list =
-        map.get(categoryName) ?? [];
+        const legacyCategory =
+          categories.find(
+            (category) =>
+              category.name === legacyName
+          );
 
-      list.push(product);
-      map.set(categoryName, list);
+        if (legacyCategory) {
+          categoryIds.add(legacyCategory.id);
+        }
+      }
+
+      for (const categoryId of categoryIds) {
+        const list =
+          map.get(categoryId) ?? [];
+
+        if (
+          !list.some(
+            (item) =>
+              item.id === product.id
+          )
+        ) {
+          list.push(product);
+        }
+
+        map.set(categoryId, list);
+      }
     }
 
     for (const list of map.values()) {
@@ -131,7 +164,7 @@ export default function CategoryManager({
     }
 
     return map;
-  }, [products]);
+  }, [categories, products]);
 
   function run(task: () => Promise<unknown>, success: string) {
     setMessage("");
@@ -243,7 +276,7 @@ export default function CategoryManager({
             seriesByCategory.get(category.id) ?? [];
 
           const categoryProducts =
-            productsByCategory.get(category.name) ?? [];
+            productsByCategory.get(category.id) ?? [];
 
           const expanded =
             expandedId === category.id;

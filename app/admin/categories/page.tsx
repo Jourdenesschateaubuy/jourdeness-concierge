@@ -1,6 +1,7 @@
 import {
   getCatalogCategories,
   getCatalogSeries,
+  getProductCatalogCategoryAssignments,
 } from "../../../lib/catalog-repository";
 import {
   listDatabaseProducts,
@@ -11,20 +12,42 @@ import styles from "../admin.module.css";
 export const dynamic = "force-dynamic";
 
 export default async function AdminCategoriesPage() {
-  const [categories, series, products] =
-    await Promise.all([
-      getCatalogCategories({
-        includeInactive: true,
-        includeCounts: true,
-      }),
-      getCatalogSeries({
-        includeInactive: true,
-        includeCounts: true,
-      }),
-      listDatabaseProducts({
-        includeInactive: true,
-      }),
-    ]);
+  const [
+    categories,
+    series,
+    products,
+    productCategoryAssignments,
+  ] = await Promise.all([
+    getCatalogCategories({
+      includeInactive: true,
+      includeCounts: true,
+    }),
+    getCatalogSeries({
+      includeInactive: true,
+      includeCounts: true,
+    }),
+    listDatabaseProducts({
+      includeInactive: true,
+    }),
+    getProductCatalogCategoryAssignments(),
+  ]);
+
+  const categoryIdsByProductId =
+    new Map<number, number[]>();
+
+  for (const assignment of productCategoryAssignments) {
+    const current =
+      categoryIdsByProductId.get(
+        assignment.productId
+      ) ?? [];
+
+    current.push(assignment.categoryId);
+
+    categoryIdsByProductId.set(
+      assignment.productId,
+      current
+    );
+  }
 
   return (
     <div className={styles.page}>
@@ -47,6 +70,8 @@ export default async function AdminCategoriesPage() {
           category: product.category,
           storefrontCategory:
             product.storefrontCategory ?? "",
+          catalogCategoryIds:
+            categoryIdsByProductId.get(product.id) ?? [],
           series: product.series,
           status: product.status,
         }))}

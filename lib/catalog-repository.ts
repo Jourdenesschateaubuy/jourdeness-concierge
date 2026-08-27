@@ -83,7 +83,9 @@ export async function getCatalogCategories(options?: {
       ${
         includeCounts
           ? `(SELECT COUNT(*) FROM catalog_series s WHERE s.category_id = c.id)::int AS series_count,
-             (SELECT COUNT(*) FROM products p WHERE COALESCE(NULLIF(p.storefront_category, ''), p.category) = c.name)::int AS product_count`
+             (SELECT COUNT(DISTINCT pcc.product_id)
+                FROM product_catalog_categories pcc
+                WHERE pcc.category_id = c.id)::int AS product_count`
           : `0::int AS series_count,
              0::int AS product_count`
       }
@@ -254,10 +256,10 @@ export async function deleteCatalogCategory(id: number) {
         [id]
       );
       const productCount = await client.query<{ count: string }>(
-        `SELECT COUNT(*)::text AS count
-         FROM products
-         WHERE COALESCE(NULLIF(storefront_category, ''), category) = $1`,
-        [name]
+        `SELECT COUNT(DISTINCT product_id)::text AS count
+         FROM product_catalog_categories
+         WHERE category_id = $1`,
+        [id]
       );
 
       if (Number(seriesCount.rows[0]?.count ?? 0) > 0) {
@@ -529,6 +531,39 @@ export async function getStorefrontCatalog(options?: {
 
   return { categories, series };
 }
+
+/**
+ * 一次取得全部商品與前台分類的關聯。
+ * 給分類管理頁使用，避免逐商品 N+1 查詢。
+ */
+export async function getProductCatalogCategoryAssignments() {
+  const result = await dbQuery<{
+    product_id: number | string;
+    category_id: number | string;
+  }>(
+    `
+      SELECT
+        product_id,
+        category_id
+      FROM product_catalog_categories
+      ORDER BY product_id ASC, category_id ASC
+    `
+  );
+
+  return result.rows
+    .map((row) => ({
+      productId: Number(row.product_id),
+      categoryId: Number(row.category_id),
+    }))
+    .filter(
+      (row) =>
+        Number.isInteger(row.productId) &&
+        row.productId > 0 &&
+        Number.isInteger(row.categoryId) &&
+        row.categoryId > 0
+    );
+}
+
 
 /**
  * 取得商品目前勾選的前台分類。
