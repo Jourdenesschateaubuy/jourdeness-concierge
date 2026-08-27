@@ -78,6 +78,13 @@ type StorefrontProduct = Product & {
   status?: StorefrontProductStatus;
   sortOrder?: number;
   sku?: string;
+
+  /**
+   * 商品可以顯示的所有正式前台分類。
+   * 資料來源：
+   * product_catalog_categories
+   */
+  storefrontCategories?: string[];
 };
 
 type HomepageStorefrontSection = {
@@ -871,72 +878,200 @@ function Home() {
     return monthlyOfferIdsV316.has(product.id) || product.series.includes("本月主打");
   }
 
-  function matchesMainCategoryV31(product: Product) {
-    if (selectedCategory === "本月優惠") {
-      return isFeaturedProductV31(product) && !isComingSoon(product);
+  function matchesStorefrontCategoryV31(
+    product: Product,
+    categoryName: string,
+    fallbackIds?: Set<number>
+  ) {
+    const assignedCategories =
+      (
+        product as StorefrontProduct
+      ).storefrontCategories?.filter(
+        (name) =>
+          typeof name === "string" &&
+          name.trim().length > 0
+      );
+
+    // 正式多分類資料存在時，
+    // relation table 是唯一判斷來源。
+    if (
+      assignedCategories &&
+      assignedCategories.length > 0
+    ) {
+      return assignedCategories.includes(
+        categoryName
+      );
     }
 
-    // 新品預告獨立成一個入口，不與正式販售用途分類混在一起。
-    if (selectedCategory === "新品預告") return isComingSoon(product);
-    if (isComingSoon(product)) return false;
-
-    if (selectedCategory === "臉部保養") {
-      return product.storefrontCategory
-        ? product.storefrontCategory === "臉部保養"
-        : faceCareProductIdsV368.has(product.id);
+    // 相容 migration 前既有商品。
+    if (
+      product.storefrontCategory
+    ) {
+      return (
+        product.storefrontCategory ===
+        categoryName
+      );
     }
 
-    if (selectedCategory === "身體洗護") {
-      return product.storefrontCategory
-        ? product.storefrontCategory === "身體洗護"
-        : bodyCareProductIdsV368.has(product.id);
+    // 相容舊 storefront 靜態備援資料。
+    if (fallbackIds) {
+      return fallbackIds.has(
+        product.id
+      );
     }
 
-    if (selectedCategory === "健康補給") {
-      return product.storefrontCategory
-        ? product.storefrontCategory === "健康補給"
-        : healthProductIdsV368.has(product.id);
-    }
-
-    if (selectedCategory === "精油香氛") {
-      return product.storefrontCategory
-        ? product.storefrontCategory === "精油香氛"
-        : essentialOilProductIdsV359.has(product.id);
-    }
-
-    // 舊分類相容：避免內部跳轉或搜尋仍使用舊分類名稱時失效。
-    if (selectedCategory === "本月精選") return isFeaturedProductV31(product) && !isComingSoon(product);
-    if (selectedCategory === "保養美肌") return matchesMainCategoryAlias(product, "臉部保養");
-    if (selectedCategory === "健康保健") return matchesMainCategoryAlias(product, "健康補給");
-
-    return selectedCategory === "全部" || product.category === selectedCategory;
+    return (
+      product.category ===
+      categoryName
+    );
   }
 
-  function matchesMainCategoryAlias(product: Product, alias: MainCategory) {
-    if (isComingSoon(product)) return false;
+  function matchesMainCategoryV31(product: Product) {
+    if (selectedCategory === "本月優惠") {
+      return (
+        isFeaturedProductV31(product) &&
+        !isComingSoon(product)
+      );
+    }
+
+    // 新品預告維持獨立入口。
+    if (
+      selectedCategory === "新品預告"
+    ) {
+      return isComingSoon(product);
+    }
+
+    if (isComingSoon(product)) {
+      return false;
+    }
+
+    if (
+      selectedCategory ===
+      "臉部保養"
+    ) {
+      return matchesStorefrontCategoryV31(
+        product,
+        "臉部保養",
+        faceCareProductIdsV368
+      );
+    }
+
+    if (
+      selectedCategory ===
+      "身體洗護"
+    ) {
+      return matchesStorefrontCategoryV31(
+        product,
+        "身體洗護",
+        bodyCareProductIdsV368
+      );
+    }
+
+    if (
+      selectedCategory ===
+      "健康補給"
+    ) {
+      return matchesStorefrontCategoryV31(
+        product,
+        "健康補給",
+        healthProductIdsV368
+      );
+    }
+
+    if (
+      selectedCategory ===
+      "精油香氛"
+    ) {
+      return matchesStorefrontCategoryV31(
+        product,
+        "精油香氛",
+        essentialOilProductIdsV359
+      );
+    }
+
+    // 舊分類相容。
+    if (
+      selectedCategory ===
+      "本月精選"
+    ) {
+      return (
+        isFeaturedProductV31(product) &&
+        !isComingSoon(product)
+      );
+    }
+
+    if (
+      selectedCategory ===
+      "保養美肌"
+    ) {
+      return matchesMainCategoryAlias(
+        product,
+        "臉部保養"
+      );
+    }
+
+    if (
+      selectedCategory ===
+      "健康保健"
+    ) {
+      return matchesMainCategoryAlias(
+        product,
+        "健康補給"
+      );
+    }
+
+    if (
+      selectedCategory === "全部"
+    ) {
+      return true;
+    }
+
+    return matchesStorefrontCategoryV31(
+      product,
+      selectedCategory
+    );
+  }
+
+  function matchesMainCategoryAlias(
+    product: Product,
+    alias: MainCategory
+  ) {
+    if (isComingSoon(product)) {
+      return false;
+    }
+
     if (alias === "臉部保養") {
-      return product.storefrontCategory
-        ? product.storefrontCategory === "臉部保養"
-        : faceCareProductIdsV368.has(product.id);
+      return matchesStorefrontCategoryV31(
+        product,
+        "臉部保養",
+        faceCareProductIdsV368
+      );
     }
 
     if (alias === "身體洗護") {
-      return product.storefrontCategory
-        ? product.storefrontCategory === "身體洗護"
-        : bodyCareProductIdsV368.has(product.id);
+      return matchesStorefrontCategoryV31(
+        product,
+        "身體洗護",
+        bodyCareProductIdsV368
+      );
     }
 
     if (alias === "健康補給") {
-      return product.storefrontCategory
-        ? product.storefrontCategory === "健康補給"
-        : healthProductIdsV368.has(product.id);
+      return matchesStorefrontCategoryV31(
+        product,
+        "健康補給",
+        healthProductIdsV368
+      );
     }
 
     if (alias === "精油香氛") {
-      return product.storefrontCategory
-        ? product.storefrontCategory === "精油香氛"
-        : essentialOilProductIdsV359.has(product.id);
+      return matchesStorefrontCategoryV31(
+        product,
+        "精油香氛",
+        essentialOilProductIdsV359
+      );
     }
+
     return false;
   }
 
@@ -26483,7 +26618,7 @@ const sevenSequenceGuideV377 = [
       `}
 
 
-      
+
 </style>
     </main>
   );
