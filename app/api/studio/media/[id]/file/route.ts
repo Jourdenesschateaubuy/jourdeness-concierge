@@ -8,7 +8,7 @@ import {
 } from "next/server";
 
 import {
-  getMediaAsset,
+  getMediaAssetForFile,
 } from "../../../../../../lib/cms/modules/media/repository";
 
 export const dynamic = "force-dynamic";
@@ -40,7 +40,7 @@ export async function GET(
   }
 
   const asset =
-    await getMediaAsset(id);
+    await getMediaAssetForFile(id);
 
   if (!asset) {
     return new NextResponse(

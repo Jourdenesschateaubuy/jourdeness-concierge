@@ -74,6 +74,9 @@ export default function MediaLibraryClient({
   const [uploading, setUploading] =
     useState(false);
 
+  const [archiving, setArchiving] =
+    useState(false);
+
   const [hydrated, setHydrated] =
     useState(false);
 
@@ -307,6 +310,75 @@ export default function MediaLibraryClient({
         "已加入發布佇列。"
     );
   }
+
+  async function archiveSelected() {
+    if (
+      !selected ||
+      archiving
+    ) {
+      return;
+    }
+
+    const ok =
+      window.confirm(
+        `確定要將「${selected.title || selected.originalName}」從 Media Library 移除嗎？\n\n圖片會從 Media Library 隱藏，但既有商品、TOP 或首頁若仍使用這張圖片，會繼續正常顯示。`
+      );
+
+    if (!ok) {
+      return;
+    }
+
+    setArchiving(true);
+    setMessage(
+      "正在從 Media Library 移除…"
+    );
+
+    try {
+      const response =
+        await fetch(
+          `/api/studio/media/${selected.id}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "移除圖片失敗。"
+        );
+      }
+
+      const remaining =
+        assets.filter(
+          (asset) =>
+            asset.id !==
+            selected.id
+        );
+
+      setAssets(remaining);
+      setSelectedId(
+        remaining[0]?.id ??
+          null
+      );
+
+      setMessage(
+        "圖片已從 Media Library 移除。既有網站引用仍會保留。"
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "移除圖片失敗。"
+      );
+    } finally {
+      setArchiving(false);
+    }
+  }
+
   return (
     <div style={styles.pageGrid}>
       <section style={styles.main}>
@@ -457,15 +529,6 @@ export default function MediaLibraryClient({
           </div>
         ) : (
           <>
-            <img
-              src={selected.fileUrl}
-              alt={
-                selected.altText ||
-                selected.title
-              }
-              style={styles.previewImage}
-            />
-
             <form
               key={selected.id}
               onSubmit={
@@ -551,56 +614,25 @@ export default function MediaLibraryClient({
                 />
               </label>
 
-              <label style={styles.field}>
-                <span>Alt</span>
+              <input
+                type="hidden"
+                name="altText"
+                value={
+                  selected.altText
+                }
+                readOnly
+              />
 
-                <textarea
-                  name="altText"
-                  rows={3}
-                  defaultValue={
-                    selected.altText
-                  }
-                  style={styles.textarea}
-                />
-              </label>
-
-              <label style={styles.field}>
-                <span>標籤</span>
-
-                <input
-                  name="tags"
-                  defaultValue={
-                    selected.tags.join(
-                      ", "
-                    )
-                  }
-                  style={styles.input}
-                />
-              </label>
-
-              <div style={styles.meta}>
-                <span>
-                  原檔：
-                  {selected.originalName}
-                </span>
-
-                <span>
-                  格式：
-                  {selected.mimeType}
-                </span>
-
-                <span>
-                  大小：
-                  {bytesLabel(
-                    selected.byteSize
-                  )}
-                </span>
-
-                <span>
-                  Media ID：
-                  {selected.id}
-                </span>
-              </div>
+              <input
+                type="hidden"
+                name="tags"
+                value={
+                  selected.tags.join(
+                    ", "
+                  )
+                }
+                readOnly
+              />
 
               <button
                 type="submit"
@@ -616,6 +648,41 @@ export default function MediaLibraryClient({
               >
                 加入發布佇列
               </button>
+
+              <div
+                style={
+                  styles.dangerZone
+                }
+              >
+                <strong>
+                  圖片清理
+                </strong>
+
+                <small>
+                  移除後不再出現在
+                  Media Library；
+                  已經被商品、TOP
+                  或首頁使用的圖片
+                  仍會保留顯示。
+                </small>
+
+                <button
+                  type="button"
+                  onClick={
+                    archiveSelected
+                  }
+                  disabled={
+                    archiving
+                  }
+                  style={
+                    styles.dangerButton
+                  }
+                >
+                  {archiving
+                    ? "移除中…"
+                    : "從 Media Library 移除"}
+                </button>
+              </div>
             </form>
           </>
         )}
@@ -707,6 +774,31 @@ const styles: Record<
     padding: "10px 14px",
     background: "#8c2940",
     color: "#fff",
+    cursor: "pointer",
+    fontWeight: 900,
+  },
+
+  dangerZone: {
+    display: "grid",
+    gap: 8,
+    marginTop: 8,
+    padding: 12,
+    border:
+      "1px solid rgba(180,35,24,.16)",
+    borderRadius: 12,
+    background:
+      "rgba(180,35,24,.035)",
+    color: "#7a3029",
+    lineHeight: 1.5,
+  },
+
+  dangerButton: {
+    border:
+      "1px solid rgba(180,35,24,.28)",
+    borderRadius: 999,
+    padding: "10px 14px",
+    background: "#fff",
+    color: "#b42318",
     cursor: "pointer",
     fontWeight: 900,
   },

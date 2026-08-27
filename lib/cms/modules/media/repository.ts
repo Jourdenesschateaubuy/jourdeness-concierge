@@ -233,6 +233,54 @@ export async function getMediaAsset(
   };
 }
 
+/**
+ * 僅供圖片檔案讀取使用。
+ *
+ * 即使 Media Asset 已經從 Library 移除，
+ * 舊商品、TOP、首頁若仍引用該 Media ID，
+ * 圖片仍然可以正常顯示。
+ */
+export async function getMediaAssetForFile(
+  id: number
+) {
+  const result =
+    await dbQuery<
+      MediaRow & {
+        storage_path: string;
+      }
+    >(
+      `
+        SELECT
+          id,
+          original_name,
+          title,
+          alt_text,
+          mime_type,
+          byte_size,
+          tags,
+          created_at,
+          storage_path
+        FROM media_assets
+        WHERE id = $1
+        LIMIT 1
+      `,
+      [id]
+    );
+
+  const row =
+    result.rows[0];
+
+  if (!row) {
+    return null;
+  }
+
+  return {
+    ...mapRow(row),
+    storagePath:
+      row.storage_path,
+  };
+}
+
 export async function createMediaAsset({
   originalName,
   storagePath,
