@@ -529,3 +529,178 @@ export async function getStorefrontCatalog(options?: {
 
   return { categories, series };
 }
+
+/**
+ * 取得商品目前勾選的前台分類。
+ * product_catalog_categories 是商品多分類的正式關聯表。
+ */
+export async function getProductCatalogCategoryIds(
+  productId: number
+) {
+  if (!Number.isInteger(productId) || productId <= 0) {
+    return [];
+  }
+
+  const result = await dbQuery<{
+    category_id: number | string;
+  }>(
+    `
+      SELECT pcc.category_id
+      FROM product_catalog_categories pcc
+      JOIN catalog_categories c
+        ON c.id = pcc.category_id
+      WHERE pcc.product_id = $1
+      ORDER BY c.sort_order ASC, c.id ASC
+    `,
+    [productId]
+  );
+
+  return result.rows
+    .map((row) => Number(row.category_id))
+    .filter(
+      (id) => Number.isInteger(id) && id > 0
+    );
+}
+
+
+/**
+ * 完整取代商品的多分類設定。
+ *
+ * primaryCategoryName 仍同步寫入 products.storefront_category，
+ * 讓既有前台與舊程式在第二階段完成前保持相容。
+ *
+ * 主要分類一定會自動加入關聯表，不能被漏掉。
+ */
+export async function replaceProductCatalogCategories(
+  productId: number,
+  categoryIds: number[],
+  primaryCategoryName: string
+) {
+  const cleanPrimary =
+    primaryCategoryName.trim();
+
+  if (!Number.isInteger(productId) || productId <= 0) {
+    throw new Error("商品 ID 無效");
+  }
+
+  if (!cleanPrimary) {
+    throw new Error("主要分類不能空白");
+  }
+
+  return withDbClient(async (client) => {
+    await client.query("BEGIN");
+
+    try {
+      const productResult =
+        await client.query<{ id: number }>(
+          `
+            SELECT id
+            FROM products
+            WHERE id = $1
+            FOR UPDATE
+          `,
+          [productId]
+        );
+
+      if (!productResult.rows[0]) {
+        throw new Error("找不到這筆商品");
+      }
+
+      const primaryResult =
+        await client.query<{
+          id: number | string;
+        }>(
+          `
+            SELECT id
+            FROM catalog_categories
+            WHERE name = $1
+            LIMIT 1
+          `,
+          [cleanPrimary]
+        );
+
+      const primaryCategoryId =
+        Number(primaryResult.rows[0]?.id);
+
+      if (
+        !Number.isInteger(primaryCategoryId) ||
+        primaryCategoryId <= 0
+      ) {
+        throw new Error(
+          `找不到主要分類：${cleanPrimary}`
+        );
+      }
+
+      const uniqueIds = Array.from(
+        new Set([
+          primaryCategoryId,
+          ...categoryIds.filter(
+            (id) =>
+              Number.isInteger(id) &&
+              id > 0
+          ),
+        ])
+      );
+
+      for (const categoryId of uniqueIds) {
+        const categoryResult =
+          await client.query<{ id: number }>(
+            `
+              SELECT id
+              FROM catalog_categories
+              WHERE id = $1
+              LIMIT 1
+            `,
+            [categoryId]
+          );
+
+        if (!categoryResult.rows[0]) {
+          throw new Error(
+            `分類 ID #${categoryId} 不存在`
+          );
+        }
+      }
+
+      await client.query(
+        `
+          UPDATE products
+          SET
+            storefront_category = $2,
+            updated_at = NOW()
+          WHERE id = $1
+        `,
+        [productId, cleanPrimary]
+      );
+
+      await client.query(
+        `
+          DELETE FROM product_catalog_categories
+          WHERE product_id = $1
+        `,
+        [productId]
+      );
+
+      for (const categoryId of uniqueIds) {
+        await client.query(
+          `
+            INSERT INTO product_catalog_categories (
+              product_id,
+              category_id
+            )
+            VALUES ($1, $2)
+            ON CONFLICT (product_id, category_id)
+            DO NOTHING
+          `,
+          [productId, categoryId]
+        );
+      }
+
+      await client.query("COMMIT");
+
+      return uniqueIds;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  });
+}

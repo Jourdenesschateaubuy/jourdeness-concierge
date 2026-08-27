@@ -1,4 +1,9 @@
 import { notFound } from "next/navigation";
+import {
+  getCatalogCategories,
+  getCatalogSeries,
+  getProductCatalogCategoryIds,
+} from "../../../../../lib/catalog-repository";
 import { getDatabaseProduct } from "../../../../../lib/product-repository";
 import { updateProductAction } from "../../actions";
 import ProductCardEditForm from "../../_components/ProductCardEditForm";
@@ -24,6 +29,19 @@ export default async function EditProductPage({
   const product = await getDatabaseProduct(id);
   if (!product) notFound();
 
+  const [
+    catalogCategories,
+    catalogSeries,
+    initialCategoryIds,
+  ] = await Promise.all([
+    getCatalogCategories({
+      includeInactive: true,
+    }),
+    getCatalogSeries({
+      includeInactive: true,
+    }),
+    getProductCatalogCategoryIds(id),
+  ]);
 
   return (
     <div className={styles.page}>
@@ -62,6 +80,9 @@ export default async function EditProductPage({
         action={updateProductAction}
         initialTab={tab === "detail" ? "detail" : "card"}
         returnTo={from === "health" ? "/admin/products/health" : undefined}
+        catalogCategories={catalogCategories}
+        catalogSeries={catalogSeries}
+        initialCategoryIds={initialCategoryIds}
       />
     </div>
   );

@@ -1,4 +1,8 @@
 "use server";
+
+import {
+  replaceProductCatalogCategories,
+} from "../../../lib/catalog-repository";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { hasValidAdminSession } from "../../../lib/admin-auth";
@@ -82,6 +86,25 @@ function parseSortOrder(value: string) {
   return Number.isFinite(number) ? number : 0;
 }
 
+function catalogCategoryIdsFromForm(
+  formData: FormData
+) {
+  return Array.from(
+    new Set(
+      formData
+        .getAll("catalogCategoryIds")
+        .map((value) =>
+          Number(String(value))
+        )
+        .filter(
+          (value) =>
+            Number.isInteger(value) &&
+            value > 0
+        )
+    )
+  );
+}
+
 function productInputFromForm(
   formData: FormData
 ): ProductWriteInput {
@@ -156,6 +179,13 @@ export async function createProductAction(formData: FormData) {
     productInputFromForm(formData)
   );
 
+  await replaceProductCatalogCategories(
+    product.id,
+    catalogCategoryIdsFromForm(formData),
+    product.storefrontCategory?.trim() ||
+      product.category.trim()
+  );
+
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/admin/products/health");
@@ -211,6 +241,13 @@ export async function updateProductAction(formData: FormData) {
     throw new Error("找不到這筆商品");
   }
 
+  await replaceProductCatalogCategories(
+    id,
+    catalogCategoryIdsFromForm(formData),
+    product.storefrontCategory?.trim() ||
+      product.category.trim()
+  );
+
   if (
     existingProduct.image &&
     existingProduct.image !== product.image
@@ -260,6 +297,10 @@ export async function updateProductEditorAction(
       throw new Error("商品分類不能空白");
     }
 
+    if (!storefrontCategory) {
+      throw new Error("主要分類不能空白");
+    }
+
     const product = await updateDatabaseProductPartial(id, {
       category,
       storefrontCategory,
@@ -277,6 +318,12 @@ export async function updateProductEditorAction(
     if (!product) {
       throw new Error("找不到這筆商品");
     }
+
+    await replaceProductCatalogCategories(
+      id,
+      catalogCategoryIdsFromForm(formData),
+      storefrontCategory
+    );
   } else {
     const name = stringValue(formData, "name");
     const image = stringValue(formData, "image");

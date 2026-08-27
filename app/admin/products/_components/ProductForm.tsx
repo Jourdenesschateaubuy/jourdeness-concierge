@@ -3,23 +3,27 @@
 import {  useState } from "react";
 import Link from "next/link";
 
-import { categoryConfig } from "../../../../lib/storefront-core";
+import type {
+  CatalogCategory,
+  CatalogSeries,
+} from "../../../../lib/catalog-repository";
 import type { DatabaseProduct } from "../../../../lib/product-repository";
 
 import ProductImageUploader from "./ProductImageUploader";
+import ProductCatalogFields from "./ProductCatalogFields";
 import styles from "./product-form.module.css";
 
 type ProductFormProps = {
   product?: DatabaseProduct;
   action: (formData: FormData) => void | Promise<void>;
   submitLabel: string;
+  catalogCategories: CatalogCategory[];
+  catalogSeries: CatalogSeries[];
+  initialCategoryIds?: number[];
 };
 
 type Tab = "card" | "detail" | "manage";
 
-const categories = Object.keys(categoryConfig).filter(
-  (category) => category !== "組合價"
-);
 
 function normalizeOriginalPriceInput(value: string) {
   const match = value.trim().match(/^原價\s*\$\s*([\d,]+)$/);
@@ -39,6 +43,9 @@ export default function ProductForm({
   product,
   action,
   submitLabel,
+  catalogCategories,
+  catalogSeries,
+  initialCategoryIds,
 }: ProductFormProps) {
   const [tab, setTab] = useState<Tab>("card");
 
@@ -52,14 +59,6 @@ export default function ProductForm({
   );
   const [originalPrice, setOriginalPrice] = useState(initialOriginalPrice);
 
-  const defaultStorefrontCategory =
-  product?.storefrontCategory ??
-  categories[0] ??
-  "臉部保養";
-
-  const [storefrontCategory, setStorefrontCategory] = useState(
-    defaultStorefrontCategory
-  );
   const [status, setStatus] = useState(
     product?.status ?? "active"
   );
@@ -71,12 +70,6 @@ export default function ProductForm({
       {product ? (
         <input type="hidden" name="id" value={product.id} />
       ) : null}
-
-      <input
-        type="hidden"
-        name="category"
-        value={storefrontCategory}
-      />
 
       <div
         className={styles.tabs}
@@ -311,33 +304,16 @@ export default function ProductForm({
                 建立後系統會自動分配 P-xxxx 商品編號。內部資料庫 ID 不會重新編號。
               </div>
             )}
-
-            <label>
-              <span>前台分類 *</span>
-              <select
-                name="storefrontCategory"
-                required
-                value={storefrontCategory}
-                onChange={(event) =>
-                  setStorefrontCategory(event.target.value)
-                }
-              >
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              <span>系列</span>
-              <input
-                name="series"
-                defaultValue={product?.series ?? ""}
-                placeholder="例如：龍血系列"
-              />
-            </label>
+            <ProductCatalogFields
+              catalogCategories={catalogCategories}
+              catalogSeries={catalogSeries}
+              initialPrimaryCategory={
+                product?.storefrontCategory ?? ""
+              }
+              initialCategoryIds={initialCategoryIds}
+              initialSeries={product?.series ?? ""}
+              mirrorPrimaryToCategory
+            />
 
             <label>
               <span>貨號</span>

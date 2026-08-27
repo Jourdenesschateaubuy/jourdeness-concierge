@@ -1,4 +1,8 @@
 import { redirect } from "next/navigation";
+import {
+  getCatalogCategories,
+  getCatalogSeries,
+} from "../../../../lib/catalog-repository";
 import { createProductAction } from "../actions";
 import ProductForm from "../_components/ProductForm";
 import styles from "../../admin.module.css";
@@ -20,6 +24,13 @@ export default async function NewProductPage({
     redirect("/admin/bundle-offers/new");
   }
 
+  const [
+    catalogCategories,
+    catalogSeries,
+  ] = await Promise.all([
+    getCatalogCategories(),
+    getCatalogSeries(),
+  ]);
 
   return (
     <div className={styles.page}>
@@ -42,6 +53,8 @@ export default async function NewProductPage({
       <ProductForm
         action={createProductAction}
         submitLabel="建立一般商品"
+        catalogCategories={catalogCategories}
+        catalogSeries={catalogSeries}
       />
     </div>
   );

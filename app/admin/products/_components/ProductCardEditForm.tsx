@@ -3,12 +3,16 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
-import { categoryConfig } from "../../../../lib/storefront-core";
+import type {
+  CatalogCategory,
+  CatalogSeries,
+} from "../../../../lib/catalog-repository";
 import type {
   DatabaseProduct,
   ProductStatus,
 } from "../../../../lib/product-repository";
 import ProductImageUploader from "./ProductImageUploader";
+import ProductCatalogFields from "./ProductCatalogFields";
 import MediaPicker, {
   type PickerMediaAsset,
 } from "../../website-studio/components/MediaPicker";
@@ -20,6 +24,9 @@ type Props = {
   action: (formData: FormData) => void | Promise<void>;
   initialTab?: Tab;
   returnTo?: string;
+  catalogCategories: CatalogCategory[];
+  catalogSeries: CatalogSeries[];
+  initialCategoryIds: number[];
 };
 
 type Tab = "card" | "detail";
@@ -29,7 +36,6 @@ type ExpandedItem = {
   content: string;
 };
 
-const categories = Object.keys(categoryConfig).filter((category) => category !== "組合價");
 
 function normalizeOriginalPriceInput(value: string) {
   const match = value.trim().match(/^原價\s*\$\s*([\d,]+)$/);
@@ -175,6 +181,9 @@ export default function ProductCardEditForm({
   product,
   initialTab = "card",
   returnTo,
+  catalogCategories,
+  catalogSeries,
+  initialCategoryIds,
 }: Props) {
   const [tab, setTab] = useState<Tab>(initialTab);
   const [imageUploading, setImageUploading] = useState(false);
@@ -206,23 +215,10 @@ export default function ProductCardEditForm({
     product.status ?? "active"
   );
 
-const initialCategory = product.category?.trim() ?? "";
-
-const [category, setCategory] = useState<string>(
-  categories.includes(initialCategory)
-    ? initialCategory
-    : categories[0] || "保養品"
-);
-  const initialStorefrontCategory =
-    product.storefrontCategory?.trim() ?? "";
-
-  const [storefrontCategory, setStorefrontCategory] = useState<string>(
-    categories.includes(initialStorefrontCategory)
-      ? initialStorefrontCategory
-      : categories[0] || "臉部保養"
-  );
-
-  const [series, setSeries] = useState(product.series ?? "");
+  const category =
+    product.category?.trim() ||
+    product.storefrontCategory?.trim() ||
+    "";
   const [spec, setSpec] = useState(product.spec ?? "");
   const [expiryNote, setExpiryNote] = useState(
     product.expiryNote ?? ""
@@ -1092,34 +1088,17 @@ return (
             </div>
 
             <div className={styles.twoColumns}>
-              <label>
-                <span>前台分類 *</span>
-                <select
-                  name="storefrontCategory"
-                  required
-                  value={storefrontCategory}
-                  onChange={(event) =>
-                    setStorefrontCategory(event.target.value)
-                  }
-                >
-                  {categories.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                <span>商品系列</span>
-                <input
-                  name="series"
-                  value={series}
-                  onChange={(event) =>
-                    setSeries(event.target.value)
-                  }
-                />
-              </label>
+              <ProductCatalogFields
+                catalogCategories={catalogCategories}
+                catalogSeries={catalogSeries}
+                initialPrimaryCategory={
+                  product.storefrontCategory ??
+                  product.category ??
+                  ""
+                }
+                initialCategoryIds={initialCategoryIds}
+                initialSeries={product.series ?? ""}
+              />
             </div>
           </section>
         </div>
