@@ -111,6 +111,11 @@ export default function MediaLibraryClient({
     useState(false);
 
   const [
+    cleanupQueuing,
+    setCleanupQueuing,
+  ] = useState(false);
+
+  const [
     usage,
     setUsage,
   ] =
@@ -644,6 +649,80 @@ export default function MediaLibraryClient({
     }
   }
 
+  async function queuePermanentCleanup() {
+    if (
+      !selected ||
+      view !== "trash" ||
+      cleanupQueuing
+    ) {
+      return;
+    }
+
+    if (
+      !usage ||
+      usage.inUse
+    ) {
+      setMessage(
+        "此圖片仍被網站使用，不能永久刪除。"
+      );
+      return;
+    }
+
+    const ok =
+      window.confirm(
+        `確定要永久刪除「${selected.title || selected.originalName}」嗎？\n\n此動作之後會刪除 NAS 原始檔與 Media 資料，無法從回收桶還原。\n\n目前先加入公司電腦永久清理佇列。`
+      );
+
+    if (!ok) {
+      return;
+    }
+
+    setCleanupQueuing(true);
+    setMessage(
+      "正在建立永久清理工作…"
+    );
+
+    try {
+      const response =
+        await fetch(
+          `/api/studio/media/${selected.id}/cleanup`,
+          {
+            method: "POST",
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        if (data.usage) {
+          setUsage(
+            data.usage as
+              MediaUsageResult
+          );
+        }
+
+        throw new Error(
+          data.error ||
+            "建立永久清理工作失敗。"
+        );
+      }
+
+      setMessage(
+        data.message ||
+          "已加入永久清理佇列。"
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "建立永久清理工作失敗。"
+      );
+    } finally {
+      setCleanupQueuing(false);
+    }
+  }
+
   return (
     <div style={styles.pageGrid}>
       <section style={styles.main}>
@@ -1116,14 +1195,48 @@ export default function MediaLibraryClient({
                   {!usageLoading &&
                   usage &&
                   !usage.inUse ? (
-                    <small
-                      style={
-                        styles.safeDeleteHint
-                      }
-                    >
-                      ✓ 此圖片已通過使用中檢查，
-                      下一步可進行永久清理。
-                    </small>
+                    <>
+                      <small
+                        style={
+                          styles.safeDeleteHint
+                        }
+                      >
+                        ✓ 此圖片已通過使用中檢查，
+                        可以加入永久清理佇列。
+                      </small>
+
+                      <div
+                        style={
+                          styles.permanentDeleteZone
+                        }
+                      >
+                        <strong>
+                          永久清理
+                        </strong>
+
+                        <small>
+                          執行前後端會再次檢查
+                          圖片是否仍被網站使用。
+                        </small>
+
+                        <button
+                          type="button"
+                          onClick={
+                            queuePermanentCleanup
+                          }
+                          disabled={
+                            cleanupQueuing
+                          }
+                          style={
+                            styles.permanentDeleteButton
+                          }
+                        >
+                          {cleanupQueuing
+                            ? "加入佇列中…"
+                            : "永久刪除此圖片"}
+                        </button>
+                      </div>
+                    </>
                   ) : null}
                 </div>
               )}
@@ -1457,5 +1570,30 @@ const styles: Record<
     color: "#315d45",
     fontWeight: 800,
     lineHeight: 1.5,
+  },
+
+  permanentDeleteZone: {
+    display: "grid",
+    gap: 8,
+    marginTop: 4,
+    padding: 11,
+    border:
+      "1px solid rgba(180,35,24,.18)",
+    borderRadius: 10,
+    background:
+      "rgba(180,35,24,.035)",
+    color: "#7a3029",
+    lineHeight: 1.5,
+  },
+
+  permanentDeleteButton: {
+    border:
+      "1px solid rgba(180,35,24,.32)",
+    borderRadius: 999,
+    padding: "10px 14px",
+    background: "#fff",
+    color: "#b42318",
+    cursor: "pointer",
+    fontWeight: 900,
   },
 };
