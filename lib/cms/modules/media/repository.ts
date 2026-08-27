@@ -433,3 +433,348 @@ export async function restoreMediaAsset(
     [id]
   );
 }
+
+export type MediaUsageReference = {
+  kind:
+    | "product"
+    | "bundle"
+    | "site-studio";
+  label: string;
+};
+
+function collectSiteStudioReferences(
+  value: unknown,
+  mediaUrl: string,
+  contentKey: string
+): MediaUsageReference[] {
+  if (
+    !value ||
+    typeof value !== "object"
+  ) {
+    return [];
+  }
+
+  const config =
+    value as Record<
+      string,
+      unknown
+    >;
+
+  const references:
+    MediaUsageReference[] = [];
+
+  function objectUsesMedia(
+    target: unknown
+  ) {
+    try {
+      return JSON.stringify(
+        target
+      ).includes(mediaUrl);
+    } catch {
+      return false;
+    }
+  }
+
+  const hero =
+    config.hero as
+      | Record<
+          string,
+          unknown
+        >
+      | undefined;
+
+  if (
+    hero &&
+    objectUsesMedia(hero)
+  ) {
+    references.push({
+      kind: "site-studio",
+      label:
+        contentKey ===
+        "homepage_draft"
+          ? "首頁主視覺（草稿）"
+          : "首頁主視覺",
+    });
+  }
+
+  const secondaryHero =
+    config.secondaryHero as
+      | Record<
+          string,
+          unknown
+        >
+      | undefined;
+
+  if (
+    secondaryHero &&
+    objectUsesMedia(
+      secondaryHero
+    )
+  ) {
+    references.push({
+      kind: "site-studio",
+      label:
+        contentKey ===
+        "homepage_draft"
+          ? "第二主視覺（草稿）"
+          : "第二主視覺",
+    });
+  }
+
+  const rankings =
+    Array.isArray(
+      config.rankings
+    )
+      ? config.rankings
+      : [];
+
+  for (
+    const ranking
+    of rankings
+  ) {
+    if (
+      !ranking ||
+      typeof ranking !==
+        "object" ||
+      !objectUsesMedia(
+        ranking
+      )
+    ) {
+      continue;
+    }
+
+    const row =
+      ranking as Record<
+        string,
+        unknown
+      >;
+
+    const rank =
+      Number(row.rank);
+
+    references.push({
+      kind: "site-studio",
+      label:
+        Number.isFinite(rank)
+          ? `排行榜 TOP ${rank}${
+              contentKey ===
+              "homepage_draft"
+                ? "（草稿）"
+                : ""
+            }`
+          : contentKey ===
+            "homepage_draft"
+          ? "排行榜（草稿）"
+          : "排行榜",
+    });
+  }
+
+  const sections =
+    Array.isArray(
+      config.sections
+    )
+      ? config.sections
+      : [];
+
+  for (
+    const section
+    of sections
+  ) {
+    if (
+      !section ||
+      typeof section !==
+        "object" ||
+      !objectUsesMedia(
+        section
+      )
+    ) {
+      continue;
+    }
+
+    const row =
+      section as Record<
+        string,
+        unknown
+      >;
+
+    const title =
+      String(
+        row.title ||
+          row.name ||
+          row.key ||
+          "首頁區塊"
+      );
+
+    references.push({
+      kind: "site-studio",
+      label:
+        contentKey ===
+        "homepage_draft"
+          ? `首頁區塊：${title}（草稿）`
+          : `首頁區塊：${title}`,
+    });
+  }
+
+  if (
+    references.length === 0 &&
+    objectUsesMedia(config)
+  ) {
+    references.push({
+      kind: "site-studio",
+      label:
+        contentKey ===
+        "homepage_draft"
+          ? "Website Studio 首頁草稿"
+          : "Website Studio 正式首頁",
+    });
+  }
+
+  return references;
+}
+
+export async function getMediaAssetUsage(
+  id: number
+) {
+  const mediaUrl =
+    `/api/studio/media/${id}/file`;
+
+  const references:
+    MediaUsageReference[] =
+      [];
+
+  const products =
+    await dbQuery<{
+      id: number;
+      name: string | null;
+      sku: string | null;
+    }>(
+      `
+        SELECT
+          id,
+          to_jsonb(products)
+            ->> 'name'
+            AS name,
+          to_jsonb(products)
+            ->> 'sku'
+            AS sku
+        FROM products
+        WHERE
+          to_jsonb(products)::text
+          LIKE '%' || $1 || '%'
+        ORDER BY id
+        LIMIT 100
+      `,
+      [mediaUrl]
+    );
+
+  for (
+    const product
+    of products.rows
+  ) {
+    const name =
+      product.name ||
+      `Product #${product.id}`;
+
+    const sku =
+      product.sku
+        ? `（${product.sku}）`
+        : "";
+
+    references.push({
+      kind: "product",
+      label:
+        `商品：${name}${sku}`,
+    });
+  }
+
+  const bundles =
+    await dbQuery<{
+      id: number;
+      name: string | null;
+      title: string | null;
+    }>(
+      `
+        SELECT
+          id,
+          to_jsonb(bundle_offers)
+            ->> 'name'
+            AS name,
+          to_jsonb(bundle_offers)
+            ->> 'title'
+            AS title
+        FROM bundle_offers
+        WHERE
+          to_jsonb(bundle_offers)::text
+          LIKE '%' || $1 || '%'
+        ORDER BY id
+        LIMIT 100
+      `,
+      [mediaUrl]
+    );
+
+  for (
+    const bundle
+    of bundles.rows
+  ) {
+    references.push({
+      kind: "bundle",
+      label:
+        `組合優惠：${
+          bundle.name ||
+          bundle.title ||
+          `Bundle #${bundle.id}`
+        }`,
+    });
+  }
+
+  const studio =
+    await dbQuery<{
+      content_key: string;
+      value: unknown;
+    }>(
+      `
+        SELECT
+          content_key,
+          value
+        FROM site_studio_content
+        WHERE
+          value::text
+          LIKE '%' || $1 || '%'
+        ORDER BY content_key
+      `,
+      [mediaUrl]
+    );
+
+  for (
+    const row
+    of studio.rows
+  ) {
+    references.push(
+      ...collectSiteStudioReferences(
+        row.value,
+        mediaUrl,
+        row.content_key
+      )
+    );
+  }
+
+  const deduped =
+    Array.from(
+      new Map(
+        references.map(
+          (reference) => [
+            `${reference.kind}:${reference.label}`,
+            reference,
+          ]
+        )
+      ).values()
+    );
+
+  return {
+    mediaId: id,
+    mediaUrl,
+    inUse:
+      deduped.length > 0,
+    references: deduped,
+  };
+}

@@ -14,6 +14,22 @@ type LibraryView =
   | "library"
   | "trash";
 
+type MediaUsageReference = {
+  kind:
+    | "product"
+    | "bundle"
+    | "site-studio";
+  label: string;
+};
+
+type MediaUsageResult = {
+  mediaId: number;
+  mediaUrl: string;
+  inUse: boolean;
+  references:
+    MediaUsageReference[];
+};
+
 function bytesLabel(
   value: number
 ) {
@@ -94,6 +110,19 @@ export default function MediaLibraryClient({
   const [restoring, setRestoring] =
     useState(false);
 
+  const [
+    usage,
+    setUsage,
+  ] =
+    useState<MediaUsageResult | null>(
+      null
+    );
+
+  const [
+    usageLoading,
+    setUsageLoading,
+  ] = useState(false);
+
   const [hydrated, setHydrated] =
     useState(false);
 
@@ -101,6 +130,89 @@ export default function MediaLibraryClient({
     setHydrated(true);
     void refresh("trash");
   }, []);
+
+  useEffect(() => {
+    if (
+      view !== "trash" ||
+      !selectedId
+    ) {
+      setUsage(null);
+      setUsageLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadUsage() {
+      setUsageLoading(true);
+      setUsage(null);
+
+      try {
+        const response =
+          await fetch(
+            `/api/studio/media/${selectedId}/usage`,
+            {
+              cache:
+                "no-store",
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (
+          cancelled
+        ) {
+          return;
+        }
+
+        if (
+          !response.ok
+        ) {
+          throw new Error(
+            data.error ||
+              "無法檢查圖片使用狀態。"
+          );
+        }
+
+        setUsage(
+          data as
+            MediaUsageResult
+        );
+      } catch (error) {
+        if (
+          cancelled
+        ) {
+          return;
+        }
+
+        setUsage(null);
+
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "無法檢查圖片使用狀態。"
+        );
+      } finally {
+        if (
+          !cancelled
+        ) {
+          setUsageLoading(
+            false
+          );
+        }
+      }
+    }
+
+    void loadUsage();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    view,
+    selectedId,
+  ]);
 
   const currentAssets =
     view === "trash"
@@ -908,6 +1020,82 @@ export default function MediaLibraryClient({
                     Media Library 移除。
                   </small>
 
+                  <div
+                    style={
+                      styles.usagePanel
+                    }
+                  >
+                    <strong>
+                      圖片使用狀態
+                    </strong>
+
+                    {usageLoading ? (
+                      <small>
+                        正在檢查網站引用…
+                      </small>
+                    ) : usage?.inUse ? (
+                      <>
+                        <span
+                          style={
+                            styles.usageLocked
+                          }
+                        >
+                          🔒 使用中
+                        </span>
+
+                        <small>
+                          此圖片仍被網站引用，
+                          目前不可永久刪除。
+                        </small>
+
+                        <div
+                          style={
+                            styles.usageList
+                          }
+                        >
+                          {usage.references.map(
+                            (
+                              reference,
+                              index
+                            ) => (
+                              <span
+                                key={
+                                  `${reference.kind}-${reference.label}-${index}`
+                                }
+                              >
+                                •{" "}
+                                {
+                                  reference.label
+                                }
+                              </span>
+                            )
+                          )}
+                        </div>
+                      </>
+                    ) : usage ? (
+                      <>
+                        <span
+                          style={
+                            styles.usageSafe
+                          }
+                        >
+                          ⚪ 未使用
+                        </span>
+
+                        <small>
+                          目前沒有找到商品、
+                          組合優惠或
+                          Website Studio
+                          的圖片引用。
+                        </small>
+                      </>
+                    ) : (
+                      <small>
+                        尚未取得使用狀態。
+                      </small>
+                    )}
+                  </div>
+
                   <button
                     type="button"
                     onClick={
@@ -924,6 +1112,19 @@ export default function MediaLibraryClient({
                       ? "還原中…"
                       : "還原到 Media Library"}
                   </button>
+
+                  {!usageLoading &&
+                  usage &&
+                  !usage.inUse ? (
+                    <small
+                      style={
+                        styles.safeDeleteHint
+                      }
+                    >
+                      ✓ 此圖片已通過使用中檢查，
+                      下一步可進行永久清理。
+                    </small>
+                  ) : null}
                 </div>
               )}
             </form>
@@ -1221,5 +1422,40 @@ const styles: Record<
     color: "#315d45",
     cursor: "pointer",
     fontWeight: 900,
+  },
+
+  usagePanel: {
+    display: "grid",
+    gap: 7,
+    padding: 11,
+    border:
+      "1px solid rgba(61,45,49,.10)",
+    borderRadius: 10,
+    background: "#fff",
+  },
+
+  usageLocked: {
+    color: "#b42318",
+    fontWeight: 900,
+  },
+
+  usageSafe: {
+    color: "#315d45",
+    fontWeight: 900,
+  },
+
+  usageList: {
+    display: "grid",
+    gap: 4,
+    padding: "4px 0",
+    color: "#6f5e63",
+    fontSize: 12,
+    lineHeight: 1.5,
+  },
+
+  safeDeleteHint: {
+    color: "#315d45",
+    fontWeight: 800,
+    lineHeight: 1.5,
   },
 };
