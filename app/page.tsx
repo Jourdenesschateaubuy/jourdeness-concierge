@@ -781,7 +781,49 @@ function Home() {
     };
   }, []);
 
-  const seriesList = categoryConfig[selectedCategory] ?? ["全部"];
+  const selectedCatalogCategory =
+    storefrontCatalogCategories.find(
+      (category) =>
+        category.isActive &&
+        category.name ===
+          selectedCategory
+    );
+
+  const catalogSeriesList =
+    selectedCatalogCategory
+      ? Array.from(
+          new Set(
+            storefrontCatalogSeries
+              .filter(
+                (item) =>
+                  item.categoryId ===
+                    selectedCatalogCategory.id &&
+                  item.isActive
+              )
+              .sort(
+                (a, b) =>
+                  a.sortOrder -
+                    b.sortOrder ||
+                  a.id - b.id
+              )
+              .map(
+                (item) =>
+                  item.name.trim()
+              )
+              .filter(Boolean)
+          )
+        )
+      : null;
+
+  const seriesList =
+    catalogSeriesList
+      ? [
+          "全部",
+          ...catalogSeriesList,
+        ]
+      : categoryConfig[
+          selectedCategory
+        ] ?? ["全部"];
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery);
   const monthlyOfferIdsV316 = new Set([34, 121]);
@@ -1077,6 +1119,17 @@ function Home() {
 
   function matchesSeriesV31(product: Product) {
     if (selectedSeries === "全部") return true;
+
+    const productSeries =
+      product.series?.trim();
+
+    if (
+      productSeries &&
+      productSeries ===
+        selectedSeries
+    ) {
+      return true;
+    }
 
     const fullText = `${product.name} ${product.category} ${product.series} ${product.description} ${product.price}`;
     const tags = getProductTags(product);
