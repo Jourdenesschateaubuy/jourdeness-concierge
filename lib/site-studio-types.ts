@@ -49,6 +49,13 @@ export type SiteStudioSectionKind =
   | "products"
   | "image";
 
+export type SiteStudioSectionItem = {
+  targetType:
+    | "product"
+    | "bundle_offer";
+  targetId: number;
+};
+
 export type SiteStudioSection = {
   key: SiteStudioSectionKey;
   label: string;
@@ -60,6 +67,7 @@ export type SiteStudioSection = {
   sortOrder?: number;
   locked?: boolean;
   productIds?: number[];
+  items?: SiteStudioSectionItem[];
   image?: string;
   desktopImage?: string;
   alt?: string;
@@ -309,6 +317,73 @@ function normalizeRanking(
   };
 }
 
+function normalizeSiteStudioSectionItems(
+  value:
+    | SiteStudioSectionItem[]
+    | null
+    | undefined,
+  fallbackProductIds: number[]
+): SiteStudioSectionItem[] {
+  const candidates =
+    Array.isArray(value)
+      ? value
+      : fallbackProductIds.map(
+          (targetId) => ({
+            targetType:
+              "product" as const,
+            targetId,
+          })
+        );
+
+  const result:
+    SiteStudioSectionItem[] = [];
+
+  const seen =
+    new Set<string>();
+
+  for (const candidate of candidates) {
+    const targetType =
+      candidate?.targetType ===
+      "bundle_offer"
+        ? "bundle_offer"
+        : candidate?.targetType ===
+            "product"
+          ? "product"
+          : null;
+
+    const targetId =
+      Number(
+        candidate?.targetId
+      );
+
+    if (
+      !targetType ||
+      !Number.isInteger(targetId) ||
+      targetId <= 0
+    ) {
+      continue;
+    }
+
+    const key =
+      targetType +
+      ":" +
+      targetId;
+
+    if (seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+
+    result.push({
+      targetType,
+      targetId,
+    });
+  }
+
+  return result;
+}
+
 function normalizeSection(
   value: Partial<SiteStudioSection> | null | undefined,
   fallback: SiteStudioSection
@@ -323,6 +398,25 @@ function normalizeSection(
         : fallback.visible,
   };
 
+  const fallbackProductIds =
+    Array.isArray(
+      merged.productIds
+    )
+      ? merged.productIds
+          .map(Number)
+          .filter(
+            (id) =>
+              Number.isInteger(id) &&
+              id > 0
+          )
+      : [];
+
+  const items =
+    normalizeSiteStudioSectionItems(
+      merged.items,
+      fallbackProductIds
+    );
+
   return {
     ...merged,
     kind: merged.kind ?? "system",
@@ -331,11 +425,18 @@ function normalizeSection(
         ? merged.sortOrder
         : fallback.sortOrder ?? 999,
     locked: Boolean(merged.locked),
-    productIds: Array.isArray(merged.productIds)
-      ? merged.productIds
-          .map(Number)
-          .filter((id) => Number.isInteger(id) && id > 0)
-      : [],
+    productIds:
+      items
+        .filter(
+          (item) =>
+            item.targetType ===
+            "product"
+        )
+        .map(
+          (item) =>
+            item.targetId
+        ),
+    items,
     linkType: merged.linkType ?? "none",
     linkValue: merged.linkValue ?? "",
   };
@@ -350,6 +451,25 @@ function normalizeCustomSection(
   const kind: SiteStudioSectionKind =
     value.kind === "image" ? "image" : "products";
 
+  const fallbackProductIds =
+    Array.isArray(
+      value.productIds
+    )
+      ? value.productIds
+          .map(Number)
+          .filter(
+            (id) =>
+              Number.isInteger(id) &&
+              id > 0
+          )
+      : [];
+
+  const items =
+    normalizeSiteStudioSectionItems(
+      value.items,
+      fallbackProductIds
+    );
+
   return {
     key: String(value.key),
     label: String(value.label ?? value.title ?? "自訂首頁區塊"),
@@ -361,11 +481,18 @@ function normalizeCustomSection(
     sortOrder:
       typeof value.sortOrder === "number" ? value.sortOrder : 100 + index,
     locked: false,
-    productIds: Array.isArray(value.productIds)
-      ? value.productIds
-          .map(Number)
-          .filter((id) => Number.isInteger(id) && id > 0)
-      : [],
+    productIds:
+      items
+        .filter(
+          (item) =>
+            item.targetType ===
+            "product"
+        )
+        .map(
+          (item) =>
+            item.targetId
+        ),
+    items,
     image: String(value.image ?? ""),
     desktopImage: String(value.desktopImage ?? ""),
     alt: String(value.alt ?? value.title ?? "首頁視覺圖片"),
@@ -453,10 +580,3 @@ export function applySiteStudioPreviewPatch(
     ),
   };
 }
-
-
-
-
-
-
-

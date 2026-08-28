@@ -3015,40 +3015,273 @@ const sevenSequenceGuideV377 = [
     actionLabel?: string;
     onAction?: () => void;
   }) {
-    const studioSection = getStudioSection(studioKey);
-    if (!studioSection.visible) return null;
-    if (studioKey === "comingSoon" && products.length === 0) return null;
+    const studioSection =
+      getStudioSection(
+        studioKey
+      );
+
+    if (!studioSection.visible) {
+      return null;
+    }
+
+    type HomeSectionContent =
+      | {
+          targetType:
+            "product";
+          key: string;
+          product: Product;
+        }
+      | {
+          targetType:
+            "bundle_offer";
+          key: string;
+          offer:
+            StorefrontBundleOffer;
+        };
+
+    const contentItems:
+      HomeSectionContent[] = [];
+
+    const configuredItems =
+      Array.isArray(
+        studioSection.items
+      )
+        ? studioSection.items
+        : [];
+
+    if (
+      configuredItems.length >
+      0
+    ) {
+      for (
+        const item of
+        configuredItems
+      ) {
+        if (
+          item.targetType ===
+          "bundle_offer"
+        ) {
+          const offer =
+            bundleOffers.find(
+              (candidate) =>
+                candidate.id ===
+                item.targetId
+            );
+
+          if (offer) {
+            contentItems.push({
+              targetType:
+                "bundle_offer",
+              key:
+                "bundle_offer:" +
+                offer.id,
+              offer,
+            });
+          }
+
+          continue;
+        }
+
+        const product =
+          products.find(
+            (candidate) =>
+              candidate.id ===
+              item.targetId
+          );
+
+        if (product) {
+          contentItems.push({
+            targetType:
+              "product",
+            key:
+              "product:" +
+              product.id,
+            product,
+          });
+        }
+      }
+    } else {
+      for (
+        const product of products
+      ) {
+        contentItems.push({
+          targetType:
+            "product",
+          key:
+            "product:" +
+            product.id,
+          product,
+        });
+      }
+    }
+
+    if (
+      studioKey ===
+        "comingSoon" &&
+      contentItems.length === 0
+    ) {
+      return null;
+    }
 
     return (
-      <section className="home-product-section mall-shelf-section-v271" id={id}>
+      <section
+        className="home-product-section mall-shelf-section-v271"
+        id={id}
+      >
         <div
-          className={`section-heading compact ${
-            isAdminMode && isAdminEditMode
-              ? "admin-v2-manageable-site-block"
-              : ""
-          }`}
+          className={
+            "section-heading compact " +
+            (
+              isAdminMode &&
+              isAdminEditMode
+                ? "admin-v2-manageable-site-block"
+                : ""
+            )
+          }
           onClick={(event) =>
-            selectStudioSection(event, studioKey, studioSection.label)
+            selectStudioSection(
+              event,
+              studioKey,
+              studioSection.label
+            )
           }
         >
-          {studioSection.eyebrow && <span>{studioSection.eyebrow}</span>}
-          <h2>{studioSection.title || title}</h2>
-          {(studioSection.subtitle || subtitle) && (
-            <p>{studioSection.subtitle || subtitle}</p>
+          {studioSection.eyebrow && (
+            <span>
+              {
+                studioSection.eyebrow
+              }
+            </span>
+          )}
+
+          <h2>
+            {studioSection.title ||
+              title}
+          </h2>
+
+          {(studioSection.subtitle ||
+            subtitle) && (
+            <p>
+              {studioSection.subtitle ||
+                subtitle}
+            </p>
           )}
         </div>
 
         <div className="home-product-grid">
-          {products.map((product) => (
-            <ProductCard product={product} key={`home-${id ?? title}-${product.id}`} />
-          ))}
+          {contentItems.map(
+            (content) =>
+              content.targetType ===
+              "product" ? (
+                <ProductCard
+                  product={
+                    content.product
+                  }
+                  key={
+                    "home-" +
+                    (id ?? title) +
+                    "-" +
+                    content.key
+                  }
+                />
+              ) : (
+                <article
+                  className="product-card"
+                  key={
+                    "home-" +
+                    (id ?? title) +
+                    "-" +
+                    content.key
+                  }
+                >
+                  {content.offer
+                    .coverImage ? (
+                    <div className="product-image">
+                      <img
+                        src={
+                          content.offer
+                            .coverImage
+                        }
+                        alt={
+                          content.offer
+                            .name
+                        }
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : (
+                    <div className="product-image">
+                      <span>
+                        組合優惠
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="product-info">
+                    <div className="product-card-title-zone-v365">
+                      <div className="product-card-title-slot-v364">
+                        <h3>
+                          {
+                            content.offer
+                              .name
+                          }
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
+                      {content.offer
+                        .cardOriginalPriceText ? (
+                        <p className="original-price">
+                          {
+                            content.offer
+                              .cardOriginalPriceText
+                          }
+                        </p>
+                      ) : null}
+
+                      {content.offer
+                        .cardPriceText ? (
+                        <p className="price">
+                          {
+                            content.offer
+                              .cardPriceText
+                          }
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="product-card-actions-v358">
+                      <button
+                        type="button"
+                        className="add-cart-button compact-add-cart-v350 cart-card-button-v358"
+                        onClick={() =>
+                          openBundleOfferDetail(
+                            content.offer
+                          )
+                        }
+                      >
+                        <span>
+                          查看組合
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              )
+          )}
         </div>
 
-        {actionLabel && onAction && (
-          <button type="button" className="home-more-button" onClick={onAction}>
-            {actionLabel}
-          </button>
-        )}
+        {actionLabel &&
+          onAction && (
+            <button
+              type="button"
+              className="home-more-button"
+              onClick={onAction}
+            >
+              {actionLabel}
+            </button>
+          )}
       </section>
     );
   }

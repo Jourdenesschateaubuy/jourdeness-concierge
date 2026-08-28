@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import {
+  useEffect,
   useMemo,
   useState,
   useTransition,
@@ -27,6 +28,7 @@ import { CSS } from "@dnd-kit/utilities";
 
 import type {
   SiteStudioSection,
+  SiteStudioSectionItem,
 } from "../../../lib/site-studio-types";
 
 export type SectionProductOption = {
@@ -40,34 +42,114 @@ export type SectionProductOption = {
   series: string;
 };
 
+export type SectionBundleOfferOption = {
+  id: number;
+  name: string;
+  status: string;
+  image: string;
+  priceText: string;
+  category: string;
+  series: string;
+};
+
+type ContentTypeFilter =
+  | "all"
+  | "product"
+  | "bundle_offer";
+
+type SectionContentOption = {
+  key: string;
+  targetType:
+    | "product"
+    | "bundle_offer";
+  targetId: number;
+  displayCode: string;
+  title: string;
+  image: string;
+  meta: string;
+  status: string;
+};
+
 type Props = {
   section: SiteStudioSection;
   products: SectionProductOption[];
+  bundleOffers:
+    SectionBundleOfferOption[];
   onSaved?: (
     section: SiteStudioSection
   ) => void;
 };
 
+function itemKey(
+  item: SiteStudioSectionItem
+) {
+  return (
+    item.targetType +
+    ":" +
+    item.targetId
+  );
+}
+
+function initialItems(
+  section: SiteStudioSection
+): SiteStudioSectionItem[] {
+  if (
+    Array.isArray(section.items)
+  ) {
+    return section.items;
+  }
+
+  return (
+    section.productIds ?? []
+  ).map(
+    (targetId) => ({
+      targetType:
+        "product" as const,
+      targetId,
+    })
+  );
+}
+
 export default function SiteStudioSectionProductManager({
   section,
   products,
+  bundleOffers,
   onSaved,
 }: Props) {
-  const [productIds, setProductIds] =
-    useState<number[]>(
-      section.productIds ?? []
+  const [items, setItems] =
+    useState<
+      SiteStudioSectionItem[]
+    >(
+      initialItems(section)
     );
 
   const [
-    selectedProductId,
-    setSelectedProductId,
+    selectedContentKey,
+    setSelectedContentKey,
   ] = useState("");
+
+  const [
+    contentType,
+    setContentType,
+  ] =
+    useState<ContentTypeFilter>(
+      "all"
+    );
 
   const [message, setMessage] =
     useState("");
 
   const [isPending, startTransition] =
     useTransition();
+
+  useEffect(() => {
+    setItems(
+      initialItems(section)
+    );
+  }, [
+    section.items,
+    section.productIds,
+  ]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -83,60 +165,210 @@ export default function SiteStudioSectionProductManager({
     })
   );
 
-  const selectedProducts =
+  const catalogOptions =
+    useMemo<
+      SectionContentOption[]
+    >(
+      () => [
+        ...products.map(
+          (product) => ({
+            key:
+              "product:" +
+              product.id,
+            targetType:
+              "product" as const,
+            targetId:
+              product.id,
+            displayCode:
+              product.displayCode,
+            title:
+              product.cardName ||
+              product.name,
+            image:
+              product.image,
+            meta:
+              product.series ||
+              product.category,
+            status:
+              product.status,
+          })
+        ),
+
+        ...bundleOffers.map(
+          (offer) => ({
+            key:
+              "bundle_offer:" +
+              offer.id,
+            targetType:
+              "bundle_offer" as const,
+            targetId:
+              offer.id,
+            displayCode:
+              "Bundle #" +
+              offer.id,
+            title:
+              offer.name,
+            image:
+              offer.image,
+            meta:
+              offer.priceText ||
+              offer.series ||
+              offer.category ||
+              "組合優惠",
+            status:
+              offer.status,
+          })
+        ),
+      ],
+      [
+        products,
+        bundleOffers,
+      ]
+    );
+
+  const optionMap =
     useMemo(
       () =>
-        productIds
-          .map((id) =>
-            products.find(
-              (product) =>
-                product.id === id
-            )
+        new Map(
+          catalogOptions.map(
+            (option) => [
+              option.key,
+              option,
+            ]
+          )
+        ),
+      [catalogOptions]
+    );
+
+  const selectedKeys =
+    useMemo(
+      () =>
+        new Set(
+          items.map(itemKey)
+        ),
+      [items]
+    );
+
+  const selectedContent =
+    useMemo(
+      () =>
+        items.map((item) => {
+          const key =
+            itemKey(item);
+
+          return (
+            optionMap.get(key) ?? {
+              key,
+              targetType:
+                item.targetType,
+              targetId:
+                item.targetId,
+              displayCode:
+                item.targetType ===
+                "bundle_offer"
+                  ? "Bundle #" +
+                    item.targetId
+                  : "Product #" +
+                    item.targetId,
+              title:
+                "找不到目前內容資料",
+              image: "",
+              meta:
+                "可直接移除此項目",
+              status:
+                "inactive",
+            }
+          );
+        }),
+      [
+        items,
+        optionMap,
+      ]
+    );
+
+  const availableContent =
+    useMemo(
+      () =>
+        catalogOptions
+          .filter(
+            (option) =>
+              !selectedKeys.has(
+                option.key
+              )
           )
           .filter(
-            (
-              product
-            ): product is SectionProductOption =>
-              Boolean(product)
+            (option) =>
+              contentType === "all"
+                ? true
+                : option.targetType ===
+                  contentType
           ),
-      [productIds, products]
+      [
+        catalogOptions,
+        selectedKeys,
+        contentType,
+      ]
     );
 
-  const availableProducts =
-    useMemo(
-      () =>
-        products.filter(
-          (product) =>
-            !productIds.includes(
-              product.id
-            )
-        ),
-      [productIds, products]
-    );
+  useEffect(() => {
+    if (
+      selectedContentKey &&
+      !availableContent.some(
+        (option) =>
+          option.key ===
+          selectedContentKey
+      )
+    ) {
+      setSelectedContentKey(
+        ""
+      );
+    }
+  }, [
+    selectedContentKey,
+    availableContent,
+  ]);
 
   async function save(
-    nextProductIds: number[]
+    nextItems:
+      SiteStudioSectionItem[]
   ) {
-    const nextSection = {
-      ...section,
-      productIds:
-        nextProductIds,
-    };
+    const nextProductIds =
+      nextItems
+        .filter(
+          (item) =>
+            item.targetType ===
+            "product"
+        )
+        .map(
+          (item) =>
+            item.targetId
+        );
 
-    const response = await fetch(
-      "/api/admin/site-studio",
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-        body: JSON.stringify({
-          kind: "section",
-          section: nextSection,
-        }),
-      }
-    );
+    const nextSection:
+      SiteStudioSection = {
+        ...section,
+        productIds:
+          nextProductIds,
+        items:
+          nextItems,
+      };
+
+    const response =
+      await fetch(
+        "/api/admin/site-studio",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            kind: "section",
+            section:
+              nextSection,
+          }),
+        }
+      );
 
     const result =
       await response.json();
@@ -144,12 +376,27 @@ export default function SiteStudioSectionProductManager({
     if (!response.ok) {
       throw new Error(
         result?.error ||
-          "商品編排儲存失敗"
+          "首頁內容編排儲存失敗"
       );
     }
 
+    const savedSection =
+      Array.isArray(
+        result?.config?.sections
+      )
+        ? result.config.sections.find(
+            (
+              candidate:
+                SiteStudioSection
+            ) =>
+              candidate.key ===
+              section.key
+          )
+        : null;
+
     onSaved?.(
-      nextSection
+      savedSection ??
+        nextSection
     );
 
     window.dispatchEvent(
@@ -160,56 +407,56 @@ export default function SiteStudioSectionProductManager({
   }
 
   function persist(
-    nextProductIds: number[],
+    nextItems:
+      SiteStudioSectionItem[],
     successMessage: string
   ) {
     const previous =
-      productIds;
+      items;
 
-    setProductIds(
-      nextProductIds
+    setItems(
+      nextItems
     );
 
     setMessage(
       "儲存中…"
     );
 
-    startTransition(async () => {
-      try {
-        await save(
-          nextProductIds
-        );
+    startTransition(
+      async () => {
+        try {
+          await save(
+            nextItems
+          );
 
-        setMessage(
-          successMessage
-        );
-      } catch (error) {
-        setProductIds(
-          previous
-        );
+          setMessage(
+            successMessage
+          );
+        } catch (error) {
+          setItems(
+            previous
+          );
 
-        setMessage(
-          error instanceof Error
-            ? error.message
-            : "儲存失敗，已恢復原設定"
-        );
+          setMessage(
+            error instanceof Error
+              ? error.message
+              : "儲存失敗，已恢復原設定"
+          );
+        }
       }
-    });
+    );
   }
 
-  function addProduct() {
-    const productId =
-      Number(
-        selectedProductId
+  function addContent() {
+    const option =
+      optionMap.get(
+        selectedContentKey
       );
 
     if (
-      !Number.isInteger(
-        productId
-      ) ||
-      productId <= 0 ||
-      productIds.includes(
-        productId
+      !option ||
+      selectedKeys.has(
+        option.key
       )
     ) {
       return;
@@ -217,26 +464,35 @@ export default function SiteStudioSectionProductManager({
 
     persist(
       [
-        ...productIds,
-        productId,
+        ...items,
+        {
+          targetType:
+            option.targetType,
+          targetId:
+            option.targetId,
+        },
       ],
-      "商品已加入"
+      option.targetType ===
+        "bundle_offer"
+        ? "組合優惠已加入"
+        : "商品已加入"
     );
 
-    setSelectedProductId(
+    setSelectedContentKey(
       ""
     );
   }
 
-  function removeProduct(
-    productId: number
+  function removeContent(
+    key: string
   ) {
     persist(
-      productIds.filter(
-        (id) =>
-          id !== productId
+      items.filter(
+        (item) =>
+          itemKey(item) !==
+          key
       ),
-      "商品已移除"
+      "首頁內容已移除"
     );
   }
 
@@ -253,14 +509,17 @@ export default function SiteStudioSectionProductManager({
       return;
     }
 
+    const keys =
+      items.map(itemKey);
+
     const oldIndex =
-      productIds.indexOf(
-        Number(active.id)
+      keys.indexOf(
+        String(active.id)
       );
 
     const newIndex =
-      productIds.indexOf(
-        Number(over.id)
+      keys.indexOf(
+        String(over.id)
       );
 
     if (
@@ -272,11 +531,11 @@ export default function SiteStudioSectionProductManager({
 
     persist(
       arrayMove(
-        productIds,
+        items,
         oldIndex,
         newIndex
       ),
-      "商品排序已儲存"
+      "首頁內容排序已儲存"
     );
   }
 
@@ -287,30 +546,62 @@ export default function SiteStudioSectionProductManager({
       <div style={styles.heading}>
         <div>
           <strong>
-            編排商品
+            編排首頁內容
           </strong>
 
           <p>
-            選擇首頁要展示的商品，
-            並拖曳調整商品順序。
+            一般商品與組合優惠可以放在同一個區塊，
+            並拖曳調整顯示順序。
           </p>
         </div>
 
         <span
           style={styles.countBadge}
         >
-          {productIds.length}
-          {" "}個商品
+          {items.length}
+          {" "}個內容
         </span>
       </div>
 
       <div style={styles.addRow}>
         <select
+          value={contentType}
+          onChange={(event) =>
+            setContentType(
+              event.target
+                .value as
+                ContentTypeFilter
+            )
+          }
+          disabled={isPending}
+          style={
+            styles.typeSelect
+          }
+        >
+          <option value="all">
+            類型：全部
+          </option>
+
+          <option value="product">
+            類型：一般商品
+          </option>
+
+          {bundleOffers.length >
+          0 ? (
+            <option
+              value="bundle_offer"
+            >
+              類型：組合優惠
+            </option>
+          ) : null}
+        </select>
+
+        <select
           value={
-            selectedProductId
+            selectedContentKey
           }
           onChange={(event) =>
-            setSelectedProductId(
+            setSelectedContentKey(
               event.target.value
             )
           }
@@ -318,19 +609,26 @@ export default function SiteStudioSectionProductManager({
           style={styles.select}
         >
           <option value="">
-            選擇要加入的商品
+            選擇要加入的內容
           </option>
 
-          {availableProducts.map(
-            (product) => (
+          {availableContent.map(
+            (option) => (
               <option
-                key={product.id}
-                value={product.id}
+                key={option.key}
+                value={option.key}
               >
-                {product.displayCode}
+                {option.targetType ===
+                "bundle_offer"
+                  ? "[組合優惠] "
+                  : "[一般商品] "}
+                {option.displayCode}
                 {"｜"}
-                {product.cardName ||
-                  product.name}
+                {option.title}
+                {option.meta
+                  ? "｜" +
+                    option.meta
+                  : ""}
               </option>
             )
           )}
@@ -338,14 +636,16 @@ export default function SiteStudioSectionProductManager({
 
         <button
           type="button"
-          onClick={addProduct}
+          onClick={addContent}
           disabled={
             isPending ||
-            !selectedProductId
+            !selectedContentKey
           }
-          style={styles.addButton}
+          style={
+            styles.addButton
+          }
         >
-          ＋ 加入商品
+          ＋ 加入
         </button>
       </div>
 
@@ -359,10 +659,10 @@ export default function SiteStudioSectionProductManager({
         </small>
       ) : null}
 
-      {selectedProducts.length ===
+      {selectedContent.length ===
       0 ? (
         <div style={styles.empty}>
-          此區塊目前沒有商品。
+          此區塊目前沒有內容。
         </div>
       ) : (
         <DndContext
@@ -375,7 +675,9 @@ export default function SiteStudioSectionProductManager({
           }
         >
           <SortableContext
-            items={productIds}
+            items={items.map(
+              itemKey
+            )}
             strategy={
               verticalListSortingStrategy
             }
@@ -385,17 +687,21 @@ export default function SiteStudioSectionProductManager({
                 styles.productList
               }
             >
-              {selectedProducts.map(
-                (product) => (
-                  <SortableProductRow
-                    key={product.id}
-                    product={product}
+              {selectedContent.map(
+                (content) => (
+                  <SortableContentRow
+                    key={
+                      content.key
+                    }
+                    content={
+                      content
+                    }
                     disabled={
                       isPending
                     }
                     onRemove={() =>
-                      removeProduct(
-                        product.id
+                      removeContent(
+                        content.key
                       )
                     }
                   />
@@ -409,12 +715,13 @@ export default function SiteStudioSectionProductManager({
   );
 }
 
-function SortableProductRow({
-  product,
+function SortableContentRow({
+  content,
   disabled,
   onRemove,
 }: {
-  product: SectionProductOption;
+  content:
+    SectionContentOption;
   disabled: boolean;
   onRemove: () => void;
 }) {
@@ -426,7 +733,7 @@ function SortableProductRow({
     transition,
     isDragging,
   } = useSortable({
-    id: product.id,
+    id: content.key,
     disabled,
   });
 
@@ -448,23 +755,24 @@ function SortableProductRow({
     >
       <button
         type="button"
-        style={styles.dragHandle}
+        style={
+          styles.dragHandle
+        }
         disabled={disabled}
-        title="拖曳商品排序"
+        title="拖曳排序"
         {...attributes}
         {...listeners}
       >
         ☰
       </button>
 
-      <div style={styles.imageBox}>
-        {product.image ? (
+      <div
+        style={styles.imageBox}
+      >
+        {content.image ? (
           <img
-            src={product.image}
-            alt={
-              product.cardName ||
-              product.name
-            }
+            src={content.image}
+            alt={content.title}
             style={styles.image}
           />
         ) : (
@@ -473,18 +781,38 @@ function SortableProductRow({
       </div>
 
       <div style={styles.info}>
-        <small>
-          {product.displayCode}
-        </small>
+        <div
+          style={
+            styles.identityRow
+          }
+        >
+          <span
+            style={
+              content.targetType ===
+              "bundle_offer"
+                ? styles.bundleBadge
+                : styles.productBadge
+            }
+          >
+            {content.targetType ===
+            "bundle_offer"
+              ? "組合優惠"
+              : "一般商品"}
+          </span>
+
+          <small>
+            {
+              content.displayCode
+            }
+          </small>
+        </div>
 
         <strong>
-          {product.cardName ||
-            product.name}
+          {content.title}
         </strong>
 
         <span>
-          {product.series ||
-            product.category}
+          {content.meta}
         </span>
       </div>
 
@@ -535,12 +863,22 @@ const styles: Record<
   },
 
   addRow: {
-    display: "flex",
+    display: "grid",
+    gridTemplateColumns:
+      "160px minmax(0,1fr) auto",
     gap: 8,
   },
 
+  typeSelect: {
+    minWidth: 0,
+    padding: "9px 11px",
+    border:
+      "1px solid rgba(140,41,64,.18)",
+    borderRadius: 10,
+    background: "#fff",
+  },
+
   select: {
-    flex: 1,
     minWidth: 0,
     padding: "9px 11px",
     border:
@@ -610,6 +948,8 @@ const styles: Record<
     height: 62,
     borderRadius: 9,
     background: "#f4efec",
+    color: "#9b8f8b",
+    fontSize: 10,
   },
 
   image: {
@@ -620,8 +960,33 @@ const styles: Record<
 
   info: {
     display: "grid",
-    gap: 3,
+    gap: 4,
     minWidth: 0,
+  },
+
+  identityRow: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 6,
+  },
+
+  productBadge: {
+    padding: "3px 7px",
+    borderRadius: 999,
+    background: "#eef3fb",
+    color: "#365b8c",
+    fontSize: 10,
+    fontWeight: 800,
+  },
+
+  bundleBadge: {
+    padding: "3px 7px",
+    borderRadius: 999,
+    background: "#fff0e4",
+    color: "#9a5b27",
+    fontSize: 10,
+    fontWeight: 800,
   },
 
   removeButton: {

@@ -197,6 +197,26 @@ export default async function HomepageStudioPage() {
                   })
                 )
               }
+              bundleOffers={
+                bundleOffers.map(
+                  (offer) => ({
+                    id: offer.id,
+                    name: offer.name,
+                    status:
+                      offer.status,
+                    image:
+                      offer.coverImage || "",
+                    priceText:
+                      offer.cardPriceText || "",
+                    category:
+                      offer.storefrontCategory ||
+                      "組合優惠",
+                    series:
+                      offer.series ||
+                      "組合優惠",
+                  })
+                )
+              }
             />
           </section>
         </div>
@@ -388,24 +408,3 @@ const styles: Record<
     alignItems: "start",
   },
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

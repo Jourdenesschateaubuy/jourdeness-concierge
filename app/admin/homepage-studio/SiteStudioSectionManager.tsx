@@ -31,17 +31,21 @@ import type {
 } from "../../../lib/site-studio-types";
 
 import SiteStudioSectionProductManager, {
+  type SectionBundleOfferOption,
   type SectionProductOption,
 } from "./SiteStudioSectionProductManager";
 
 type Props = {
   initialSections: SiteStudioSection[];
   products: SectionProductOption[];
+  bundleOffers:
+    SectionBundleOfferOption[];
 };
 
 export default function SiteStudioSectionManager({
   initialSections,
   products,
+  bundleOffers,
 }: Props) {
   const [sections, setSections] =
     useState(initialSections);
@@ -374,6 +378,9 @@ export default function SiteStudioSectionManager({
                 key={section.key}
                 section={section}
                 products={products}
+                bundleOffers={
+                  bundleOffers
+                }
                 disabled={isPending}
                 editing={
                   editingKey ===
@@ -421,6 +428,7 @@ export default function SiteStudioSectionManager({
 function SectionCard({
   section,
   products,
+  bundleOffers,
   disabled,
   editing,
   onEdit,
@@ -430,6 +438,8 @@ function SectionCard({
 }: {
   section: SiteStudioSection;
   products: SectionProductOption[];
+  bundleOffers:
+    SectionBundleOfferOption[];
   disabled: boolean;
   editing: boolean;
   onEdit: () => void;
@@ -531,8 +541,10 @@ function SectionCard({
             </>
           ) : (
             <small style={styles.compactMeta}>
-              {section.productIds?.length ?? 0}
-              {" 個商品"}
+              {section.items?.length ??
+                section.productIds?.length ??
+                0}
+              {" 個內容"}
             </small>
           )}
         </div>
@@ -639,10 +651,20 @@ function SectionCard({
             <SiteStudioSectionProductManager
               section={section}
               products={products}
+              bundleOffers={
+                section.kind ===
+                  "products" ||
+                section.key ===
+                  "monthlyOffers"
+                  ? bundleOffers
+                  : []
+              }
               onSaved={(savedSection) =>
                 onChange({
                   productIds:
                     savedSection.productIds ?? [],
+                  items:
+                    savedSection.items ?? [],
                 })
               }
             />
@@ -883,18 +905,3 @@ const styles: Record<
     fontWeight: 800,
   },
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
