@@ -73,6 +73,39 @@ const statusLabels: Record<ProductStatus, string> = {
   sold_out: "售罄",
 };
 
+function imageReferenceKey(value: string) {
+  const clean = value.trim();
+
+  if (!clean) return "";
+
+  try {
+    const url = new URL(
+      clean,
+      "https://jourdeness.local"
+    );
+
+    return url.pathname.replace(/\/+$/g, "");
+  } catch {
+    return clean
+      .split(/[?#]/, 1)[0]
+      .replace(/\/+$/g, "");
+  }
+}
+
+function isSameImageReference(
+  left: string,
+  right: string
+) {
+  const leftKey = imageReferenceKey(left);
+  const rightKey = imageReferenceKey(right);
+
+  return Boolean(
+    leftKey &&
+    rightKey &&
+    leftKey === rightKey
+  );
+}
+
 function moveItem<T>(
   items: T[],
   from: number,
@@ -181,7 +214,13 @@ export default function BundleOfferCardEditForm({
 
   const [gallery, setGallery] =
     useState<string[]>(
-      initialOffer.gallery
+      initialOffer.gallery.filter(
+        (image) =>
+          !isSameImageReference(
+            image,
+            initialOffer.coverImage ?? ""
+          )
+      )
     );
 const [
     galleryPickerOpen,
@@ -218,7 +257,23 @@ function addGalleryImage(
       `/api/studio/media/${asset.id}/file`;
 
     setGallery((current) => {
-      if (current.includes(imageUrl)) {
+      if (
+        isSameImageReference(
+          imageUrl,
+          coverImage
+        )
+      ) {
+        return current;
+      }
+
+      if (
+        current.some((image) =>
+          isSameImageReference(
+            image,
+            imageUrl
+          )
+        )
+      ) {
         return current;
       }
 
@@ -479,9 +534,23 @@ function addGalleryImage(
 
               <ProductImageUploader
                 initialImage={coverImage}
-                onImageChange={(image) =>
-                  setCoverImage(image)
-                }
+                onImageChange={(image) => {
+                  setCoverImage(image);
+
+                  if (!image) {
+                    return;
+                  }
+
+                  setGallery((current) =>
+                    current.filter(
+                      (galleryImage) =>
+                        !isSameImageReference(
+                          galleryImage,
+                          image
+                        )
+                    )
+                  );
+                }}
               />
 
               <div
