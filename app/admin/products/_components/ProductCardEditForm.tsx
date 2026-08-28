@@ -106,6 +106,39 @@ function SaveChangesButton({
   );
 }
 
+function imageReferenceKey(value: string) {
+  const clean = value.trim();
+
+  if (!clean) return "";
+
+  try {
+    const url = new URL(
+      clean,
+      "https://jourdeness.local"
+    );
+
+    return url.pathname.replace(/\/+$/g, "");
+  } catch {
+    return clean
+      .split(/[?#]/, 1)[0]
+      .replace(/\/+$/g, "");
+  }
+}
+
+function isSameImageReference(
+  left: string,
+  right: string
+) {
+  const leftKey = imageReferenceKey(left);
+  const rightKey = imageReferenceKey(right);
+
+  return Boolean(
+    leftKey &&
+    rightKey &&
+    leftKey === rightKey
+  );
+}
+
 function moveItem<T>(items: T[], from: number, to: number) {
   if (to < 0 || to >= items.length) return items;
 
@@ -187,8 +220,19 @@ export default function ProductCardEditForm({
 }: Props) {
   const [tab, setTab] = useState<Tab>(initialTab);
   const [imageUploading, setImageUploading] = useState(false);
+
+  const [primaryImage, setPrimaryImage] = useState(
+    product.image ?? ""
+  );
+
   const [gallery, setGallery] = useState<string[]>(
-    product.gallery ?? []
+    (product.gallery ?? []).filter(
+      (image) =>
+        !isSameImageReference(
+          image,
+          product.image ?? ""
+        )
+    )
   );
   const [galleryPickerOpen, setGalleryPickerOpen] =
     useState(false);
@@ -248,11 +292,30 @@ const [features, setFeatures] = useState<string[]>(
       `/api/studio/media/${asset.id}/file`;
 
     setGallery((current) => {
-      if (current.includes(imageUrl)) {
+      if (
+        isSameImageReference(
+          imageUrl,
+          primaryImage
+        )
+      ) {
         return current;
       }
 
-      return [...current, imageUrl].slice(0, 8);
+      if (
+        current.some((image) =>
+          isSameImageReference(
+            image,
+            imageUrl
+          )
+        )
+      ) {
+        return current;
+      }
+
+      return [
+        ...current,
+        imageUrl,
+      ].slice(0, 8);
     });
   }
 
@@ -372,6 +435,23 @@ return (
             <ProductImageUploader
               initialImage={product.image ?? ""}
               onUploadingChange={setImageUploading}
+              onImageChange={(nextImage) => {
+                setPrimaryImage(nextImage);
+
+                if (!nextImage) {
+                  return;
+                }
+
+                setGallery((current) =>
+                  current.filter(
+                    (image) =>
+                      !isSameImageReference(
+                        image,
+                        nextImage
+                      )
+                  )
+                );
+              }}
             />
 
             <div
