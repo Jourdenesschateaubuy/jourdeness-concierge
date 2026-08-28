@@ -320,7 +320,9 @@ function addGalleryImage(
     }
   }
 
-  async function saveDetail() {
+  async function saveDetail(
+    saveCardAfter = true
+  ) {
     const response = await fetch(
       `/api/admin/bundle-offers/${initialOffer.id}/info`,
       {
@@ -353,7 +355,9 @@ function addGalleryImage(
     }
 
     // 管理設定仍由商品卡 API 保存。
-    await saveCard();
+    if (saveCardAfter) {
+      await saveCard();
+    }
   }
 
   async function handleSave() {
@@ -364,7 +368,11 @@ function addGalleryImage(
     try {
       if (tab === "card") {
         await saveCard();
-        setSuccess("商品卡已儲存。");
+        await saveDetail(false);
+
+        setSuccess(
+          "商品卡與商品圖片已儲存。"
+        );
       }
 
       if (tab === "detail") {
@@ -452,9 +460,9 @@ function addGalleryImage(
                 }
               >
                 <div>
-                  <strong>商品主圖</strong>
+                  <strong>商品圖片</strong>
                   <span>
-                    商品卡＋商品詳情主圖
+                    商品主圖＋商品詳情輪播圖片
                   </span>
                 </div>
 
@@ -465,7 +473,7 @@ function addGalleryImage(
                   <br />
                   建議格式：JPG
                   <br />
-                  使用位置：商品卡＋商品詳情主圖
+                  商品主圖固定為第一張
                 </small>
               </div>
 
@@ -475,6 +483,262 @@ function addGalleryImage(
                   setCoverImage(image)
                 }
               />
+
+              <div
+                className={
+                  styles.sectionTitleRow
+                }
+                style={{
+                  marginTop: 18,
+                }}
+              >
+                <div>
+                  <strong>
+                    其他輪播圖片
+                  </strong>
+
+                  <p
+                    className={
+                      styles.sectionHelp
+                    }
+                    style={{
+                      margin: "4px 0 0",
+                    }}
+                  >
+                    會接在商品主圖後方，
+                    顯示於商品詳情最上方輪播。
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={
+                    gallery.length >= 8
+                  }
+                  onClick={() =>
+                    setGalleryPickerOpen(
+                      true
+                    )
+                  }
+                >
+                  ＋從 Media Library 新增圖片
+                </button>
+              </div>
+
+              <p
+                className={
+                  styles.sectionHelp
+                }
+              >
+                目前共 {gallery.length + 1} 張：
+                商品主圖 1 張＋其他輪播圖片{" "}
+                {gallery.length} 張。
+              </p>
+
+              {gallery.length === 0 ? (
+                <p
+                  className={
+                    styles.emptyText
+                  }
+                >
+                  目前沒有其他輪播圖片。
+                </p>
+              ) : (
+                <div
+                  className={
+                    styles.repeatList
+                  }
+                >
+                  {gallery.map(
+                    (
+                      image,
+                      index
+                    ) => (
+                      <div
+                        className={
+                          styles.repeatItem
+                        }
+                        key={`${image}-${index}`}
+                        draggable
+                        onDragStart={() =>
+                          setDraggingGalleryIndex(
+                            index
+                          )
+                        }
+                        onDragEnd={() =>
+                          setDraggingGalleryIndex(
+                            null
+                          )
+                        }
+                        onDragOver={(
+                          event
+                        ) =>
+                          event.preventDefault()
+                        }
+                        onDrop={() => {
+                          if (
+                            draggingGalleryIndex !==
+                            null
+                          ) {
+                            moveGalleryByDrag(
+                              draggingGalleryIndex,
+                              index
+                            );
+                          }
+
+                          setDraggingGalleryIndex(
+                            null
+                          );
+                        }}
+                        style={{
+                          cursor: "grab",
+                          opacity:
+                            draggingGalleryIndex ===
+                            index
+                              ? 0.55
+                              : 1,
+                        }}
+                      >
+                        <div
+                          title="拖曳排序"
+                          aria-label="拖曳排序"
+                          style={{
+                            alignSelf:
+                              "stretch",
+                            display: "grid",
+                            placeItems:
+                              "center",
+                            minWidth: 34,
+                            color:
+                              "#8c2940",
+                            fontWeight:
+                              900,
+                            fontSize: 18,
+                            userSelect:
+                              "none",
+                          }}
+                        >
+                          ☰
+                        </div>
+
+                        <img
+                          src={image}
+                          alt={`商品圖片 ${index + 2}`}
+                          style={{
+                            width: 88,
+                            height: 88,
+                            objectFit:
+                              "contain",
+                            borderRadius:
+                              10,
+                            border:
+                              "1px solid rgba(140,41,64,.12)",
+                            background:
+                              "#fff",
+                          }}
+                        />
+
+                        <div
+                          style={{
+                            flex: 1,
+                            minWidth: 0,
+                          }}
+                        >
+                          <strong>
+                            第 {index + 2} 張
+                          </strong>
+
+                          <small
+                            style={{
+                              display:
+                                "block",
+                              marginTop: 4,
+                              overflow:
+                                "hidden",
+                              textOverflow:
+                                "ellipsis",
+                              whiteSpace:
+                                "nowrap",
+                            }}
+                          >
+                            {image}
+                          </small>
+                        </div>
+
+                        <div
+                          className={
+                            styles.itemActions
+                          }
+                        >
+                          <button
+                            type="button"
+                            disabled={
+                              index === 0
+                            }
+                            onClick={() =>
+                              setGallery(
+                                moveItem(
+                                  gallery,
+                                  index,
+                                  index - 1
+                                )
+                              )
+                            }
+                          >
+                            ↑
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={
+                              index ===
+                              gallery.length - 1
+                            }
+                            onClick={() =>
+                              setGallery(
+                                moveItem(
+                                  gallery,
+                                  index,
+                                  index + 1
+                                )
+                              )
+                            }
+                          >
+                            ↓
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setGallery(
+                                gallery.filter(
+                                  (
+                                    _,
+                                    itemIndex
+                                  ) =>
+                                    itemIndex !==
+                                    index
+                                )
+                              )
+                            }
+                          >
+                            移除
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+
+              <p
+                className={
+                  styles.sectionHelp
+                }
+              >
+                可拖曳排序，也可使用 ↑ ↓ 微調。
+                商品主圖固定為第一張。
+              </p>
             </section>
 
             <div className={styles.fields}>
@@ -1246,236 +1510,6 @@ function addGalleryImage(
             </section>
 
             <section
-              className={
-                styles.detailSection
-              }
-            >
-              <div
-                className={
-                  styles.sectionTitleRow
-                }
-              >
-                <div
-                  className={
-                    styles.frontSectionHeading
-                  }
-                >
-                  <span>07</span>
-
-                  <div>
-                    <h3>
-                      更多商品圖片
-                    </h3>
-
-                    <small>
-                      商品資訊頁的其他圖片，最多 8 張
-                    </small>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  disabled={
-                    gallery.length >= 8
-                  }
-                  onClick={() =>
-                    setGalleryPickerOpen(
-                      true
-                    )
-                  }
-                >
-                  ＋從 Media Library 新增圖片
-                </button>
-              </div>
-
-              <p
-                className={
-                  styles.sectionHelp
-                }
-              >
-                已設定 {gallery.length} 張更多商品圖片；前台商品頁共顯示{" "}
-                {gallery.length + 1} 張（含商品主圖）。
-              </p>
-
-              {gallery.length === 0 ? (
-                <p
-                  className={
-                    styles.emptyText
-                  }
-                >
-                  目前沒有更多商品圖片。
-                </p>
-              ) : (
-                <div
-                  className={
-                    styles.repeatList
-                  }
-                >
-                  {gallery.map(
-                    (
-                      image,
-                      index
-                    ) => (
-                      <div
-                        className={
-                          styles.repeatItem
-                        }
-                        key={`${image}-${index}`}
-                        draggable
-                        onDragStart={() =>
-                          setDraggingGalleryIndex(
-                            index
-                          )
-                        }
-                        onDragEnd={() =>
-                          setDraggingGalleryIndex(
-                            null
-                          )
-                        }
-                        onDragOver={(
-                          event
-                        ) =>
-                          event.preventDefault()
-                        }
-                        onDrop={() => {
-                          if (
-                            draggingGalleryIndex !==
-                            null
-                          ) {
-                            moveGalleryByDrag(
-                              draggingGalleryIndex,
-                              index
-                            );
-                          }
-
-                          setDraggingGalleryIndex(
-                            null
-                          );
-                        }}
-                      >
-                        <img
-                          src={image}
-                          alt={`商品圖片 ${index + 1}`}
-                          style={{
-                            width: 88,
-                            height: 88,
-                            objectFit:
-                              "contain",
-                            borderRadius:
-                              10,
-                            border:
-                              "1px solid rgba(140,41,64,.12)",
-                            background:
-                              "#fff",
-                          }}
-                        />
-
-                        <div
-                          style={{
-                            flex: 1,
-                            minWidth: 0,
-                          }}
-                        >
-                          <strong>
-                            圖片{" "}
-                            {index + 1}
-                          </strong>
-
-                          <small
-                            style={{
-                              display:
-                                "block",
-                              overflow:
-                                "hidden",
-                              textOverflow:
-                                "ellipsis",
-                              whiteSpace:
-                                "nowrap",
-                            }}
-                          >
-                            {image}
-                          </small>
-                        </div>
-
-                        <div
-                          className={
-                            styles.itemActions
-                          }
-                        >
-                          <button
-                            type="button"
-                            disabled={
-                              index === 0
-                            }
-                            onClick={() =>
-                              setGallery(
-                                moveItem(
-                                  gallery,
-                                  index,
-                                  index -
-                                    1
-                                )
-                              )
-                            }
-                          >
-                            ↑
-                          </button>
-
-                          <button
-                            type="button"
-                            disabled={
-                              index ===
-                              gallery.length -
-                                1
-                            }
-                            onClick={() =>
-                              setGallery(
-                                moveItem(
-                                  gallery,
-                                  index,
-                                  index +
-                                    1
-                                )
-                              )
-                            }
-                          >
-                            ↓
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setGallery(
-                                gallery.filter(
-                                  (
-                                    _,
-                                    itemIndex
-                                  ) =>
-                                    itemIndex !==
-                                    index
-                                )
-                              )
-                            }
-                          >
-                            刪除
-                          </button>
-                        </div>
-                      </div>
-                    )
-                  )}
-                </div>
-              )}
-
-              <p
-                className={
-                  styles.sectionHelp
-                }
-              >
-                更多商品圖片僅用於商品詳情頁，可拖曳排序，也可使用 ↑ ↓ 微調。
-              </p>
-            </section>
-
-            <section
               className={`${styles.detailSection} ${styles.managementSection}`}
             >
               <div
@@ -1634,7 +1668,7 @@ function addGalleryImage(
       </div>
 <MediaPicker
         open={galleryPickerOpen}
-        title="新增更多商品圖片"
+        title="選擇商品輪播圖片"
         onClose={() =>
           setGalleryPickerOpen(false)
         }

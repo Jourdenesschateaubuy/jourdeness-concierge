@@ -370,6 +370,7 @@ export async function updateProductEditorAction(
             ),
           }),
       image,
+      gallery: stringValues(formData, "gallery"),
       priceNote: promotionText ?? "",
       status: nextStatus,
     });
