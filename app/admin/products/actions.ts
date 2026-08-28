@@ -339,8 +339,19 @@ export async function updateProductEditorAction(
       throw new Error("商品名稱不能空白");
     }
 
-    if (!salePriceAmount) {
-      throw new Error("售價請填入大於 0 的整數");
+    if (!rawSalePrice) {
+      throw new Error(
+        "售價／前台顯示文字不能空白"
+      );
+    }
+
+    if (
+      !salePriceAmount &&
+      nextStatus === "active"
+    ) {
+      throw new Error(
+        "上架商品的售價請填入大於 0 的整數"
+      );
     }
 
     if (!image) {
@@ -362,12 +373,16 @@ export async function updateProductEditorAction(
       originalPriceAmount: originalPriceAmount ?? null,
       originalPrice: formatOriginalPriceText(originalPriceAmount) ?? "",
       promotionText: promotionText ?? null,
-      ...({
+      ...(salePriceAmount
+        ? {
             salePriceAmount,
             price: formatStandardPriceText(
-              salePriceAmount as number,
+              salePriceAmount,
               existingProduct.category
             ),
+          }
+        : {
+            price: rawSalePrice,
           }),
       image,
       gallery: stringValues(formData, "gallery"),

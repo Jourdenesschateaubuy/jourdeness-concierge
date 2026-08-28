@@ -206,10 +206,7 @@ export default function ProductCardEditForm({
     Boolean((product.originalPrice ?? "").trim())
   );
   const [price, setPrice] = useState(
-    String(
-      product.salePriceAmount ??
-        normalizeSellingPriceInput(product.price ?? "")
-    )
+    normalizeSellingPriceInput(product.price ?? "")
   );
   const [status, setStatus] = useState<ProductStatus>(
     product.status ?? "active"
@@ -640,16 +637,15 @@ return (
 
               {(
                 <label>
-                  <span>售價（NT$）</span>
+                  <span>售價／前台顯示文字</span>
                   <input
                     name="price"
                     required
-                    inputMode="numeric"
                     value={price}
                     onChange={(event) =>
                       setPrice(event.target.value)
                     }
-                    placeholder="例如：2160"
+                    placeholder="例如：2160 或 急速補貨中"
                   />
                 </label>
               )}
