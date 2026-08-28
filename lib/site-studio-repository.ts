@@ -220,19 +220,49 @@ export async function updateSiteStudioHero(
 export async function updateSiteStudioRanking(
   ranking: SiteStudioRankingItem
 ) {
-  const current =
+  /*
+   * 排行榜屬於即時商城設定：
+   * 儲存 TOP1～TOP6 時，
+   * 同步更新 Draft 與正式首頁的同一個排名。
+   *
+   * 注意：
+   * 只同步目前這一個 ranking，
+   * 不發布其他尚未完成的首頁草稿。
+   */
+  const draft =
     await getSiteStudioDraftConfig();
 
-  return saveSiteStudioDraftConfig({
-    ...current,
+  const nextDraft = {
+    ...draft,
     rankings:
-      current.rankings.map(
+      draft.rankings.map(
+        (item) =>
+          item.rank === ranking.rank
+            ? ranking
+            : item
+      ),
+  };
+
+  const savedDraft =
+    await saveSiteStudioDraftConfig(
+      nextDraft
+    );
+
+  const published =
+    await getSiteStudioConfig();
+
+  await saveSiteStudioConfig({
+    ...published,
+    rankings:
+      published.rankings.map(
         (item) =>
           item.rank === ranking.rank
             ? ranking
             : item
       ),
   });
+
+  return savedDraft;
 }
 
 export async function saveSiteStudioSections(
