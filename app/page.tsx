@@ -87,20 +87,6 @@ type StorefrontProduct = Product & {
   storefrontCategories?: string[];
 };
 
-type HomepageStorefrontSection = {
-  id: number;
-  code: string;
-  name: string;
-  description?: string;
-  sortOrder: number;
-  layoutType?: "grid";
-  desktopColumns?: 3 | 4 | 5;
-  mobileColumns?: 1 | 2;
-  maxItems?: number;
-  backgroundStyle?: "default" | "soft" | "white";
-  productIds: number[];
-};
-
 type StorefrontBundleOfferItem = {
   id: number;
   productId: number;
@@ -203,8 +189,6 @@ function Home() {
     useState<StorefrontCatalogCategory[]>([]);
   const [storefrontCatalogSeries, setStorefrontCatalogSeries] =
     useState<StorefrontCatalogSeries[]>([]);
-  const [homepageStorefrontSections, setHomepageStorefrontSections] =
-    useState<HomepageStorefrontSection[]>([]);
   const [bundleOffers, setBundleOffers] =
     useState<StorefrontBundleOffer[]>([]);
 
@@ -399,10 +383,7 @@ function Home() {
             productId?: number;
             patch?:
               | Partial<StorefrontProduct>
-              | SiteStudioPreviewPatch
-              | Partial<HomepageStorefrontSection>;
-            sectionId?: number;
-            sectionIds?: number[];
+              | SiteStudioPreviewPatch;
           }
         | undefined;
 
@@ -453,70 +434,6 @@ function Home() {
           setCartReturnProduct(null);
           openProductDetail(product, false);
         }
-
-        return;
-      }
-
-      if (
-        data?.type === "jourdeness-homepage-section-preview" &&
-        Number.isInteger(data.sectionId) &&
-        data.patch
-      ) {
-        const sectionId = Number(data.sectionId);
-        const patch =
-          data.patch as Partial<HomepageStorefrontSection>;
-
-        setHomepageStorefrontSections((currentSections) =>
-          currentSections.map((section) =>
-            section.id === sectionId
-              ? {
-                  ...section,
-                  ...patch,
-                }
-              : section
-          )
-        );
-
-        return;
-      }
-
-      if (
-        data?.type ===
-          "jourdeness-homepage-section-order-preview" &&
-        Array.isArray(data.sectionIds)
-      ) {
-        const orderedIds = data.sectionIds
-          .map(Number)
-          .filter((id) => Number.isInteger(id));
-
-        setHomepageStorefrontSections((currentSections) => {
-          const sectionMap = new Map(
-            currentSections.map((section) => [section.id, section])
-          );
-
-          const reordered = orderedIds
-            .map((id, index) => {
-              const section = sectionMap.get(id);
-
-              if (!section) return null;
-
-              sectionMap.delete(id);
-
-              return {
-                ...section,
-                sortOrder: index + 1,
-              };
-            })
-            .filter(
-              (section): section is HomepageStorefrontSection =>
-                section !== null
-            );
-
-          return [
-            ...reordered,
-            ...Array.from(sectionMap.values()),
-          ];
-        });
 
         return;
       }
@@ -660,7 +577,6 @@ function Home() {
         const [
           studioResponse,
           catalogResponse,
-          homepageSectionsResponse,
         ] = await Promise.all([
           fetch(
             isHomepageDraftPreview
@@ -672,14 +588,6 @@ function Home() {
           ),
           fetch(
             "/api/storefront/catalog",
-            {
-              cache: "no-store",
-            }
-          ),
-          fetch(
-            isHomepageDraftPreview
-              ? "/api/storefront/homepage-sections?mode=draft"
-              : "/api/storefront/homepage-sections",
             {
               cache: "no-store",
             }
@@ -701,14 +609,6 @@ function Home() {
             catalogResponse,
             "分類設定同步失敗"
           );
-        const homepageSectionsPayload =
-          await readJsonResponse<{
-            sections?: HomepageStorefrontSection[];
-          }>(
-            homepageSectionsResponse,
-            "首頁動態區塊同步失敗"
-          );
-
         if (cancelled) return;
 
         if (studioResponse.ok && studioPayload.config) {
@@ -728,13 +628,6 @@ function Home() {
           );
         }
 
-        if (homepageSectionsResponse.ok) {
-          setHomepageStorefrontSections(
-            Array.isArray(homepageSectionsPayload.sections)
-              ? homepageSectionsPayload.sections
-              : []
-          );
-        }
       } catch (error) {
         console.warn("[Jourdeness] 工作台首頁設定同步失敗：", error);
       }
@@ -3373,86 +3266,6 @@ const sevenSequenceGuideV377 = [
               {actionLabel}
             </button>
           )}
-      </section>
-    );
-  }
-
-  function DatabaseHomepageSection({
-    section,
-  }: {
-    section: HomepageStorefrontSection;
-  }) {
-    const sectionProducts = section.productIds
-      .map((productId) =>
-        products.find(
-          (product) =>
-            Number(product.id) === Number(productId)
-        )
-      )
-      .filter(Boolean)
-      .slice(
-        0,
-        Math.max(1, section.maxItems ?? 8)
-      ) as Product[];
-
-    if (sectionProducts.length === 0) return null;
-
-    const desktopColumns =
-      section.desktopColumns === 3 ||
-      section.desktopColumns === 5
-        ? section.desktopColumns
-        : 4;
-
-    const mobileColumns =
-      section.mobileColumns === 1 ? 1 : 2;
-
-    const background =
-      section.backgroundStyle === "white"
-        ? "#fff"
-        : section.backgroundStyle === "soft"
-          ? "#f7eee3"
-          : undefined;
-
-    return (
-      <section
-        className="home-product-section mall-shelf-section-v271"
-        id={`database-home-section-${section.code}`}
-        style={{
-          ...(background ? { background } : {}),
-          ...(background
-            ? {
-                borderRadius: 18,
-                padding: "22px 18px",
-              }
-            : {}),
-        }}
-      >
-        <div className="section-heading compact">
-          <span>Homepage Selection</span>
-          <h2>{section.name}</h2>
-          {section.description && (
-            <p>{section.description}</p>
-          )}
-        </div>
-
-        <div
-          className="database-home-grid-v2"
-          style={
-            {
-              "--jourdeness-desktop-columns":
-                desktopColumns,
-              "--jourdeness-mobile-columns":
-                mobileColumns,
-            } as CSSProperties
-          }
-        >
-          {sectionProducts.map((product) => (
-            <ProductCard
-              product={product}
-              key={`database-home-${section.id}-${product.id}`}
-            />
-          ))}
-        </div>
       </section>
     );
   }
@@ -8951,16 +8764,6 @@ const sevenSequenceGuideV377 = [
           </div>
         </section>
       )}
-
-      {homepageStorefrontSections
-        .slice()
-        .sort((a, b) => a.sortOrder - b.sortOrder)
-        .map((section) => (
-          <DatabaseHomepageSection
-            key={`database-home-section-${section.id}`}
-            section={section}
-          />
-        ))}
 
       {siteStudioConfig.sections
         .filter(
