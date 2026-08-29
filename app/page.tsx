@@ -1382,9 +1382,86 @@ const sevenSequenceGuideV377 = [
   const topRankingItemsV378 = siteStudioConfig.rankings.filter(
     (item) => item.visible
   );
-  const summerWhiteningProducts = getProductsByIds(
-    siteStudioConfig.secondaryHero.productIds ?? []
-  );
+  type SecondaryHeroContentItem =
+    | {
+        targetType: "product";
+        key: string;
+        product: Product;
+      }
+    | {
+        targetType: "bundle_offer";
+        key: string;
+        offer: StorefrontBundleOffer;
+      };
+
+  const secondaryHeroConfiguredItems =
+    Array.isArray(
+      siteStudioConfig.secondaryHero.items
+    )
+      ? siteStudioConfig.secondaryHero.items
+      : (
+          siteStudioConfig.secondaryHero.productIds ??
+          []
+        ).map(
+          (targetId) => ({
+            targetType:
+              "product" as const,
+            targetId,
+          })
+        );
+
+  const secondaryHeroContentItems:
+    SecondaryHeroContentItem[] =
+      secondaryHeroConfiguredItems.flatMap(
+        (
+          item
+        ): SecondaryHeroContentItem[] => {
+          if (
+            item.targetType ===
+            "bundle_offer"
+          ) {
+            const offer =
+              bundleOffers.find(
+                (candidate) =>
+                  candidate.id ===
+                  item.targetId
+              );
+
+            return offer
+              ? [
+                  {
+                    targetType:
+                      "bundle_offer",
+                    key:
+                      "bundle_offer:" +
+                      offer.id,
+                    offer,
+                  },
+                ]
+              : [];
+          }
+
+          const product =
+            products.find(
+              (candidate) =>
+                candidate.id ===
+                item.targetId
+            );
+
+          return product
+            ? [
+                {
+                  targetType:
+                    "product",
+                  key:
+                    "product:" +
+                    product.id,
+                  product,
+                },
+              ]
+            : [];
+        }
+      );
 
   // V3.8.0：首頁「本月優惠・活動方案」改為方案導向，不再重複 TOP 排行榜商品。
   const monthlyOfferCardsV380 = [
@@ -8760,12 +8837,116 @@ const sevenSequenceGuideV377 = [
 
           <div className="seasonal-product-showcase-v342" aria-label="夏日美白精選商品">
             <div className="seasonal-product-grid-v342">
-              {summerWhiteningProducts.map((product) => (
-                <ProductCard
-                  product={product}
-                  key={`summer-whitening-${product.id}`}
-                />
-              ))}
+              {secondaryHeroContentItems.map(
+                (content) => {
+                  if (
+                    content.targetType ===
+                    "product"
+                  ) {
+                    return (
+                      <ProductCard
+                        product={
+                          content.product
+                        }
+                        key={
+                          "secondary-hero-" +
+                          content.key
+                        }
+                      />
+                    );
+                  }
+
+                  const offer =
+                    content.offer;
+
+                  const offerImage =
+                    offer.coverImage ||
+                    offer.gallery?.[0] ||
+                    offer.items.find(
+                      (item) =>
+                        Boolean(
+                          item.product.image
+                        )
+                    )?.product.image ||
+                    "";
+
+                  return (
+                    <article
+                      className="product-card commerce-product-card shelf-card-v271 compact-commerce-card-v350"
+                      key={
+                        "secondary-hero-" +
+                        content.key
+                      }
+                    >
+                      {offerImage ? (
+                        <div className="product-image">
+                          <img
+                            src={
+                              offerImage
+                            }
+                            alt={
+                              offer.name
+                            }
+                            loading="lazy"
+                          />
+                        </div>
+                      ) : (
+                        <div className="product-image">
+                          <span>
+                            組合優惠
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="product-info">
+                        <div className="product-card-title-zone-v365">
+                          <div className="product-card-title-slot-v364">
+                            <h3>
+                              {
+                                offer.name
+                              }
+                            </h3>
+                          </div>
+                        </div>
+
+                        <div className="price-block commerce-price-block shelf-price-block-v271 compact-price-block-v350">
+                          {offer.cardOriginalPriceText ? (
+                            <p className="original-price">
+                              {
+                                offer.cardOriginalPriceText
+                              }
+                            </p>
+                          ) : null}
+
+                          {offer.cardPriceText ? (
+                            <p className="price">
+                              {
+                                offer.cardPriceText
+                              }
+                            </p>
+                          ) : null}
+                        </div>
+
+                        <div className="product-card-actions-v358">
+                          <button
+                            type="button"
+                            className="add-cart-button compact-add-cart-v350 cart-card-button-v358"
+                            onClick={() =>
+                              openBundleOfferDetail(
+                                offer
+                              )
+                            }
+                          >
+                            <span>
+                              查看組合
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                }
+              )}
             </div>
           </div>
         </section>

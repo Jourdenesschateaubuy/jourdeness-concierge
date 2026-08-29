@@ -14,6 +14,12 @@ export type SiteStudioHero = {
   visible: boolean;
   imageSpec: string;
   productIds?: number[];
+  items?: Array<{
+    targetType:
+      | "product"
+      | "bundle_offer";
+    targetId: number;
+  }>;
 };
 
 export type SiteStudioRankingItem = {
@@ -291,7 +297,7 @@ function normalizeHero(
   value: Partial<SiteStudioHero> | null | undefined,
   fallback: SiteStudioHero
 ): SiteStudioHero {
-  return {
+  const merged = {
     ...fallback,
     ...(value ?? {}),
     slot: fallback.slot,
@@ -299,6 +305,47 @@ function normalizeHero(
       typeof value?.visible === "boolean"
         ? value.visible
         : fallback.visible,
+  };
+
+  if (
+    fallback.slot !== "secondary"
+  ) {
+    return merged;
+  }
+
+  const fallbackProductIds =
+    Array.isArray(
+      merged.productIds
+    )
+      ? merged.productIds.filter(
+          (id) =>
+            Number.isInteger(id) &&
+            id > 0
+        )
+      : [];
+
+  const items =
+    normalizeSiteStudioSectionItems(
+      Array.isArray(value?.items)
+        ? value.items
+        : undefined,
+      fallbackProductIds
+    );
+
+  return {
+    ...merged,
+    productIds:
+      items
+        .filter(
+          (item) =>
+            item.targetType ===
+            "product"
+        )
+        .map(
+          (item) =>
+            item.targetId
+        ),
+    items,
   };
 }
 

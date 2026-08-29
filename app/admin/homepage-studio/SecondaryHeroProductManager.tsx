@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   useEffect,
@@ -41,107 +41,290 @@ export type SecondaryHeroProductOption = {
   series: string;
 };
 
+export type SecondaryHeroBundleOfferOption = {
+  id: number;
+  name: string;
+  status: string;
+  image: string;
+  priceText: string;
+  category: string;
+  series: string;
+};
+
 type Props = {
   hero: SiteStudioHero;
-  products: SecondaryHeroProductOption[];
+  products:
+    SecondaryHeroProductOption[];
+  bundleOffers:
+    SecondaryHeroBundleOfferOption[];
 };
+
+type SecondaryHeroItem =
+  NonNullable<
+    SiteStudioHero["items"]
+  >[number];
+
+type SecondaryHeroContentOption = {
+  key: string;
+  targetType:
+    | "product"
+    | "bundle_offer";
+  targetId: number;
+  displayCode: string;
+  title: string;
+  image: string;
+  meta: string;
+};
+
+function itemKey(
+  item: SecondaryHeroItem
+) {
+  return (
+    item.targetType +
+    ":" +
+    item.targetId
+  );
+}
+
+function initialItems(
+  hero: SiteStudioHero
+): SecondaryHeroItem[] {
+  if (
+    Array.isArray(hero.items)
+  ) {
+    return hero.items;
+  }
+
+  return (
+    hero.productIds ?? []
+  ).map(
+    (targetId) => ({
+      targetType:
+        "product" as const,
+      targetId,
+    })
+  );
+}
 
 export default function SecondaryHeroProductManager({
   hero,
   products,
+  bundleOffers,
 }: Props) {
-  const [productIds, setProductIds] =
-    useState<number[]>(
-      hero.productIds ?? []
+  const [
+    items,
+    setItems,
+  ] =
+    useState<
+      SecondaryHeroItem[]
+    >(
+      () =>
+        initialItems(hero)
     );
 
-  const [selectedProductId, setSelectedProductId] =
+  const [
+    selectedContentKey,
+    setSelectedContentKey,
+  ] =
     useState("");
 
-  const [message, setMessage] =
+  const [
+    message,
+    setMessage,
+  ] =
     useState("");
 
-  const [isOpen, setIsOpen] =
+  const [
+    isOpen,
+    setIsOpen,
+  ] =
     useState(false);
 
-  const [isPending, startTransition] =
+  const [
+    isPending,
+    startTransition,
+  ] =
     useTransition();
 
   useEffect(() => {
-    setProductIds(
-      hero.productIds ?? []
+    setItems(
+      initialItems(hero)
     );
-  }, [hero.productIds]);
+  }, [
+    hero.items,
+    hero.productIds,
+  ]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 6,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 180,
-        tolerance: 6,
-      },
-    })
-  );
+  const sensors =
+    useSensors(
+      useSensor(
+        PointerSensor,
+        {
+          activationConstraint: {
+            distance: 6,
+          },
+        }
+      ),
+      useSensor(
+        TouchSensor,
+        {
+          activationConstraint: {
+            delay: 180,
+            tolerance: 6,
+          },
+        }
+      )
+    );
 
-  const selectedProducts =
+  const catalog =
+    useMemo<
+      SecondaryHeroContentOption[]
+    >(
+      () => [
+        ...products.map(
+          (product) => ({
+            key:
+              "product:" +
+              product.id,
+            targetType:
+              "product" as const,
+            targetId:
+              product.id,
+            displayCode:
+              product.displayCode,
+            title:
+              product.cardName ||
+              product.name,
+            image:
+              product.image,
+            meta:
+              product.series ||
+              product.category ||
+              "商品",
+          })
+        ),
+
+        ...bundleOffers.map(
+          (offer) => ({
+            key:
+              "bundle_offer:" +
+              offer.id,
+            targetType:
+              "bundle_offer" as const,
+            targetId:
+              offer.id,
+            displayCode:
+              "Bundle #" +
+              offer.id,
+            title:
+              offer.name,
+            image:
+              offer.image,
+            meta:
+              offer.priceText ||
+              offer.series ||
+              offer.category ||
+              "組合優惠",
+          })
+        ),
+      ],
+      [
+        products,
+        bundleOffers,
+      ]
+    );
+
+  const selectedContent =
     useMemo(
       () =>
-        productIds
-          .map((id) =>
-            products.find(
-              (product) =>
-                product.id === id
-            )
+        items
+          .map(
+            (item) =>
+              catalog.find(
+                (option) =>
+                  option.key ===
+                  itemKey(item)
+              )
           )
           .filter(
             (
-              product
-            ): product is SecondaryHeroProductOption =>
-              Boolean(product)
+              option
+            ): option is SecondaryHeroContentOption =>
+              Boolean(option)
           ),
-      [productIds, products]
+      [
+        items,
+        catalog,
+      ]
     );
 
-  const availableProducts =
+  const availableContent =
     useMemo(
-      () =>
-        products.filter(
-          (product) =>
-            !productIds.includes(
-              product.id
+      () => {
+        const selectedKeys =
+          new Set(
+            items.map(
+              itemKey
             )
-        ),
-      [productIds, products]
+          );
+
+        return catalog.filter(
+          (option) =>
+            !selectedKeys.has(
+              option.key
+            )
+        );
+      },
+      [
+        items,
+        catalog,
+      ]
     );
 
   async function save(
-    nextProductIds: number[]
+    nextItems:
+      SecondaryHeroItem[]
   ) {
-    const nextHero = {
-      ...hero,
-      productIds:
-        nextProductIds,
-    };
+    const nextProductIds =
+      nextItems
+        .filter(
+          (item) =>
+            item.targetType ===
+            "product"
+        )
+        .map(
+          (item) =>
+            item.targetId
+        );
 
-    const response = await fetch(
-      "/api/admin/site-studio",
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-        body: JSON.stringify({
-          kind: "hero",
-          slot: "secondary",
-          hero: nextHero,
-        }),
-      }
-    );
+    const nextHero:
+      SiteStudioHero = {
+        ...hero,
+        productIds:
+          nextProductIds,
+        items:
+          nextItems,
+      };
+
+    const response =
+      await fetch(
+        "/api/admin/site-studio",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body:
+            JSON.stringify({
+              kind: "hero",
+              slot:
+                "secondary",
+              hero:
+                nextHero,
+            }),
+        }
+      );
 
     const result =
       await response.json();
@@ -149,7 +332,7 @@ export default function SecondaryHeroProductManager({
     if (!response.ok) {
       throw new Error(
         result?.error ||
-          "副主視覺商品儲存失敗"
+          "副主視覺搭配內容儲存失敗"
       );
     }
 
@@ -163,105 +346,127 @@ export default function SecondaryHeroProductManager({
   }
 
   function persist(
-    nextProductIds: number[],
+    nextItems:
+      SecondaryHeroItem[],
     successMessage: string
   ) {
     const previous =
-      productIds;
+      items;
 
-    setProductIds(
-      nextProductIds
+    setItems(
+      nextItems
     );
 
-    setMessage("儲存中…");
+    setMessage(
+      "儲存中…"
+    );
 
-    startTransition(async () => {
-      try {
-        await save(
-          nextProductIds
-        );
+    startTransition(
+      async () => {
+        try {
+          await save(
+            nextItems
+          );
 
-        setMessage(
-          successMessage
-        );
-      } catch (error) {
-        setProductIds(
-          previous
-        );
+          setMessage(
+            successMessage
+          );
+        } catch (error) {
+          setItems(
+            previous
+          );
 
-        setMessage(
-          error instanceof Error
-            ? error.message
-            : "儲存失敗，已恢復原設定"
-        );
+          setMessage(
+            error instanceof Error
+              ? error.message
+              : "儲存失敗，已恢復原設定"
+          );
+        }
       }
-    });
+    );
   }
 
-  function addProduct() {
-    const productId =
-      Number(
-        selectedProductId
+  function addContent() {
+    const option =
+      availableContent.find(
+        (candidate) =>
+          candidate.key ===
+          selectedContentKey
       );
 
-    if (
-      !Number.isInteger(
-        productId
-      ) ||
-      productId <= 0 ||
-      productIds.includes(
-        productId
-      )
-    ) {
+    if (!option) {
       return;
     }
 
     persist(
       [
-        ...productIds,
-        productId,
+        ...items,
+        {
+          targetType:
+            option.targetType,
+          targetId:
+            option.targetId,
+        },
       ],
-      "商品已加入"
+      option.targetType ===
+      "bundle_offer"
+        ? "組合優惠已加入"
+        : "商品已加入"
     );
 
-    setSelectedProductId(
+    setSelectedContentKey(
       ""
     );
   }
 
-  function removeProduct(
-    productId: number
+  function removeContent(
+    key: string
   ) {
     persist(
-      productIds.filter(
-        (id) =>
-          id !== productId
+      items.filter(
+        (item) =>
+          itemKey(item) !==
+          key
       ),
-      "商品已移除"
+      "搭配內容已移除"
     );
   }
 
   function handleDragEnd(
     event: DragEndEvent
   ) {
-    const { active, over } =
+    const {
+      active,
+      over,
+    } =
       event;
 
     if (
       !over ||
-      active.id === over.id
+      active.id ===
+        over.id
     ) {
       return;
     }
 
+    const activeKey =
+      String(active.id);
+
+    const overKey =
+      String(over.id);
+
     const oldIndex =
-      productIds.indexOf(
-        Number(active.id)
+      items.findIndex(
+        (item) =>
+          itemKey(item) ===
+          activeKey
       );
 
     const newIndex =
-      productIds.indexOf(
-        Number(over.id)
+      items.findIndex(
+        (item) =>
+          itemKey(item) ===
+          overKey
       );
 
     if (
@@ -271,16 +476,13 @@ export default function SecondaryHeroProductManager({
       return;
     }
 
-    const reordered =
+    persist(
       arrayMove(
-        productIds,
+        items,
         oldIndex,
         newIndex
-      );
-
-    persist(
-      reordered,
-      "商品排序已儲存"
+      ),
+      "搭配內容排序已儲存"
     );
   }
 
@@ -306,179 +508,205 @@ export default function SecondaryHeroProductManager({
             </span>
 
             <strong>
-              副主視覺搭配商品
+              副主視覺搭配內容
             </strong>
           </div>
 
           {isOpen ? (
             <p>
-              這個商品區固定在副主視覺下方，
-              整區不能拖動，但商品可新增、
-              移除與拖曳排序。
+              這個內容區固定在副主視覺下方，
+              可加入一般商品或組合優惠，
+              並可移除與拖曳排序。
             </p>
           ) : null}
         </div>
 
-        <div style={styles.headingActions}>
+        <div
+          style={
+            styles.headingActions
+          }
+        >
           <span
             style={
               styles.countBadge
             }
           >
-            {productIds.length}
-            {" "}個商品
+            {items.length}
+            {" "}個內容
           </span>
 
           <button
             type="button"
-            style={styles.manageButton}
+            style={
+              styles.manageButton
+            }
             onClick={() =>
               setIsOpen(
-                (current) => !current
+                (current) =>
+                  !current
               )
             }
           >
             {isOpen
               ? "收合"
-              : "管理商品"}
+              : "管理內容"}
           </button>
         </div>
       </div>
 
       {isOpen ? (
         <>
-      <div
-        style={styles.addRow}
-      >
-        <select
-          value={
-            selectedProductId
-          }
-          onChange={(event) =>
-            setSelectedProductId(
-              event.target.value
-            )
-          }
-          style={styles.select}
-          disabled={isPending}
-        >
-          <option value="">
-            選擇要加入的商品
-          </option>
-
-          {availableProducts.map(
-            (product) => (
-              <option
-                key={
-                  product.id
-                }
-                value={
-                  product.id
-                }
-              >
-                {product.displayCode}
-                {"｜"}
-                {product.cardName ||
-                  product.name}
-              </option>
-            )
-          )}
-        </select>
-
-        <button
-          type="button"
-          onClick={addProduct}
-          disabled={
-            isPending ||
-            !selectedProductId
-          }
-          style={styles.addButton}
-        >
-          ＋ 加入商品
-        </button>
-      </div>
-
-      {message ? (
-        <div
-          style={
-            styles.message
-          }
-        >
-          {isPending
-            ? "儲存中…"
-            : message}
-        </div>
-      ) : null}
-
-      {selectedProducts.length ===
-      0 ? (
-        <div
-          style={
-            styles.empty
-          }
-        >
-          尚未設定副主視覺搭配商品。
-        </div>
-      ) : (
-        <DndContext
-          id="secondary-hero-products"
-          sensors={sensors}
-          collisionDetection={
-            closestCenter
-          }
-          onDragEnd={
-            handleDragEnd
-          }
-        >
-          <SortableContext
-            items={
-              productIds
-            }
-            strategy={
-              horizontalListSortingStrategy
+          <div
+            style={
+              styles.addRow
             }
           >
-            <div
+            <select
+              value={
+                selectedContentKey
+              }
+              onChange={
+                (event) =>
+                  setSelectedContentKey(
+                    event.target.value
+                  )
+              }
               style={
-                styles.productGrid
+                styles.select
+              }
+              disabled={
+                isPending
               }
             >
-              {selectedProducts.map(
-                (product) => (
-                  <SortableProductCard
+              <option value="">
+                選擇商品或組合優惠
+              </option>
+
+              {availableContent.map(
+                (option) => (
+                  <option
                     key={
-                      product.id
+                      option.key
                     }
-                    product={
-                      product
+                    value={
+                      option.key
                     }
-                    disabled={
-                      isPending
-                    }
-                    onRemove={() =>
-                      removeProduct(
-                        product.id
-                      )
-                    }
-                  />
+                  >
+                    {option.targetType ===
+                    "bundle_offer"
+                      ? "[組合] "
+                      : "[商品] "}
+                    {option.displayCode}
+                    {"｜"}
+                    {option.title}
+                  </option>
                 )
               )}
+            </select>
+
+            <button
+              type="button"
+              onClick={
+                addContent
+              }
+              disabled={
+                isPending ||
+                !selectedContentKey
+              }
+              style={
+                styles.addButton
+              }
+            >
+              ＋ 加入內容
+            </button>
+          </div>
+
+          {message ? (
+            <div
+              style={
+                styles.message
+              }
+            >
+              {isPending
+                ? "儲存中…"
+                : message}
             </div>
-          </SortableContext>
-        </DndContext>
-      )}
+          ) : null}
+
+          {selectedContent.length ===
+          0 ? (
+            <div
+              style={
+                styles.empty
+              }
+            >
+              尚未設定副主視覺搭配內容。
+            </div>
+          ) : (
+            <DndContext
+              id="secondary-hero-content"
+              sensors={
+                sensors
+              }
+              collisionDetection={
+                closestCenter
+              }
+              onDragEnd={
+                handleDragEnd
+              }
+            >
+              <SortableContext
+                items={
+                  items.map(
+                    itemKey
+                  )
+                }
+                strategy={
+                  horizontalListSortingStrategy
+                }
+              >
+                <div
+                  style={
+                    styles.productGrid
+                  }
+                >
+                  {selectedContent.map(
+                    (content) => (
+                      <SortableContentCard
+                        key={
+                          content.key
+                        }
+                        content={
+                          content
+                        }
+                        disabled={
+                          isPending
+                        }
+                        onRemove={() =>
+                          removeContent(
+                            content.key
+                          )
+                        }
+                      />
+                    )
+                  )}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )}
         </>
       ) : null}
     </section>
   );
 }
 
-function SortableProductCard({
-  product,
+function SortableContentCard({
+  content,
   disabled,
   onRemove,
 }: {
-  product: SecondaryHeroProductOption;
+  content:
+    SecondaryHeroContentOption;
   disabled: boolean;
   onRemove: () => void;
 }) {
@@ -489,14 +717,18 @@ function SortableProductCard({
     transform,
     transition,
     isDragging,
-  } = useSortable({
-    id: product.id,
-    disabled,
-  });
+  } =
+    useSortable({
+      id:
+        content.key,
+      disabled,
+    });
 
   return (
     <article
-      ref={setNodeRef}
+      ref={
+        setNodeRef
+      }
       style={{
         ...styles.productCard,
         transform:
@@ -515,12 +747,14 @@ function SortableProductCard({
         style={
           styles.dragHandle
         }
-        title="拖曳商品排序"
-        aria-label={`拖曳 ${
-          product.cardName ||
-          product.name
-        }`}
-        disabled={disabled}
+        title="拖曳內容排序"
+        aria-label={
+          "拖曳 " +
+          content.title
+        }
+        disabled={
+          disabled
+        }
         {...attributes}
         {...listeners}
       >
@@ -532,14 +766,13 @@ function SortableProductCard({
           styles.imageBox
         }
       >
-        {product.image ? (
+        {content.image ? (
           <img
             src={
-              product.image
+              content.image
             }
             alt={
-              product.cardName ||
-              product.name
+              content.title
             }
             style={
               styles.image
@@ -558,24 +791,26 @@ function SortableProductCard({
         }
       >
         <small>
-          {product.displayCode}
+          {content.displayCode}
         </small>
 
         <strong>
-          {product.cardName ||
-            product.name}
+          {content.title}
         </strong>
 
         <span>
-          {product.series ||
-            product.category}
+          {content.meta}
         </span>
       </div>
 
       <button
         type="button"
-        onClick={onRemove}
-        disabled={disabled}
+        onClick={
+          onRemove
+        }
+        disabled={
+          disabled
+        }
         style={
           styles.removeButton
         }

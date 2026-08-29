@@ -117,8 +117,10 @@ export default async function HomepageStudioPage() {
           <FixedCard
             title="首頁副主視覺"
             description={`750 × 900 px｜搭配 ${
-              config.secondaryHero.productIds?.length ?? 0
-            } 個商品`}
+              config.secondaryHero.items?.length ??
+                config.secondaryHero.productIds?.length ??
+                0
+            } 個內容`}
           />
         </div>
       </section>
@@ -165,6 +167,28 @@ export default async function HomepageStudioPage() {
                     ),
                     series:
                       product.series || "",
+                  })
+                )
+              }
+              bundleOffers={
+                bundleOffers.map(
+                  (offer) => ({
+                    id:
+                      offer.id,
+                    name:
+                      offer.name,
+                    status:
+                      offer.status,
+                    image:
+                      offer.coverImage || "",
+                    priceText:
+                      offer.cardPriceText || "",
+                    category:
+                      offer.storefrontCategory ||
+                      "組合優惠",
+                    series:
+                      offer.series ||
+                      "組合優惠",
                   })
                 )
               }
