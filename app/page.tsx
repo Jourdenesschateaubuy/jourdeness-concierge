@@ -3559,35 +3559,139 @@ const sevenSequenceGuideV377 = [
     const studioSection = getStudioSection("monthlyOffers");
     if (!studioSection.visible) return null;
 
-    const configuredOfferIds =
-      Array.isArray(
-        studioSection.productIds
-      )
-        ? studioSection.productIds
-        : monthlyOfferCardsV380
-            .map((item) => item.productId)
-            .filter(
-              (id): id is number =>
-                typeof id === "number"
-            );
+    type MonthlyOfferSectionItemV380 =
+      | {
+          targetType: "product";
+          key: string;
+          badge: string;
+          title: string;
+          description: string;
+          price: string;
+          productId: number;
+        }
+      | {
+          targetType: "bundle_offer";
+          key: string;
+          badge: string;
+          title: string;
+          description: string;
+          price: string;
+          offer: StorefrontBundleOffer;
+        };
 
-    const monthlyOfferItemsV380 =
-      configuredOfferIds.flatMap(
-        (productId) => {
+    const configuredItems =
+      Array.isArray(studioSection.items)
+        ? studioSection.items
+        : (
+            Array.isArray(studioSection.productIds)
+              ? studioSection.productIds
+              : monthlyOfferCardsV380
+                  .map((item) => item.productId)
+                  .filter(
+                    (id): id is number =>
+                      typeof id === "number"
+                  )
+          ).map((targetId) => ({
+            targetType: "product" as const,
+            targetId,
+          }));
+
+    const monthlyOfferItemsV380:
+      MonthlyOfferSectionItemV380[] =
+      configuredItems.flatMap(
+        (configuredItem):
+          MonthlyOfferSectionItemV380[] => {
+          if (
+            configuredItem.targetType ===
+            "bundle_offer"
+          ) {
+            const offer =
+              bundleOffers.find(
+                (candidate) =>
+                  candidate.id ===
+                  configuredItem.targetId
+              );
+
+            if (!offer) {
+              return [];
+            }
+
+            const pricePlan =
+              offer.plans.find(
+                (plan) =>
+                  typeof plan.priceAmount ===
+                  "number"
+              ) ??
+              offer.plans[0] ??
+              null;
+
+            const price =
+              offer.cardPriceText ||
+              (typeof pricePlan?.priceAmount ===
+              "number"
+                ? "組合價 $" +
+                  pricePlan.priceAmount.toLocaleString(
+                    "zh-TW"
+                  )
+                : "查看組合");
+
+            return [
+              {
+                targetType:
+                  "bundle_offer",
+                key:
+                  "bundle_offer:" +
+                  offer.id,
+                badge:
+                  offer.series ||
+                  offer.storefrontCategory ||
+                  "組合優惠",
+                title: offer.name,
+                description:
+                  offer.cardSubtitle ||
+                  offer.intro ||
+                  "本月精選組合優惠",
+                price,
+                offer,
+              },
+            ];
+          }
+
+          const productId =
+            configuredItem.targetId;
+
           const existingOffer =
             monthlyOfferCardsV380.find(
               (item) =>
-                item.productId === productId
+                item.productId ===
+                productId
             );
 
           if (existingOffer) {
-            return [existingOffer];
+            return [
+              {
+                targetType: "product",
+                key:
+                  "product:" +
+                  productId,
+                badge:
+                  existingOffer.badge,
+                title:
+                  existingOffer.title,
+                description:
+                  existingOffer.description,
+                price:
+                  existingOffer.price,
+                productId,
+              },
+            ];
           }
 
           const product =
             products.find(
               (candidate) =>
-                candidate.id === productId
+                candidate.id ===
+                productId
             );
 
           if (!product) {
@@ -3596,6 +3700,10 @@ const sevenSequenceGuideV377 = [
 
           return [
             {
+              targetType: "product",
+              key:
+                "product:" +
+                product.id,
               badge:
                 product.series ||
                 product.category ||
@@ -3606,115 +3714,240 @@ const sevenSequenceGuideV377 = [
               description:
                 product.description ||
                 "本月精選商品",
-              price:
-                product.price,
+              price: product.price,
               productId:
-                product.id as number | null,
+                product.id,
             },
           ];
         }
       );
 
     return (
-      <section className="home-product-section monthly-offers-section-v380" id="home-hot-products-v380">
+      <section
+        className="home-product-section monthly-offers-section-v380"
+        id="home-hot-products-v380"
+      >
         <div
-          className={`section-heading compact monthly-offers-heading-v380 ${
-            isAdminMode && isAdminEditMode
+          className={
+            "section-heading compact monthly-offers-heading-v380 " +
+            (isAdminMode && isAdminEditMode
               ? "admin-v2-manageable-site-block"
-              : ""
-          }`}
+              : "")
+          }
           onClick={(event) =>
-            selectStudioSection(event, "monthlyOffers", studioSection.label)
+            selectStudioSection(
+              event,
+              "monthlyOffers",
+              studioSection.label
+            )
           }
         >
-          {studioSection.eyebrow && <span>{studioSection.eyebrow}</span>}
+          {studioSection.eyebrow && (
+            <span>
+              {studioSection.eyebrow}
+            </span>
+          )}
           <h2>{studioSection.title}</h2>
-          {studioSection.subtitle && <p>{studioSection.subtitle}</p>}
+          {studioSection.subtitle && (
+            <p>
+              {studioSection.subtitle}
+            </p>
+          )}
         </div>
 
         <div className="monthly-offer-grid-v380">
-          {monthlyOfferItemsV380.map((item) => {
-            const product = item.productId
-              ? products.find((candidate) => candidate.id === item.productId)
-              : null;
-            const priceParts = item.price.split("｜").map((part) => part.trim()).filter(Boolean);
-            const offerImage = product?.image ?? null;
-            const unavailable = product ? isCartDisabled(product) : false;
+          {monthlyOfferItemsV380.map(
+            (item) => {
+              const product =
+                item.targetType === "product"
+                  ? products.find(
+                      (candidate) =>
+                        candidate.id ===
+                        item.productId
+                    ) ?? null
+                  : null;
 
-            return (
-              <article
-                className={`monthly-offer-card-v380 ${
-                  product && managedProductId === product.id
-                    ? "admin-v2-product-selected"
-                    : ""
-                }`}
-                key={`${item.badge}-${item.title}`}
-                onDoubleClick={(event) =>
-                  handleMonthlyOfferDoubleClickV380(event, item)
-                }
-                title={
-                  isAdminMode && isAdminEditMode
-                    ? "單擊選取商品卡｜雙擊編輯商品詳情"
-                    : undefined
-                }
-              >
-                <button
-                  type="button"
-                  className="monthly-offer-image-button-v381"
-                  onClick={() => handleMonthlyOfferClickV380(item)}
-                  aria-label={`查看優惠：${item.title}`}
+              const offer =
+                item.targetType ===
+                "bundle_offer"
+                  ? item.offer
+                  : null;
+
+              const priceParts =
+                item.price
+                  .split("｜")
+                  .map((part) =>
+                    part.trim()
+                  )
+                  .filter(Boolean);
+
+              const offerImage =
+                offer
+                  ? offer.coverImage ||
+                    offer.gallery?.[0] ||
+                    offer.items.find(
+                      (entry) =>
+                        Boolean(
+                          entry.product.image
+                        )
+                    )?.product.image ||
+                    null
+                  : product?.image ?? null;
+
+              const unavailable =
+                product
+                  ? isCartDisabled(product)
+                  : offer
+                    ? offer.status !==
+                      "active"
+                    : false;
+
+              return (
+                <article
+                  className={
+                    "monthly-offer-card-v380 " +
+                    (product &&
+                    managedProductId ===
+                      product.id
+                      ? "admin-v2-product-selected"
+                      : "")
+                  }
+                  key={item.key}
+                  onDoubleClick={(event) => {
+                    if (
+                      item.targetType ===
+                      "product"
+                    ) {
+                      handleMonthlyOfferDoubleClickV380(
+                        event,
+                        item
+                      );
+                    }
+                  }}
+                  title={
+                    isAdminMode &&
+                    isAdminEditMode
+                      ? item.targetType ===
+                        "bundle_offer"
+                        ? "組合優惠卡"
+                        : "單擊選取商品卡｜雙擊編輯商品詳情"
+                      : undefined
+                  }
                 >
-                  <div className="monthly-offer-image-v381">
-                    {offerImage ? (
-                      <img
-                        src={offerImage}
-                        alt={item.title}
-                        loading="lazy"
-                        onError={(event) => {
-                          event.currentTarget.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <span>商品圖片待補</span>
-                    )}
-                  </div>
-                </button>
-                <div className="monthly-offer-content-v381">
-                  <span className="monthly-offer-badge-v380">{item.badge}</span>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                  <strong className="monthly-offer-price-list-v386">
-                    {priceParts.map((part, index) => (
-                      <span key={`${item.productId ?? item.title}-price-${index}`}>
-                        {part}
-                      </span>
-                    ))}
-                  </strong>
                   <button
                     type="button"
-                    onClick={() => handleMonthlyOfferClickV380(item)}
+                    className="monthly-offer-image-button-v381"
+                    onClick={() => {
+                      if (
+                        item.targetType ===
+                        "bundle_offer"
+                      ) {
+                        openBundleOfferDetail(
+                          item.offer
+                        );
+                      } else {
+                        handleMonthlyOfferClickV380(
+                          item
+                        );
+                      }
+                    }}
+                    aria-label={
+                      "查看優惠：" +
+                      item.title
+                    }
                   >
-                    {product && unavailable
-                      ? getUnavailableLabel(product)
-                      : "查看優惠"}
+                    <div className="monthly-offer-image-v381">
+                      {offerImage ? (
+                        <img
+                          src={offerImage}
+                          alt={item.title}
+                          loading="lazy"
+                          onError={(event) => {
+                            event.currentTarget.style.display =
+                              "none";
+                          }}
+                        />
+                      ) : (
+                        <span>
+                          商品圖片待補
+                        </span>
+                      )}
+                    </div>
                   </button>
-                </div>
-              </article>
-            );
-          })}
+
+                  <div className="monthly-offer-content-v381">
+                    <span className="monthly-offer-badge-v380">
+                      {item.badge}
+                    </span>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+
+                    <strong className="monthly-offer-price-list-v386">
+                      {priceParts.map(
+                        (part, index) => (
+                          <span
+                            key={
+                              item.key +
+                              "-price-" +
+                              index
+                            }
+                          >
+                            {part}
+                          </span>
+                        )
+                      )}
+                    </strong>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (
+                          item.targetType ===
+                          "bundle_offer"
+                        ) {
+                          openBundleOfferDetail(
+                            item.offer
+                          );
+                        } else {
+                          handleMonthlyOfferClickV380(
+                            item
+                          );
+                        }
+                      }}
+                    >
+                      {unavailable
+                        ? product
+                          ? getUnavailableLabel(
+                              product
+                            )
+                          : "暫不可購買"
+                        : item.targetType ===
+                            "bundle_offer"
+                          ? "查看組合"
+                          : "查看優惠"}
+                    </button>
+                  </div>
+                </article>
+              );
+            }
+          )}
         </div>
 
         <button
           type="button"
           className="home-more-button monthly-offers-more-v380"
-          onClick={() => openCategoryTab("本月優惠", "全部")}
+          onClick={() =>
+            openCategoryTab(
+              "本月優惠",
+              "全部"
+            )
+          }
         >
           看全部本月優惠
         </button>
       </section>
     );
   }
-
 
   function ProductVisual({
     product,
