@@ -2,80 +2,13 @@
 
 import {
   useEffect,
-  useRef,
   useState,
 } from "react";
-
-type HomepageSectionPreviewPatch = {
-  sectionId: number;
-  patch: Record<string, unknown>;
-};
-
-type HomepageSectionOrderPreview = {
-  sectionIds: number[];
-};
 
 export default function HomepagePreview() {
   const [version, setVersion] = useState(0);
 
-  const iframeRef =
-    useRef<HTMLIFrameElement | null>(null);
-
   useEffect(() => {
-    function forwardPreviewPatch(
-      event: Event
-    ) {
-      const customEvent =
-        event as CustomEvent<HomepageSectionPreviewPatch>;
-
-      if (
-        !customEvent.detail ||
-        !Number.isInteger(
-          customEvent.detail.sectionId
-        )
-      ) {
-        return;
-      }
-
-      iframeRef.current?.contentWindow?.postMessage(
-        {
-          type:
-            "jourdeness-homepage-section-preview",
-          sectionId:
-            customEvent.detail.sectionId,
-          patch:
-            customEvent.detail.patch,
-        },
-        window.location.origin
-      );
-    }
-
-    function forwardSectionOrder(
-      event: Event
-    ) {
-      const customEvent =
-        event as CustomEvent<HomepageSectionOrderPreview>;
-
-      if (
-        !customEvent.detail ||
-        !Array.isArray(
-          customEvent.detail.sectionIds
-        )
-      ) {
-        return;
-      }
-
-      iframeRef.current?.contentWindow?.postMessage(
-        {
-          type:
-            "jourdeness-homepage-section-order-preview",
-          sectionIds:
-            customEvent.detail.sectionIds,
-        },
-        window.location.origin
-      );
-    }
-
     function refreshSavedDraft() {
       setVersion(
         (current) =>
@@ -84,31 +17,11 @@ export default function HomepagePreview() {
     }
 
     window.addEventListener(
-      "jourdeness-homepage-preview-patch",
-      forwardPreviewPatch
-    );
-
-    window.addEventListener(
-      "jourdeness-homepage-section-order-preview",
-      forwardSectionOrder
-    );
-
-    window.addEventListener(
       "jourdeness-homepage-draft-saved",
       refreshSavedDraft
     );
 
     return () => {
-      window.removeEventListener(
-        "jourdeness-homepage-preview-patch",
-        forwardPreviewPatch
-      );
-
-      window.removeEventListener(
-        "jourdeness-homepage-section-order-preview",
-        forwardSectionOrder
-      );
-
       window.removeEventListener(
         "jourdeness-homepage-draft-saved",
         refreshSavedDraft
@@ -145,7 +58,6 @@ export default function HomepagePreview() {
 
       <div style={styles.phone}>
         <iframe
-          ref={iframeRef}
           key={version}
           src="/?admin=1&homepagePreview=draft"
           title="首頁手機預覽"
