@@ -1,92 +1,46 @@
-Jourdeness CMS Core v1
-======================
+Jourdeness CMS
+===============
 
-目標
-----
-這一版是「架構重構」，不是新增商城功能。
-
-原本：
-lib/homepage-publish-repository.ts
-    同時包含 Homepage-specific data model
-    + Snapshot parsing
-    + Version helper logic
-    + Publish / Rollback logic
-
-現在：
-lib/cms/
-  core/
-    publication-types.ts
-    snapshot.ts
-
-  modules/
-    homepage/
-      publication.ts
-
-首頁模組只保留 Homepage 的資料與 SQL。
-共用的小型 publication / snapshot 能力開始搬到 CMS Core。
-
-相容策略
+目前架構
 --------
-lib/homepage-publish-repository.ts 不刪除。
 
-它現在只是 Compatibility Re-export：
+網站內容管理已分為獨立模組：
 
-  export * from "./cms/modules/homepage/publication";
+- media
+- navigation
+- website-settings
 
-因此舊 API route 或尚未搬移的 import 不會突然壞掉。
+首頁內容與發布目前由 Site Studio 負責：
 
-Homepage Studio 本身已改成直接引用：
+- lib/site-studio-repository.ts
+- lib/site-studio-types.ts
+- /api/admin/site-studio
+- /api/storefront/site-studio
+- /admin/homepage-studio
 
-  lib/cms/modules/homepage/publication
+Site Studio 使用自己的 draft / published 設定，
+資料儲存在 site_studio_content。
 
-代表 Module Boundary 已真正開始使用。
+Legacy Homepage Publication
+---------------------------
 
-Website Studio
---------------
-新增：
+舊 Homepage Publication runtime 已退役。
 
-  /admin/website-studio
+以下舊程式已移除：
 
-目前是 CMS 總入口 Shell。
+- lib/homepage-publish-repository.ts
+- lib/cms/modules/homepage/publication.ts
+- lib/cms/core/publication-types.ts
+- lib/cms/core/snapshot.ts
 
-Homepage Builder：可使用
-Website Settings：規劃中
-Navigation Builder：規劃中
-Banner Builder：規劃中
-Footer Builder：規劃中
-Publish Center：規劃中
+舊資料表 homepage_versions 與 homepage_publish_state
+目前暫時保留，不在本次程式碼清理中刪除。
 
-沒有 Migration
---------------
-本版沒有改資料表、沒有移資料、沒有改 Snapshot 格式。
+Storefront Sections
+-------------------
 
-安裝
-----
-1. 先 git commit / 備份。
-2. 依 ZIP 路徑覆蓋 / 新增檔案。
-3. 不需要 migration。
-4. 執行：
+lib/storefront-section-repository.ts 仍由
+/admin/storefront 使用，因此目前保留。
 
-   npx tsc --noEmit
-
-5. 執行：
-
-   npm run dev
-
-第一個測試
-----------
-先只測「重構沒有破壞 Homepage」。
-
-開：
-
-  /admin/homepage-studio
-
-確認：
-- 頁面正常載入
-- Version History 還在
-- Homepage Sections 還在
-- 手機 Preview 還在
-
-先不要 Publish / Rollback。
-
-第二個測試之後再測 Website Studio。
+Legacy homepage-specific CRUD 會另行評估與清理，
+不影響一般 Storefront Section 管理功能。
