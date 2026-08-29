@@ -842,6 +842,16 @@ function Home() {
     return consolidatedChoiceOptionProductIdsV370.has(product.id);
   }
 
+  // Bundle Offer 的選項單品只在活動／組合優惠視圖避免重複顯示。
+  // 正常分類、系列與搜尋仍顯示單品，讓後台分類設定直接反映到前台。
+  const shouldHideConsolidatedChoiceOptionProductsV370 =
+    !normalizedSearchQuery &&
+    (
+      selectedCategory === "本月優惠" ||
+      commerceFilter === "deals-combo" ||
+      commerceFilter === "quick-monthly"
+    );
+
   // V3.6.8：漢堡分類改採固定商品歸屬，不再用「龍血／薰衣草／茶樹」等模糊關鍵字判斷主分類。
   // 本月優惠是額外活動入口；每個在售商品仍會落在一個用途主分類，確保可由漢堡選單找到。
   const faceCareProductIdsV368 = new Set([
@@ -1206,7 +1216,11 @@ function Home() {
       index,
       searchScore: getProductSearchScore(product, normalizedSearchQuery),
     }))
-    .filter(({ product }) => !isConsolidatedChoiceOptionProductV370(product))
+    .filter(
+      ({ product }) =>
+        !shouldHideConsolidatedChoiceOptionProductsV370 ||
+        !isConsolidatedChoiceOptionProductV370(product)
+    )
     .filter(({ product, searchScore }) => {
       if (normalizedSearchQuery) return searchScore !== null;
 
