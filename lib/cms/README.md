@@ -26,8 +26,11 @@ Legacy Homepage Publication
 
 舊 Homepage Publication runtime 已退役。
 
-舊資料表 homepage_versions 與 homepage_publish_state
-目前暫時保留，不在程式碼清理階段刪除。
+以下舊資料表已於 2026-08-29
+從正式 Neon PostgreSQL 移除：
+
+- homepage_versions
+- homepage_publish_state
 
 Legacy Storefront Sections
 --------------------------
@@ -39,8 +42,21 @@ Legacy Storefront Sections
 - /admin/storefront
 - lib/storefront-section-repository.ts
 
-storefront_sections 與 storefront_section_items
-目前僅保留為歷史資料表。
+以下舊資料表已於 2026-08-29
+從正式 Neon PostgreSQL 移除：
 
-相關 migration scripts 暫時保留作為歷史紀錄，
-本次不修改或刪除 Neon 資料。
+- storefront_sections
+- storefront_section_items
+
+刪除前的歷史資料已另外備份。
+
+Historical Migration Scripts
+----------------------------
+
+舊 homepage / storefront migration scripts
+仍保留在 scripts 目錄作為架構歷史紀錄。
+
+這些 legacy migration scripts 可能建立或操作
+已退役的資料表，因此不得重新套用至目前正式資料庫。
+
+目前正式首頁內容應以 Site Studio 架構為準。
