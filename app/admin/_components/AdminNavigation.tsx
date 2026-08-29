@@ -37,10 +37,6 @@ const navigationItems: NavigationItem[] = [
     disabled: true,
   },
   {
-    href: "/admin/storefront",
-    label: "商城展示配置",
-  },
-  {
     href: "/admin/homepage-studio",
     label: "首頁管理",
   },
