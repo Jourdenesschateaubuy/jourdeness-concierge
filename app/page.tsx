@@ -24054,6 +24054,7 @@ const sevenSequenceGuideV377 = [
         .detail-gallery-shell-v355 {
           position: relative !important;
           width: 100% !important;
+          aspect-ratio: 1 / 1.06 !important;
           overflow: hidden !important;
           background: #fff !important;
         }
@@ -24061,6 +24062,7 @@ const sevenSequenceGuideV377 = [
         .detail-gallery-track-v355 {
           display: flex !important;
           width: 100% !important;
+          height: 100% !important;
           overflow-x: auto !important;
           overflow-y: hidden !important;
           scroll-snap-type: x mandatory !important;
@@ -24079,17 +24081,23 @@ const sevenSequenceGuideV377 = [
           flex: 0 0 100% !important;
           width: 100% !important;
           min-width: 100% !important;
+          height: 100% !important;
+          min-height: 0 !important;
           margin: 0 !important;
           scroll-snap-align: start !important;
           scroll-snap-stop: always !important;
         }
 
         .detail-gallery-item-v355 img {
+          display: block !important;
           width: 100% !important;
-          height: auto !important;
-          aspect-ratio: 1 / 1.06 !important;
-          padding: 12px !important;
+          height: 100% !important;
+          max-width: none !important;
+          max-height: none !important;
+          aspect-ratio: auto !important;
+          padding: 0 !important;
           object-fit: contain !important;
+          object-position: center center !important;
           background: #fff !important;
         }
 
