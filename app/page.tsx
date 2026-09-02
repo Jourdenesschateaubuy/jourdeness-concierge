@@ -219,6 +219,8 @@ function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const [lastSubmittedOrderNumber, setLastSubmittedOrderNumber] = useState("");
+  const [successLineMessage, setSuccessLineMessage] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -2290,6 +2292,39 @@ const sevenSequenceGuideV377 = [
     }
 
     window.setTimeout(() => setLineCopyMessage(""), 2600);
+  }
+
+  function handleSuccessLineClick() {
+    const orderNumber =
+      lastSubmittedOrderNumber.trim();
+
+    if (!orderNumber) return;
+
+    if (!navigator.clipboard) {
+      setSuccessLineMessage(
+        `請在 LINE 中提供訂單編號：${orderNumber}`
+      );
+      return;
+    }
+
+    void navigator.clipboard
+      .writeText(orderNumber)
+      .then(() => {
+        setSuccessLineMessage(
+          "✓ 訂單編號已複製，進入 LINE 後直接貼上即可"
+        );
+      })
+      .catch(() => {
+        setSuccessLineMessage(
+          `請在 LINE 中提供訂單編號：${orderNumber}`
+        );
+      });
+  }
+
+  function closeSuccessModal() {
+    setIsSuccessOpen(false);
+    setSuccessLineMessage("");
+    setLastSubmittedOrderNumber("");
   }
 
   function toggleDrawerGroup(group: string) {
@@ -6849,6 +6884,8 @@ const sevenSequenceGuideV377 = [
         address: "",
         note: "",
       });
+      setLastSubmittedOrderNumber(orderNumber);
+      setSuccessLineMessage("");
       setIsCartOpen(false);
       setIsSuccessOpen(true);
     } catch (error) {
@@ -9937,19 +9974,44 @@ const sevenSequenceGuideV377 = [
       )}
 
       {isSuccessOpen && (
-        <section className="success-backdrop" onClick={() => setIsSuccessOpen(false)}>
-          <div className="success-modal" onClick={(event) => event.stopPropagation()}>
+        <section
+          className="success-backdrop"
+          aria-label="訂單已建立"
+        >
+          <div className="success-modal success-modal-v390">
             <div className="success-icon">✓</div>
-            <h2>訂購資料已送出！</h2>
-            <p>
-              我們已收到你的訂購資料。接下來請至 LINE 與小幫手確認商品、金額與宅配資訊。
-            </p>
+
+            <h2>訂單已建立</h2>
+
+            <div className="success-lead-v390">
+              <strong>
+                再完成最後一步，即可完成訂購
+              </strong>
+              <span>
+                請前往 LINE 與小幫手確認庫存、效期、訂單金額與付款資訊。
+              </span>
+            </div>
+
+            <div className="success-order-number-v390">
+              <span>您的訂單編號</span>
+              <strong>
+                {lastSubmittedOrderNumber || "訂單建立完成"}
+              </strong>
+              <small>
+                點下方 LINE 按鈕時，會自動複製訂單編號
+              </small>
+            </div>
 
             <div className="success-checklist">
-              <p>請至 LINE 與小幫手確認訂單內容。</p>
-              <p>小幫手會確認：庫存、效期、金額與宅配資訊。</p>
-              <p>確認無誤後，小幫手會傳送匯款資訊給您。</p>
-              <p>LINE ID：@chateau-buy</p>
+              <p>
+                LINE 小幫手會確認：庫存、效期、訂單金額與付款資訊。
+              </p>
+              <p>
+                進入 LINE 後直接貼上訂單編號，即可快速查詢。
+              </p>
+              <p>
+                LINE 小幫手：@chateau-buy
+              </p>
             </div>
 
             <div className="success-actions">
@@ -9958,13 +10020,28 @@ const sevenSequenceGuideV377 = [
                 href={lineOfficialUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={handleSuccessLineClick}
               >
-                加入 LINE 確認訂單
+                前往 LINE 完成訂單確認
               </a>
 
+              {successLineMessage && (
+                <p
+                  className="success-line-message-v390"
+                  role="status"
+                >
+                  {successLineMessage}
+                </p>
+              )}
+
+              <p className="success-persistence-v390">
+                訂單資料已成功送出，此畫面不會自動關閉。
+              </p>
+
               <button
+                type="button"
                 className="success-continue-button"
-                onClick={() => setIsSuccessOpen(false)}
+                onClick={closeSuccessModal}
               >
                 繼續逛商品
               </button>
@@ -9972,7 +10049,6 @@ const sevenSequenceGuideV377 = [
           </div>
         </section>
       )}
-
       <section className="line-confirm-section-v244" aria-label="LINE 訂單確認">
         <div className="line-confirm-card-v244">
           <div className="line-confirm-copy-v244">
@@ -12155,6 +12231,88 @@ const sevenSequenceGuideV377 = [
           border: 1px solid var(--line);
           background: #fff;
           color: var(--ink);
+        }
+
+        .success-modal-v390 {
+          max-height: calc(100dvh - 32px);
+          overflow-y: auto;
+        }
+
+        .success-lead-v390 {
+          display: grid;
+          gap: 6px;
+          margin: 0 auto 14px;
+        }
+
+        .success-lead-v390 strong {
+          color: var(--ink);
+          font-size: 16px;
+          line-height: 1.45;
+        }
+
+        .success-lead-v390 span {
+          color: var(--muted);
+          font-size: 13px;
+          line-height: 1.7;
+        }
+
+        .success-order-number-v390 {
+          display: grid;
+          gap: 7px;
+          margin: 14px 0;
+          padding: 16px 14px;
+          border: 1px solid var(--line);
+          border-radius: 20px;
+          background: #fff;
+        }
+
+        .success-order-number-v390 span {
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .success-order-number-v390 strong {
+          color: var(--ink);
+          font-size: clamp(17px, 5vw, 22px);
+          line-height: 1.3;
+          letter-spacing: 0.02em;
+          overflow-wrap: anywhere;
+        }
+
+        .success-order-number-v390 small {
+          color: var(--muted);
+          font-size: 11px;
+          line-height: 1.5;
+        }
+
+        .success-modal-v390 .success-line-button {
+          min-height: 52px;
+          background: #06c755;
+          color: #fff;
+          font-size: 16px;
+          box-shadow: 0 12px 24px rgba(6, 199, 85, 0.22);
+        }
+
+        .success-line-message-v390 {
+          margin: 0;
+          color: #087c38;
+          font-size: 12px;
+          font-weight: 900;
+          line-height: 1.5;
+        }
+
+        .success-persistence-v390 {
+          margin: 0;
+          color: var(--muted);
+          font-size: 11px;
+          line-height: 1.6;
+        }
+
+        .success-modal-v390 .success-continue-button {
+          min-height: 40px;
+          background: transparent;
+          font-size: 13px;
         }
 
         .notice-card strong {
