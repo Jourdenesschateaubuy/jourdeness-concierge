@@ -261,9 +261,7 @@ function formatMoney(
 function formatOrderTime(
   value: string
 ) {
-  if (!value) {
-    return "—";
-  }
+  if (!value) return "";
 
   const date =
     new Date(value);
@@ -276,36 +274,49 @@ function formatOrderTime(
     return value;
   }
 
-  return new Intl.DateTimeFormat(
-    "zh-TW",
-    {
-      timeZone:
-        "Asia/Taipei",
+  // Taiwan does not use daylight saving time.
+  // Convert to UTC+8 manually so SSR and browser
+  // always render exactly the same text.
+  const taipeiDate =
+    new Date(
+      date.getTime() +
+        8 * 60 * 60 * 1000
+    );
 
-      year:
-        "numeric",
+  const pad =
+    (number: number) =>
+      String(number).padStart(2, "0");
 
-      month:
-        "2-digit",
+  const year =
+    taipeiDate.getUTCFullYear();
 
-      day:
-        "2-digit",
+  const month =
+    pad(
+      taipeiDate.getUTCMonth() + 1
+    );
 
-      hour:
-        "2-digit",
+  const day =
+    pad(
+      taipeiDate.getUTCDate()
+    );
 
-      minute:
-        "2-digit",
+  const hour =
+    pad(
+      taipeiDate.getUTCHours()
+    );
 
-      second:
-        "2-digit",
+  const minute =
+    pad(
+      taipeiDate.getUTCMinutes()
+    );
 
-      hour12:
-        false,
-    }
-  ).format(date);
+  const second =
+    pad(
+      taipeiDate.getUTCSeconds()
+    );
+
+  return `${year}/${month}/${day} ${hour}:${minute}:${second}`;
 }
-
 function calculatedTotal(
   order: AdminOrder
 ) {
@@ -922,41 +933,89 @@ export default function OrdersClient({
                   </p>
                 </div>
 
-                <select
-                  value={
-                    selected.status
-                  }
-                  disabled={
-                    savingStatus
-                  }
-                  onChange={(
-                    event
-                  ) =>
-                    void handleStatusUpdate(
-                      selected,
-                      event.target
-                        .value as OrderStatus
-                    )
-                  }
-                  aria-label="變更訂單狀態"
-                  style={{
-                    ...styles.statusSelect,
-                    ...statusTone(
-                      selected.status
-                    ),
-                  }}
+                <details
+                  style={styles.statusMenuWrap}
                 >
-                  {STATUS_OPTIONS.map(
-                    (item) => (
-                      <option
-                        key={item}
-                        value={item}
-                      >
-                        {item}
-                      </option>
-                    )
-                  )}
-                </select>
+                  <summary
+                    aria-label="變更訂單狀態"
+                    aria-disabled={savingStatus}
+                    onClick={(event) => {
+                      if (savingStatus) {
+                        event.preventDefault();
+                      }
+                    }}
+                    style={{
+                      ...styles.statusMenuSummary,
+                      ...statusTone(
+                        selected.status
+                      ),
+                      ...(savingStatus
+                        ? styles.statusMenuSummaryDisabled
+                        : {}),
+                    }}
+                  >
+                    <span>
+                      {selected.status}
+                    </span>
+
+                    <span
+                      aria-hidden="true"
+                      style={styles.statusMenuChevron}
+                    >
+                      ▾
+                    </span>
+                  </summary>
+
+                  <div
+                    style={styles.statusMenu}
+                    role="menu"
+                    aria-label="訂單狀態"
+                  >
+                    {STATUS_OPTIONS.map(
+                      (item) => {
+                        const active =
+                          item === selected.status;
+
+                        return (
+                          <button
+                            key={item}
+                            type="button"
+                            role="menuitem"
+                            disabled={
+                              savingStatus ||
+                              active
+                            }
+                            onClick={(event) => {
+                              event.currentTarget
+                                .closest("details")
+                                ?.removeAttribute("open");
+
+                              void handleStatusUpdate(
+                                selected,
+                                item
+                              );
+                            }}
+                            style={{
+                              ...styles.statusMenuOption,
+                              ...statusTone(item),
+                              ...(active
+                                ? styles.statusMenuOptionActive
+                                : {}),
+                            }}
+                          >
+                            <span>
+                              {active ? "✓" : ""}
+                            </span>
+
+                            <strong>
+                              {item}
+                            </strong>
+                          </button>
+                        );
+                      }
+                    )}
+                  </div>
+                </details>
               </div>
 
               <section style={styles.detailSection}>
@@ -1335,7 +1394,9 @@ const styles:
     alignItems: "center",
     minHeight: 56,
     padding: "0 15px",
-    border: "1px solid #eadfe1",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "#eadfe1",
     borderRadius: 14,
     background: "#fff",
     color: "#5f5054",
@@ -1431,7 +1492,9 @@ const styles:
   orderCard: {
     width: "100%",
     textAlign: "left",
-    border: "1px solid #eadfe1",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "#eadfe1",
     borderRadius: 16,
     padding: 16,
     background: "#fff",
@@ -1541,14 +1604,76 @@ const styles:
     fontSize: 12,
   },
 
-  statusSelect: {
+  statusMenuWrap: {
+    position: "relative",
+    flexShrink: 0,
+  },
+
+  statusMenuSummary: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 9,
     minHeight: 36,
-    padding: "4px 10px",
+    minWidth: 112,
+    padding: "4px 11px 4px 13px",
     borderWidth: 1,
     borderStyle: "solid",
     borderRadius: 999,
+    fontSize: 13,
     fontWeight: 900,
     cursor: "pointer",
+    listStyle: "none",
+    userSelect: "none",
+  },
+
+  statusMenuSummaryDisabled: {
+    opacity: 0.55,
+    cursor: "wait",
+  },
+
+  statusMenuChevron: {
+    fontSize: 11,
+    lineHeight: 1,
+    opacity: 0.7,
+  },
+
+  statusMenu: {
+    position: "absolute",
+    top: "calc(100% + 8px)",
+    right: 0,
+    zIndex: 30,
+    display: "grid",
+    gap: 6,
+    minWidth: 150,
+    padding: 8,
+    border: "1px solid #eadfe1",
+    borderRadius: 14,
+    background: "#fff",
+    boxShadow:
+      "0 14px 34px rgba(77,48,57,.14)",
+  },
+
+  statusMenuOption: {
+    display: "grid",
+    gridTemplateColumns: "16px 1fr",
+    gap: 7,
+    alignItems: "center",
+    width: "100%",
+    minHeight: 38,
+    padding: "7px 10px",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderRadius: 10,
+    textAlign: "left",
+    cursor: "pointer",
+    fontSize: 13,
+  },
+
+  statusMenuOptionActive: {
+    cursor: "default",
+    boxShadow:
+      "inset 0 0 0 1px rgba(0,0,0,.03)",
   },
 
   detailSection: {
