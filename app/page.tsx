@@ -1551,7 +1551,7 @@ const sevenSequenceGuideV377 = [
           "買一送一",
           "任選優惠",
         ]
-      : seriesList
+      : (catalogSeriesList ?? [])
           .filter(
             (series) =>
               series !== "全部"
@@ -8033,24 +8033,7 @@ const sevenSequenceGuideV377 = [
               </div>
             )}
 
-            {selectedCategory === "臉部保養" && (
-              <div className="collection-chip-row-v22 skin">
-                {skinFilters.filter((filter) => filter !== "全部").slice(0, 8).map((filter) => (
-                  <button
-                    type="button"
-                    key={`collection-skin-${filter}`}
-                    className={selectedSkinFilter === filter ? "active" : ""}
-                    onClick={() => {
-                      setSelectedSkinFilter(filter);
-                      setSelectedSeries("全部");
-                      setSearchQuery("");
-                    }}
-                  >
-                    {filter}
-                  </button>
-                ))}
-              </div>
-            )}
+
           </section>
           )}
 
