@@ -2114,6 +2114,14 @@ const sevenSequenceGuideV377 = [
   function openCollectionPage() {
     if (typeof window !== "undefined" && !isCollectionOpen) {
       setCollectionReturnScrollY(window.scrollY);
+
+      window.history.pushState(
+        {
+          jourdenessCollection: true,
+        },
+        "",
+        window.location.href
+      );
     }
 
     setIsCollectionOpen(true);
@@ -2125,6 +2133,26 @@ const sevenSequenceGuideV377 = [
   }
 
   function closeCollectionPage() {
+    if (typeof window !== "undefined") {
+      const state =
+        window.history.state as
+          | {
+              jourdenessCollection?: boolean;
+              jourdenessDetail?: boolean;
+              jourdenessBundleDetail?: boolean;
+            }
+          | null;
+
+      if (
+        state?.jourdenessCollection &&
+        !state.jourdenessDetail &&
+        !state.jourdenessBundleDetail
+      ) {
+        window.history.back();
+        return;
+      }
+    }
+
     setIsCollectionOpen(false);
 
     if (typeof window !== "undefined") {
@@ -2886,6 +2914,27 @@ const sevenSequenceGuideV377 = [
     setSelectedBundleOffer(offer);
     setDetailGalleryIndex(0);
 
+    if (typeof window !== "undefined") {
+      const nextHash =
+        `#bundle-${offer.id}`;
+
+      if (
+        window.location.hash !==
+        nextHash
+      ) {
+        window.history.pushState(
+          {
+            jourdenessBundleDetail: true,
+            bundleOfferId: offer.id,
+            jourdenessCollection:
+              isCollectionOpen,
+          },
+          "",
+          nextHash
+        );
+      }
+    }
+
     window.setTimeout(() => {
       const scroller =
         document.querySelector(
@@ -2904,7 +2953,35 @@ const sevenSequenceGuideV377 = [
   }
 
   function closeBundleOfferDetail() {
+    if (typeof window !== "undefined") {
+      const state =
+        window.history.state as
+          | {
+              jourdenessBundleDetail?: boolean;
+            }
+          | null;
+
+      if (state?.jourdenessBundleDetail) {
+        window.history.back();
+        return;
+      }
+    }
+
     setSelectedBundleOffer(null);
+
+    if (
+      typeof window !== "undefined" &&
+      window.location.hash.startsWith(
+        "#bundle-"
+      )
+    ) {
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname +
+          window.location.search
+      );
+    }
   }
 
   function openProductDetail(product: Product, pushHistory = true) {
@@ -2919,6 +2996,8 @@ const sevenSequenceGuideV377 = [
           {
             jourdenessDetail: true,
             productId: product.id,
+            jourdenessCollection:
+              isCollectionOpen,
           },
           "",
           nextHash
@@ -5965,17 +6044,105 @@ const sevenSequenceGuideV377 = [
   }, [customer, hasRestoredSavedDraft]);
 
   useEffect(() => {
-    function handlePopState() {
+    function handlePopState(
+      event: PopStateEvent
+    ) {
+      const state =
+        event.state as
+          | {
+              jourdenessCollection?: boolean;
+              jourdenessDetail?: boolean;
+              productId?: number;
+              jourdenessBundleDetail?: boolean;
+              bundleOfferId?: number;
+            }
+          | null;
+
+      const shouldOpenCollection =
+        Boolean(
+          state?.jourdenessCollection
+        );
+
+      setIsCollectionOpen(
+        shouldOpenCollection
+      );
+
+      if (
+        state?.jourdenessDetail &&
+        Number.isInteger(
+          state.productId
+        )
+      ) {
+        const product =
+          products.find(
+            (item) =>
+              item.id ===
+              Number(state.productId)
+          ) ?? null;
+
+        setSelectedDetailProduct(
+          product
+        );
+        setSelectedBundleOffer(null);
+        setDetailHistoryActive(
+          Boolean(product)
+        );
+        return;
+      }
+
+      if (
+        state?.jourdenessBundleDetail &&
+        Number.isInteger(
+          state.bundleOfferId
+        )
+      ) {
+        const offer =
+          bundleOffers.find(
+            (item) =>
+              item.id ===
+              Number(
+                state.bundleOfferId
+              )
+          ) ?? null;
+
+        setSelectedBundleOffer(
+          offer
+        );
+        setSelectedDetailProduct(null);
+        setDetailHistoryActive(false);
+        return;
+      }
+
       setSelectedDetailProduct(null);
+      setSelectedBundleOffer(null);
       setDetailHistoryActive(false);
+
+      if (!shouldOpenCollection) {
+        window.setTimeout(() => {
+          window.scrollTo({
+            top: collectionReturnScrollY,
+            behavior: "auto",
+          });
+        }, 0);
+      }
     }
 
-    window.addEventListener("popstate", handlePopState);
+    window.addEventListener(
+      "popstate",
+      handlePopState
+    );
 
     return () => {
-      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener(
+        "popstate",
+        handlePopState
+      );
     };
-  }, []);
+  }, [
+    products,
+    bundleOffers,
+    collectionReturnScrollY,
+  ]);
 
   useEffect(() => {
     if (!isProfileOpen) return;
