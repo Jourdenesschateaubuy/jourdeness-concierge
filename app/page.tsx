@@ -9516,23 +9516,75 @@ const sevenSequenceGuideV377 = [
               className="detail-gallery-v291 detail-gallery-v355"
               aria-label="商品圖片"
             >
-              {selectedBundleOffer.coverImage ? (
-                <div className="detail-gallery-shell-v355">
-                  <div className="detail-gallery-track-v291 detail-gallery-track-v355">
-                    <figure className="detail-gallery-item-v291 detail-gallery-item-v355">
-                      <img
-                        src={selectedBundleOffer.coverImage}
-                        alt={selectedBundleOffer.name}
-                      />
-                    </figure>
+              {(() => {
+                const bundleGalleryImages =
+                  Array.from(
+                    new Set(
+                      [
+                        selectedBundleOffer.coverImage,
+                        ...(selectedBundleOffer.gallery ?? []),
+                      ].filter(
+                        (
+                          image
+                        ): image is string =>
+                          Boolean(image)
+                      )
+                    )
+                  );
+
+                return bundleGalleryImages.length > 0 ? (
+                  <div className="detail-gallery-shell-v355">
+                    <div
+                      className="detail-gallery-track-v291 detail-gallery-track-v355"
+                      aria-label="商品圖片左右滑動區"
+                    >
+                      {bundleGalleryImages.map(
+                        (image, index) => (
+                          <figure
+                            className="detail-gallery-item-v291 detail-gallery-item-v355"
+                            key={`bundle-top-gallery-${selectedBundleOffer.id}-${image}-${index}`}
+                          >
+                            <img
+                              src={image}
+                              alt={`${selectedBundleOffer.name} 圖片 ${index + 1}`}
+                              loading={
+                                index === 0
+                                  ? "eager"
+                                  : "lazy"
+                              }
+                            />
+                          </figure>
+                        )
+                      )}
+                    </div>
+
+                    {bundleGalleryImages.length > 1 ? (
+                      <span
+                        style={{
+                          position: "absolute",
+                          right: 12,
+                          bottom: 12,
+                          zIndex: 2,
+                          padding: "6px 10px",
+                          borderRadius: 999,
+                          background:
+                            "rgba(45, 35, 31, 0.72)",
+                          color: "#fff",
+                          fontSize: 11,
+                          fontWeight: 900,
+                        }}
+                      >
+                        左右滑動
+                      </span>
+                    ) : null}
                   </div>
-                </div>
-              ) : (
-                <div className="image-placeholder detail-placeholder detail-placeholder-v291">
-                  <span>Jourdeness Castle</span>
-                  <strong>圖片更新中</strong>
-                </div>
-              )}
+                ) : (
+                  <div className="image-placeholder detail-placeholder detail-placeholder-v291">
+                    <span>Jourdeness Castle</span>
+                    <strong>圖片更新中</strong>
+                  </div>
+                );
+              })()}
             </div>
 
             <div className="detail-content commerce-detail-content-v21">
@@ -9713,50 +9765,6 @@ const sevenSequenceGuideV377 = [
                 </section>
               ) : null}
 
-              {(selectedBundleOffer.gallery?.length ?? 0) > 0 && (
-                <section className="detail-info-block">
-                  <div className="related-heading related-heading-v22">
-                    <h3>更多商品圖片</h3>
-                    <span>查看更多商品與組合內容</span>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns:
-                        "repeat(2, minmax(0, 1fr))",
-                      gap: 12,
-                    }}
-                  >
-                    {selectedBundleOffer.gallery?.map(
-                      (image, index) => (
-                        <figure
-                          key={`bundle-gallery-${selectedBundleOffer.id}-${index}`}
-                          style={{
-                            margin: 0,
-                            overflow: "hidden",
-                            borderRadius: 16,
-                            border:
-                              "1px solid rgba(170, 120, 90, 0.18)",
-                            background: "#fff",
-                          }}
-                        >
-                          <img
-                            src={image}
-                            alt={`${selectedBundleOffer.name} 圖片 ${index + 1}`}
-                            loading="lazy"
-                            style={{
-                              display: "block",
-                              width: "100%",
-                              height: "auto",
-                            }}
-                          />
-                        </figure>
-                      )
-                    )}
-                  </div>
-                </section>
-              )}
             </div>
           </div>
         </section>
@@ -24257,6 +24265,7 @@ const sevenSequenceGuideV377 = [
           background: #fbf6ef !important;
           color: #4a2e22 !important;
         }
+
 
         .commerce-product-card,
         .compact-commerce-card-v350,
