@@ -1654,7 +1654,11 @@ const sevenSequenceGuideV377 = [
         )
       : [];
 
+  const isBundleOfferCategory =
+    selectedCategory === "組合價" ||
+    String(selectedCategory) === "組合優惠價";
   const collectionBundleOffers =
+    isBundleOfferCategory ||
     commerceFilter === "deals-combo" ||
     commerceFilter === "quick-monthly"
       ? monthlyBundleOffers
@@ -1677,6 +1681,7 @@ const sevenSequenceGuideV377 = [
             : monthlyBundleOffers
         : categoryBundleOffers;
   const bundleOnlyCollectionView =
+    isBundleOfferCategory ||
     commerceFilter ===
       "deals-combo" ||
     (
@@ -1693,6 +1698,7 @@ const sevenSequenceGuideV377 = [
     );
 
   const showBundleOfferCollectionSection =
+    isBundleOfferCategory ||
     commerceFilter ===
       "deals-combo" ||
     commerceFilter ===
@@ -1701,12 +1707,14 @@ const sevenSequenceGuideV377 = [
       "本月優惠" ||
     categoryBundleOffers.length > 0;
   const bundleCollectionHeading =
-    selectedCategory ===
-      "本月優惠" &&
-    selectedSeries !==
-      "全部"
-      ? selectedSeries
-      : "組合優惠";
+    isBundleOfferCategory
+      ? "組合優惠價"
+      : selectedCategory ===
+          "本月優惠" &&
+        selectedSeries !==
+          "全部"
+        ? selectedSeries
+        : "組合優惠";
 
   const collectionRegularProductsForRender =
     selectedCategory ===
