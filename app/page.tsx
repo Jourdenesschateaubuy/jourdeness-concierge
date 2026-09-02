@@ -51,6 +51,10 @@ import {
   type SiteStudioSection,
   type SiteStudioSectionKey,
 } from "../lib/site-studio-types";
+import {
+  defaultWebsiteSettings,
+  type WebsiteSettingsData,
+} from "../lib/cms/modules/website-settings/types";
 
 type StorefrontCatalogCategory = {
   id: number;
@@ -185,12 +189,18 @@ function Home() {
   );
   const [siteStudioConfig, setSiteStudioConfig] =
     useState<SiteStudioConfig>(() => DEFAULT_SITE_STUDIO_CONFIG);
+  const [websiteSettings, setWebsiteSettings] =
+    useState<WebsiteSettingsData>(() => defaultWebsiteSettings);
   const [storefrontCatalogCategories, setStorefrontCatalogCategories] =
     useState<StorefrontCatalogCategory[]>([]);
   const [storefrontCatalogSeries, setStorefrontCatalogSeries] =
     useState<StorefrontCatalogSeries[]>([]);
   const [bundleOffers, setBundleOffers] =
     useState<StorefrontBundleOffer[]>([]);
+
+  const lineOfficialUrl =
+    websiteSettings.lineUrl.trim() ||
+    "https://line.me/R/ti/p/@chateau-buy";
 
 
   const [selectedCategory, setSelectedCategory] =
@@ -517,6 +527,51 @@ function Home() {
     }
 
     void loadStorefrontProducts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadWebsiteSettings() {
+      try {
+        const response = await fetch(
+          "/api/storefront/website-settings",
+          {
+            cache: "no-store",
+          }
+        );
+
+        if (!response.ok) return;
+
+        const payload =
+          await readJsonResponse<{
+            settings?: WebsiteSettingsData;
+          }>(
+            response,
+            "網站設定同步失敗"
+          );
+
+        if (
+          !cancelled &&
+          payload.settings
+        ) {
+          setWebsiteSettings(
+            payload.settings
+          );
+        }
+      } catch (error) {
+        console.warn(
+          "[Jourdeness] 網站設定同步失敗，保留預設設定。",
+          error
+        );
+      }
+    }
+
+    void loadWebsiteSettings();
 
     return () => {
       cancelled = true;
@@ -9900,7 +9955,7 @@ const sevenSequenceGuideV377 = [
             <div className="success-actions">
               <a
                 className="success-line-button"
-                href="https://line.me/R/ti/p/@chateau-buy"
+                href={lineOfficialUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -9926,7 +9981,7 @@ const sevenSequenceGuideV377 = [
 
             <a
               className="line-confirm-button-v244"
-              href="https://line.me/R/ti/p/@chateau-buy"
+              href={lineOfficialUrl}
               target="_blank"
               rel="noopener noreferrer"
             >

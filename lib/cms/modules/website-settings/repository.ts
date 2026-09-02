@@ -37,6 +37,28 @@ function parseJson(value: unknown) {
   return value;
 }
 
+export async function getPublishedWebsiteSettings(): Promise<WebsiteSettingsData> {
+  const result = await dbQuery<{
+    snapshot: unknown;
+  }>(
+    `
+      SELECT
+        versions.snapshot
+      FROM website_settings_state AS state
+      LEFT JOIN website_settings_versions AS versions
+        ON versions.id = state.published_version_id
+      WHERE state.id = 1
+      LIMIT 1
+    `
+  );
+
+  const snapshot =
+    result.rows[0]?.snapshot;
+
+  return normalizeSettings(
+    parseJson(snapshot)
+  );
+}
 export async function getWebsiteSettingsStatus(): Promise<WebsiteSettingsStatus> {
   const stateResult = await dbQuery<{
     draft_data: unknown;
