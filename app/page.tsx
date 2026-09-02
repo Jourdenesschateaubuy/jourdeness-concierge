@@ -2246,6 +2246,11 @@ const sevenSequenceGuideV377 = [
     openProductDetail(product);
   }
 
+  function openBundleRelatedDetail(product: Product) {
+    setSelectedBundleOffer(null);
+    openProductDetail(product);
+  }
+
   function formatMoneyValue(value: string) {
     const normalized = value.trim().replace(/,/g, "");
 
@@ -4153,6 +4158,74 @@ const sevenSequenceGuideV377 = [
       .filter((item) => {
         if (isConsolidatedChoiceOptionProductV370(item)) return false;
         if (seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      })
+      .slice(0, 6);
+  }
+
+  function getBundleRelatedProducts(
+    bundle: StorefrontBundleOffer
+  ) {
+    const bundledProductIds = new Set(
+      bundle.items.map((item) => item.productId)
+    );
+
+    const bundledProducts = getProductsByIds(
+      Array.from(bundledProductIds)
+    );
+
+    const bundleSeries = new Set(
+      [
+        bundle.series,
+        ...bundledProducts.map((item) => item.series),
+      ].filter(
+        (value): value is string => Boolean(value)
+      )
+    );
+
+    const bundleCategories = new Set(
+      [
+        bundle.storefrontCategory,
+        ...bundledProducts.map((item) => item.category),
+      ].filter(
+        (value): value is string => Boolean(value)
+      )
+    );
+
+    const sameSeries = products.filter(
+      (item) =>
+        !bundledProductIds.has(item.id) &&
+        bundleSeries.has(item.series)
+    );
+
+    const sameCategory = products.filter(
+      (item) =>
+        !bundledProductIds.has(item.id) &&
+        bundleCategories.has(item.category) &&
+        !bundleSeries.has(item.series)
+    );
+
+    const fallback = products.filter(
+      (item) => !bundledProductIds.has(item.id)
+    );
+
+    const seen = new Set<number>();
+
+    return [
+      ...sameSeries,
+      ...sameCategory,
+      ...fallback,
+    ]
+      .filter((item) => {
+        if (bundledProductIds.has(item.id)) return false;
+        if (isConsolidatedChoiceOptionProductV370(item)) return false;
+
+        const status = getStorefrontStatus(item);
+
+        if (status && status !== "active") return false;
+        if (seen.has(item.id)) return false;
+
         seen.add(item.id);
         return true;
       })
@@ -9762,6 +9835,44 @@ const sevenSequenceGuideV377 = [
                 <section className="detail-info-block">
                   <h3>使用方式</h3>
                   <p>{selectedBundleOffer.usage}</p>
+                </section>
+              ) : null}
+
+              {getBundleRelatedProducts(selectedBundleOffer).length > 0 ? (
+                <section className="detail-info-block">
+                  <div className="related-heading related-heading-v22">
+                    <h3>你可能也會喜歡</h3>
+                    <span>同系列、同分類或適合搭配的商品推薦</span>
+                  </div>
+
+                  <div className="related-products related-products-v22">
+                    {getBundleRelatedProducts(selectedBundleOffer).map(
+                      (item) => (
+                        <button
+                          type="button"
+                          className="related-card"
+                          key={`bundle-related-${selectedBundleOffer.id}-${item.id}`}
+                          onClick={() =>
+                            openBundleRelatedDetail(item)
+                          }
+                        >
+                          <div className="related-image">
+                            {hasRealImage(item) ? (
+                              <img
+                                src={getPrimaryImage(item)}
+                                alt={item.name}
+                              />
+                            ) : (
+                              <span>圖片準備中</span>
+                            )}
+                          </div>
+
+                          <strong>{getCardName(item)}</strong>
+                          <p>{displayPrice(item)}</p>
+                        </button>
+                      )
+                    )}
+                  </div>
                 </section>
               ) : null}
 
