@@ -159,6 +159,87 @@ export async function listOrders() {
   return result.rows;
 }
 
+export async function getOrderNotificationSnapshot(
+  afterId = 0
+) {
+  const safeAfterId =
+    Number.isInteger(afterId) &&
+    afterId >= 0
+      ? afterId
+      : 0;
+
+  const [summaryResult, ordersResult] =
+    await Promise.all([
+      dbQuery<{
+        latest_id: string | number | null;
+        new_count: string | number | null;
+      }>(
+        `
+          SELECT
+            COALESCE(MAX(id), 0) AS latest_id,
+            COUNT(*) FILTER (
+              WHERE id > $1
+            ) AS new_count
+          FROM orders
+        `,
+        [safeAfterId]
+      ),
+
+      dbQuery<{
+        id: string | number;
+        order_number: string;
+        customer_name: string;
+        total_amount: string | number | null;
+        order_time: string | Date | null;
+      }>(
+        `
+          SELECT
+            id,
+            order_number,
+            customer_name,
+            total_amount,
+            order_time
+          FROM orders
+          WHERE id > $1
+          ORDER BY id DESC
+          LIMIT 5
+        `,
+        [safeAfterId]
+      ),
+    ]);
+
+  const row =
+    summaryResult.rows[0];
+
+  return {
+    latestId:
+      Number(row?.latest_id ?? 0) || 0,
+
+    newCount:
+      Number(row?.new_count ?? 0) || 0,
+
+    orders:
+      ordersResult.rows.map((order) => ({
+        id:
+          Number(order.id) || 0,
+
+        orderNumber:
+          String(order.order_number ?? ""),
+
+        customerName:
+          String(order.customer_name ?? ""),
+
+        totalAmount:
+          Number(order.total_amount ?? 0) || 0,
+
+        orderTime:
+          order.order_time
+            ? new Date(order.order_time).toISOString()
+            : "",
+      })),
+  };
+}
+
 export async function listOrdersWithItems() {
   const result =
     await dbQuery(
