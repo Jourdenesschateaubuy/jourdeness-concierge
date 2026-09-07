@@ -7046,19 +7046,14 @@ const sevenSequenceGuideV377 = [
 
 
       window.localStorage.removeItem(CART_STORAGE_KEY);
-      window.localStorage.removeItem(CUSTOMER_DRAFT_STORAGE_KEY);
       setSubmitStatus("success");
       setSubmitMessage("");
       setCartItems([]);
       setBundleCartItems([]);
-      setCustomer({
-        customerName: "",
-        lineId: "",
-        phone: "",
-        deliveryMethod: "宅配",
-        address: "",
+      setCustomer((current) => ({
+        ...current,
         note: "",
-      });
+      }));
       setLastSubmittedOrderNumber(orderNumber);
       setSuccessLineMessage("");
       setIsCartOpen(false);
@@ -7977,7 +7972,7 @@ const sevenSequenceGuideV377 = [
                 <div>
                   <span>LINE 身分</span>
                   <strong>{lineProfile ? lineProfile.displayName : "尚未綁定 LINE"}</strong>
-                  <p>{lineProfile ? "結帳送出時會一併帶入 LINE 身分。" : "綁定後可讓小幫手更快確認你的訂購資料。"}</p>
+                  <p>{lineProfile ? "已綁定 LINE，結帳時會一併帶入 LINE 身分。" : "綁定後可讓小幫手更快確認你的訂購資料。"}</p>
                 </div>
                 {!lineProfile && (
                   <button type="button" onClick={startLineBinding} disabled={lineBindingStatus === "loading" || !LINE_LIFF_ID}>
@@ -7994,8 +7989,8 @@ const sevenSequenceGuideV377 = [
                   <input value={customer.customerName} onChange={(event) => setCustomer({ ...customer, customerName: event.target.value })} placeholder="請輸入姓名" />
                 </label>
                 <label>
-                  LINE ID（備用）
-                  <input value={customer.lineId} onChange={(event) => setCustomer({ ...customer, lineId: event.target.value })} placeholder="未綁定時可填寫" />
+                  LINE ID（選填）
+                  <input value={customer.lineId} onChange={(event) => setCustomer({ ...customer, lineId: event.target.value })} placeholder="未綁定 LINE 時可填寫" />
                 </label>
                 <label>
                   電話
@@ -8008,7 +8003,7 @@ const sevenSequenceGuideV377 = [
               </div>
 
               <div className="profile-actions-v320">
-                <span>輸入內容會自動保存，不需要另外按儲存。</span>
+                <span>資料會保存在此裝置，下次購物可直接使用。</span>
                 <button type="button" onClick={() => setIsProfileOpen(false)}>完成</button>
               </div>
             </div>
@@ -9467,7 +9462,7 @@ const sevenSequenceGuideV377 = [
                           {lineProfile ? (
                             <strong>已綁定：{lineProfile.displayName}</strong>
                           ) : (
-                            <strong>資料可綁定 LINE 保存</strong>
+                            <strong>資料會保存在此裝置</strong>
                           )}
                           {lineBindingMessage ? <em>{lineBindingMessage}</em> : null}
                         </div>
@@ -9495,11 +9490,11 @@ const sevenSequenceGuideV377 = [
                         </label>
 
                         <label>
-                          LINE ID（備用）
+                          LINE ID（選填）
                           <input
                             value={customer.lineId}
                             onChange={(event) => setCustomer({ ...customer, lineId: event.target.value })}
-                            placeholder="未綁定時可填寫"
+                            placeholder="未綁定 LINE 時可填寫"
                           />
                         </label>
 
