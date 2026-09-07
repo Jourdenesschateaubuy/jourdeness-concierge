@@ -288,9 +288,9 @@ async function processPublishJob(
 
   if (!job) {
     console.log(
-      "沒有等待發布或清理的圖片。"
+      "沒有等待發布的圖片。"
     );
-    return;
+    return false;
   }
 
   const jobId =
@@ -354,6 +354,8 @@ async function processPublishJob(
 
     throw error;
   }
+
+  return true;
 }
 
 async function main() {
@@ -379,18 +381,40 @@ async function main() {
       pool
     );
 
-    const cleaned =
-      await processCleanupJob(
-        pool
-      );
-
-    if (cleaned) {
-      return;
-    }
-
-    await processPublishJob(
+    await processCleanupJob(
       pool
     );
+
+    const maxPublishJobsPerRun =
+      5;
+
+    let publishedCount =
+      0;
+
+    while (
+      publishedCount <
+      maxPublishJobsPerRun
+    ) {
+      const published =
+        await processPublishJob(
+          pool
+        );
+
+      if (!published) {
+        break;
+      }
+
+      publishedCount += 1;
+    }
+
+    if (
+      publishedCount ===
+      maxPublishJobsPerRun
+    ) {
+      console.log(
+        `本輪已處理 ${publishedCount} 個發布工作，其餘等待下一輪。`
+      );
+    }
   } finally {
     await pool.end();
   }
