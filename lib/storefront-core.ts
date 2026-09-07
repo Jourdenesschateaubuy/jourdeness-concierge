@@ -111,6 +111,7 @@ declare global {
 export const CART_STORAGE_KEY = "jourdeness_saved_cart_v2";
 export const CUSTOMER_DRAFT_STORAGE_KEY = "jourdeness_customer_draft_v1";
 export const LINE_PROFILE_STORAGE_KEY = "jourdeness_line_profile_v1";
+export const LAST_ORDER_NUMBER_STORAGE_KEY = "jourdeness_last_order_number_v1";
 export const LINE_LIFF_ID = process.env.NEXT_PUBLIC_LINE_LIFF_ID || "";
 export const LIFF_SDK_SRC = "https://static.line-scdn.net/liff/edge/2/sdk.js";
 

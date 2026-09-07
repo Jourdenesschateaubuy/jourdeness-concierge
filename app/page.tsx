@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import {
   CART_STORAGE_KEY,
   CUSTOMER_DRAFT_STORAGE_KEY,
+  LAST_ORDER_NUMBER_STORAGE_KEY,
   LIFF_SDK_SRC,
   LINE_LIFF_ID,
   LINE_PROFILE_STORAGE_KEY,
@@ -2360,7 +2361,6 @@ const sevenSequenceGuideV377 = [
   function closeSuccessModal() {
     setIsSuccessOpen(false);
     setSuccessLineMessage("");
-    setLastSubmittedOrderNumber("");
   }
 
   function toggleDrawerGroup(group: string) {
@@ -5936,6 +5936,23 @@ const sevenSequenceGuideV377 = [
   }, []);
 
   useEffect(() => {
+    try {
+      const savedOrderNumber =
+        window.localStorage.getItem(
+          LAST_ORDER_NUMBER_STORAGE_KEY
+        );
+
+      if (savedOrderNumber?.trim()) {
+        setLastSubmittedOrderNumber(
+          savedOrderNumber.trim()
+        );
+      }
+    } catch {
+      // 最近訂單編號讀取失敗時不影響購物流程。
+    }
+  }, []);
+
+  useEffect(() => {
     if (!LINE_LIFF_ID) {
       setLineBindingStatus("unavailable");
       return;
@@ -7055,6 +7072,15 @@ const sevenSequenceGuideV377 = [
         note: "",
       }));
       setLastSubmittedOrderNumber(orderNumber);
+
+      try {
+        window.localStorage.setItem(
+          LAST_ORDER_NUMBER_STORAGE_KEY,
+          orderNumber
+        );
+      } catch {
+        // 最近訂單編號保存失敗時不影響已建立的訂單。
+      }
       setSuccessLineMessage("");
       setIsCartOpen(false);
       setIsSuccessOpen(true);
@@ -7984,6 +8010,17 @@ const sevenSequenceGuideV377 = [
               {lineBindingMessage ? <p className="profile-binding-message-v320">{lineBindingMessage}</p> : null}
 
               <div className="profile-form-grid-v320">
+                {lastSubmittedOrderNumber ? (
+                  <label className="profile-field-full-v320">
+                    最近訂單編號
+                    <input
+                      value={lastSubmittedOrderNumber}
+                      readOnly
+                      aria-label="最近訂單編號"
+                      title="最近一次成功送出的訂單編號"
+                    />
+                  </label>
+                ) : null}
                 <label>
                   姓名
                   <input value={customer.customerName} onChange={(event) => setCustomer({ ...customer, customerName: event.target.value })} placeholder="請輸入姓名" />
