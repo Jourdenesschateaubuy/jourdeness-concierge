@@ -13949,11 +13949,11 @@ const sevenSequenceGuideV377 = [
         }
 
         .home-product-section .section-heading.compact h2::before {
-          content: "- ";
+          content: "";
         }
 
         .home-product-section .section-heading.compact h2::after {
-          content: " -";
+          content: "";
         }
 
         .home-product-section .section-heading.compact span {
