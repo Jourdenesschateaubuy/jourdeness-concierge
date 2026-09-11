@@ -1641,20 +1641,14 @@ const sevenSequenceGuideV377 = [
     bundleOffers;
 
   const categoryBundleOffers =
-    selectedCategory === "臉部保養" ||
-    selectedCategory === "身體洗護" ||
-    selectedCategory === "健康補給"
-      ? bundleOffers.filter(
-          (offer) =>
-            offer.storefrontCategory ===
-              selectedCategory &&
-            (
-              selectedSeries === "全部" ||
-              offer.series === selectedSeries
-            )
+    bundleOffers.filter(
+      (offer) =>
+        offer.storefrontCategory === selectedCategory &&
+        (
+          selectedSeries === "全部" ||
+          offer.series === selectedSeries
         )
-      : [];
-
+    );
   const isBundleOfferCategory =
     selectedCategory === "組合價" ||
     String(selectedCategory) === "組合優惠價";
