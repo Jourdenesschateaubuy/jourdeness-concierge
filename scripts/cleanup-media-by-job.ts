@@ -15,6 +15,8 @@ import ws from "ws";
 neonConfig.webSocketConstructor =
   ws;
 
+
+const R2_BUCKET = "jourdeness-media";
 function loadLocalEnv() {
   const envPath =
     path.join(
@@ -200,6 +202,59 @@ function isGitTracked(
   }
 }
 
+
+function deleteFromR2(
+  id: number
+) {
+  const wranglerCli =
+    path.join(
+      process.cwd(),
+      "node_modules",
+      "wrangler",
+      "bin",
+      "wrangler.js"
+    );
+
+  if (!fs.existsSync(wranglerCli)) {
+    throw new Error(
+      `找不到 Wrangler CLI：${wranglerCli}`
+    );
+  }
+
+  const objectKey =
+    `media/${id}`;
+
+  const objectPath =
+    `${R2_BUCKET}/${objectKey}`;
+
+  console.log("");
+  console.log("開始刪除 R2");
+  console.log("Media ID :", id);
+  console.log("R2 Key   :", objectKey);
+  console.log("");
+
+  execFileSync(
+    process.execPath,
+    [
+      wranglerCli,
+      "r2",
+      "object",
+      "delete",
+      objectPath,
+      "--remote",
+    ],
+    {
+      cwd: process.cwd(),
+      stdio: "inherit",
+      env: process.env,
+    }
+  );
+
+  console.log("");
+  console.log("R2 DELETE OK");
+  console.log("Media ID :", id);
+  console.log("R2 Key   :", objectKey);
+}
 async function main() {
   loadLocalEnv();
 
@@ -361,6 +416,11 @@ async function main() {
         )
       );
 
+    /*
+     * 先清理 R2。
+     * NAS 是 source of truth，因此保留到 R2 成功刪除之後。
+     */
+    deleteFromR2(mediaId);
     /*
      * NAS 實體檔只能刪
      * UPLOAD_ROOT 內的路徑。
@@ -535,10 +595,34 @@ async function main() {
          * 但 push 曾失敗，重試時
          * 仍會再次 push。
          */
+        const currentBranch =
+          execFileSync(
+            "git",
+            [
+              "branch",
+              "--show-current",
+            ],
+            {
+              cwd: process.cwd(),
+              encoding: "utf8",
+            }
+          ).trim();
+
+        if (!currentBranch) {
+          throw new Error(
+            "無法取得目前 Git branch。"
+          );
+        }
+
+        console.log(
+          "GIT PUSH BRANCH:",
+          currentBranch
+        );
+
         runGit([
           "push",
           "origin",
-          "main",
+          currentBranch,
         ]);
       } else if (
         fs.existsSync(
