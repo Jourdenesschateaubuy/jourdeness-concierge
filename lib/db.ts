@@ -1,12 +1,11 @@
 ﻿import {
   Pool,
-  neonConfig,
+  neon,
   type PoolClient,
+  type QueryResult,
   type QueryResultRow,
 } from "@neondatabase/serverless";
-import ws from "ws";
 
-neonConfig.webSocketConstructor = ws;
 
 function getConnectionString() {
   const value = process.env.DATABASE_URL?.trim();
@@ -34,14 +33,13 @@ export async function dbQuery<
 >(
   text: string,
   values: unknown[] = []
-) {
-  const pool = getDbPool();
+): Promise<QueryResult<T>> {
+  const sql = neon(getConnectionString());
+  const result = await sql.query(text, values, {
+    fullResults: true,
+  });
 
-  try {
-    return await pool.query<T>(text, values);
-  } finally {
-    await pool.end();
-  }
+  return result as unknown as QueryResult<T>;
 }
 
 export async function withDbClient<T>(

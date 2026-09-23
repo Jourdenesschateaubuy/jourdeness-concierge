@@ -48,3 +48,6 @@ runtime/
 
 # local production logs
 logs/
+/dist/
+.vinext/
+.wrangler/
