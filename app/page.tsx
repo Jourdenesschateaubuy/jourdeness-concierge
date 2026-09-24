@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 
 // Jourdeness storefront build: V3.8.6 — 龍血玫瑰皂改為自由配選項，不再單獨顯示商品卡。
@@ -2459,37 +2459,12 @@ const sevenSequenceGuideV377 = [
     return "";
   }
 
-  function getNameBasedImageCandidates(product: Product) {
-    const content = productContent(product);
-    const rawNames = [
-      product.name,
-      product.cardName ?? "",
-      content.cardName ?? "",
-      product.name.replace(/\s+/g, ""),
-      product.name.replace(/[\/\|｜＋+()（）:：]/g, " ").replace(/\s+/g, " ").trim(),
-      product.name.replace(/[\/\|｜＋+()（）:：\s]/g, ""),
-    ];
-
-    const baseNames = Array.from(new Set(rawNames.map((name) => name.trim()).filter(Boolean)));
-    const extensions = ["jpg", "png", "jpeg", "webp"];
-    const candidates: string[] = [];
-
-    for (const baseName of baseNames) {
-      for (const extension of extensions) {
-        candidates.push(`/products/${baseName}.${extension}`);
-      }
-    }
-
-    return candidates;
-  }
-
   function getImageCandidates(product: Product) {
 
     const candidates = [
       product.image,
       ...(productImageFallbacks[product.id] ?? []),
       ...(product.gallery ?? []),
-      ...getNameBasedImageCandidates(product),
     ].filter((image): image is string => Boolean(image && !image.includes("placeholder")));
 
     return Array.from(new Set(candidates));

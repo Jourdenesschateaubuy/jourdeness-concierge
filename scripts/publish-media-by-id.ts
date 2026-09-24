@@ -9,6 +9,8 @@ import ws from "ws";
 
 neonConfig.webSocketConstructor = ws;
 
+const R2_BUCKET = "jourdeness-media";
+
 function loadLocalEnv() {
   const envPath = path.join(
     process.cwd(),
@@ -90,17 +92,79 @@ function resolveSourcePath(
   return storagePath;
 }
 
-function runGit(
-  args: string[]
-) {
+function uploadToR2({
+  id,
+  sourcePath,
+  originalName,
+  mimeType,
+}: {
+  id: number;
+  sourcePath: string;
+  originalName: string;
+  mimeType: string;
+}) {
+  const wranglerCli =
+    path.join(
+      process.cwd(),
+      "node_modules",
+      "wrangler",
+      "bin",
+      "wrangler.js"
+    );
+
+  if (!fs.existsSync(wranglerCli)) {
+    throw new Error(
+      `找不到 Wrangler CLI：${wranglerCli}`
+    );
+  }
+
+  const objectKey =
+    `media/${id}`;
+
+  const objectPath =
+    `${R2_BUCKET}/${objectKey}`;
+
+  const disposition =
+    `inline; filename*=UTF-8''${encodeURIComponent(
+      originalName
+    )}`;
+
+  console.log("");
+  console.log("開始上傳 R2");
+  console.log("Media ID :", id);
+  console.log("Source   :", sourcePath);
+  console.log("R2 Key   :", objectKey);
+  console.log("");
+
   execFileSync(
-    "git",
-    args,
+    process.execPath,
+    [
+      wranglerCli,
+      "r2",
+      "object",
+      "put",
+      objectPath,
+      "--file",
+      sourcePath,
+      "--content-type",
+      mimeType,
+      "--content-disposition",
+      disposition,
+      "--cache-control",
+      "public, max-age=3600",
+      "--remote",
+    ],
     {
       cwd: process.cwd(),
       stdio: "inherit",
+      env: process.env,
     }
   );
+
+  console.log("");
+  console.log("R2 PUBLISH OK");
+  console.log("Media ID :", id);
+  console.log("R2 Key   :", objectKey);
 }
 
 async function main() {
@@ -114,7 +178,7 @@ async function main() {
     id <= 0
   ) {
     throw new Error(
-      "請輸入有效的 Media ID，例如：146"
+      "請輸入有效的 Media ID，例如：119"
     );
   }
 
@@ -136,14 +200,15 @@ async function main() {
     const result =
       await pool.query(
         `
-        SELECT
-          id,
-          original_name,
-          storage_path
-        FROM media_assets
-        WHERE id = $1
-          AND is_active = TRUE
-        LIMIT 1
+          SELECT
+            id,
+            original_name,
+            storage_path,
+            mime_type
+          FROM media_assets
+          WHERE id = $1
+            AND is_active = TRUE
+          LIMIT 1
         `,
         [id]
       );
@@ -153,7 +218,7 @@ async function main() {
 
     if (!asset) {
       throw new Error(
-        `找不到 Media ID ${id}`
+        `找不到有效的 Media ID ${id}`
       );
     }
 
@@ -164,157 +229,23 @@ async function main() {
 
     if (!fs.existsSync(sourcePath)) {
       throw new Error(
-        `來源圖片不存在：${sourcePath}`
+        `NAS 來源圖片不存在：${sourcePath}`
       );
     }
 
-    const safeName =
-      path.basename(
-        String(asset.original_name)
-      );
-
-    const targetDir =
-      path.join(
-        process.cwd(),
-        "public",
-        "products"
-      );
-
-    fs.mkdirSync(
-      targetDir,
-      {
-        recursive: true,
-      }
-    );
-
-    const targetPath =
-      path.join(
-        targetDir,
-        safeName
-      );
-
-    fs.copyFileSync(
+    uploadToR2({
+      id,
       sourcePath,
-      targetPath
-    );
-
-    console.log("");
-    console.log("MEDIA SYNC OK");
-    console.log("Media ID :", id);
-    console.log("Name     :", safeName);
-    console.log("Target   :", targetPath);
-    console.log("");
-
-    const gitPath =
-      `public/products/${safeName}`;
-
-    runGit([
-      "add",
-      "--",
-      gitPath,
-    ]);
-
-    const status =
-      execFileSync(
-        "git",
-        [
-          "diff",
-          "--cached",
-          "--quiet",
-          "--exit-code",
-        ],
-        {
-          cwd: process.cwd(),
-        }
-      );
-
-    void status;
-  } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "status" in error &&
-      error.status === 1
-    ) {
-      // staged changes exist
-    } else {
-      throw error;
-    }
+      originalName:
+        String(asset.original_name),
+      mimeType:
+        String(
+          asset.mime_type ||
+          "application/octet-stream"
+        ),
+    });
   } finally {
     await pool.end();
-  }
-
-  const publishId =
-    Number(process.argv[2]);
-
-  const pool2 =
-    new Pool({
-      connectionString:
-        process.env.DATABASE_URL!,
-    });
-
-  try {
-    const result =
-      await pool2.query(
-        `
-        SELECT original_name
-        FROM media_assets
-        WHERE id = $1
-        LIMIT 1
-        `,
-        [publishId]
-      );
-
-    const safeName =
-      path.basename(
-        String(
-          result.rows[0]
-            ?.original_name ?? publishId
-        )
-      );
-
-    const staged =
-      execFileSync(
-        "git",
-        [
-          "diff",
-          "--cached",
-          "--name-only",
-        ],
-        {
-          cwd: process.cwd(),
-          encoding: "utf8",
-        }
-      ).trim();
-
-    if (!staged) {
-      console.log(
-        "沒有新的檔案變更，不需要發布。"
-      );
-      return;
-    }
-
-    runGit([
-      "commit",
-      "-m",
-      `publish: media ${publishId} ${safeName}`,
-    ]);
-
-    runGit([
-      "push",
-      "origin",
-      "main",
-    ]);
-
-    console.log("");
-    console.log(
-      "PUBLISH OK"
-    );
-    console.log(
-      "Vercel 將自動開始部署。"
-    );
-  } finally {
-    await pool2.end();
   }
 }
 
@@ -322,7 +253,7 @@ main().catch(
   (error) => {
     console.error("");
     console.error(
-      "PUBLISH FAILED"
+      "R2 PUBLISH FAILED"
     );
     console.error(
       error instanceof Error
