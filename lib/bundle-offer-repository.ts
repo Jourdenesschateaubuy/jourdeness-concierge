@@ -422,17 +422,160 @@ export async function listBundleOffers() {
     `
   );
 
-  return Promise.all(
-    result.rows.map(async (row) => {
-      const relations =
-        await loadBundleOfferRelations(Number(row.id));
+  if (result.rows.length === 0) {
+    return [];
+  }
 
-      return {
-        ...rowToBundleOfferBase(row),
-        ...relations,
-      };
-    })
-  );
+  const offerIds =
+    result.rows.map((row) => Number(row.id));
+
+  const [itemsResult, plansResult] =
+    await Promise.all([
+      dbQuery<BundleOfferItemRow>(
+        `
+          SELECT
+            item.id,
+            item.bundle_offer_id,
+            item.product_id,
+            item.role,
+            item.quantity,
+            item.sort_order,
+
+            product.display_code AS product_display_code,
+            product.name AS product_name,
+            product.image AS product_image,
+            product.price AS product_price,
+            product.status AS product_status
+
+          FROM bundle_offer_items AS item
+          JOIN products AS product
+            ON product.id = item.product_id
+
+          WHERE item.bundle_offer_id =
+            ANY($1::bigint[])
+
+          ORDER BY
+            item.bundle_offer_id ASC,
+            item.sort_order ASC,
+            item.id ASC
+        `,
+        [offerIds]
+      ),
+
+      dbQuery<BundleOfferPlanRow>(
+        `
+          SELECT *
+          FROM bundle_offer_plans
+          WHERE bundle_offer_id =
+            ANY($1::bigint[])
+          ORDER BY
+            bundle_offer_id ASC,
+            sort_order ASC,
+            id ASC
+        `,
+        [offerIds]
+      ),
+    ]);
+
+  const planIds =
+    plansResult.rows.map(
+      (plan) => Number(plan.id)
+    );
+
+  const giftRows =
+    planIds.length > 0
+      ? (
+          await dbQuery<BundleOfferPlanGiftRow>(
+            `
+              SELECT *
+              FROM bundle_offer_plan_gifts
+              WHERE bundle_offer_plan_id =
+                ANY($1::bigint[])
+              ORDER BY
+                bundle_offer_plan_id ASC,
+                sort_order ASC,
+                id ASC
+            `,
+            [planIds]
+          )
+        ).rows
+      : [];
+
+  const giftsByPlanId =
+    new Map<number, BundleOfferPlanGift[]>();
+
+  for (const row of giftRows) {
+    const planId =
+      Number(row.bundle_offer_plan_id);
+
+    const gifts =
+      giftsByPlanId.get(planId) ?? [];
+
+    gifts.push(
+      rowToBundlePlanGift(row)
+    );
+
+    giftsByPlanId.set(
+      planId,
+      gifts
+    );
+  }
+
+  const itemsByOfferId =
+    new Map<number, BundleOfferItem[]>();
+
+  for (const row of itemsResult.rows) {
+    const offerId =
+      Number(row.bundle_offer_id);
+
+    const items =
+      itemsByOfferId.get(offerId) ?? [];
+
+    items.push(
+      rowToBundleItem(row)
+    );
+
+    itemsByOfferId.set(
+      offerId,
+      items
+    );
+  }
+
+  const plansByOfferId =
+    new Map<number, BundleOfferPlan[]>();
+
+  for (const row of plansResult.rows) {
+    const offerId =
+      Number(row.bundle_offer_id);
+
+    const plans =
+      plansByOfferId.get(offerId) ?? [];
+
+    plans.push(
+      rowToBundlePlan(
+        row,
+        giftsByPlanId.get(Number(row.id)) ?? []
+      )
+    );
+
+    plansByOfferId.set(
+      offerId,
+      plans
+    );
+  }
+
+  return result.rows.map((row) => {
+    const offerId =
+      Number(row.id);
+
+    return {
+      ...rowToBundleOfferBase(row),
+      items:
+        itemsByOfferId.get(offerId) ?? [],
+      plans:
+        plansByOfferId.get(offerId) ?? [],
+    };
+  });
 }
 
 export async function getBundleOffer(id: number) {
