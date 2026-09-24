@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 const siteUrl =
-  "https://jourdeness-concierge.vercel.app";
+  "https://jourdeness-concierge.jourdeness-dev.workers.dev";
 
 const siteDescription =
   "精選佐登妮絲人氣保養、美妝、精油與健康商品，城堡限定優惠線上輕鬆選購。";
