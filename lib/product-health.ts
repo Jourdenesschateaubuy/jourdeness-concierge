@@ -91,25 +91,16 @@ async function checkProductImage(image: string): Promise<ImageCheckResult> {
     return "missing";
   }
 
-  if (/^(?:https?:|data:|blob:)/i.test(cleanImage)) {
+  if (
+    /^(?:https?:|data:|blob:)/i.test(cleanImage) ||
+    cleanImage.startsWith("/api/studio/media/")
+  ) {
     return "remote";
   }
-
-  const uploadRoot = normalized(process.env.UPLOAD_ROOT);
   const publicRoot = path.join(process.cwd(), "public");
   const candidates: string[] = [];
 
-  if (cleanImage.startsWith("/api/uploads/")) {
-    if (!uploadRoot) return "unverifiable";
-
-    const relativePath = cleanImage
-      .slice("/api/uploads/".length)
-      .replaceAll("/", path.sep);
-    const absolutePath = safeLocalPath(uploadRoot, relativePath);
-
-    if (!absolutePath) return "missing";
-    candidates.push(absolutePath);
-  } else if (cleanImage.startsWith("/")) {
+  if (cleanImage.startsWith("/")) {
     const absolutePath = safeLocalPath(
       publicRoot,
       cleanImage.slice(1).replaceAll("/", path.sep)
@@ -119,10 +110,6 @@ async function checkProductImage(image: string): Promise<ImageCheckResult> {
     candidates.push(absolutePath);
   } else {
     const fileName = path.basename(cleanImage);
-
-    if (uploadRoot) {
-      candidates.push(path.join(uploadRoot, "products", fileName));
-    }
 
     candidates.push(
       path.join(publicRoot, "products", fileName),

@@ -5,7 +5,6 @@ import {
   getDatabaseProduct,
   updateDatabaseProduct,
 } from "../../../../../lib/product-repository";
-import { deleteUploadedImage } from "../../../../../lib/upload-storage";
 import {
   extractPrimaryMoneyAmount,
   formatOriginalPriceText,
@@ -457,22 +456,6 @@ export async function PATCH(
   const updatedProduct =
     await getDatabaseProduct(productId);
 
-  if (
-    previousImage &&
-    nextImage &&
-    previousImage !== nextImage
-  ) {
-    try {
-      await deleteUploadedImage(
-        previousImage
-      );
-    } catch (error) {
-      console.error(
-        "[Jourdeness Studio] 舊商品圖片刪除失敗：",
-        error
-      );
-    }
-  }
 
   return NextResponse.json({
     product: updatedProduct,

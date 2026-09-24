@@ -20,9 +20,6 @@ import {
 } from "../../../lib/product-repository";
 
 import {
-  deleteUploadedImage,
-} from "../../../lib/upload-storage";
-import {
 
   formatOriginalPriceText,
   formatStandardPriceText,
@@ -248,16 +245,6 @@ export async function updateProductAction(formData: FormData) {
       product.category.trim()
   );
 
-  if (
-    existingProduct.image &&
-    existingProduct.image !== product.image
-  ) {
-    try {
-      await deleteUploadedImage(existingProduct.image);
-    } catch (error) {
-      console.error("舊商品圖片刪除失敗：", error);
-    }
-  }
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
@@ -394,16 +381,6 @@ export async function updateProductEditorAction(
       throw new Error("找不到這筆商品");
     }
 
-    if (
-      existingProduct.image &&
-      existingProduct.image !== product.image
-    ) {
-      try {
-        await deleteUploadedImage(existingProduct.image);
-      } catch (error) {
-        console.error("舊商品圖片刪除失敗：", error);
-      }
-    }
   }
 
   revalidatePath("/admin");
@@ -449,13 +426,6 @@ export async function deleteProductAction(formData: FormData) {
     throw new Error("商品刪除失敗");
   }
 
-  if (existingProduct.image) {
-    try {
-      await deleteUploadedImage(existingProduct.image);
-    } catch (error) {
-      console.error("商品圖片刪除失敗：", error);
-    }
-  }
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
