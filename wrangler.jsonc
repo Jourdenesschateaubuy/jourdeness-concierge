@@ -11,6 +11,12 @@
     "not_found_handling": "none",
     "binding": "ASSETS"
   },
+  "kv_namespaces": [
+    {
+      "binding": "VINEXT_KV_CACHE",
+      "id": "e51333c211394ea9aa779d725e0d087a"
+    }
+  ],
   "r2_buckets": [
     {
       "binding": "JOURDENESS_MEDIA",
