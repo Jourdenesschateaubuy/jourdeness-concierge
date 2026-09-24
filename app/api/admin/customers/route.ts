@@ -1,3 +1,4 @@
+import { hasValidAdminSession } from "../../../../lib/admin-auth";
 import {
   NextRequest,
   NextResponse,
@@ -10,6 +11,13 @@ import {
 export async function POST(
   request: NextRequest
 ) {
+  if (!(await hasValidAdminSession())) {
+    return NextResponse.json(
+      { error: "尚未登入管理後台" },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await request.json();
 

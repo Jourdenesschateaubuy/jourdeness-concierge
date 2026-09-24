@@ -1,4 +1,4 @@
-import handler from "vinext/server/fetch-handler";
+﻿import handler from "vinext/server/fetch-handler";
 
 type R2ObjectLike = {
   body: ReadableStream;
@@ -101,7 +101,7 @@ export default {
   async fetch(
     request: Request,
     env: Env,
-    ctx: ExecutionContext
+    ctx: Parameters<typeof handler.fetch>[2]
   ): Promise<Response> {
     const url =
       new URL(request.url);

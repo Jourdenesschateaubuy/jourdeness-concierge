@@ -1,3 +1,4 @@
+import { hasValidAdminSession } from "../../../../lib/admin-auth";
 import { NextResponse } from "next/server";
 
 import {
@@ -218,12 +219,26 @@ async function buildMigration(apply: boolean) {
 }
 
 export async function GET() {
+  if (!(await hasValidAdminSession())) {
+    return NextResponse.json(
+      { error: "尚未登入管理後台" },
+      { status: 401 }
+    );
+  }
+
   return NextResponse.json(
     await buildMigration(false)
   );
 }
 
 export async function POST() {
+  if (!(await hasValidAdminSession())) {
+    return NextResponse.json(
+      { error: "尚未登入管理後台" },
+      { status: 401 }
+    );
+  }
+
   return NextResponse.json(
     await buildMigration(true)
   );

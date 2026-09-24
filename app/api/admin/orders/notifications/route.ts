@@ -1,3 +1,4 @@
+import { hasValidAdminSession } from "../../../../../lib/admin-auth";
 import { NextResponse } from "next/server";
 
 import {
@@ -9,6 +10,13 @@ export const dynamic = "force-dynamic";
 export async function GET(
   request: Request
 ) {
+  if (!(await hasValidAdminSession())) {
+    return NextResponse.json(
+      { error: "尚未登入管理後台" },
+      { status: 401 }
+    );
+  }
+
   try {
     const url =
       new URL(request.url);

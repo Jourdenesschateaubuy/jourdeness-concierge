@@ -1,3 +1,4 @@
+import { hasValidAdminSession } from "../../../../../lib/admin-auth";
 ﻿import { NextResponse } from "next/server";
 import { updateOrderStatus } from "../../../../../lib/order-repository";
 
@@ -9,6 +10,13 @@ const ALLOWED_STATUSES = new Set([
 ]);
 
 export async function POST(request: Request) {
+  if (!(await hasValidAdminSession())) {
+    return NextResponse.json(
+      { error: "尚未登入管理後台" },
+      { status: 401 }
+    );
+  }
+
 
   try {
 

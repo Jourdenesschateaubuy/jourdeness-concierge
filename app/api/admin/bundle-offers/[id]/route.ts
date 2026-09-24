@@ -1,3 +1,4 @@
+import { hasValidAdminSession } from "../../../../../lib/admin-auth";
 import { NextResponse } from "next/server";
 
 import {
@@ -26,6 +27,13 @@ export async function GET(
   _request: Request,
   context: RouteContext
 ) {
+  if (!(await hasValidAdminSession())) {
+    return NextResponse.json(
+      { error: "尚未登入管理後台" },
+      { status: 401 }
+    );
+  }
+
   const { id: rawId } = await context.params;
   const id = parseId(rawId);
 
@@ -61,6 +69,13 @@ export async function PATCH(
   request: Request,
   context: RouteContext
 ) {
+  if (!(await hasValidAdminSession())) {
+    return NextResponse.json(
+      { error: "尚未登入管理後台" },
+      { status: 401 }
+    );
+  }
+
   const { id: rawId } = await context.params;
   const id = parseId(rawId);
 
@@ -138,6 +153,13 @@ export async function PUT(
   request: Request,
   context: RouteContext
 ) {
+  if (!(await hasValidAdminSession())) {
+    return NextResponse.json(
+      { error: "尚未登入管理後台" },
+      { status: 401 }
+    );
+  }
+
   const { id: rawId } = await context.params;
   const id = parseId(rawId);
 
@@ -190,6 +212,13 @@ export async function DELETE(
   _request: Request,
   context: RouteContext
 ) {
+  if (!(await hasValidAdminSession())) {
+    return NextResponse.json(
+      { error: "尚未登入管理後台" },
+      { status: 401 }
+    );
+  }
+
   const { id: rawId } = await context.params;
   const id = parseId(rawId);
 
